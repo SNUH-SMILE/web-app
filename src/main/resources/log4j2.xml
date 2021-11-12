@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %5p [%c] %m%n" />
+        </Console>
+        <RollingFile name="rollingFile" fileName="./../logs/infectious-disease.log" filePattern="./../logs/infectious-disease_%d{yyyy-MM-dd}.log" append="true">
+            <PatternLayout pattern="%d %5p [%c] %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="java.sql" level="DEBUG" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="rollingFile"/>
+        </Logger>
+        <Logger name="egovframework" level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="rollingFile"/>
+        </Logger>
+        <!-- log SQL with timing information, post execution -->
+        <Logger name="jdbc.sqltiming" level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="rollingFile"/>
+        </Logger>
+        <Logger name="org.springframework" level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="rollingFile"/>
+        </Logger>
+
+        <Logger name="jdbc" level="OFF" />
+        <Logger name="jdbc.connection" level="OFF" />
+        <logger name="jdbc.audit" level="OFF" />
+        <Logger name="jdbc.resultset" level="OFF" />
+        <Logger name="jdbc.resultsettable" level="OFF" />
+        <Logger name="log4jdbc.debug" level="OFF"/>
+        <Logger name="org.mybatis.spring" level="OFF"/>
+
+        <Root level="DEBUG">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="rollingFile"/>
+        </Root>
+    </Loggers>
+</Configuration>

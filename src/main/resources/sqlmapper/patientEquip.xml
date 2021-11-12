@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+
+	<!-- 환자별 사용장비 리스트 조회 -->
+	<select id="selectPatientEquipList" resultType="kr.co.hconnect.vo.PatientEquipListVO">
+	<![CDATA[
+		-- 환자별 사용장비 리스트 조회
+		-- selectPatientEquipList
+		SELECT A.ADMISSION_ID	-- 입소내역ID
+			 , A.CENTER_ID      -- 센터ID
+		     , A.PATIENT_ID 	-- 환자ID
+		     , B.NAME 			-- 이름
+		     , (SELECT IFNULL(GROUP_CONCAT(Z.EQUIP_NM ORDER BY Z.EQUIP_NM SEPARATOR ', ')
+		                     , '')
+		          FROM PATIENT_EQUIP X
+		               INNER JOIN EQUIPMENT Z  ON X.EQUIP_ID = Z.EQUIP_ID 
+		         WHERE X.ADMISSION_ID = A.ADMISSION_ID) 
+		       AS EQUIP_LIST_NM	-- 장비내역
+		  FROM ADMISSION A 
+		       INNER JOIN PATIENT B  ON A.PATIENT_ID = B.PATIENT_ID 
+		 WHERE A.DISCHARGE_DATE IS NULL
+	]]>
+	</select>
+
+
+	<!-- 환자 장비내역 리스트 조회 -->
+	<select id="selectPatientEquipInfoList" parameterType="String" resultType="kr.co.hconnect.vo.PatientEquipVO">
+	<![CDATA[
+		-- 환자 장비내역 리스트 조회
+		-- selectPatientEquipInfoList
+		SELECT A.ADMISSION_ID       -- 입소내역ID 
+		     , A.PATIENT_ID         -- 환자ID
+		     , C.NAME               -- 환자이름
+		     , A.EQUIP_ID           -- 장비ID
+		     , D.EQUIP_NM           -- 장비명
+		  FROM PATIENT_EQUIP A
+		       INNER JOIN ADMISSION B  ON A.ADMISSION_ID = B.ADMISSION_ID 
+		       INNER JOIN PATIENT   C  ON A.PATIENT_ID = C.PATIENT_ID 
+		       INNER JOIN EQUIPMENT D  ON A.EQUIP_ID   = D.EQUIP_ID 
+		                              AND B.CENTER_ID  = D.CENTER_ID 
+		 WHERE A.ADMISSION_ID = #{admissionId} 
+	]]>
+	</select>
+	
+	<!-- 센터별 장비 조회 -->
+	<select id="selectEquipmentListByCenterIdList" parameterType="String" resultType="kr.co.hconnect.vo.EquipmentVO">
+	<![CDATA[
+	    -- 센터별 장비 조회
+	    -- selectEquipmentListByCenterIdList
+		SELECT B.EQUIP_ID     -- 장비ID
+		     , B.EQUIP_NM     -- 장비명
+		     , B.CENTER_ID    -- 센터ID
+		     , C.CENTER_NM    -- 센터명
+		     , B.REMARK       -- 리마크
+		  FROM ADMISSION A
+		       INNER JOIN EQUIPMENT        B  ON A.CENTER_ID = B.CENTER_ID 
+		       INNER JOIN TREATMENT_CENTER C  ON B.CENTER_ID = C.CENTER_ID 
+		 WHERE A.ADMISSION_ID = #{admissionId}
+		   -- 사용중인 장비 제외처리
+		   AND NOT EXISTS ( SELECT NULL
+		                      FROM ADMISSION Z
+		                           INNER JOIN PATIENT_EQUIP X  ON Z.ADMISSION_ID = X.ADMISSION_ID 
+		                     WHERE Z.DISCHARGE_DATE IS NULL
+		                       AND Z.ADMISSION_ID <> A.ADMISSION_ID -- 본인 사용 장비 제외 
+		                       AND B.EQUIP_ID = X.EQUIP_ID )
+	]]>
+	</select>
+	
+	<!-- 환자별 사용장비 저장 -->
+	<insert id="insertPatientEquip" parameterType="kr.co.hconnect.vo.PatientEquipVO">
+	<![CDATA[
+		-- 환자별 사용장비 저장
+		-- insertEquipment
+		INSERT 
+		  INTO PATIENT_EQUIP
+		     ( 
+		       ADMISSION_ID
+		     , PATIENT_ID
+		     , EQUIP_ID
+		     , REG_ID
+		     , REG_DT
+		     , UPD_ID
+		     , UPD_DT
+		     )
+		VALUES
+		     ( 
+		       #{admissionId}
+		     , #{patientId}
+		     , #{equipId}
+		     , #{regId}
+		     , current_timestamp()
+		     , #{updId}
+		     , current_timestamp()
+		     )
+	]]>
+	</insert>
+	
+	<!-- 환자별 사용장비 전체 삭제-입소내역ID, 환자ID기준 -->
+	<delete id="deletePatientEquipAll" parameterType="kr.co.hconnect.vo.PatientEquipVO">
+	<![CDATA[
+		-- 환자별 사용장비 전체 삭제-입소내역ID, 환자ID기준
+		-- deleteEquipmentAll
+		DELETE 
+		  FROM PATIENT_EQUIP
+		 WHERE ADMISSION_ID = #{admissionId} 
+		   AND PATIENT_ID   = #{patientId}
+	]]>
+	</delete>
+
+</mapper>

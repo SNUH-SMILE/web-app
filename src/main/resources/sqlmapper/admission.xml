@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+
+	<!-- 입소자내역 리스트 조회 -->
+	<select id="selectAdmissionList" resultType="kr.co.hconnect.vo.AdmissionListVO">
+	<![CDATA[
+		-- 입소자내역 리스트 조회
+		-- selectAdmissionList
+		SELECT A.ADMISSION_ID 					        -- 입소내역ID 
+		     , A.CENTER_ID                              -- 생활치료센터ID
+		     , A.HOSPITAL_CD                            -- 병원코드
+		     , A.HOSPITAL_PATIENT_ID                    -- 병원환자ID
+		     , B.PATIENT_ID                             -- 환자ID
+		     , B.NAME                                   -- 이름
+		     , B.BIRTH_DATE                             -- 생년월일
+		     , B.CONTACT                                -- 연락처
+		     , CASE B.SEX WHEN 'M' THEN '남' 
+		                  WHEN 'F' THEN '여' 
+		                           ELSE ''
+		       END                          AS DISP_SEX	-- 성별
+		  FROM ADMISSION A
+		       INNER JOIN PATIENT B ON A.PATIENT_ID = B.PATIENT_ID
+		 WHERE A.DISCHARGE_DATE IS NULL
+	]]>
+	</select>
+	
+	<!-- 입소내역 정보 조회 -->
+	<select id="selectAdmissionInfo" parameterType="String" resultType="kr.co.hconnect.vo.AdmissionInfoVO">
+	<![CDATA[
+		-- 입소내역 정보 조회
+		-- selectAdmissionInfo
+		SELECT A.ADMISSION_ID                          -- 입소내역ID
+		     , A.PATIENT_ID                            -- 환자ID
+		     , A.HOSPITAL_PATIENT_ID                   -- 병원환자ID
+		     , A.CENTER_ID                             -- 센터ID
+		     , C.CENTER_NM                             -- 센터명
+		     , B.NAME                                  -- 이름
+		     , B.BIRTH_DATE                            -- 생년월일
+		     , B.CONTACT                               -- 연락처
+		     , B.SEX                                   -- 성별
+		     , A.ADMIT_DATE                            -- 입소일자
+		     , A.DISCHARGE_DATE                        -- 퇴소일자
+		     , A.LOCATION                              -- 위치
+		     , D.DETAIL_CD_NM           AS LOCATION_NM -- 위치명
+		     , A.REMARK                                -- 리마크     
+		  FROM ADMISSION A
+		       INNER JOIN PATIENT            B  ON A.PATIENT_ID = B.PATIENT_ID
+		       INNER JOIN TREATMENT_CENTER   C  ON A.CENTER_ID  = C.CENTER_ID 
+		       LEFT OUTER JOIN COM_CD_DETAIL D  ON D.COM_CD = 'ROOM'
+		                                       AND D.DETAIL_CD = A.LOCATION 
+		 WHERE A.ADMISSION_ID = #{admissionId}
+	]]>
+	</select>
+
+    <!-- 입소내역 생성 -->
+	<insert id="insertAdmission" parameterType="kr.co.hconnect.vo.AdmissionVO">
+	<![CDATA[
+		-- 입소내역 생성
+		-- insertAdmission
+		INSERT 
+		  INTO ADMISSION
+		     ( ADMISSION_ID
+		     , PATIENT_ID
+		     , CENTER_ID
+		     , ADMIT_DATE
+		     , DISCHARGE_DATE
+		     , LOCATION
+		     , HOSPITAL_CD
+		     , HOSPITAL_PATIENT_ID
+		     , REMARK
+		     , REG_ID
+		     , REG_DT
+		     , UPD_ID
+		     , UPD_DT
+		     )
+		VALUES
+		     ( #{admissionId}
+		     , #{patientId}
+		     , #{centerId}
+		     , #{admitDate}
+		     , #{dischargeDate}
+		     , #{location}
+		     , CASE WHEN IFNULL(#{centerId}, '') = ''
+		                 THEN NULL
+		            ELSE      (SELECT HOSPITAL_CD 
+		                         FROM TREATMENT_CENTER
+		                        WHERE CENTER_ID = #{centerId})
+		       END
+		     , #{hospitalPatientId}
+		     , #{remark}
+		     , #{regId}
+		     , current_timestamp()
+		     , #{updId}
+		     , current_timestamp()
+		     )
+	]]>	
+	</insert>
+	
+    <!-- 입소내역 수정 -->
+	<update id="updateAdmission" parameterType="kr.co.hconnect.vo.AdmissionVO">
+	<![CDATA[
+		-- 입소내역 수정
+		-- updateAdmission
+		UPDATE ADMISSION 
+		   SET PATIENT_ID          = #{patientId}
+		     , CENTER_ID           = #{centerId}
+		     , ADMIT_DATE          = #{admitDate}
+		     , LOCATION            = #{location}
+		     , HOSPITAL_CD         = CASE WHEN IFNULL(#{centerId}, '') = ''
+							                   THEN NULL
+							              ELSE      (SELECT HOSPITAL_CD 
+							                           FROM TREATMENT_CENTER
+							                          WHERE CENTER_ID = #{centerId})
+							         END
+		     , HOSPITAL_PATIENT_ID = #{hospitalPatientId}
+		     , REMARK              = #{remark}
+		     , UPD_ID              = #{updId}
+		     , UPD_DT              = current_timestamp()
+		 WHERE ADMISSION_ID = #{admissionId}
+	]]>			
+	</update>
+	
+	<!-- 퇴소처리 -->
+	<update id="updateAdmissionDischarge" parameterType="kr.co.hconnect.vo.AdmissionVO">
+	<![CDATA[
+		-- 퇴소처리
+		-- updateAdmissionDischarge
+		UPDATE ADMISSION 
+		   SET DISCHARGE_DATE = #{dischargeDate} 
+		   	 , UPD_ID         = #{updId}
+		     , UPD_DT         = current_timestamp()
+		 WHERE ADMISSION_ID = #{admissionId}
+	]]>
+	</update>
+
+</mapper>

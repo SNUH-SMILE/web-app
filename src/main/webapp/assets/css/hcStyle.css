@@ -1,0 +1,399 @@
+
+:root{
+    --nav-width   : 92px;
+    /*--nav-width   : 0px;*/
+    /*Color*/
+    --first-color : #0C5DF4;
+    --bg-color    : #3f4d67;
+    --sub-color   : #B6CEFC;
+    --white-color : #FFF;
+
+    /*Font*/
+    /*--body-font: ''*/
+    --normal-font-size:1rem;
+    --small-font-size :.875rem;
+
+    /*Z-Index*/
+    --z-fixed:100;
+}
+*,::before,::after{
+    box-sizing: border-box;
+}
+
+body{
+    position  : relative;
+    margin    : 0;
+    /*padding   : 2rem 0 0 6.75rem;*/
+    /*padding   : 0 0 0 5.75rem;*/
+    padding   : 0 0 0 0;
+    /*font-family: var(--body-font);*/
+    font-size : var(--normal-font-size);
+    transition: .5s;
+}
+.dark{
+    color: white;
+    background-color: darkgray;
+}
+.dark >table >tbody >tr >td {
+    color: white;
+}
+h1{
+    margin: 0;
+}
+ul{
+    margin    : 0;
+    padding   : 0;
+    list-style: none;
+
+}
+a{
+ text-decoration: none;
+}
+.l-navbar {
+    position: fixed;
+    top: 3rem;
+    left: 0;
+    /*width: var(--nav-width);*/
+    width: 0;
+    height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--white-color);
+    /*padding: 1.5rem 1.5rem 2rem;*/
+    padding: 1.5rem 0 2rem;
+    transition: .5s;
+    z-index: var(--z-fixed);
+}
+.HcNav{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+.nav_brand{
+    height: 100%;
+    /*display: grid;*/
+    /*grid-template-columns: max-content max-content;*/
+    /*justify-content: space-between;*/
+    /*align-items: center;*/
+    /*margin-bottom: 2rem;*/
+}
+.nav_toggle {
+    font-size: 1.25rem;
+    padding-left: .75rem;
+    cursor: pointer;
+}
+.nav_logo{
+    color: var(--white-color);
+    font-weight: 600;
+}
+.nav_link{
+    display: grid;
+    grid-template-columns: max-content max-content;
+    align-items: center;
+    /*column-gap: .75rem;*/
+    padding: .75rem;
+    color: var(--white-color);
+    /*border-radius: .5rem;*/
+    margin-bottom: 1rem;
+    transition: .3s;
+    cursor: pointer;
+}
+.nav_link:hover{
+    /*background-color: var(--first-color);*/
+    background-color: #393f55;
+    color: var(--white-color);
+}
+.nav_icon{
+    font-size: 1.25rem;
+}
+.nav_name{
+    font-size: var(--small-font-size);
+}
+
+
+
+/*메뉴확장*/
+.expander {
+    width: calc(var(--nav-width) + 8.25rem);
+}
+
+/*Body Padding*/
+.body-pd{
+    /*padding: 2rem 0 0 16rem;*/
+    padding: 0.5rem 0 0 14.5rem;
+    /*padding: 0 0 0 0;*/
+    transition: .5s;
+
+}
+
+
+/*메뉴선택*/
+.active {
+    border-left: 3px solid cyan;
+    /*background-color: var(--first-color);*/
+}
+
+/*메뉴확장*/
+.HcCollapse {
+    grid-template-columns: 20px max-content 1fr;
+}
+.HcCollapse_link{
+    justify-self: flex-end;
+    text-align: right;
+}
+.HcCollapse_menu {
+    display: none;
+    margin-left: 10px;
+    padding: .75rem 2.25rem;
+}
+.HcCollapse_menu > li{
+    list-style: circle;
+    width: 150px;
+    padding-bottom: 0.3rem;
+}
+.HcCollapse_menu > li> a {
+    display: flex;
+    text-decoration: none;
+}
+
+.HcCollapse_subLink {
+    color: var(--sub-color);
+    font-size: var(--small-font-size);
+}
+.HcCollapse_subLink:hover {
+    color: var(--white-color);
+}
+.showCollapse{
+    display: block;
+}
+/*메뉴확장시 화살표 돌리기*/
+.HcRotate {
+    transform: rotate(180deg);
+    /*transition: .5s;*/
+    text-align: left !important;
+}
+
+/*헤더*/
+.HcHeader{
+    height: 3rem;
+    top: 0;
+    position:sticky;
+    z-index: 20;
+    background-color: var(--bg-color);
+    color: var(--white-color);
+}
+.HeaderLogo {
+    width: calc(var(--nav-width) + 8.25rem);
+    height: 3rem;
+}
+.HeaderUserInfo {
+    padding-right: 0;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+.HeaderUserInfoPadding{
+    /*padding-right: 50px;*/
+}
+.pointerImg{
+    cursor: pointer;
+}
+.main-nonePd{
+    padding-top: 1rem;
+    transition: .5s;
+}
+/*정렬*/
+/*가운데*/
+.centerDisplay{
+    display: flex;
+    align-items: center;
+}
+/*왼쪽-가운데*/
+.leftCenterDisplay{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+
+/*SNUH 테마*/
+.SnuhBtn{
+    /*background-image: linear-gradient(to left top, white,deepskyblue);*/
+    background-color: #fffffF;
+}
+
+.SnuhModalClose{
+    transition: 0.5s;
+    transform: translateY(-230px);
+
+}
+.SnuhModalHeader{
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+thead{
+    background-color: #6b7995;
+    position: sticky;
+    top: 0;
+    z-index: 8;
+    font-weight:600;
+    color:white;
+    height: 50px;
+    /*display: flex;*/
+    align-items: center;
+}
+.HcCardHeader {
+    height: 41px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /*d-flex justify-content-between align-items-center*/
+}
+
+.card > .card-header{
+    background-color: #6b7995;
+}
+.HcCardHeader > div > button {
+    font-weight: bold;
+}
+
+.hcTrSelect{
+    background-color: #cad8f8;
+}
+
+.hcBtn1{
+    background-image: linear-gradient(to left top, dodgerblue, deepskyblue);
+    border: none;
+    color: white;
+    border-radius: 5px;
+}
+.hcBtn1:hover{
+    background-image: linear-gradient(to left top, deepskyblue,dodgerblue);
+}
+.hcBtn2{
+
+    background-image: linear-gradient(to left top, crimson,lightcoral);
+    border: none;
+    color: white;
+    border-radius: 5px;
+}
+.hcBtn2:hover{
+    background-image: linear-gradient(to left top, lightcoral,crimson);
+
+}
+
+.was-validated .form-control:invalid, .form-control.is-invalid  {
+    border-color: #dc3545;
+    padding-right: calc(1.5em + 0.75rem);
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgba(220,53,69,.9)" class="bi bi-x-lg" viewBox="0 0 16 16"><path d="M1.293 1.293a1 1 0 0 1 1.414 0L8 6.586l5.293-5.293a1 1 0 1 1 1.414 1.414L9.414 8l5.293 5.293a1 1 0 0 1-1.414 1.414L8 9.414l-5.293 5.293a1 1 0 0 1-1.414-1.414L6.586 8 1.293 2.707a1 1 0 0 1 0-1.414z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.alert-div{
+    display: none;
+    position: absolute;
+    z-index: 99999;
+    width: 25vw;
+    top: 2.5vw;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+.alert-header{
+    font-size: 1rem;
+    font-weight: 800;
+    width: 100%;
+}
+
+#btnAlertClose {
+    float: end;
+}
+
+.error-status {
+    font-size: 0.8rem;
+}
+.error-message {
+    font-size: 0.8rem;
+}
+.hcResizeShow{
+    display: none;
+}
+
+.cardBox{
+    cursor: hand;
+    transition: 0.5s;
+}
+.cardBox:hover{
+    transform: scale(1.07);
+    z-index: 9999999999;
+}
+.dangerStatusFontColor{
+    color: #ff4949;
+}
+.activeSideMenuDisplay{
+    width: max-content;
+    background-color: rgba(0, 255, 200, 0.75);!important;
+    border-radius: 5px;
+    color: white;!important;
+    font-weight: bold;!important;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.hi{
+    display: inline-block;
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    vertical-align: -.125em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+.hi-oxygen{
+    content: url("icons/oxygen.svg");
+
+}
+.hi-bloodPressure{
+    content: '<svg id="_x33_0"  enable-background="new 0 0 64 64" height="512" viewBox="0 0 64 64" width="512" xmlns="http://www.w3.org/2000/svg">'
+    +'<g>'
+    +'<path   d="m63 28c0-2.757-2.243-5-5-5h-10c-.552 0-1-.449-1-1v-1h-2v1c0 1.654 1.346 3 3 3h10c1.654 0 3 1.346 3 3s-1.346 3-3 3h-17v2h17c2.757 0 5-2.243 5-5z"/>'
+    +'<circle fill="blue" cx="24" cy="32" r="1"/>'
+    +'<path fill="red" d="m24 45c-7.168 0-13-5.832-13-13s5.832-13 13-13c2.097 0 4.073.511 5.829 1.396-3.81-7.616-8.079-14.091-9.828-16.645-3.485 5.102-17.001 25.821-17.001 40.249 0 9.374 7.626 17 17 17s17-7.626 17-17c0-2.163-.313-4.586-.922-7.222-1.909 4.808-6.598 8.222-12.078 8.222zm-19-1c0-2.161.322-4.595.956-7.233l1.945.467c-.598 2.486-.901 4.762-.901 6.766 0 .313.011.622.032.929l-1.994.143c-.025-.354-.038-.713-.038-1.072zm5.729 11.785c-2.731-2.152-4.643-5.196-5.383-8.571l1.954-.428c.642 2.924 2.299 5.562 4.668 7.429z"/><path d="m25 21.051v1.949h-2v-1.949c-2.283.207-4.366 1.111-6.034 2.502l1.377 1.377-1.414 1.414-1.377-1.377c-1.391 1.667-2.294 3.751-2.501 6.034h1.949v2h-1.949c.207 2.283 1.111 4.366 2.501 6.034l1.377-1.377 1.414 1.414-1.377 1.377c1.667 1.391 3.751 2.294 6.034 2.501v-1.95h2v1.949c2.283-.207 4.366-1.111 6.034-2.501l-1.377-1.377 1.414-1.414 1.377 1.377c1.391-1.667 2.294-3.751 2.501-6.034h-1.949v-2h1.949c-.207-2.283-1.111-4.366-2.501-6.034l-1.377 1.377-1.414-1.414 1.377-1.377c-1.668-1.391-3.751-2.294-6.034-2.501zm1.699 9.664c.188.391.301.823.301 1.285 0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3c.462 0 .894.113 1.285.301l2.958-2.957 1.414 1.414z"/><path d="m39 33v-2h-2.051c.026.331.051.662.051 1s-.025.669-.051 1z"/><path d="m45 15h2c1.103 0 2-.897 2-2v-7c0-1.654-1.346-3-3-3s-3 1.346-3 3v7c0 1.103.897 2 2 2z"/><path d="m45 17h2v2h-2z"/><path d="m58 49c-2.414 0-4.434 1.721-4.899 4h-1.357l-3.732-12.439-3.762 12.225-1.415-7.786h-3.886c-.036.677-.105 1.344-.21 2h2.426l2.585 14.214 4.238-13.774 2.268 7.56h2.845c.465 2.279 2.484 4 4.899 4 2.757 0 5-2.243 5-5s-2.243-5-5-5zm0 8c-1.654 0-3-1.346-3-3s1.346-3 3-3 3 1.346 3 3-1.346 3-3 3z"/>'
+    +'</g>'
+    +'</svg>';
+    width: 20px;
+}
+
+.hcSearchTermName{
+    font-weight:600;
+    color:white;
+}
+
+.hcPatientDashboardCardHeaderColor{
+    background: #145b9b;
+}
+.hcPatientDashboardCardBodyColor{
+    background: #fafbfc;
+}
+.hcVitalSign{
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.hcCardVitalDangerFont{
+  color: red;
+}
+th{
+    padding-bottom: 1rem !important;
+}
+.vsCardBody{
+    min-height: 60px;
+}

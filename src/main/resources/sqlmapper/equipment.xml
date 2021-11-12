@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+
+    <!-- 장비 정보 조회 -->
+	<select id="selectEquipmentList" resultType="kr.co.hconnect.vo.EquipmentVO">
+	<![CDATA[
+		SELECT
+		       A.EQUIP_ID		  AS EQUIP_ID	  -- 장비ID
+		     , A.EQUIP_NM         AS EQUIP_NM     -- 장비명
+		     , A.CENTER_ID        AS CENTER_ID    -- 센터ID
+			 , B.CENTER_NM        AS CENTER_NM    -- 센터명
+		     , A.REMARK           AS REMARK       -- 리마크
+		     , A.REG_ID           AS REG_ID       -- 등록자ID
+		     , A.REG_DT           AS REG_DT       -- 등록일시
+		     , A.UPD_ID           AS UPD_ID       -- 수정자ID
+		     , A.UPD_DT           AS UPD_DT       -- 수정일시
+		  FROM equipment A
+			   LEFT OUTER JOIN treatment_center B
+			                ON B.CENTER_ID = A.CENTER_ID
+		 ORDER BY A.EQUIP_ID
+	]]>
+	</select>
+
+	<!-- 장비 정보 입력 -->
+	<insert id="insertEquipment" parameterType="kr.co.hconnect.vo.EquipmentVO">
+	<![CDATA[
+		INSERT INTO
+			   equipment (
+				   EQUIP_ID         -- 장비Id
+				 , EQUIP_NM         -- 장비명
+				 , CENTER_ID        -- 센터Id
+				 , REMARK           -- 리마크
+			     , REG_ID           -- 등록자ID
+			     , UPD_ID           -- 수정자ID
+		       )
+		VALUES (
+				 #{equipId}
+			   , #{equipNm}
+			   , #{centerId}
+			   , #{remark}
+			   , #{regId}
+			   , #{regId}
+			   )
+		]]>
+	</insert>
+	<!-- 장비 정보 업데이트 -->
+	<update id="updateEquipment" parameterType="kr.co.hconnect.vo.EquipmentVO">
+	<![CDATA[
+		UPDATE equipment
+		   SET EQUIP_NM            = #{equipNm}  -- 장비명
+		     , CENTER_ID           = #{centerId}  -- 센터Id
+		     , REMARK              = #{remark}    -- 리마크
+		     , UPD_ID              = #{updId}        -- 수정자
+		WHERE EQUIP_ID             = #{equipId}
+		]]>
+	</update>
+
+	<!-- 장비 정보 삭제 -->
+	<delete id="deleteEquipment" parameterType="String">
+	<![CDATA[
+		DELETE FROM equipment WHERE EQUIP_ID = #{equipId} -- 장비Id
+		]]>
+	</delete>
+
+	<!-- 장비 중복 체크  -->
+	<select id="checkEquipmentId" parameterType="String" resultType="Integer">
+		<![CDATA[
+		SELECT
+		       COUNT(*) AS COUNT
+		  FROM
+		       equipment
+		 WHERE EQUIP_ID = #{equipId} -- 장비Id
+		]]>
+	</select>
+
+</mapper>

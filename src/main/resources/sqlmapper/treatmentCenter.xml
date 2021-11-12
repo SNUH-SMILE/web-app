@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+<!--생활치료센터-->
+    <!-- 센터 정보 조회 -->
+	<select id="selectTreatmentCenterList" resultType="kr.co.hconnect.vo.TreatmentCenterVO">
+	<![CDATA[
+		SELECT
+			A.CENTER_ID                          -- 센터 id
+			 ,A.CENTER_NM                        -- 센터명
+			 ,A.CENTER_LOCATION                  -- 센터위치
+			 ,A.HOSPITAL_CD                      -- 병원코드
+			 ,B.DETAIL_CD_NM   AS HOSPITAL_NM    -- 병원명
+		FROM treatment_center A
+				 LEFT OUTER JOIN com_cd_detail B  ON B.COM_CD    = 'CD001'
+			AND B.DETAIL_CD = A.HOSPITAL_CD
+		ORDER BY A.CENTER_ID
+	]]>
+	</select>
+
+
+	<!-- 센터 정보 입력 -->
+	<insert id="insertTreatmentCenter" parameterType="kr.co.hconnect.vo.TreatmentCenterVO">
+	<![CDATA[
+		INSERT INTO
+		    treatment_center (
+				     CENTER_ID                 -- 센터id
+				   , CENTER_NM                 -- 센터명
+				   , CENTER_LOCATION           -- 센터위치
+				   , HOSPITAL_CD               -- 병원코드
+				   , REG_ID                    -- 생성자
+				   , UPD_ID					   -- 수정자
+		    )
+			VALUES (
+					 #{centerId}
+				   , #{centerNm}
+				   , #{centerLocation}
+				   , #{hospitalCd}
+				   , #{regId}
+				   , #{regId}
+			)
+		]]>
+	</insert>
+	<!-- 센터 정보 업데이트 -->
+	<update id="updateTreatmentCenter" parameterType="kr.co.hconnect.vo.TreatmentCenterVO">
+	<![CDATA[
+		UPDATE treatment_center
+		   SET
+		       CENTER_NM       = #{centerNm}                 -- 센터명
+		     , CENTER_LOCATION = #{centerLocation}           -- 센터위치
+		     , HOSPITAL_CD     = #{hospitalCd}               -- 병원코드
+			 , UPD_ID          = #{updId}                    -- 수정자
+		 WHERE CENTER_ID       = #{centerId}
+		]]>
+	</update>
+
+	<!-- 센터 정보 삭제 -->
+	<delete id="deleteTreatmentCenter" parameterType="String">
+	<![CDATA[
+		DELETE FROM treatment_center WHERE CENTER_ID = #{centerId}                 -- 센터Id
+	]]>
+	</delete>
+
+</mapper>

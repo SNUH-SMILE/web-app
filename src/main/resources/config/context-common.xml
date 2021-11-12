@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--suppress SpringXmlModelInspection -->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+    <!-- PropertyPlaceholderConfigurer 설정 -->
+    <context:property-placeholder location="classpath:/property/dev-config.properties"/>
+
+    <!-- 스테레오 타입 Annotation 을 인식하여 Spring bean 으로 자동 등록하기 위한 component-scan 설정 -->
+    <context:component-scan base-package="kr.co.hconnect">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+    </context:component-scan>
+
+    <!-- MessageSource 설정 -->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>classpath:/message/message-common</value>
+                <value>classpath:/egovframework/rte/fdl/idgnr/messages/idgnr</value>
+                <value>classpath:/egovframework/rte/fdl/property/messages/properties</value>
+            </list>
+        </property>
+        <property name="cacheSeconds" value="60"/>
+    </bean>
+    <bean id="globalValidator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        <property name="validationMessageSource" ref="messageSource"/>
+    </bean>
+
+    <bean id="leaveaTrace" class="egovframework.rte.fdl.cmmn.trace.LeaveaTrace">
+        <property name="traceHandlerServices">
+            <list>
+                <ref bean="traceHandlerService" />
+            </list>
+        </property>
+    </bean>
+
+    <bean id="traceHandlerService" class="egovframework.rte.fdl.cmmn.trace.manager.DefaultTraceHandleManager">
+        <property name="reqExpMatcher" ref="antPathMater"/>
+        <property name="patterns">
+            <list>
+                <value>*</value>
+            </list>
+        </property>
+        <property name="handlers">
+            <list>
+                <ref bean="defaultTraceHandler" />
+            </list>
+        </property>
+    </bean>
+
+    <bean id="antPathMater" class="org.springframework.util.AntPathMatcher" />
+    <bean id="defaultTraceHandler" class="egovframework.rte.fdl.cmmn.trace.handler.DefaultTraceHandler" />
+
+    <!-- 암호화 관련 설정 -->
+    <bean id="passwordEncoder" class="egovframework.rte.fdl.cryptography.EgovPasswordEncoder">
+        <property name="algorithm" value="${crypto.algorithm}"/>
+        <property name="hashedPassword" value="${crypto.algorithmKeyHash}"/>
+    </bean>
+    <bean id="ariaCryptoService" class="egovframework.rte.fdl.cryptography.impl.EgovARIACryptoServiceImpl">
+        <property name="passwordEncoder" ref="passwordEncoder"/>
+        <property name="blockSize" value="1024"/>
+    </bean>
+    <bean id="dataSourceCryptoEnvConfigService" class="kr.co.hconnect.common.DataSourceCryptoEnvConfigService">
+        <property name="encryptedPassword" value="${db.password}"/>
+    </bean>
+</beans>
