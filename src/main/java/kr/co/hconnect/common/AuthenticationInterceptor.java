@@ -51,8 +51,12 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 인증체크 제외 URL인 경우
         String uri = request.getRequestURI();
-        LOGGER.info("URI: {}", uri);
+        LOGGER.info("Request URI: {}", uri);
         if (this.permitUrls.contains(uri))
+            return true;
+
+        // REST API 대응 URL은 인증체크에서 제외
+        if (uri.startsWith("/api/"))
             return true;
 
         // 로그인여부 확인. 로그인 사용자가 아닌 경우 로그인 페이지 표시

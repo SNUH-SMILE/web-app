@@ -21,6 +21,7 @@
         </property>
         <property name="messageConverters">
             <list>
+                <!-- 왜 필요한지 이유를 모르겠음
                 <bean class="org.springframework.http.converter.StringHttpMessageConverter">
                     <property name="supportedMediaTypes">
                         <list>
@@ -29,6 +30,7 @@
                         </list>
                     </property>
                 </bean>
+                -->
                 <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
 				    <property name="objectMapper">
 				        <bean class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
