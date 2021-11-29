@@ -1,5 +1,6 @@
 package kr.co.hconnect.repository;
 
+import kr.co.hconnect.domain.LoginInfo;
 import kr.co.hconnect.domain.Patient;
 import kr.co.hconnect.domain.SearchExistLoginInfo;
 import kr.co.hconnect.domain.SearchLoginIdInfo;
@@ -59,6 +60,15 @@ public class PatientDao extends EgovAbstractMapper {
 	 */
 	public int updatePatientInfo(Patient patient) {
 		return update("kr.co.hconnect.sqlmapper.addPatientInfo", patient);
+	}
+
+	/**
+	 * 환자 비밀번호 변경-LoginId 기준
+	 * @param loginInfo 로그인 구성정보
+	 * @return affectedRow
+	 */
+	public int updatePatientPasswordByLoginId(LoginInfo loginInfo) {
+		return update("kr.co.hconnect.sqlmapper.updatePatientPasswordByLoginId", loginInfo);
 	}
 
 	/**

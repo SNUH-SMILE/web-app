@@ -94,8 +94,19 @@
 		     , ZIP_CODE   = #{zipCode}
 		     , ADDRESS1   = #{address1}
 		     , ADDRESS2   = #{address2}
+			 , UPD_DT     = NOW()
 		 WHERE PATIENT_ID = #{patientId};
 
+	]]>
+	</update>
+
+	<!-- 환자 비밀번호 변경-LoginId 기준 -->
+	<update id="updatePatientPasswordByLoginId" parameterType="kr.co.hconnect.domain.LoginInfo">
+	<![CDATA[
+		UPDATE PATIENT
+           SET PASSWORD = #{password}
+			 , UPD_DT     = NOW()
+         WHERE LOGIN_ID = #{loginId}
 	]]>
 	</update>
 

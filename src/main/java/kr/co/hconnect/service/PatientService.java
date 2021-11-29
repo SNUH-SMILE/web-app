@@ -33,6 +33,16 @@ public class PatientService extends EgovAbstractServiceImpl {
     }
 
     /**
+     * 환자정보 조회-로그인ID 기준
+     *
+     * @param loginId 로그인ID
+     * @return Patient
+     */
+    public Patient selectPatientByLoginId(String loginId) {
+        return patientDao.selectPatientByLoginId(loginId);
+    }
+
+    /**
      * 환자정보 조회-로그인
      * 
      * @param loginInfo 로그인 정보
@@ -43,7 +53,7 @@ public class PatientService extends EgovAbstractServiceImpl {
     public Patient selectPatientByLoginInfo(LoginInfo loginInfo)
             throws NotFoundPatientInfoException, NotMatchPatientPasswordException {
         // 환자정보 조회
-        Patient patient = patientDao.selectPatientByLoginId(loginInfo.getLoginId());
+        Patient patient = selectPatientByLoginId(loginInfo.getLoginId());
 
         // 전달받은 비밀번호 암호화
         String encryptPassword = CryptoUtils.encrypt(loginInfo.getPassword());
@@ -122,5 +132,23 @@ public class PatientService extends EgovAbstractServiceImpl {
      */
     public List<Patient> selectPatientBySearchExistLoginInfo(SearchExistLoginInfo searchExistLoginInfo) {
         return patientDao.selectPatientBySearchExistLoginInfo(searchExistLoginInfo);
+    }
+
+    /**
+     * 환자 비밀번호 변경-LoginId 기준
+     * @param loginInfo 로그인 구성정보
+     * @return affectedRow
+     */
+    public int updatePatientPasswordByLoginId(LoginInfo loginInfo) {
+        // 환자정보 확인
+        Patient patient = selectPatientByLoginId(loginInfo.getLoginId());
+        if (patient == null) {
+            throw new NotFoundPatientInfoException(String.format("[%s] 로그인ID의 환자정보가 존재하지 않습니다.", loginInfo.getLoginId()));
+        }
+
+        // 비밀번호 암호화
+        patient.setPassword(CryptoUtils.encrypt(patient.getPassword()));
+
+        return patientDao.updatePatientPasswordByLoginId(loginInfo);
     }
 }

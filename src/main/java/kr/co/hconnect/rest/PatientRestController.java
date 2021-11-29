@@ -34,6 +34,44 @@ public class PatientRestController {
     }
 
     /**
+     * 환자정보 저장
+     *
+     * @param patient 환자 저장 정보
+     * @return BaseResponse
+     */
+    @RequestMapping(value = "/patient", method = RequestMethod.POST)
+    public BaseResponse savePatient(@Valid @RequestBody Patient patient, BindingResult result) {
+        if (result.hasErrors()) {
+            // TODO::Valid 체크 처리
+            StringBuilder sbError = new StringBuilder();
+            for (ObjectError error : result.getAllErrors()) {
+                LOGGER.info(error.toString());
+                sbError.append(error.getDefaultMessage());
+            }
+
+            BaseResponse baseResponse = new BaseResponse();
+            baseResponse.setCode("99");
+            baseResponse.setMessage(sbError.toString());
+
+            return baseResponse;
+        }
+
+        BaseResponse baseResponse = new BaseResponse();
+
+        try {
+            Patient savePatientInfo = patientService.savePatientInfo(patient);
+
+            baseResponse.setCode("00");
+            baseResponse.setMessage("환자정보를 저장하였습니다.");
+        } catch (NotFoundPatientInfoException e) {
+            baseResponse.setCode("99");
+            baseResponse.setMessage(e.getMessage());
+        }
+
+        return baseResponse;
+    }
+
+    /**
      * 로그인ID 중복체크
      *
      * @param loginId 로그인ID
@@ -69,13 +107,14 @@ public class PatientRestController {
     }
 
     /**
-     * 환자정보 저장
+     * 환자 비밀번호 수정
      *
-     * @param patient 환자 저장 정보
+     * @param loginInfo 로그인 구성정보
      * @return BaseResponse
      */
-    @RequestMapping(value = "/patient", method = RequestMethod.POST)
-    public BaseResponse savePatient(@Valid @RequestBody Patient patient, BindingResult result) {
+    @RequestMapping(value = "/patient/password", method = RequestMethod.PUT)
+    public BaseResponse changePassword(@Valid @RequestBody LoginInfo loginInfo
+            , BindingResult result) {
         if (result.hasErrors()) {
             // TODO::Valid 체크 처리
             StringBuilder sbError = new StringBuilder();
@@ -92,12 +131,11 @@ public class PatientRestController {
         }
 
         BaseResponse baseResponse = new BaseResponse();
-
         try {
-            Patient savePatientInfo = patientService.savePatientInfo(patient);
+            patientService.updatePatientPasswordByLoginId(loginInfo);
 
             baseResponse.setCode("00");
-            baseResponse.setMessage("환자정보를 저장하였습니다.");
+            baseResponse.setMessage("비밀번호가 변경되었습니다.");
         } catch (NotFoundPatientInfoException e) {
             baseResponse.setCode("99");
             baseResponse.setMessage(e.getMessage());
@@ -151,6 +189,12 @@ public class PatientRestController {
         return findLoginIdResult;
     }
 
+    /**
+     * 개인정보 존재여부 확인
+     *
+     * @param searchExistLoginInfo 개인정보 확인 검색 조건
+     * @return ExistResult
+     */
     @RequestMapping(value = "/patients/find", method = RequestMethod.GET)
     public ExistResult checkExistLoginInfo(@Valid @RequestBody SearchExistLoginInfo searchExistLoginInfo
             , BindingResult result) {
@@ -186,4 +230,5 @@ public class PatientRestController {
 
         return existResult;
     }
+
 }
