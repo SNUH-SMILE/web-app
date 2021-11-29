@@ -1,7 +1,5 @@
 package kr.co.hconnect.service;
-/**
- * 생활치료센터
- */
+
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.rte.fdl.cmmn.exception.FdlException;
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
@@ -14,11 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * 생활치료센터 Service
+ */
 @Service
 @Transactional(rollbackFor = Exception.class, readOnly = true)
 public class TreatmentCenterService extends EgovAbstractServiceImpl {
 
-    private TreatmentCenterDao treatmentCenterDao; //생활치료센터 Dao
+    private final TreatmentCenterDao treatmentCenterDao; //생활치료센터 Dao
 
     private final EgovIdGnrService centerIdGnrService; //생활치료센터 Id채번 서비스
 

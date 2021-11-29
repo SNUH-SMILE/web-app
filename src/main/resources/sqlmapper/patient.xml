@@ -2,6 +2,82 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.hconnect.sqlmapper">
 
+	<!-- 환자정보 조회-로그인ID 기준 -->
+	<select id="selectPatientByLoginId" parameterType="String" resultType="kr.co.hconnect.domain.Patient">
+	<![CDATA[
+		SELECT PATIENT_ID		-- 환자ID
+		     , LOGIN_ID         -- 로그인ID
+		     , PASSWORD         -- 비밀번호
+		     , PATIENT_NM       -- 성명
+		     , SSN              -- 주민번호
+		     , BIRTH_DATE       -- 생년월일
+		     , SEX              -- 성별
+		     , CELL_PHONE       -- 휴대폰
+		     , ZIP_CODE         -- 우편번호
+		     , ADDRESS1         -- 주소
+		     , ADDRESS2         -- 상세주소
+          FROM PATIENT
+         WHERE LOGIN_ID = #{loginId}
+	]]>
+	</select>
+
+	<!-- 환자정보 조회-주민번호(암호화) 기준 -->
+	<select id="selectPatientBySsn" parameterType="String" resultType="kr.co.hconnect.domain.Patient">
+	<![CDATA[
+		SELECT PATIENT_ID		-- 환자ID
+			 , LOGIN_ID         -- 로그인ID
+			 , PASSWORD         -- 비밀번호
+			 , PATIENT_NM       -- 성명
+			 , SSN              -- 주민번호
+			 , BIRTH_DATE       -- 생년월일
+			 , SEX              -- 성별
+			 , CELL_PHONE       -- 휴대폰
+			 , ZIP_CODE         -- 우편번호
+			 , ADDRESS1         -- 주소
+			 , ADDRESS2         -- 상세주소
+		  FROM PATIENT
+		 WHERE SSN = #{ssn}
+	]]>
+	</select>
+
+	<!-- 환자정보 조회-아이디 검색 조건 정보 기준 -->
+	<select id="selectPatientBySearchLoginIdInfo" parameterType="kr.co.hconnect.domain.SearchLoginIdInfo" resultType="kr.co.hconnect.domain.Patient">
+	<![CDATA[
+		SELECT PATIENT_ID		-- 환자ID
+			 , LOGIN_ID         -- 로그인ID
+			 , PASSWORD         -- 비밀번호
+			 , PATIENT_NM       -- 성명
+			 , SSN              -- 주민번호
+			 , BIRTH_DATE       -- 생년월일
+			 , SEX              -- 성별
+			 , CELL_PHONE       -- 휴대폰
+			 , ZIP_CODE         -- 우편번호
+			 , ADDRESS1         -- 주소
+			 , ADDRESS2         -- 상세주소
+		  FROM PATIENT
+		 WHERE PATIENT_NM = #{patientNm}
+           AND CELL_PHONE = #{cellPhone}
+		]]>
+	</select>
+
+	<!-- 환자 추가 정보 업데이트 -->
+	<update id="addPatientInfo" parameterType="kr.co.hconnect.domain.Patient">
+	<![CDATA[
+		UPDATE PATIENT
+		   SET LOGIN_ID   = #{loginId}
+		     , PASSWORD   = #{password}
+		     , PATIENT_NM = #{patientNm}
+		     , BIRTH_DATE = #{birthDate}
+		     , SEX        = #{sex}
+		     , CELL_PHONE = #{cellPhone}
+		     , ZIP_CODE   = #{zipCode}
+		     , ADDRESS1   = #{address1}
+		     , ADDRESS2   = #{address2}
+		 WHERE PATIENT_ID = #{patientId};
+
+	]]>
+	</update>
+
     <!-- 환자정보 생성 -->
 	<insert id="insertPatient" parameterType="kr.co.hconnect.vo.PatientVO">
 	<![CDATA[

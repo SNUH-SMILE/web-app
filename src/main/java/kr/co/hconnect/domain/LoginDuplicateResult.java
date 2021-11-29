@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * 아이디 중복 확인 정보
+ * 로그인ID 중복 확인 정보
  */
 @Getter
 @Setter
