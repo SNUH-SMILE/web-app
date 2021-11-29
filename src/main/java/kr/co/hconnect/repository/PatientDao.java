@@ -1,6 +1,7 @@
 package kr.co.hconnect.repository;
 
 import kr.co.hconnect.domain.Patient;
+import kr.co.hconnect.domain.SearchExistLoginInfo;
 import kr.co.hconnect.domain.SearchLoginIdInfo;
 import org.springframework.stereotype.Repository;
 
@@ -36,10 +37,19 @@ public class PatientDao extends EgovAbstractMapper {
 	/**
 	 * 환자정보 조회-아이디 검색 조건 정보 기준
 	 * @param searchLoginIdInfo 아이디 검색 조건 정보
-	 * @return Patient
+	 * @return List&ltPatient&gt
 	 */
 	public List<Patient> selectPatientListBySearchLoginIdInfo(SearchLoginIdInfo searchLoginIdInfo) {
 		return selectList("kr.co.hconnect.sqlmapper.selectPatientBySearchLoginIdInfo", searchLoginIdInfo);
+	}
+
+	/**
+	 * 환자정보 조회-개인정보 확인 검색 조건 기준
+	 * @param searchExistLoginInfo 개인정보 확인 검색 조건
+	 * @return List&ltPatient&gt
+	 */
+	public List<Patient> selectPatientBySearchExistLoginInfo(SearchExistLoginInfo searchExistLoginInfo) {
+		return selectList("kr.co.hconnect.sqlmapper.selectPatientBySearchExistLoginInfo", searchExistLoginInfo);
 	}
 
 	/**

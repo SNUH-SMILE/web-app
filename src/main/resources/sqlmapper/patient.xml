@@ -57,7 +57,28 @@
 		  FROM PATIENT
 		 WHERE PATIENT_NM = #{patientNm}
            AND CELL_PHONE = #{cellPhone}
-		]]>
+	]]>
+	</select>
+
+	<!-- 환자정보 조회-개인정보 확인 검색 조건 기준 -->
+	<select id="selectPatientBySearchExistLoginInfo" parameterType="kr.co.hconnect.domain.SearchExistLoginInfo" resultType="kr.co.hconnect.domain.Patient">
+	<![CDATA[
+		SELECT PATIENT_ID		-- 환자ID
+			 , LOGIN_ID         -- 로그인ID
+			 , PASSWORD         -- 비밀번호
+			 , PATIENT_NM       -- 성명
+			 , SSN              -- 주민번호
+			 , BIRTH_DATE       -- 생년월일
+			 , SEX              -- 성별
+			 , CELL_PHONE       -- 휴대폰
+			 , ZIP_CODE         -- 우편번호
+			 , ADDRESS1         -- 주소
+			 , ADDRESS2         -- 상세주소
+	      FROM PATIENT
+		 WHERE LOGIN_ID = #{loginId}
+		   AND PATIENT_NM = #{patientNm}
+		   AND CELL_PHONE = #{cellPhone}
+	]]>
 	</select>
 
 	<!-- 환자 추가 정보 업데이트 -->

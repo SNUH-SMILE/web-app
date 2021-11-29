@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * 개인정보 확인 검색 조건
@@ -30,5 +31,6 @@ public class SearchExistLoginInfo {
      * 휴대폰
      */
     @NotNull
+    @Pattern(regexp = "^[0-9]+$")
     private String cellPhone;
 }

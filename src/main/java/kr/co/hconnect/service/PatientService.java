@@ -4,6 +4,7 @@ import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import kr.co.hconnect.common.CryptoUtils;
 import kr.co.hconnect.domain.LoginInfo;
 import kr.co.hconnect.domain.Patient;
+import kr.co.hconnect.domain.SearchExistLoginInfo;
 import kr.co.hconnect.domain.SearchLoginIdInfo;
 import kr.co.hconnect.exception.NotFoundPatientInfoException;
 import kr.co.hconnect.exception.NotMatchPatientPasswordException;
@@ -107,9 +108,19 @@ public class PatientService extends EgovAbstractServiceImpl {
      * 환자정보 조회-아이디 검색 조건 정보 기준
      * 
      * @param searchLoginIdInfo 아이디 검색 조건 정보
-     * @return Patient 환자정보
+     * @return List&ltPatient&gt
      */
     public List<Patient> selectPatientBySearchLoginIdInfo(SearchLoginIdInfo searchLoginIdInfo) {
         return patientDao.selectPatientListBySearchLoginIdInfo(searchLoginIdInfo);
+    }
+
+    /**
+     * 환자정보 조회-개인정보 확인 검색 조건 기준
+     *
+     * @param searchExistLoginInfo 개인정보 확인 검색 조건
+     * @return List&ltPatient&gt
+     */
+    public List<Patient> selectPatientBySearchExistLoginInfo(SearchExistLoginInfo searchExistLoginInfo) {
+        return patientDao.selectPatientBySearchExistLoginInfo(searchExistLoginInfo);
     }
 }

@@ -112,7 +112,7 @@ public class PatientRestController {
      * @param searchLoginIdInfo 아이디 검색 조건 정보
      * @return FindLoginIdResult
      */
-    @RequestMapping(value = "/patient/findById", method = RequestMethod.GET)
+    @RequestMapping(value = "/patients/findById", method = RequestMethod.GET)
     public FindLoginIdResult selectPatientLoginId(@Valid @RequestBody SearchLoginIdInfo searchLoginIdInfo
             , BindingResult result) {
         if (result.hasErrors()) {
@@ -149,5 +149,41 @@ public class PatientRestController {
         }
 
         return findLoginIdResult;
+    }
+
+    @RequestMapping(value = "/patients/find", method = RequestMethod.GET)
+    public ExistResult checkExistLoginInfo(@Valid @RequestBody SearchExistLoginInfo searchExistLoginInfo
+            , BindingResult result) {
+        if (result.hasErrors()) {
+            // TODO::Valid 체크 처리
+            StringBuilder sbError = new StringBuilder();
+            for (ObjectError error : result.getAllErrors()) {
+                LOGGER.info(error.toString());
+                sbError.append(error.getDefaultMessage());
+            }
+
+            ExistResult existResult = new ExistResult();
+            existResult.setCode("99");
+            existResult.setMessage(sbError.toString());
+
+            return existResult;
+        }
+
+        // 환자정보 조회
+        List<Patient> patientList = patientService.selectPatientBySearchExistLoginInfo(searchExistLoginInfo);
+
+        ExistResult existResult = new ExistResult();
+
+        if (patientList.size() == 0) {
+            existResult.setCode("00");
+            existResult.setMessage("동일 환자정보가 존재하지 않습니다.");
+            existResult.setExistYn("N");
+        } else {
+            existResult.setCode("99");
+            existResult.setMessage("동일 환자정보가 존재합니다.");
+            existResult.setExistYn("Y");
+        }
+
+        return existResult;
     }
 }
