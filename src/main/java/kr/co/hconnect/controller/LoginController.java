@@ -43,7 +43,7 @@ public class LoginController {
 	/**
 	 * 로그인 정보 확인
 	 */
-	@RequestMapping(value="checkLogin.ajax")
+	@RequestMapping(value="/checkLogin.ajax")
 	public ModelAndView checkLogin(@RequestParam(value = "userId") String userId
 		, @RequestParam(value = "password") String password
 		, HttpServletRequest request) {
