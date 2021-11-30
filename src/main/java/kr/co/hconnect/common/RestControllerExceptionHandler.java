@@ -16,18 +16,18 @@ public class RestControllerExceptionHandler {
     /**
      * 유효하지 않은 요청 파라메터 코드
      */
-    public static final String COD_INVALID_REQUEST_PARAMETER = "99";
+    public static final String CODE_INVALID_REQUEST_PARAMETER = "99";
 
     /**
      * {@link InvalidFormatException} 예외 처리
      * @param e {@link InvalidFormatException} 객체
      * @return {@link BaseResponse} 객체
      */
-    @ExceptionHandler(InvalidFormatException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidFormatException.class)
     public BaseResponse handleInvalidFormatException(InvalidFormatException e) {
         BaseResponse resp = new BaseResponse();
-        resp.setCode(COD_INVALID_REQUEST_PARAMETER);
+        resp.setCode(CODE_INVALID_REQUEST_PARAMETER);
         resp.setMessage(e.getMessage());
         return resp;
     }
