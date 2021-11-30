@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+
+    <!-- 측정결과 저장 -->
+    <insert id="insertResult" parameterType="kr.co.hconnect.domain.Result"
+            useGeneratedKeys="true"
+            keyColumn="RESULT_SEQ"
+            keyProperty="resultSeq">
+    <![CDATA[
+        INSERT
+        INTO RESULT ( ADMISSION_ID
+                    , ITEM_ID
+                    , RESULT_DATE
+                    , RESULT_TIME)
+        VALUES ( #{admissionId}
+               , #{itemId}
+               , #{resultDate}
+               , #{resultTime})
+        ]]>
+    </insert>
+
+    <!-- 측정결과 세부 저장 -->
+    <insert id="insertResultDetail" parameterType="kr.co.hconnect.domain.ResultDetail">
+    <![CDATA[
+        INSERT
+        INTO RESULT_DETAIL ( RESULT_SEQ
+                           , RESULT_TYPE
+                           , RESULT)
+        VALUES ( #{resultSeq}
+               , #{resultType}
+               , #{result})
+        ]]>
+    </insert>
+
+</mapper>

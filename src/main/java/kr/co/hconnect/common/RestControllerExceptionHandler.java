@@ -3,6 +3,7 @@ package kr.co.hconnect.common;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import kr.co.hconnect.domain.BaseResponse;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
+import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -52,5 +53,20 @@ public class RestControllerExceptionHandler {
         resp.setMessage(sbError.toString());
         return resp;
     }
+
+    /**
+     * {@link NotFoundAdmissionInfoException} 예외 처리
+     * @param e {@link NotFoundAdmissionInfoException} 객체
+     * @return {@link BaseResponse} 객체
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NotFoundAdmissionInfoException.class)
+    public BaseResponse handleNotFoundAdmissionInfoException(NotFoundAdmissionInfoException e) {
+        BaseResponse resp = new BaseResponse();
+        resp.setCode(CODE_INVALID_REQUEST_PARAMETER);
+        resp.setMessage(e.getMessage());
+        return resp;
+    }
+
 
 }
