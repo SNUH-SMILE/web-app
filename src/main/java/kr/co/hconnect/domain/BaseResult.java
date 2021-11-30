@@ -1,5 +1,6 @@
 package kr.co.hconnect.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,10 +24,12 @@ public class BaseResult implements Serializable {
     /**
      * 측정일자
      */
+    @JsonFormat(pattern = "yyyyMMdd")
     private LocalDate resultDate;
     /**
      * 측정시간
      */
+    @JsonFormat(pattern = "HHmm")
     private LocalTime resultTime;
     /**
      * 디바이스ID
