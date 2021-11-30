@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+    <!-- 측정일자별 혈압 목록 조회 -->
+    <select id="selectBpList" parameterType="kr.co.hconnect.domain.SearchResultInfo"
+            resultType="kr.co.hconnect.domain.BpResult">
+        <![CDATA[
+        SELECT B.RESULT_DATE
+             , B.RESULT_TIME
+             , C.RESULT AS RESULT_DBP
+             , D.RESULT AS RESULT_SBP
+        FROM ITEM A
+                 INNER JOIN RESULT B
+                            ON A.ITEM_ID = B.ITEM_ID
+                 INNER JOIN result_detail C
+                            ON B.RESULT_SEQ = C.RESULT_SEQ
+                 INNER JOIN result_detail D
+                            ON B.RESULT_SEQ = D.RESULT_SEQ
+        WHERE A.ITEM_ID = #{itemId}
+          AND B.ADMISSION_ID = #{admissionId}
+          AND B.RESULT_DATE = #{resultDate}
+          AND C.RESULT_TYPE = #{firstResultType}
+          ANd D.RESULT_TYPE = #{secondResultType}
+        ]]>
+    </select>
+</mapper>
