@@ -2,7 +2,9 @@ package kr.co.hconnect.common;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import kr.co.hconnect.domain.BaseResponse;
+import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -29,6 +31,25 @@ public class RestControllerExceptionHandler {
         BaseResponse resp = new BaseResponse();
         resp.setCode(CODE_INVALID_REQUEST_PARAMETER);
         resp.setMessage(e.getMessage());
+        return resp;
+    }
+
+    /**
+     * {@link InvalidRequestArgumentException} 예외 처리
+     * @param e {@link InvalidRequestArgumentException} 객체
+     * @return {@link BaseResponse} 객체
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidRequestArgumentException.class)
+    public BaseResponse handleInvalidRequestArgumentException(InvalidRequestArgumentException e) {
+        StringBuilder sbError = new StringBuilder();
+        for (ObjectError error : e.getBindingResult().getAllErrors()) {
+            sbError.append(error.getDefaultMessage());
+        }
+
+        BaseResponse resp = new BaseResponse();
+        resp.setCode(CODE_INVALID_REQUEST_PARAMETER);
+        resp.setMessage(sbError.toString());
         return resp;
     }
 
