@@ -1,5 +1,6 @@
 package kr.co.hconnect.vo;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import kr.co.hconnect.common.BaseDefaultVO;
@@ -9,7 +10,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * 입소내역
+ * 격리/입소내역
  */
 @Getter
 @Setter
@@ -20,7 +21,7 @@ public class AdmissionVO extends BaseDefaultVO {
 	private static final long serialVersionUID = 7561048307184224750L;
 
 	/**
-	 * 입소내역ID
+	 * 격리/입소내역ID
 	 */
 	private String admissionId;
 	/**
@@ -28,32 +29,36 @@ public class AdmissionVO extends BaseDefaultVO {
 	 */
 	private String patientId;
 	/**
+	 * 시작일
+	 */
+	private LocalDate admissionDate;
+	/**
+	 * 종료예정일
+	 */
+	private LocalDate dschgeSchdldDate;
+	/**
+	 * 종료일
+	 */
+	private LocalDate dschgeDate;
+	/**
+	 * 격리/입소구분 - CD004
+	 */
+	private String qantnDiv;
+	/**
+	 * 담당자
+	 */
+	private String personCharge;
+	/**
 	 * 센터ID
 	 */
 	private String centerId;
 	/**
-	 * 입소일자
+	 * 호실
 	 */
-	private Date admitDate;
+	private String room;
 	/**
-	 * 퇴소일자
+	 * 삭제여부
 	 */
-	private Date dischargeDate;
-	/**
-	 * 위치
-	 */
-	private String location;
-	/**
-	 * 병원코드
-	 */
-	private String hospitalCd;
-	/**
-	 * 병원환자ID
-	 */
-	private String hospitalPatientId;
-	/**
-	 * 리마크
-	 */
-	private String remark;
+	private String delYn;
 	
 }

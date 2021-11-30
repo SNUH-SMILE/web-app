@@ -2,6 +2,8 @@ package kr.co.hconnect.service;
 
 import java.util.List;
 
+import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
+import kr.co.hconnect.exception.NotFoundPatientInfoException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +69,26 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 
 		LOGGER.info("Dao {}", dao);
 	}
-	
+
+	/**
+	 * 로그인ID 기준 격리/입소내역(내원중) 리스트 조회
+	 *
+	 * @param loginId 로그인ID
+	 * @return AdmissionVO 격리/입소내역 정보
+	 * @throws NotFoundAdmissionInfoException 현재일 기준 내원중인 격리/입소내역이 존재하지 않거나, 한건 이상일 경우 발생
+	 */
+	public AdmissionVO selectActiveAdmissionByLoginId(String loginId) throws NotFoundAdmissionInfoException {
+		List<AdmissionVO> admissionVOS = dao.selectActiveAdmissionListByLoginId(loginId);
+
+		if (admissionVOS == null || admissionVOS.size() == 0) {
+			throw new NotFoundAdmissionInfoException("내원중인 격리/입소내역이 존재하지 않습니다.");
+		} else if (admissionVOS.size() > 1) {
+			throw new NotFoundAdmissionInfoException("내원중인 격리/입소내역이 한건 이상 존재합니다.");
+		}
+
+		return admissionVOS.get(0);
+	}
+
 	/**
 	 * 입소내역리스트 조회
 	 * @return List<AdmissionListVO>-입소내역리스트
