@@ -91,7 +91,7 @@ public class PatientService extends EgovAbstractServiceImpl {
      * @param patient 환정보
      * @return Patient 환자정보
      */
-    public Patient savePatientInfo(Patient patient) {
+    public Patient savePatientInfo(Patient patient) throws NotFoundPatientInfoException {
 
         // 환자정보 신규생성
         if (patient.getFlag().equals("A")) {
@@ -139,7 +139,7 @@ public class PatientService extends EgovAbstractServiceImpl {
      * @param loginInfo 로그인 구성정보
      * @return affectedRow
      */
-    public int updatePatientPasswordByLoginId(LoginInfo loginInfo) {
+    public int updatePatientPasswordByLoginId(LoginInfo loginInfo) throws NotFoundPatientInfoException {
         // 환자정보 확인
         Patient patient = selectPatientByLoginId(loginInfo.getLoginId());
         if (patient == null) {
