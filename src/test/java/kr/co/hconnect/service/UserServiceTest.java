@@ -47,7 +47,7 @@ public class UserServiceTest {
         userService.insertUser(userVOs);
 
 /*
-        //# @Transactional(rollbackFor = Exception.class) 선언한 경우
+        //# @Transactional(rollbackFor = Exception.class) 선언한 경
         2021-09-08 19:48:59,772 DEBUG [jdbc.audit] 2. Connection.rollback() returned   org.apache.commons.dbcp.DelegatingConnection.rollback(DelegatingConnection.java:368)
         2021-09-08 19:48:59,772 DEBUG [jdbc.audit] 2. Connection.isReadOnly() returned false  org.apache.commons.dbcp.DelegatingConnection.isReadOnly(DelegatingConnection.java:362)
         2021-09-08 19:48:59,772 DEBUG [jdbc.audit] 2. Connection.isClosed() returned false  org.apache.commons.dbcp.DelegatingConnection.isClosed(DelegatingConnection.java:386)
