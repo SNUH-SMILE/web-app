@@ -1,6 +1,7 @@
 package kr.co.hconnect.rest;
 
 import kr.co.hconnect.domain.*;
+import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
 import kr.co.hconnect.exception.NotFoundPatientInfoException;
 import kr.co.hconnect.service.PatientService;
@@ -9,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -51,18 +51,7 @@ public class PatientRestController {
     @RequestMapping(value = "/patient", method = RequestMethod.POST)
     public BaseResponse savePatient(@Valid @RequestBody Patient patient, BindingResult result) {
         if (result.hasErrors()) {
-            // TODO::Valid 체크 처리
-            StringBuilder sbError = new StringBuilder();
-            for (ObjectError error : result.getAllErrors()) {
-                LOGGER.info(error.toString());
-                sbError.append(error.getDefaultMessage());
-            }
-
-            BaseResponse baseResponse = new BaseResponse();
-            baseResponse.setCode("99");
-            baseResponse.setMessage(sbError.toString());
-
-            return baseResponse;
+            throw new InvalidRequestArgumentException(result);
         }
 
         BaseResponse baseResponse = new BaseResponse();
@@ -89,18 +78,7 @@ public class PatientRestController {
     @RequestMapping(value = "/patient/duplicate", method = RequestMethod.GET)
     public LoginDuplicateResult checkDuplicateLoginId(@Valid @RequestBody LoginId loginId, BindingResult result) {
         if (result.hasErrors()) {
-            // TODO::Valid 체크 처리
-            StringBuilder sbError = new StringBuilder();
-            for (ObjectError error : result.getAllErrors()) {
-                LOGGER.info(error.toString());
-                sbError.append(error.getDefaultMessage());
-            }
-
-            LoginDuplicateResult loginDuplicateResult = new LoginDuplicateResult();
-            loginDuplicateResult.setCode("99");
-            loginDuplicateResult.setMessage(sbError.toString());
-
-            return loginDuplicateResult;
+            throw new InvalidRequestArgumentException(result);
         }
 
         boolean isDuplicateLoginId = patientService.checkDuplicateLoginId(loginId.getLoginId());
@@ -125,18 +103,7 @@ public class PatientRestController {
     public BaseResponse changePassword(@Valid @RequestBody LoginInfo loginInfo
             , BindingResult result) {
         if (result.hasErrors()) {
-            // TODO::Valid 체크 처리
-            StringBuilder sbError = new StringBuilder();
-            for (ObjectError error : result.getAllErrors()) {
-                LOGGER.info(error.toString());
-                sbError.append(error.getDefaultMessage());
-            }
-
-            BaseResponse baseResponse = new BaseResponse();
-            baseResponse.setCode("99");
-            baseResponse.setMessage(sbError.toString());
-
-            return baseResponse;
+            throw new InvalidRequestArgumentException(result);
         }
 
         BaseResponse baseResponse = new BaseResponse();
@@ -163,18 +130,7 @@ public class PatientRestController {
     public FindLoginIdResult selectPatientLoginId(@Valid @RequestBody SearchLoginIdInfo searchLoginIdInfo
             , BindingResult result) {
         if (result.hasErrors()) {
-            // TODO::Valid 체크 처리
-            StringBuilder sbError = new StringBuilder();
-            for (ObjectError error : result.getAllErrors()) {
-                LOGGER.info(error.toString());
-                sbError.append(error.getDefaultMessage());
-            }
-
-            FindLoginIdResult findLoginIdResult = new FindLoginIdResult();
-            findLoginIdResult.setCode("99");
-            findLoginIdResult.setMessage(sbError.toString());
-
-            return findLoginIdResult;
+            throw new InvalidRequestArgumentException(result);
         }
 
         // 환자정보 조회
@@ -208,18 +164,7 @@ public class PatientRestController {
     public ExistResult checkExistLoginInfo(@Valid @RequestBody SearchExistLoginInfo searchExistLoginInfo
             , BindingResult result) {
         if (result.hasErrors()) {
-            // TODO::Valid 체크 처리
-            StringBuilder sbError = new StringBuilder();
-            for (ObjectError error : result.getAllErrors()) {
-                LOGGER.info(error.toString());
-                sbError.append(error.getDefaultMessage());
-            }
-
-            ExistResult existResult = new ExistResult();
-            existResult.setCode("99");
-            existResult.setMessage(sbError.toString());
-
-            return existResult;
+            throw new InvalidRequestArgumentException(result);
         }
 
         // 환자정보 조회
@@ -250,18 +195,7 @@ public class PatientRestController {
     public BaseResponse checkExistLoginInfo(@Valid @RequestBody SaveQuarantineStatusInfo saveQuarantineStatusInfo
             , BindingResult result) {
         if (result.hasErrors()) {
-            // TODO::Valid 체크 처리
-            StringBuilder sbError = new StringBuilder();
-            for (ObjectError error : result.getAllErrors()) {
-                LOGGER.info(error.toString());
-                sbError.append(error.getDefaultMessage());
-            }
-
-            BaseResponse baseResponse = new BaseResponse();
-            baseResponse.setCode("99");
-            baseResponse.setMessage(sbError.toString());
-
-            return baseResponse;
+            throw new InvalidRequestArgumentException(result);
         }
 
         BaseResponse baseResponse = new BaseResponse();

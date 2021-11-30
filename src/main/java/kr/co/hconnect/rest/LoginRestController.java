@@ -1,6 +1,7 @@
 package kr.co.hconnect.rest;
 
 import kr.co.hconnect.domain.*;
+import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.exception.NotFoundPatientInfoException;
 import kr.co.hconnect.exception.NotMatchPatientPasswordException;
 import kr.co.hconnect.service.PatientService;
@@ -8,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -41,18 +41,7 @@ public class LoginRestController {
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public BaseResponse login(@Valid @RequestBody LoginInfo loginInfo, BindingResult result) {
         if (result.hasErrors()) {
-            // TODO::Valid 체크 처리
-            StringBuilder sbError = new StringBuilder();
-            for (ObjectError error : result.getAllErrors()) {
-                LOGGER.info(error.toString());
-                sbError.append(error.getDefaultMessage());
-            }
-
-            BaseResponse baseResponse = new BaseResponse();
-            baseResponse.setCode("99");
-            baseResponse.setMessage(sbError.toString());
-
-            return baseResponse;
+            throw new InvalidRequestArgumentException(result);
         }
 
         BaseResponse baseResponse = new BaseResponse();

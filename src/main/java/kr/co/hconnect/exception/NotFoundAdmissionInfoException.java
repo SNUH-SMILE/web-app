@@ -4,6 +4,8 @@ import org.springframework.util.StringUtils;
 
 public class NotFoundAdmissionInfoException extends RuntimeException {
 
+    private static final long serialVersionUID = 7203908342314774373L;
+
     /**
      * 격리/입소내역 오류정보
      */

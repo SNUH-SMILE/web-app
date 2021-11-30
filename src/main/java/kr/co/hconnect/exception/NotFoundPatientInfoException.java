@@ -7,6 +7,8 @@ import org.springframework.util.StringUtils;
  */
 public class NotFoundPatientInfoException extends RuntimeException {
 
+    private static final long serialVersionUID = -4652372284776165213L;
+
     /**
      * 환자정보 오류 내역
      */

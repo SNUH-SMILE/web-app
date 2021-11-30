@@ -5,7 +5,9 @@ import org.springframework.util.StringUtils;
 /**
  * 환자 비밀번호 불일치 Exception
  */
-public class NotMatchPatientPasswordException extends Throwable {
+public class NotMatchPatientPasswordException extends RuntimeException {
+
+    private static final long serialVersionUID = 8031810052520379149L;
 
     /**
      * 환자 비밀번호 불일치 오류내역
