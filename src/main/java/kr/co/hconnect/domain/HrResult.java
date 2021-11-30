@@ -14,6 +14,8 @@ import lombok.ToString;
 @ToString
 public class HrResult extends BaseResult {
 
+    private static final long serialVersionUID = 682236620960989258L;
+
     /**
      * 심박수 측정결과
      */

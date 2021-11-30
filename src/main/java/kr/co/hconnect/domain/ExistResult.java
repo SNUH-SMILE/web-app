@@ -14,6 +14,8 @@ import lombok.ToString;
 @ToString
 public class ExistResult extends BaseResponse {
 
+    private static final long serialVersionUID = 1014853041055920406L;
+
     /**
      * 존재여부 (Y : 존재, N : 존재하지 않음)
      */

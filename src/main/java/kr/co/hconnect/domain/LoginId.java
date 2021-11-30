@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * 로그인ID
@@ -14,7 +15,9 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 @ToString
-public class LoginId {
+public class LoginId implements Serializable {
+
+    private static final long serialVersionUID = 6553727126635301004L;
 
     /**
      * 아이디

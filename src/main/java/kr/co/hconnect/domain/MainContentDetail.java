@@ -18,6 +18,8 @@ import java.util.List;
 @ToString
 public class MainContentDetail extends BaseResponse {
 
+    private static final long serialVersionUID = -5442871090266382740L;
+
     /**
      * 성명
      */

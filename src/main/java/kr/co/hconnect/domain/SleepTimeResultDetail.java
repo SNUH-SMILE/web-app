@@ -17,6 +17,8 @@ import java.util.List;
 @ToString
 public class SleepTimeResultDetail extends BaseResponse {
 
+    private static final long serialVersionUID = 1233864927452295030L;
+
     /**
      * 총수면시간
      */

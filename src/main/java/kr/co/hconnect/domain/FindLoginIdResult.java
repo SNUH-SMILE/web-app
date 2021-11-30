@@ -14,6 +14,8 @@ import lombok.ToString;
 @ToString
 public class FindLoginIdResult extends BaseResponse {
 
+    private static final long serialVersionUID = 5817875168013867531L;
+
     /**
      * 아이디
      */

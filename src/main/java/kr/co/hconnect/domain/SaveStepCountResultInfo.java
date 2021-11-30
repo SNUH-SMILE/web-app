@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -14,7 +15,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString
-public class SaveStepCountResultInfo {
+public class SaveStepCountResultInfo implements Serializable {
+
+    private static final long serialVersionUID = -3386649844875205459L;
 
     /**
      * 아이디

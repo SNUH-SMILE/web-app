@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
@@ -17,7 +18,9 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @ToString
-public class Patient {
+public class Patient implements Serializable {
+
+    private static final long serialVersionUID = 6789973998668288818L;
 
     /**
      * 가입/수정 구분 (A : 가입, M : 수정)

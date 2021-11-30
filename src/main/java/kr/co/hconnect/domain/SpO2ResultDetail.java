@@ -16,6 +16,8 @@ import java.util.List;
 @ToString
 public class SpO2ResultDetail extends BaseResponse {
 
+    private static final long serialVersionUID = 882837456396619808L;
+
     /**
      * 산소포화도 측정결과 목록
      */

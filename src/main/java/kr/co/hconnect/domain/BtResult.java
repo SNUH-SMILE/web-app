@@ -14,6 +14,8 @@ import lombok.ToString;
 @ToString
 public class BtResult extends BaseResult {
 
+    private static final long serialVersionUID = -5344118631588677759L;
+
     /**
      * 체온 측정결과
      */

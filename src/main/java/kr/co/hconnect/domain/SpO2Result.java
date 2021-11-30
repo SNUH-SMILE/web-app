@@ -14,6 +14,8 @@ import lombok.ToString;
 @ToString
 public class SpO2Result extends BaseResult {
 
+    private static final long serialVersionUID = 704469605148079253L;
+
     /**
      * 산소포화도 측정결과
      */

@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
@@ -14,7 +15,9 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @ToString
-public class SearchResultInfo {
+public class SearchResultInfo implements Serializable {
+
+    private static final long serialVersionUID = 5219098809479607333L;
 
     /**
      * 아이디

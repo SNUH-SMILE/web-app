@@ -7,6 +7,7 @@ import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.io.Serializable;
 
 /**
  * 아이디 검색 조건 정보
@@ -15,7 +16,9 @@ import javax.validation.constraints.Pattern;
 @Setter
 @NoArgsConstructor
 @ToString
-public class SearchLoginIdInfo {
+public class SearchLoginIdInfo implements Serializable {
+
+    private static final long serialVersionUID = 225855391158373717L;
 
     /**
      * 성명

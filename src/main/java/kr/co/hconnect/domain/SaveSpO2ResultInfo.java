@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -14,7 +15,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString
-public class SaveSpO2ResultInfo {
+public class SaveSpO2ResultInfo implements Serializable {
+
+    private static final long serialVersionUID = -7475744117489798364L;
 
     /**
      * 아이디

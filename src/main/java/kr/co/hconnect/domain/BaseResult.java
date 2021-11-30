@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -15,7 +16,9 @@ import java.time.LocalTime;
 @Setter
 @NoArgsConstructor
 @ToString
-public class BaseResult {
+public class BaseResult implements Serializable {
+
+    private static final long serialVersionUID = 3151632367180058023L;
 
     /**
      * 측정일자

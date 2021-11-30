@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 /**
  * 요청결과 반환 기본 구성 정보
  */
@@ -12,7 +14,9 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-public class BaseResponse {
+public class BaseResponse implements Serializable {
+
+    private static final long serialVersionUID = 6592236361981006525L;
 
     /**
      * 결과 코드

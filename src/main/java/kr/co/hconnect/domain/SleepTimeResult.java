@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.time.LocalTime;
 
 /**
@@ -14,7 +15,9 @@ import java.time.LocalTime;
 @Setter
 @NoArgsConstructor
 @ToString
-public class SleepTimeResult {
+public class SleepTimeResult implements Serializable {
+
+    private static final long serialVersionUID = 571618490256658959L;
 
     /**
      * 수면타입 (0 : 기상, 1 : 얕은잠, 2 : 깊은잠)

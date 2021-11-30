@@ -16,6 +16,8 @@ import java.util.List;
 @ToString
 public class HrResultDetail extends BaseResponse {
 
+    private static final long serialVersionUID = 6852351119555954343L;
+
     /**
      * 심막수 측정결과 목록
      */

@@ -14,6 +14,8 @@ import lombok.ToString;
 @ToString
 public class BpResult extends BaseResult {
 
+    private static final long serialVersionUID = 3856975045053471529L;
+
     /**
      * 최저혈압 측정결과
      */

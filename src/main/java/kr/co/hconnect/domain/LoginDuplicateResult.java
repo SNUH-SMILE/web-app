@@ -14,6 +14,8 @@ import lombok.ToString;
 @ToString
 public class LoginDuplicateResult extends BaseResponse {
 
+    private static final long serialVersionUID = -1549074312490147220L;
+
     /**
      * 중복여부 (Y : 중복, N : 중복아님)
      */

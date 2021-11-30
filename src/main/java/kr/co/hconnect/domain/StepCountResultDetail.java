@@ -16,6 +16,8 @@ import java.util.List;
 @ToString
 public class StepCountResultDetail extends BaseResponse {
 
+    private static final long serialVersionUID = 4495282342621565117L;
+
     /**
      * 걸음수 측정결과 목록
      */

@@ -7,6 +7,7 @@ import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.io.Serializable;
 
 /**
  * 격리상태 저장 정보
@@ -15,7 +16,9 @@ import javax.validation.constraints.Pattern;
 @Setter
 @NoArgsConstructor
 @ToString
-public class SaveQuarantineStatusInfo {
+public class SaveQuarantineStatusInfo implements Serializable {
+
+    private static final long serialVersionUID = -5426661290209696802L;
 
     /**
      * 로그인ID

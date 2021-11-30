@@ -14,6 +14,8 @@ import lombok.ToString;
 @ToString
 public class StepCountResult extends BaseResult {
 
+    private static final long serialVersionUID = -7647935258239993387L;
+
     /**
      * 걸음수 측정결과
      */

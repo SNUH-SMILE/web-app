@@ -16,6 +16,8 @@ import java.util.List;
 @ToString
 public class BpResultDetail extends BaseResponse {
 
+    private static final long serialVersionUID = 8570616428809449743L;
+
     /**
      * 혈압 측정결과 목록
      */

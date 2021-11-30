@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -15,7 +16,9 @@ import java.time.LocalTime;
 @Setter
 @NoArgsConstructor
 @ToString
-public class SaveSleepTimeResult {
+public class SaveSleepTimeResult implements Serializable {
+
+    private static final long serialVersionUID = -1047867605598679950L;
 
     /**
      * 측정시작일자
