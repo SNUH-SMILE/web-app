@@ -27,7 +27,7 @@ import kr.co.hconnect.vo.ComCdDetailVO;
 import kr.co.hconnect.vo.PatientVO;
 
 /**
- * 입소내역 관리 서비스
+ * 격리/입소내역 관리 Service
  */
 @Service
 @Transactional(rollbackFor = Exception.class, readOnly = true)

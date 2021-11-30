@@ -3,7 +3,7 @@
 <mapper namespace="kr.co.hconnect.sqlmapper">
 
 	<!-- 로그인ID 기준 격리/입소내역(내원중) 리스트 조회 -->
-	<select id="selectActiveAdmissionListByLoginId" parameterType="String" resultType="kr.co.hconnect.vo.AdmissionListVO">
+	<select id="selectActiveAdmissionListByLoginId" parameterType="String" resultType="kr.co.hconnect.vo.AdmissionVO">
 	<![CDATA[
 		SELECT A.ADMISSION_ID             -- 격리/입소내역ID
 		     , A.PATIENT_ID               -- 환자ID

@@ -1,8 +1,10 @@
 package kr.co.hconnect.rest;
 
 import kr.co.hconnect.domain.*;
+import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
 import kr.co.hconnect.exception.NotFoundPatientInfoException;
 import kr.co.hconnect.service.PatientService;
+import kr.co.hconnect.service.QantnStatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +27,19 @@ public class PatientRestController {
     private final PatientService patientService;
 
     /**
+     * 격리상태 관리 Service
+     */
+    private final QantnStatusService qantnStatusService;
+
+    /**
      * 생성자
      * @param patientService 환자관리 Service
+     * @param qantnStatusService 격리상태 관리 Service
      */
     @Autowired
-    public PatientRestController (PatientService patientService) {
+    public PatientRestController(PatientService patientService, QantnStatusService qantnStatusService) {
         this.patientService = patientService;
+        this.qantnStatusService = qantnStatusService;
     }
 
     /**
@@ -229,6 +238,45 @@ public class PatientRestController {
         }
 
         return existResult;
+    }
+
+    /**
+     * 격리 상태 저장
+     *
+     * @param saveQuarantineStatusInfo 격리상태 저장 정보
+     * @return BaseResponse
+     */
+    @RequestMapping(value = "/quarantine", method = RequestMethod.POST)
+    public BaseResponse checkExistLoginInfo(@Valid @RequestBody SaveQuarantineStatusInfo saveQuarantineStatusInfo
+            , BindingResult result) {
+        if (result.hasErrors()) {
+            // TODO::Valid 체크 처리
+            StringBuilder sbError = new StringBuilder();
+            for (ObjectError error : result.getAllErrors()) {
+                LOGGER.info(error.toString());
+                sbError.append(error.getDefaultMessage());
+            }
+
+            BaseResponse baseResponse = new BaseResponse();
+            baseResponse.setCode("99");
+            baseResponse.setMessage(sbError.toString());
+
+            return baseResponse;
+        }
+
+        BaseResponse baseResponse = new BaseResponse();
+
+        try {
+            qantnStatusService.insertQantnStatus(saveQuarantineStatusInfo);
+
+            baseResponse.setCode("00");
+            baseResponse.setMessage("격리 상태 저장 완료");
+        } catch (NotFoundAdmissionInfoException e) {
+            baseResponse.setCode("99");
+            baseResponse.setMessage(e.getMessage());
+        }
+
+        return baseResponse;
     }
 
 }

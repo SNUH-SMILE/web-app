@@ -15,7 +15,7 @@ public class AdmissionDao extends EgovAbstractMapper {
 	/**
 	 * 로그인ID 기준 격리/입소내역(내원중) 리스트 조회
 	 *
-	 * @param patientId 환자ID
+	 * @param loginId 환자ID
 	 * @return List&ltAdmissionVO&gt 격리/입소내역 리스트
 	 */
 	public List<AdmissionVO> selectActiveAdmissionListByLoginId(String loginId) {
@@ -32,7 +32,7 @@ public class AdmissionDao extends EgovAbstractMapper {
 	
 	/**
 	 * 입소내역 정보 조회
-	 * @param vo AdmissionVO-입소내역VO
+	 * @param admissionId 격리/입소내역ID
 	 * @return affectedRow
 	 */
 	public AdmissionInfoVO selectAdmissionInfo(String admissionId) {

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+
+    <!-- 현재 격리상태 조회 -->
+    <select id="selectActiveQantnStatus" parameterType="String" resultType="kr.co.hconnect.domain.QantnStatus">
+        SELECT A.QANTN_STATUS_SEQ                       -- 격리상태순번
+             , A.ADMISSION_ID                           -- 격리/입소내역ID
+             , A.QANTN_STATUS_DIV                       -- 격리상태구분
+             , B.DETAIL_CD_NM       AS QANTN_STATUS_NM  -- 격리상태명
+          FROM QANTN_STATUS A
+               INNER JOIN COM_CD_DETAIL B  ON B.COM_CD = 'CD006'
+                                          AND A.QANTN_STATUS_DIV = B.DETAIL_CD
+         WHERE A.ADMISSION_ID = #{admissionId}
+         ORDER BY A.QANTN_STATUS_SEQ DESC
+         LIMIT 1
+    </select>
+
+    <!-- 격리상태 저장 -->
+    <insert id="insertQantnStatus" parameterType="kr.co.hconnect.domain.QantnStatus">
+    <![CDATA[
+        INSERT
+          INTO QANTN_STATUS
+             ( ADMISSION_ID
+             , QANTN_STATUS_DIV
+             , REG_DT
+             )
+        VALUES
+             ( #{admissionId}
+             , #{qantnStatusDiv}
+             , NOW()
+             )
+    ]]>
+    </insert>
+
+</mapper>
