@@ -1,5 +1,6 @@
 package kr.co.hconnect.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,6 +30,7 @@ public class SearchResultInfo implements Serializable {
      * 측정일자
      */
     @NotNull(message = "측정일자가 누락되었습니다.")
+    @JsonFormat(pattern = "yyyyMMdd")
     private LocalDate resultDate;
     /**
      * 입소자 Id
