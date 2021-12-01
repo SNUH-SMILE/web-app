@@ -142,7 +142,7 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
     /**
      * 메인컨텐츠 조회
      *
-     * @param admissionId 로그인 Id
+     * @param loginId 로그인 Id
      * @return MainContentDetail
      */
     public MainContentDetail mainService(String loginId) {
