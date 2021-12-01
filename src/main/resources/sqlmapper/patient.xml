@@ -2,20 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.hconnect.sqlmapper">
 
-	<!-- 환자정보 조회-로그인ID 기준 -->
+    <!-- 환자정보 조회-로그인ID 기준 -->
 	<select id="selectPatientByLoginId" parameterType="String" resultType="kr.co.hconnect.domain.Patient">
 	<![CDATA[
-		SELECT PATIENT_ID		-- 환자ID
-		     , LOGIN_ID         -- 로그인ID
-		     , PASSWORD         -- 비밀번호
-		     , PATIENT_NM       -- 성명
-		     , SSN              -- 주민번호
-		     , BIRTH_DATE       -- 생년월일
-		     , SEX              -- 성별
-		     , CELL_PHONE       -- 휴대폰
-		     , ZIP_CODE         -- 우편번호
-		     , ADDRESS1         -- 주소
-		     , ADDRESS2         -- 상세주소
+		SELECT PATIENT_ID -- 환자ID
+             , LOGIN_ID   -- 로그인ID
+             , PASSWORD   -- 비밀번호
+             , PATIENT_NM -- 성명
+             , SSN        -- 주민번호
+             , BIRTH_DATE -- 생년월일
+             , SEX        -- 성별
+             , CELL_PHONE -- 휴대폰
+             , ZIP_CODE   -- 우편번호
+             , ADDRESS1   -- 주소
+             , ADDRESS2   -- 상세주소
           FROM PATIENT
          WHERE LOGIN_ID = #{loginId}
 	]]>
@@ -100,25 +100,43 @@
 	]]>
 	</update>
 
-	<!-- 환자 비밀번호 변경-LoginId 기준 -->
-	<update id="updatePatientPasswordByLoginId" parameterType="kr.co.hconnect.domain.LoginInfo">
+    <!-- 환자 비밀번호 변경-LoginId 기준 -->
+    <update id="updatePatientPasswordByLoginId" parameterType="kr.co.hconnect.domain.LoginInfo">
 	<![CDATA[
-		UPDATE PATIENT
-           SET PASSWORD = #{password}
-			 , UPD_DT     = NOW()
-         WHERE LOGIN_ID = #{loginId}
-	]]>
+        UPDATE PATIENT
+        SET PASSWORD = #{password}
+          , UPD_DT   = NOW()
+        WHERE LOGIN_ID = #{loginId}
+        ]]>
 	</update>
 
+    <!-- 본인인증 내역 확인 -->
+    <select id="selectIdentityInfo" parameterType="String" resultType="kr.co.hconnect.domain.IdentityResult">
+    <![CDATA[
+        SELECT IFNULL(B.QANTN_DIV, '0') AS QUARANTINE_DIV
+             , CASE
+                   WHEN IFNULL(A.LOGIN_ID, '') <> ''
+                       THEN 'Y'
+                   ELSE 'N'
+            END                         AS REGISTER_YN
+        FROM PATIENT A
+                 LEFT OUTER JOIN admission B ON A.PATIENT_ID = B.PATIENT_ID
+            AND B.ADMISSION_DATE <= NOW()
+            AND B.DSCHGE_DATE IS NULL
+            AND B.DEL_YN = 'N'
+        WHERE A.SSN = #{ssn}
+        ]]>
+    </select>
+
     <!-- 환자정보 생성 -->
-	<insert id="insertPatient" parameterType="kr.co.hconnect.vo.PatientVO">
+    <insert id="insertPatient" parameterType="kr.co.hconnect.vo.PatientVO">
 	<![CDATA[
-		INSERT 
-		  INTO PATIENT
-		     ( PATIENT_ID
-		     , NAME
-		     , BIRTH_DATE
-		     , CONTACT
+        INSERT
+        INTO PATIENT
+        (      PATIENT_ID
+        ,      NAME
+        ,      BIRTH_DATE
+        ,      CONTACT
 		     , SEX
 		     , REG_ID
 		     , UPD_ID

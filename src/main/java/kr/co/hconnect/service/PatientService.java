@@ -2,10 +2,7 @@ package kr.co.hconnect.service;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import kr.co.hconnect.common.CryptoUtils;
-import kr.co.hconnect.domain.LoginInfo;
-import kr.co.hconnect.domain.Patient;
-import kr.co.hconnect.domain.SearchExistLoginInfo;
-import kr.co.hconnect.domain.SearchLoginIdInfo;
+import kr.co.hconnect.domain.*;
 import kr.co.hconnect.exception.NotFoundPatientInfoException;
 import kr.co.hconnect.exception.NotMatchPatientPasswordException;
 import kr.co.hconnect.repository.PatientDao;
@@ -150,5 +147,15 @@ public class PatientService extends EgovAbstractServiceImpl {
         patient.setPassword(CryptoUtils.encrypt(patient.getPassword()));
 
         return patientDao.updatePatientPasswordByLoginId(loginInfo);
+    }
+
+    /**
+     * 본인인증 내역 확인
+     *
+     * @param ssn 주민번호
+     * @return IdentityResult
+     */
+    public IdentityResult selectIdentityInfo(String ssn) throws NotFoundPatientInfoException {
+        return patientDao.selectIdentityInfo(CryptoUtils.encrypt(ssn));
     }
 }
