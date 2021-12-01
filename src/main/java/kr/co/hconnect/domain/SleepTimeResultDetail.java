@@ -1,5 +1,6 @@
 package kr.co.hconnect.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,14 +23,16 @@ public class SleepTimeResultDetail extends BaseResponse {
     /**
      * 총수면시간
      */
-    private int totalSleepTime;
+    private String totalSleepTime;
     /**
      * 측정시작일시
      */
+    @JsonFormat(pattern = "yyyyMMddHH")
     private LocalDateTime resultStartDateTime;
     /**
      * 측정종료일시
      */
+    @JsonFormat(pattern = "yyyyMMddHH")
     private LocalDateTime resultEndDateTime;
     /**
      * 수면시간 측정결과 목록
