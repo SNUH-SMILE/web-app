@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -24,16 +25,19 @@ public class BaseResult implements Serializable {
     /**
      * 측정일자
      */
+    @NotNull
     @JsonFormat(pattern = "yyyyMMdd")
     private LocalDate resultDate;
     /**
      * 측정시간
      */
-    @JsonFormat(pattern = "HHmm")
+    @NotNull
+    @JsonFormat(pattern = "HHmmss")
     private LocalTime resultTime;
     /**
      * 디바이스ID
      */
+    @NotNull
     private String deviceId;
 
 }

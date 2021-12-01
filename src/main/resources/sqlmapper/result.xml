@@ -12,11 +12,13 @@
         INTO RESULT ( ADMISSION_ID
                     , ITEM_ID
                     , RESULT_DATE
-                    , RESULT_TIME)
+                    , RESULT_TIME
+                    , DEVICE_ID)
         VALUES ( #{admissionId}
                , #{itemId}
                , #{resultDate}
-               , #{resultTime})
+               , #{resultTime}
+               , #{deviceId})
         ]]>
     </insert>
 
@@ -31,6 +33,25 @@
                , #{resultType}
                , #{result})
         ]]>
+    </insert>
+
+    <!-- 수면 측정결과 저장 -->
+    <insert id="insertResultSleepTime" parameterType="kr.co.hconnect.domain.SaveSleepTimeResult">
+        INSERT
+        INTO RESULT_SLEEP ( ADMISSION_ID
+                          , RESULT_START_DATE
+                          , RESULT_START_TIME
+                          , RESULT_END_DATE
+                          , RESULT_END_TIME
+                          , SLEEP_TYPE
+                          , DEVICE_ID)
+        VALUES ( #{admissionId}
+               , #{resultStartDate}
+               , #{resultStartTime}
+               , #{resultEndDate}
+               , #{resultEndTime}
+               , #{sleepType}
+               , #{deviceId})
     </insert>
 
 </mapper>

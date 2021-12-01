@@ -1,9 +1,7 @@
 package kr.co.hconnect.service;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
-import kr.co.hconnect.domain.Result;
-import kr.co.hconnect.domain.ResultDetail;
-import kr.co.hconnect.domain.ResultSavedInformationData;
+import kr.co.hconnect.domain.*;
 import kr.co.hconnect.repository.ResultDao;
 import kr.co.hconnect.vo.AdmissionVO;
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * 측정결과 Service
+ */
 @Service
 @Transactional(rollbackFor = Exception.class, readOnly = true)
 public class ResultService extends EgovAbstractServiceImpl {
@@ -22,6 +23,9 @@ public class ResultService extends EgovAbstractServiceImpl {
      */
     private final ResultDao resultDao;
 
+    /**
+     * 격리/입소내역 관리 Service
+     */
     private final AdmissionService admissionService;
 
     /**
@@ -69,6 +73,27 @@ public class ResultService extends EgovAbstractServiceImpl {
                 resultDetail.setResultSeq(result.getResultSeq());
                 resultDao.insertResultDetail(resultDetail);
             }
+        }
+
+        return true;
+    }
+
+    /**
+     * 수면 측정결과 내역 저장
+     *
+     * @param resultInfo 수면 측정결과 저장 정보
+     * @return boolean 저장성공여부
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public boolean saveResultSleep(SaveSleepResultInfo resultInfo) {
+        // 격리/입소내역ID
+        String admissionId = admissionService.selectActiveAdmissionByLoginId(resultInfo.getLoginId()).getAdmissionId();
+
+        // 수면 측정결과 저장
+        for (SaveSleepTimeResult data : resultInfo.getResults()) {
+            data.setAdmissionId(admissionId);
+
+            resultDao.insertResultSleepTime(data);
         }
 
         return true;

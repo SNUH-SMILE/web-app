@@ -1,10 +1,12 @@
 package kr.co.hconnect.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -26,5 +28,7 @@ public class SaveSpO2ResultInfo implements Serializable {
     /**
      * 산소포화도 측정 결과
      */
+    @JsonProperty("spO2List")
+    @NotNull(message = "측정결과 누락")
     private List<SpO2Result> results;
 }

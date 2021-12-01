@@ -5,10 +5,29 @@ package kr.co.hconnect.common;
  */
 public enum ItemId {
 
-    BLOOD_PRESSURE("I0025"),
-    BODY_TEMPERATURE("I0027"),
-    HEART_RATE("I0026"),
-    OXYGEN_SATURATION("I0029"),
+    /**
+     * 혈압
+     */
+    BLOOD_PRESSURE("I0005"),
+    /**
+     * 체온
+     */
+    BODY_TEMPERATURE("I0001"),
+    /**
+     * 심박수
+     */
+    HEART_RATE("I0002"),
+    /**
+     * 산소포화도
+     */
+    OXYGEN_SATURATION("I0003"),
+    /**
+     * 걸음수
+     */
+    STEP_COUNT("I0004"),
+    /**
+     * 혈압
+     */
     RESPIRATION("I0028");
 
 

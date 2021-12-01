@@ -1,9 +1,12 @@
 package kr.co.hconnect.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * 혈압 구성정보
@@ -17,12 +20,16 @@ public class BpResult extends BaseResult {
     private static final long serialVersionUID = 3856975045053471529L;
 
     /**
-     * 최저혈압 측정결과
-     */
-    private String resultDbp;
-    /**
      * 최고혈압 측정결과
      */
+    @NotNull
+    @JsonProperty("sbp")
     private String resultSbp;
-    
+    /**
+     * 최저혈압 측정결과
+     */
+    @NotNull
+    @JsonProperty("dbp")
+    private String resultDbp;
+
 }

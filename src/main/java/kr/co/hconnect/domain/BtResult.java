@@ -1,9 +1,12 @@
 package kr.co.hconnect.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * 체온 구성정보
@@ -19,6 +22,8 @@ public class BtResult extends BaseResult {
     /**
      * 체온 측정결과
      */
+    @NotNull
+    @JsonProperty("bt")
     private String result;
 
 }

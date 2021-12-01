@@ -1,9 +1,12 @@
 package kr.co.hconnect.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * 걸음수 구성정보
@@ -19,9 +22,13 @@ public class StepCountResult extends BaseResult {
     /**
      * 걸음수 측정결과
      */
+    @NotNull
+    @JsonProperty("stepCount")
     private String resultStepCount;
     /**
      * 거리 측정결과
      */
+    @NotNull
+    @JsonProperty("distance")
     private String resultDistance;
 }

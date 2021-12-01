@@ -40,5 +40,9 @@ public class Result implements Serializable {
      * 측정시간
      */
     private LocalTime resultTime;
+    /**
+     * 디바이스ID
+     */
+    private String deviceId;
 
 }
