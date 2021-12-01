@@ -1,12 +1,16 @@
 package kr.co.hconnect.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 /**
  * 수면 측정결과 검색 조건
@@ -22,13 +26,39 @@ public class SearchSleepResultInfo implements Serializable {
     /**
      * 아이디
      */
+    @NotNull(message = "사용자 아이디가 누락되었습니다.")
     private String loginId;
+
     /**
      * 측정시작일시
      */
+    @NotNull(message = "측정시작일시가 누락되었습니다.")
+    @JsonFormat(pattern = "yyyyMMddHH")
     private LocalDateTime resultStartDateTime;
+    /**
+     * 측정시작일
+     */
+    private LocalDate resultStartDate;
+    /**
+     * 측정시작시
+     */
+    private LocalTime resultStartTime;
     /**
      * 측정종료일시
      */
+    @NotNull(message = "측정종료일시가 누락되었습니다.")
+    @JsonFormat(pattern = "yyyyMMddHH")
     private LocalDateTime resultEndDateTime;
+    /**
+     * 측정종료일
+     */
+    private LocalDate resultEndDate;
+    /**
+     * 측정종료시
+     */
+    private LocalTime resultEndTime;
+    /**
+     * 입소자 Id
+     */
+    private String admissionId;
 }

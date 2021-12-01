@@ -10,6 +10,8 @@ import java.util.List;
 public class MeasurementResultDao extends EgovAbstractMapper {
 
     /**
+     * 신규 알림 여부조회
+     *
      * @param admissionId 입소자 Id
      * @return 읽지않은 공지사항 갯수
      */
@@ -17,23 +19,63 @@ public class MeasurementResultDao extends EgovAbstractMapper {
         return selectList("kr.co.hconnect.sqlmapper.selectNotice", admissionId).size();
     }
 
+    /**
+     * 측정일자별 상세체온 목록 조회
+     *
+     * @param searchResultInfo 검색조건
+     * @return 측정일자별 상세체온 목록 조회
+     */
     public List<BtResult> selectBtList(SearchResultInfo searchResultInfo) {
         return selectList("kr.co.hconnect.sqlmapper.selectBtList", searchResultInfo);
     }
 
+    /**
+     * 측정일자별 상세심박수 목록 조회
+     *
+     * @param searchResultInfo 측정결과 검색 조건
+     * @return 측정일자별 상세심박수 목록
+     */
     public List<HrResult> selectHrList(SearchResultInfo searchResultInfo) {
         return selectList("kr.co.hconnect.sqlmapper.selectHrList", searchResultInfo);
     }
 
+    /**
+     * 측정일자별 상세산소포화도 목록 조회
+     *
+     * @param searchResultInfo 측정결과 검색 조건
+     * @return 측정일자별 상세산소포화도 목록
+     */
     public List<SpO2Result> selectSpO2List(SearchResultInfo searchResultInfo) {
         return selectList("kr.co.hconnect.sqlmapper.selectSpO2List", searchResultInfo);
     }
 
-    public List<BpResult> selectBpList(SearchResultInfo searchResultInfo) {
-        return selectList("kr.co.hconnect.sqlmapper.selectBpList", searchResultInfo);
+    /**
+     * 측정일자별 상세혈압 목록 조회
+     *
+     * @param searchResultInfos 측정결과 검색 조건
+     * @return 측정일자별 상세혈압 목록
+     */
+    public List<BpResult> selectBpList(SearchResultInfos searchResultInfos) {
+        return selectList("kr.co.hconnect.sqlmapper.selectBpList", searchResultInfos);
     }
 
-    public List<StepCountResult> selectStepList(SearchResultInfo searchResultInfo) {
-        return selectList("kr.co.hconnect.sqlmapper.selectStepList", searchResultInfo);
+    /**
+     * 측정일자별 상세걸음수 목록 조회
+     *
+     * @param searchResultInfos 측정결과 검색 조건
+     * @return 측정일자별 상세걸음수 목록
+     */
+    public List<StepCountResult> selectStepList(SearchResultInfos searchResultInfos) {
+        return selectList("kr.co.hconnect.sqlmapper.selectStepList", searchResultInfos);
+    }
+
+    /**
+     * 측정일자별 상세수면 목록 조회
+     *
+     * @param searchSleepResultInfo 측정결과 검색 조건
+     * @return 측정일자별 상세수면 목록
+     */
+    public List<SleepTimeResult> selectSleepTimeList(SearchSleepResultInfo searchSleepResultInfo) {
+        return selectList("kr.co.hconnect.sqlmapper.selectSleepTimeList", searchSleepResultInfo);
     }
 }

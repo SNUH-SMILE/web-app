@@ -1,5 +1,6 @@
 package kr.co.hconnect.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,9 +27,11 @@ public class SleepTimeResult implements Serializable {
     /**
      * 수면 시작시각
      */
+    @JsonFormat(pattern = "HHmm")
     private LocalTime sleepStartTime;
     /**
      * 수면 종료시각
      */
+    @JsonFormat(pattern = "HHmm")
     private LocalTime sleepEndTime;
 }
