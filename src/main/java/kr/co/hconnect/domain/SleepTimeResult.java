@@ -1,12 +1,14 @@
 package kr.co.hconnect.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 /**
@@ -25,10 +27,20 @@ public class SleepTimeResult implements Serializable {
      */
     private String sleepType;
     /**
+     * 수면 시작일
+     */
+    @JsonIgnore
+    private LocalDate sleepStartDate;
+    /**
      * 수면 시작시각
      */
     @JsonFormat(pattern = "HHmm")
     private LocalTime sleepStartTime;
+    /**
+     * 수면 종료일
+     */
+    @JsonIgnore
+    private LocalDate sleepEndDate;
     /**
      * 수면 종료시각
      */

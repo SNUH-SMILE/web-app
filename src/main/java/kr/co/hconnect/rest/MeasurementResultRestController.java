@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +65,23 @@ public class MeasurementResultRestController {
         return admissionService.selectActiveAdmissionByLoginId(loginId).getAdmissionId();
     }
 
+    /**
+     * 메인컨텐츠 조회
+     *
+     * @param loginId 로그인Id
+     * @return MainContentDetail
+     */
+    @RequestMapping(value = "/main", method = RequestMethod.GET)
+    public MainContentDetail mainContent(@Valid @RequestBody LoginId loginId, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+        MainContentDetail mainContentDetail = measurementResultService.mainService(loginId.getLoginId());
+        mainContentDetail.setCode("00");
+        mainContentDetail.setMessage("메인컨텐츠가 조회되었습니다.");
+        return mainContentDetail;
+    }
+
 
     /**
      * 신규 알림 여부조회
@@ -109,11 +125,10 @@ public class MeasurementResultRestController {
             throw new InvalidRequestArgumentException(bindingResult);
         }
         searchResultInfo.setAdmissionId(getAdmissionId(searchResultInfo.getLoginId()));
-        searchResultInfo.setItemId("I0001");
         BtResultDetail btResultDetail = new BtResultDetail();
         btResultDetail.setCode("00");
         btResultDetail.setMessage("체온 상세목록 조회 성공");
-        btResultDetail.setBtList(measurementResultService.selectBpLIst(searchResultInfo));
+        btResultDetail.setBtList(measurementResultService.selectBtLIst(searchResultInfo));
         return btResultDetail;
     }
 
@@ -130,7 +145,6 @@ public class MeasurementResultRestController {
             throw new InvalidRequestArgumentException(bindingResult);
         }
         searchResultInfo.setAdmissionId(getAdmissionId(searchResultInfo.getLoginId()));
-        searchResultInfo.setItemId("I0002");
         HrResultDetail hrResultDetail = new HrResultDetail();
         hrResultDetail.setCode("00");
         hrResultDetail.setMessage("심박수 상세목록 조회 성공");
@@ -151,7 +165,7 @@ public class MeasurementResultRestController {
             throw new InvalidRequestArgumentException(bindingResult);
         }
         searchResultInfo.setAdmissionId(getAdmissionId(searchResultInfo.getLoginId()));
-        searchResultInfo.setItemId("I0003");
+
         SpO2ResultDetail spO2ResultDetail = new SpO2ResultDetail();
         spO2ResultDetail.setCode("00");
         spO2ResultDetail.setMessage("산소포화도 상세목록 조회 성공");
@@ -173,9 +187,6 @@ public class MeasurementResultRestController {
         }
 
         searchResultInfos.setAdmissionId(getAdmissionId(searchResultInfos.getLoginId()));
-        searchResultInfos.setItemId("I0004");
-        searchResultInfos.setFirstResultType("04");
-        searchResultInfos.setSecondResultType("05");
 
         StepCountResultDetail stepCountResultDetail = new StepCountResultDetail();
         stepCountResultDetail.setCode("00");
@@ -197,9 +208,6 @@ public class MeasurementResultRestController {
             throw new InvalidRequestArgumentException(bindingResult);
         }
         searchResultInfos.setAdmissionId(getAdmissionId(searchResultInfos.getLoginId()));
-        searchResultInfos.setItemId("I0005");
-        searchResultInfos.setFirstResultType("02");
-        searchResultInfos.setSecondResultType("03");
 
         BpResultDetail bpResultDetail = new BpResultDetail();
         bpResultDetail.setCode("00");
@@ -223,11 +231,7 @@ public class MeasurementResultRestController {
             throw new InvalidRequestArgumentException(bindingResult);
         }
         searchSleepResultInfo.setAdmissionId(getAdmissionId(searchSleepResultInfo.getLoginId()));
-        //Result Start/End DateTime 을 Date 와 Time 으로 분리
-        searchSleepResultInfo.setResultStartDate(searchSleepResultInfo.getResultStartDateTime().toLocalDate());
-        searchSleepResultInfo.setResultStartTime(searchSleepResultInfo.getResultStartDateTime().toLocalTime());
-        searchSleepResultInfo.setResultEndDate(searchSleepResultInfo.getResultEndDateTime().toLocalDate());
-        searchSleepResultInfo.setResultEndTime(searchSleepResultInfo.getResultEndDateTime().toLocalTime());
+
 
         //SleepTimeResultDetail 세팅
         SleepTimeResultDetail sleepTimeResultDetail = new SleepTimeResultDetail();
@@ -235,16 +239,13 @@ public class MeasurementResultRestController {
         sleepTimeResultDetail.setMessage("수면시간 상세목록 조회 성공");
         sleepTimeResultDetail.setResultStartDateTime(searchSleepResultInfo.getResultStartDateTime());
         sleepTimeResultDetail.setResultEndDateTime(searchSleepResultInfo.getResultEndDateTime());
+
         sleepTimeResultDetail.setSleepTimeList(measurementResultService.selectSleepTimeList(searchSleepResultInfo));
 
         //총 수면시간
         List<SleepTimeResult> sleepTimeResultList = sleepTimeResultDetail.getSleepTimeList();
-        int tempTotalSleep = 0;
-        for (int i = 0; i < sleepTimeResultList.size(); i++) {
-            tempTotalSleep += sleepTimeResultList.get(i).getSleepStartTime()
-                    .until(sleepTimeResultList.get(i).getSleepEndTime(), ChronoUnit.HOURS);
-        }
-        sleepTimeResultDetail.setTotalSleepTime(Integer.toString(tempTotalSleep));
+        int tempTotalSleep = measurementResultService.getTempTotalSleep(sleepTimeResultList);
+        sleepTimeResultDetail.setTotalSleepTime(Integer.toString(tempTotalSleep / 60));
 
         return sleepTimeResultDetail;
     }

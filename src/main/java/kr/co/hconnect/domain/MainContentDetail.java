@@ -1,12 +1,13 @@
 package kr.co.hconnect.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -27,14 +28,17 @@ public class MainContentDetail extends BaseResponse {
     /**
      * 격리시작일자
      */
+    @JsonFormat(pattern = "yyyyMMdd")
     private LocalDate admissionDate;
     /**
      * 격리종료예정일자
      */
+    @JsonFormat(pattern = "yyyyMMdd")
     private LocalDate dischargeScheduledDate;
     /**
      * 격리종료일자
      */
+    @JsonFormat(pattern = "yyyyMMdd")
     private LocalDate dischargeDate;
     /**
      * 담당자
@@ -63,7 +67,8 @@ public class MainContentDetail extends BaseResponse {
     /**
      * 당일 총수면시간
      */
-    private LocalDate todayTotalSleepTime;
+    @JsonFormat(pattern = "HHmm")
+    private LocalTime todayTotalSleepTime;
     /**
      * 당일 수면시간 목록
      */

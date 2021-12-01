@@ -8,9 +8,7 @@ import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 /**
  * 수면 측정결과 검색 조건
@@ -35,28 +33,13 @@ public class SearchSleepResultInfo implements Serializable {
     @NotNull(message = "측정시작일시가 누락되었습니다.")
     @JsonFormat(pattern = "yyyyMMddHH")
     private LocalDateTime resultStartDateTime;
-    /**
-     * 측정시작일
-     */
-    private LocalDate resultStartDate;
-    /**
-     * 측정시작시
-     */
-    private LocalTime resultStartTime;
+
     /**
      * 측정종료일시
      */
     @NotNull(message = "측정종료일시가 누락되었습니다.")
     @JsonFormat(pattern = "yyyyMMddHH")
     private LocalDateTime resultEndDateTime;
-    /**
-     * 측정종료일
-     */
-    private LocalDate resultEndDate;
-    /**
-     * 측정종료시
-     */
-    private LocalTime resultEndTime;
     /**
      * 입소자 Id
      */

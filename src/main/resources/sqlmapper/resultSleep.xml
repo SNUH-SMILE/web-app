@@ -6,17 +6,16 @@
             resultType="kr.co.hconnect.domain.SleepTimeResult">
         <![CDATA[
         SELECT A.RESULT_START_TIME AS SLEEP_START_TIME
+             , A.RESULT_START_DATE AS SLEEP_START_DATE
              , A.RESULT_END_TIME   AS SLEEP_END_TIME
+             , A.RESULT_END_DATE   AS SLEEP_END_DATE
              , A.SLEEP_TYPE
         FROM RESULT_SLEEP A
         WHERE A.ADMISSION_ID = #{admissionId}
           AND A.RESULT_START_DATE
             BETWEEN
-            DATE (#{resultStartDate})
-          AND DATE (#{resultEndDate})
-          AND A.RESULT_START_TIME
-            BETWEEN TIME (#{resultStartTime})
-          AND TIME (#{resultEndTime});
+            DATE (#{resultStartDateTime})
+          AND DATE (#{resultEndDateTime})
         ]]>
     </select>
 </mapper>
