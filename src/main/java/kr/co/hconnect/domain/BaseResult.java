@@ -1,6 +1,7 @@
 package kr.co.hconnect.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,6 +39,7 @@ public class BaseResult implements Serializable {
      * 디바이스ID
      */
     @NotNull
+    @JsonIgnore
     private String deviceId;
 
 }
