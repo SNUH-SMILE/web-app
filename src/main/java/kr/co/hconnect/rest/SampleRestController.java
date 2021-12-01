@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 @RestController
-public class SampleController {
+public class SampleRestController {
 
     @GetMapping("/api/sample")
     public SampleVO doSample(@Valid @RequestBody SampleVO sampleVO) {
