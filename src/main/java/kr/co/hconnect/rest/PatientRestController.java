@@ -84,9 +84,26 @@ public class PatientRestController {
             throw new InvalidRequestArgumentException(result);
         }
 
+        // 신규 가입일 경우 데이터 확인
+        if (patient.getFlag().equals("A")) {
+            BaseResponse baseResponse = new BaseResponse();
+            baseResponse.setCode("99");
+
+            if (!patient.getSsn().matches("^[0-9]{13}")) {
+                // 주민번호 입력형태 확인
+                baseResponse.setMessage("주민번호를 확인하세요.");
+                return baseResponse;
+            } else if (patientService.checkDuplicateLoginId(patient.getLoginId())) {
+                // 동일 로그인ID 중복여부 확인
+                baseResponse.setMessage("사용중인 로그인ID 입니다.");
+                return baseResponse;
+            }
+        }
+
         BaseResponse baseResponse = new BaseResponse();
 
         try {
+            // 환자정보 저장
             Patient savePatientInfo = patientService.savePatientInfo(patient);
 
             baseResponse.setCode("00");
