@@ -144,7 +144,7 @@ public class PatientService extends EgovAbstractServiceImpl {
         }
 
         // 비밀번호 암호화
-        patient.setPassword(CryptoUtils.encrypt(patient.getPassword()));
+        loginInfo.setPassword(CryptoUtils.encrypt(loginInfo.getPassword()));
 
         return patientDao.updatePatientPasswordByLoginId(loginInfo);
     }
