@@ -1,30 +1,24 @@
 package kr.co.hconnect.service;
 
-import java.util.List;
-
+import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import egovframework.rte.fdl.cmmn.exception.FdlException;
+import egovframework.rte.fdl.idgnr.EgovIdGnrService;
 import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
-import kr.co.hconnect.exception.NotFoundPatientInfoException;
+import kr.co.hconnect.repository.AdmissionDao;
+import kr.co.hconnect.repository.PatientDao;
+import kr.co.hconnect.vo.AdmissionInfoVO;
+import kr.co.hconnect.vo.AdmissionListVO;
+import kr.co.hconnect.vo.AdmissionVO;
+import kr.co.hconnect.vo.PatientVO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-//import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
-import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
-import egovframework.rte.fdl.cmmn.exception.FdlException;
-import egovframework.rte.fdl.idgnr.EgovIdGnrService;
-import kr.co.hconnect.repository.AdmissionDao;
-import kr.co.hconnect.repository.ComCdManagerDao;
-import kr.co.hconnect.repository.PatientDao;
-import kr.co.hconnect.vo.AdmissionInfoVO;
-import kr.co.hconnect.vo.AdmissionListVO;
-import kr.co.hconnect.vo.AdmissionVO;
-import kr.co.hconnect.vo.ComCdDetailVO;
-import kr.co.hconnect.vo.PatientVO;
+import java.util.List;
 
 /**
  * 격리/입소내역 관리 Service
@@ -83,7 +77,7 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 		if (admissionVOS == null || admissionVOS.size() == 0) {
 			throw new NotFoundAdmissionInfoException("내원중인 격리/입소내역이 존재하지 않습니다.");
 		} else if (admissionVOS.size() > 1) {
-			throw new NotFoundAdmissionInfoException("내원중인 격리/입소내역이 한건 이상 존재합니다.");
+            throw new NotFoundAdmissionInfoException(String.format("내원중인 격리/입소내역이 %d건 존재합니다.", admissionVOS.size()));
 		}
 
 		return admissionVOS.get(0);
