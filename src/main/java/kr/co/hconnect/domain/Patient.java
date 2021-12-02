@@ -1,6 +1,7 @@
 package kr.co.hconnect.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,7 +9,6 @@ import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
@@ -18,28 +18,33 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @ToString
-public class Patient implements Serializable {
+public class Patient extends BaseResponse {
 
     private static final long serialVersionUID = 6789973998668288818L;
 
     /**
      * 가입/수정 구분 (A : 가입, M : 수정)
      */
+    @NotNull
     @Pattern(regexp = "^[AM]$", message = "가입/수정 구분을 확인하세요.")
+    @JsonIgnore
     private String flag;
     /**
      * 환자ID
      */
+    @JsonIgnore
     private String patientId;
     /**
      * 아이디
      */
     @NotNull
+    @JsonIgnore
     private String loginId;
     /**
      * 비밀번호
      */
     @NotNull
+    @JsonIgnore
     private String password;
     /**
      * 성명
@@ -49,7 +54,7 @@ public class Patient implements Serializable {
     /**
      * 주민번호
      */
-    @NotNull
+    @JsonIgnore
     private String ssn;
     /**
      * 생년월일

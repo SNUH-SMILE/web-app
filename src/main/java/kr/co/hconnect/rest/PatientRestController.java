@@ -10,7 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -40,6 +43,33 @@ public class PatientRestController {
     public PatientRestController(PatientService patientService, QantnStatusService qantnStatusService) {
         this.patientService = patientService;
         this.qantnStatusService = qantnStatusService;
+    }
+
+    /**
+     * 회원정보 조회-로그인ID 기준
+     *
+     * @param loginId 로그인ID VO
+     * @return Patient 회원정보
+     */
+    @RequestMapping(value = "/patient", method = RequestMethod.GET)
+    public Patient selectPatient(@Valid @RequestBody LoginId loginId, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new InvalidRequestArgumentException(result);
+        }
+
+        // 회원정보 조회
+        Patient patient = patientService.selectPatientByLoginId(loginId.getLoginId());
+
+        if (patient != null) {
+            patient.setCode("00");
+            patient.setMessage("회원정보 조회 완료.");
+        } else {
+            patient = new Patient();
+            patient.setCode("99");
+            patient.setMessage("회원정보가 존재하지 않습니다.");
+        }
+
+        return patient;
     }
 
     /**
