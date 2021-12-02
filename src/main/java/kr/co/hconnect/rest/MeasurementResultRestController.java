@@ -84,10 +84,11 @@ public class MeasurementResultRestController {
         resultListsSize += mainContentDetail.getTodaySpO2List().size();
         resultListsSize += mainContentDetail.getTodaySleepTimeList().size();
         resultListsSize += mainContentDetail.getTodayStepCountList().size();
-        if (resultListsSize > 0) {
+        if(resultListsSize>0){
             mainContentDetail.setCode("00");
             mainContentDetail.setMessage("메인컨텐츠가 조회 되었습니다.");
-        } else if (resultListsSize == 0) {
+        }
+        else if(resultListsSize==0){
             mainContentDetail.setCode("00");
             mainContentDetail.setMessage("메인컨텐츠가 측정결과 목록이 없습니다.");
         }
@@ -138,10 +139,11 @@ public class MeasurementResultRestController {
         searchResultInfo.setAdmissionId(getAdmissionId(searchResultInfo.getLoginId()));
         BtResultDetail btResultDetail = new BtResultDetail();
         btResultDetail.setBtList(measurementResultService.selectBtLIst(searchResultInfo));
-        if (btResultDetail.getBtList().size() > 0) {
+        if(btResultDetail.getBtList().size() > 0){
             btResultDetail.setCode("00");
             btResultDetail.setMessage("체온 상세목록 조회 되었습니다.");
-        } else if (btResultDetail.getBtList().size() == 0) {
+        }
+        else if(btResultDetail.getBtList().size() == 0){
             btResultDetail.setCode("00");
             btResultDetail.setMessage("체온 상세목록이 없습니다.");
         }
@@ -163,10 +165,11 @@ public class MeasurementResultRestController {
         searchResultInfo.setAdmissionId(getAdmissionId(searchResultInfo.getLoginId()));
         HrResultDetail hrResultDetail = new HrResultDetail();
         hrResultDetail.setHrList(measurementResultService.selectHrList(searchResultInfo));
-        if (hrResultDetail.getHrList().size() > 0) {
+        if(hrResultDetail.getHrList().size() > 0){
             hrResultDetail.setCode("00");
             hrResultDetail.setMessage("심박수 상세목록 조회 되었습니다.");
-        } else if (hrResultDetail.getHrList().size() == 0) {
+        }
+        else if(hrResultDetail.getHrList().size() == 0){
             hrResultDetail.setCode("00");
             hrResultDetail.setMessage("심박수 상세목록이 없습니다.");
         }
@@ -189,10 +192,11 @@ public class MeasurementResultRestController {
 
         SpO2ResultDetail spO2ResultDetail = new SpO2ResultDetail();
         spO2ResultDetail.setSpO2List(measurementResultService.selectSpO2List(searchResultInfo));
-        if (spO2ResultDetail.getSpO2List().size() > 0) {
+        if(spO2ResultDetail.getSpO2List().size() > 0){
             spO2ResultDetail.setCode("00");
             spO2ResultDetail.setMessage("산소포화도 상세목록 조회 되었습니다.");
-        } else if (spO2ResultDetail.getSpO2List().size() == 0) {
+        }
+        else if(spO2ResultDetail.getSpO2List().size() == 0){
             spO2ResultDetail.setCode("00");
             spO2ResultDetail.setMessage("산소포화도 상세목록이 없습니다.");
         }
@@ -216,10 +220,11 @@ public class MeasurementResultRestController {
 
         StepCountResultDetail stepCountResultDetail = new StepCountResultDetail();
         stepCountResultDetail.setStepCountList(measurementResultService.selectStepList(searchResultInfos));
-        if (stepCountResultDetail.getStepCountList().size() > 0) {
+        if(stepCountResultDetail.getStepCountList().size() > 0){
             stepCountResultDetail.setCode("00");
             stepCountResultDetail.setMessage("걸음 상세목록 조회 되었습니다.");
-        } else if (stepCountResultDetail.getStepCountList().size() == 0) {
+        }
+        else if(stepCountResultDetail.getStepCountList().size() == 0){
             stepCountResultDetail.setCode("00");
             stepCountResultDetail.setMessage("걸음 상세목록이 없습니다.");
         }
@@ -242,10 +247,11 @@ public class MeasurementResultRestController {
 
         BpResultDetail bpResultDetail = new BpResultDetail();
         bpResultDetail.setBpList(measurementResultService.selectBpList(searchResultInfos));
-        if (bpResultDetail.getBpList().size() > 0) {
+        if(bpResultDetail.getBpList().size() > 0){
             bpResultDetail.setCode("00");
             bpResultDetail.setMessage("혈압 상세목록 조회 되었습니다.");
-        } else if (bpResultDetail.getBpList().size() == 0) {
+        }
+        else if(bpResultDetail.getBpList().size() == 0){
             bpResultDetail.setCode("00");
             bpResultDetail.setMessage("혈압 상세목록이 없습니다.");
         }
@@ -257,7 +263,7 @@ public class MeasurementResultRestController {
      * 수면시간 상세목록 조회
      *
      * @param searchSleepResultInfo 수면 측정결과 검색 조건
-     * @return BpResultDetail bpResultDetail
+     * @return SleepTimeResultDetail sleepTimeResultDetail
      */
     @RequestMapping(value = "/result/sleep", method = RequestMethod.GET)
     public SleepTimeResultDetail selectSleepList(@Valid @RequestBody SearchSleepResultInfo searchSleepResultInfo
@@ -275,14 +281,15 @@ public class MeasurementResultRestController {
         sleepTimeResultDetail.setResultEndDateTime(searchSleepResultInfo.getResultEndDateTime());
 
         sleepTimeResultDetail.setSleepTimeList(measurementResultService.selectSleepTimeList(searchSleepResultInfo));
-        if (sleepTimeResultDetail.getSleepTimeList().size() > 0) {
+        if(sleepTimeResultDetail.getSleepTimeList().size() > 0){
             sleepTimeResultDetail.setCode("00");
             sleepTimeResultDetail.setMessage("수면시간 상세목록 조회 되었습니다.");
             //총 수면시간
             List<SleepTimeResult> sleepTimeResultList = sleepTimeResultDetail.getSleepTimeList();
             int tempTotalSleep = measurementResultService.getTempTotalSleep(sleepTimeResultList);
             sleepTimeResultDetail.setTotalSleepTime(Integer.toString(tempTotalSleep / 60));
-        } else if (sleepTimeResultDetail.getSleepTimeList().size() == 0) {
+        }
+        else if(sleepTimeResultDetail.getSleepTimeList().size() == 0){
             sleepTimeResultDetail.setCode("00");
             sleepTimeResultDetail.setMessage("수면시간 상세목록이 없습니다.");
             sleepTimeResultDetail.setTotalSleepTime("0");

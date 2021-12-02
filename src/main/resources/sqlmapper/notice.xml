@@ -4,10 +4,11 @@
     <!-- 신규 알림여부 조회 -->
     <select id="selectNotice" parameterType="String" resultType="integer">
         <![CDATA[
-        SELECT NOTICE_SEQ -- 알림순번
-        FROM NOTICE
-        WHERE ADMISSION_ID = #{admissionId}
-          AND READ_YN = 'N'
+            SELECT
+                   NOTICE_SEQ   -- 알림순번
+              FROM NOTICE
+             WHERE ADMISSION_ID = #{admissionId}
+               AND READ_YN = 'N'
         ]]>
     </select>
 </mapper>

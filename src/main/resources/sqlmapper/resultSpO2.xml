@@ -5,17 +5,17 @@
     <select id="selectSpO2List" parameterType="kr.co.hconnect.domain.SearchResultInfo"
             resultType="kr.co.hconnect.domain.SpO2Result">
         <![CDATA[
-        SELECT A.RESULT_DATE -- 측정 일자
-             , A.RESULT_TIME -- 측정 시간
-             , C.RESULT      -- 측정 결과
-        FROM RESULT A
-                 INNER JOIN ITEM B
-                            ON A.ITEM_ID = B.ITEM_ID
-                                AND B.ITEM_ID = #{itemId}
-                 INNER JOIN RESULT_DETAIL C
-                            ON A.RESULT_SEQ = C.RESULT_SEQ
-        WHERE A.ADMISSION_ID = #{admissionId}
-          AND A.RESULT_DATE = #{resultDate};
+            SELECT A.RESULT_DATE             -- 측정 일자
+                 , A.RESULT_TIME             -- 측정 시간
+                 , C.RESULT                  -- 측정 결과
+              FROM RESULT A
+                   INNER JOIN ITEM B
+                           ON A.ITEM_ID = B.ITEM_ID
+                          AND B.ITEM_ID =#{itemId}
+                   INNER JOIN RESULT_DETAIL C
+                           ON A.RESULT_SEQ = C.RESULT_SEQ
+             WHERE A.ADMISSION_ID = #{admissionId}
+               AND A.RESULT_DATE  = #{resultDate};
         ]]>
     </select>
 </mapper>

@@ -176,16 +176,17 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
         mainContentDetail.setTodaySpO2List(selectSpO2List(searchResultInfo));
         mainContentDetail.setTodayStepCountList(selectStepList(searchResultInfos));
         mainContentDetail.setTodaySleepTimeList(selectSleepTimeList(searchSleepResultInfo));
-        if (mainContentDetail.getTodaySleepTimeList().size() > 0) {
+        if(mainContentDetail.getTodaySleepTimeList().size()>0){
             //총 수면시간
             List<SleepTimeResult> sleepTimeResultList = mainContentDetail.getTodaySleepTimeList();
             int tempTodayTotalSleep = getTempTotalSleep(sleepTimeResultList);
             LocalTime tempTotalSleepTime = LocalTime.of((tempTodayTotalSleep / 60)
-                , (tempTodayTotalSleep % 60)
+                    , (tempTodayTotalSleep % 60)
             );
             mainContentDetail.setTodayTotalSleepTime(tempTotalSleepTime);
-        } else if (mainContentDetail.getTodaySleepTimeList().size() == 0) {
-            mainContentDetail.setTodayTotalSleepTime(LocalTime.of(0, 0));
+        }
+        else if(mainContentDetail.getTodaySleepTimeList().size()==0){
+            mainContentDetail.setTodayTotalSleepTime(LocalTime.of(0,0));
         }
 
         return mainContentDetail;
