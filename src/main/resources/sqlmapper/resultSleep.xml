@@ -5,16 +5,14 @@
     <select id="selectSleepTimeList" parameterType="kr.co.hconnect.domain.SearchResultInfo"
             resultType="kr.co.hconnect.domain.SleepTimeResult">
         <![CDATA[
-        SELECT A.RESULT_START_TIME AS SLEEP_START_TIME
-             , A.RESULT_START_DATE AS SLEEP_START_DATE
-             , A.RESULT_END_TIME   AS SLEEP_END_TIME
-             , A.RESULT_END_DATE   AS SLEEP_END_DATE
-             , A.SLEEP_TYPE
+        SELECT A.RESULT_START_TIME AS SLEEP_START_TIME -- 측정 시작시간
+             , A.RESULT_START_DATE AS SLEEP_START_DATE -- 측정 시작일
+             , A.RESULT_END_TIME   AS SLEEP_END_TIME   -- 측정 종료시간
+             , A.RESULT_END_DATE   AS SLEEP_END_DATE   -- 측정 종료일
+             , A.SLEEP_TYPE                            -- 수면 유형
         FROM RESULT_SLEEP A
         WHERE A.ADMISSION_ID = #{admissionId}
-          AND A.RESULT_START_DATE
-            BETWEEN
-            DATE (#{resultStartDateTime})
+          AND A.RESULT_START_DATE BETWEEN DATE (#{resultStartDateTime})
           AND DATE (#{resultEndDateTime})
         ]]>
     </select>
