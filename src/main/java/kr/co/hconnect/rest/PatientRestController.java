@@ -233,14 +233,43 @@ public class PatientRestController {
     }
 
     /**
+     * 격리 상태 조회
+     *
+     * @param loginId 로그인ID VO
+     * @return SaveQuarantineStatusInfo
+     */
+    @RequestMapping(value = "/quarantine", method = RequestMethod.GET)
+    public SaveQuarantineStatusInfo selectQuarantine(@Valid @RequestBody LoginId loginId, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new InvalidRequestArgumentException(result);
+        }
+
+        // 격리상태 조회
+        QantnStatus qantnStatus = qantnStatusService.selectQantnStatus(loginId.getLoginId());
+
+        SaveQuarantineStatusInfo saveQuarantineStatusInfo = new SaveQuarantineStatusInfo();
+
+        if (qantnStatus != null) {
+            saveQuarantineStatusInfo.setCode("00");
+            saveQuarantineStatusInfo.setMessage("격리상태 조회 완료.");
+            saveQuarantineStatusInfo.setQuarantineStatusDiv(qantnStatus.getQantnStatusDiv());
+        } else {
+            saveQuarantineStatusInfo.setCode("99");
+            saveQuarantineStatusInfo.setMessage("격리상태 내역이 존재하지 않습니다.");
+        }
+
+        return saveQuarantineStatusInfo;
+    }
+
+    /**
      * 격리 상태 저장
      *
      * @param saveQuarantineStatusInfo 격리상태 저장 정보
      * @return BaseResponse
      */
     @RequestMapping(value = "/quarantine", method = RequestMethod.POST)
-    public BaseResponse checkExistLoginInfo(@Valid @RequestBody SaveQuarantineStatusInfo saveQuarantineStatusInfo
-            , BindingResult result) {
+    public BaseResponse saveQuarantine(@Valid @RequestBody SaveQuarantineStatusInfo saveQuarantineStatusInfo
+        , BindingResult result) {
         if (result.hasErrors()) {
             throw new InvalidRequestArgumentException(result);
         }

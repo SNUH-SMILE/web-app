@@ -5,7 +5,6 @@ import kr.co.hconnect.domain.QantnStatus;
 import kr.co.hconnect.domain.SaveQuarantineStatusInfo;
 import kr.co.hconnect.repository.QantnStatusDao;
 import kr.co.hconnect.vo.AdmissionVO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +36,22 @@ public class QantnStatusService extends EgovAbstractServiceImpl {
     public QantnStatusService(AdmissionService admissionService, QantnStatusDao qantnStatusDao) {
         this.admissionService = admissionService;
         this.qantnStatusDao = qantnStatusDao;
+    }
+
+    /**
+     * 격리상태 조회
+     *
+     * @param loginId 로그인ID
+     * @return QantnStatus
+     */
+    public QantnStatus selectQantnStatus(String loginId) {
+        // Active 격리/입소내역 조회
+        AdmissionVO admissionVO = admissionService.selectActiveAdmissionByLoginId(loginId);
+
+        // 격리/입소내역ID
+        String admissionId = admissionVO.getAdmissionId();
+
+        return qantnStatusDao.selectActiveQantnStatus(admissionId);
     }
 
     /**
