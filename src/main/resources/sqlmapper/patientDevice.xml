@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+
+    <!-- 환자별 장비 사용여부 수정-격리/입소내역ID 기준 -->
+    <update id="updatePatientDeviceUseYnByAdmissionId" parameterType="kr.co.hconnect.domain.PatientDevice">
+        UPDATE PATIENT_DEVICE
+           SET USE_YN = #{useYn}
+         WHERE ADMISSION_ID = #{admissionId}
+    </update>
+
+    <!-- 환자별 장비 입력 -->
+    <insert id="insertPatientDevice" parameterType="kr.co.hconnect.domain.PatientDevice">
+        INSERT
+          INTO PATIENT_DEVICE
+             ( ADMISSION_ID
+             , DEVICE_ID
+             , DEVICE_NM )
+        VALUES
+             ( #{admissionId}
+             , #{deviceId}
+             , #{deviceNm} )
+    </insert>
+
+</mapper>
