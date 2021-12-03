@@ -7,11 +7,13 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
+    <!--
     <context:component-scan base-package="kr.co.hconnect">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
     </context:component-scan>
+    -->
 
     <import resource="classpath:/config/context-common.xml"/>
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
@@ -33,33 +35,18 @@
         </property>
         <property name="synchronizeOnSession" value="true"/>
     </bean>
-
-    <!--
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
         <property name="interceptors">
             <list>
                 <ref bean="localeChangeInterceptor" />
-                <ref bean="authenticationInterceptor"/>
             </list>
         </property>
     </bean>
-    -->
 
     <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
     <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
         <property name="paramName" value="language" />
     </bean>
-
-    <!--
-    <bean id="authenticationInterceptor" class="kr.co.hconnect.common.AuthenticationInterceptor">
-        <property name="permitUrls">
-            <list>
-                <value>/login/login.do</value>
-                <value>/login/checkLogin.ajax</value>
-            </list>
-        </property>
-    </bean>
-    -->
 
     <bean class="org.springframework.web.servlet.view.UrlBasedViewResolver" p:order="1"
           p:viewClass="org.springframework.web.servlet.view.JstlView"

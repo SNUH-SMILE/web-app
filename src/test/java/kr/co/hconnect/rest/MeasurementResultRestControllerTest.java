@@ -1,5 +1,6 @@
 package kr.co.hconnect.rest;
 
+import kr.co.hconnect.common.RestControllerExceptionHandler;
 import kr.co.hconnect.service.AdmissionService;
 import kr.co.hconnect.service.MeasurementResultService;
 import kr.co.hconnect.service.ResultService;
@@ -28,11 +29,15 @@ public class MeasurementResultRestControllerTest {
     private AdmissionService admissionService;
     @Autowired
     private ResultService resultService;
+
     @Before
     public void setup() {
         mvc = MockMvcBuilders.standaloneSetup(
-            new MeasurementResultRestController(measurementResultService,admissionService,resultService)).build();
+                new MeasurementResultRestController(measurementResultService, admissionService, resultService))
+            .setControllerAdvice(new RestControllerExceptionHandler())
+            .build();
     }
+
     @Test
     public void givenLoginId_whenRequested_thenCode_00_ExistYn_Y() throws Exception{
         String jsonString ="{\n" +
@@ -64,21 +69,16 @@ public class MeasurementResultRestControllerTest {
     }
 
 
-    // @Rule
-    // public ExpectedException expectedException = ExpectedException.none();
-    // @Test(expected = NestedServletException.class)
-    // @Test(expected = NestedServletException.class)
-    // @Test(expected = NotFoundAdmissionInfoException.class)
     @Test
     public void givenLoginId_whenRequested_thenCode_99() throws Exception {
         String jsonString ="{\n" +
             " \"loginId\": \"Exception\"\n" +
             "}";
-        // expectedException.expect();
-        // expectedException.NotFoundAdmissionInfoException("fdsfaf");
+
         mvc.perform(get("/api/main/notice")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("99"))
             .andDo(print());
     }
