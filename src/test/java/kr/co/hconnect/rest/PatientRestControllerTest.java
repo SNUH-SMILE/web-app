@@ -10,11 +10,16 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -27,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/config/context-*.xml", "/test-context-servlet.xml" })
+@Transactional
 public class PatientRestControllerTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PatientRestControllerTest.class);
@@ -45,9 +51,16 @@ public class PatientRestControllerTest {
     @Autowired
     private QantnStatusService qantnStatusService;
 
+    @Autowired
+    private DataSource dataSource;
+
 
     @Before
     public void setUp() {
+        ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator();
+        resourceDatabasePopulator.addScript(new ClassPathResource("/sql-script/beforeSetPatientRestControllerTest.sql"));
+        resourceDatabasePopulator.execute(dataSource);
+
         mvc = MockMvcBuilders.standaloneSetup(new PatientRestController(patientService, qantnStatusService))
             .setControllerAdvice(new RestControllerExceptionHandler())
             .build();
@@ -125,7 +138,7 @@ public class PatientRestControllerTest {
         String content =
             "{\n" +
             "  \"flag\"      : \"M\",\n" +
-            "  \"loginId\"   : \"junitTestPatient\",\n" +
+            "  \"loginId\"   : \"testshy\",\n" +
             "  \"password\"  : \"1234\",\n" +
             "  \"patientNm\" : \"회원가입용수정\",\n" +
             "  \"ssn\"       : \"8812051525252\",\n" +
