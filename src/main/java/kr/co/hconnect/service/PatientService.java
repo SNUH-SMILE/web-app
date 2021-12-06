@@ -100,6 +100,15 @@ public class PatientService extends EgovAbstractServiceImpl {
             }
 
             patient.setPatientId(patientBySsn.getPatientId());
+        } else if (patient.getFlag().equals("M")) {
+            // 환자정보 수정
+            Patient patientByLoginId = patientDao.selectPatientByLoginId(patient.getLoginId());
+
+            if (patientByLoginId == null) {
+                throw new NotFoundPatientInfoException("해당 로그인 아이디가 존재하지 않습니다.");
+            }
+
+            patient.setPatientId(patientByLoginId.getPatientId());
         }
 
         // 비밀번호 암호화
