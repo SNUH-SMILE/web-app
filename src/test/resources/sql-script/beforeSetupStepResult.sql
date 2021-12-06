@@ -1,0 +1,7 @@
+INSERT infection.result (RESULT_SEQ, ADMISSION_ID, ITEM_ID, RESULT_DATE, RESULT_TIME, DEVICE_ID, REG_DT) VALUES (99999999, 'A123456789', 'I0004', '2021-12-06', '10:00:00', 'device001', '2021-12-01 13:23:01');
+INSERT INTO infection.result_detail (RESULT_SEQ, RESULT_TYPE, RESULT) VALUES (99999999, '04', '150');
+INSERT INTO infection.result_detail (RESULT_SEQ, RESULT_TYPE, RESULT) VALUES (99999999, '05', '50');
+
+#Result
+#Result Detail StepCount
+#Result Detail Distance
