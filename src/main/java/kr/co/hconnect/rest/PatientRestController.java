@@ -224,7 +224,7 @@ public class PatientRestController {
             existResult.setMessage("동일 환자정보가 존재하지 않습니다.");
             existResult.setExistYn("N");
         } else {
-            existResult.setCode("99");
+            existResult.setCode("00");
             existResult.setMessage("동일 환자정보가 존재합니다.");
             existResult.setExistYn("Y");
         }
