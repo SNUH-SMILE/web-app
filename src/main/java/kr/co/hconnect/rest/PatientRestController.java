@@ -1,6 +1,7 @@
 package kr.co.hconnect.rest;
 
 import kr.co.hconnect.domain.*;
+import kr.co.hconnect.exception.DuplicatePatientLoginIdException;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
 import kr.co.hconnect.exception.NotFoundPatientInfoException;
@@ -84,23 +85,17 @@ public class PatientRestController {
             throw new InvalidRequestArgumentException(result);
         }
 
+        BaseResponse baseResponse = new BaseResponse();
+
         // 신규 가입일 경우 데이터 확인
         if (patient.getFlag().equals("A")) {
-            BaseResponse baseResponse = new BaseResponse();
-            baseResponse.setCode("99");
-
             if (!patient.getSsn().matches("^[0-9]{13}")) {
                 // 주민번호 입력형태 확인
+                baseResponse.setCode("99");
                 baseResponse.setMessage("주민번호를 확인하세요.");
-                return baseResponse;
-            } else if (patientService.checkDuplicateLoginId(patient.getLoginId())) {
-                // 동일 로그인ID 중복여부 확인
-                baseResponse.setMessage("사용중인 로그인ID 입니다.");
                 return baseResponse;
             }
         }
-
-        BaseResponse baseResponse = new BaseResponse();
 
         try {
             // 환자정보 저장
@@ -109,6 +104,9 @@ public class PatientRestController {
             baseResponse.setCode("00");
             baseResponse.setMessage("환자정보를 저장하였습니다.");
         } catch (NotFoundPatientInfoException e) {
+            baseResponse.setCode("99");
+            baseResponse.setMessage(e.getMessage());
+        } catch (DuplicatePatientLoginIdException e) {
             baseResponse.setCode("99");
             baseResponse.setMessage(e.getMessage());
         }

@@ -3,6 +3,7 @@ package kr.co.hconnect.service;
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import kr.co.hconnect.common.CryptoUtils;
 import kr.co.hconnect.domain.*;
+import kr.co.hconnect.exception.DuplicatePatientLoginIdException;
 import kr.co.hconnect.exception.NotFoundPatientInfoException;
 import kr.co.hconnect.exception.NotMatchPatientPasswordException;
 import kr.co.hconnect.repository.PatientDao;
@@ -88,15 +89,20 @@ public class PatientService extends EgovAbstractServiceImpl {
      * @param patient 환정보
      * @return Patient 환자정보
      */
-    public Patient savePatientInfo(Patient patient) throws NotFoundPatientInfoException {
+    public Patient savePatientInfo(Patient patient)
+        throws NotFoundPatientInfoException, DuplicatePatientLoginIdException {
 
         // 환자정보 신규생성
         if (patient.getFlag().equals("A")) {
-            // 주민번호 기준 환저정보 존재여부 확인
+            // 주민번호 기준 환자정보 존재여부 확인
             Patient patientBySsn = patientDao.selectPatientBySsn(CryptoUtils.encrypt(patient.getSsn()));
-
             if (patientBySsn == null) {
                 throw new NotFoundPatientInfoException("해당 주민번호로 생성된 환자정보가 존재하지 않습니다.");
+            }
+
+            // 로그인ID 중복체크
+            if (checkDuplicateLoginId(patient.getLoginId())) {
+                throw new DuplicatePatientLoginIdException(patient.getLoginId());
             }
 
             patient.setPatientId(patientBySsn.getPatientId());
