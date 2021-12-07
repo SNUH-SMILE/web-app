@@ -23,7 +23,7 @@ public class SaveQuarantineStatusInfo extends BaseResponse {
     /**
      * 로그인ID
      */
-    @NotNull
+    @NotNull(message = "{validation.loginId.null}")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String loginId;
     /**

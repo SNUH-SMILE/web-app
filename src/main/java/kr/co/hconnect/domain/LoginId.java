@@ -22,7 +22,7 @@ public class LoginId implements Serializable {
     /**
      * 아이디
      */
-    @NotNull(message = "사용자 아이디가 누락되었습니다.")
+    @NotNull(message = "{validation.loginId.null}")
     private String loginId;
 
 }

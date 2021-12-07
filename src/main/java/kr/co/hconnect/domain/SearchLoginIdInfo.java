@@ -23,12 +23,12 @@ public class SearchLoginIdInfo implements Serializable {
     /**
      * 성명
      */
-    @NotNull
+    @NotNull(message = "{validation.name.null}")
     private String patientNm;
     /**
      * 휴대폰
      */
-    @NotNull
+    @NotNull(message = "{validation.cellphone.null}")
     @Pattern(regexp = "^[0-9]+$")
     private String cellPhone;
 }

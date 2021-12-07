@@ -22,7 +22,7 @@ public class BtResult extends BaseResult {
     /**
      * 체온 측정결과
      */
-    @NotNull
+    @NotNull(message = "{validation.result.null}")
     @JsonProperty("bt")
     private String result;
 

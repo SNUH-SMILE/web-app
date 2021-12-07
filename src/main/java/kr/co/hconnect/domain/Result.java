@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -35,6 +36,7 @@ public class Result implements Serializable {
     /**
      * 측정일자
      */
+    @NotNull(message = "{validation.resultDate.null}")
     private LocalDate resultDate;
     /**
      * 측정시간

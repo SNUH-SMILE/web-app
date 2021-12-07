@@ -24,7 +24,7 @@ public class SavePatientDeviceInfo implements Serializable {
     /**
      * 로그인ID
      */
-    @NotNull
+    @NotNull(message = "{validation.loginId.null}")
     private String loginId;
     /**
      * 장비리스트

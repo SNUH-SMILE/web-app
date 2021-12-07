@@ -22,7 +22,7 @@ public class SpO2Result extends BaseResult {
     /**
      * 산소포화도 측정결과
      */
-    @NotNull
+    @NotNull(message = "{validation.result.null}")
     @JsonProperty("spO2")
     private String result;
     

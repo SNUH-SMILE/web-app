@@ -24,12 +24,12 @@ public class SearchResultInfo implements Serializable {
     /**
      * 아이디
      */
-    @NotNull(message = "사용자 아이디가 누락되었습니다.")
+    @NotNull(message = "{validation.loginId.null}")
     private String loginId;
     /**
      * 측정일자
      */
-    @NotNull(message = "측정일자가 누락되었습니다.")
+    @NotNull(message = "{validation.resultDate.null}")
     @JsonFormat(pattern = "yyyyMMdd")
     private LocalDate resultDate;
     /**

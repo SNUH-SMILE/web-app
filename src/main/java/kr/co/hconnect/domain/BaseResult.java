@@ -1,7 +1,7 @@
 package kr.co.hconnect.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,7 +26,7 @@ public class BaseResult implements Serializable {
     /**
      * 측정일자
      */
-    @NotNull
+    @NotNull(message = "{validation.resultDate.null}")
     @JsonFormat(pattern = "yyyyMMdd")
     private LocalDate resultDate;
     /**
@@ -39,7 +39,7 @@ public class BaseResult implements Serializable {
      * 디바이스ID
      */
     @NotNull
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String deviceId;
 
 }

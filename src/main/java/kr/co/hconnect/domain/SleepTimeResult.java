@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -25,6 +26,7 @@ public class SleepTimeResult implements Serializable {
     /**
      * 수면타입 (0 : 기상, 1 : 얕은잠, 2 : 깊은잠)
      */
+    @Pattern(regexp = "^[012]$", message = "{validation.sleepType.patternMismatch}")
     private String sleepType;
     /**
      * 수면 시작일

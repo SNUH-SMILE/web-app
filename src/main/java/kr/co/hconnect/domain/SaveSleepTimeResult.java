@@ -55,7 +55,7 @@ public class SaveSleepTimeResult implements Serializable {
      * 수면유형 (0:깊은잠, 1:얕은잠, 2:기상)
      */
     @NotNull
-    @Pattern(regexp = "^[012]$", message = "수면유형을 확인하세요.")
+    @Pattern(regexp = "^[012]$", message = "{validation.sleepType.patternMismatch}")
     private String sleepType;
     /**
      * 디바이스ID

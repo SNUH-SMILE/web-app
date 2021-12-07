@@ -38,19 +38,19 @@ public class Patient extends BaseResponse {
     /**
      * 아이디
      */
-    @NotNull(message = "아이디가 누락되었습니다.")
+    @NotNull(message = "{validation.loginId.null}")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String loginId;
     /**
      * 비밀번호
      */
-    @NotNull(message = "비밀번호가 누락되었습니다.")
+    @NotNull(message = "{validation.password.null}")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     /**
      * 성명
      */
-    @NotNull(message = "성명이 누락되었습니다.")
+    @NotNull(message = "{validation.name.null}")
     private String patientNm;
     /**
      * 주민번호
@@ -60,34 +60,34 @@ public class Patient extends BaseResponse {
     /**
      * 생년월일
      */
-    @NotNull(message = "생년월일이 누락되었습니다.")
+    @NotNull(message = "{validation.birthday.null}")
     @JsonFormat(pattern = "yyyyMMdd")
     private LocalDate birthDate;
     /**
      * 성별
      */
-    @NotNull(message = "성별이 누락되었습니다.")
+    @NotNull(message = "{validation.sex.null}")
     @Pattern(regexp = "^[MF]$", message = "성별을 확인하세요.")
     private String sex;
     /**
      * 휴대폰
      */
-    @NotNull(message = "휴대폰 번호가 누락되었습니다.")
+    @NotNull(message = "{validation.cellphone.null}")
     @Pattern(regexp = "^[0-9]+$")
     private String cellPhone;
     /**
      * 우편번호
      */
-    @NotNull(message = "우편번호가 누락되었습니다.")
+    @NotNull(message = "{validation.zipcode.null}")
     private String zipCode;
     /**
      * 주소
      */
-    @NotNull(message = "주소가 누락되었습니다.")
+    @NotNull(message = "{validation.address.null}")
     private String address1;
     /**
      * 상세주소
      */
-    @NotNull(message = "상세주소가 누락되었습니다.")
+    @NotNull(message = "{validation.addressDetail.null}")
     private String address2;
 }

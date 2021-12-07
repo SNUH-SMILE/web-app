@@ -24,11 +24,12 @@ public class SaveStepCountResultInfo implements Serializable {
     /**
      * 아이디
      */
+    @NotNull(message = "{validation.loginId.null}")
     private String loginId;
     /**
      * 걸음수 측정 결과
      */
     @JsonProperty("stepCountList")
-    @NotNull(message = "측정결과 누락")
+    @NotNull(message = "{validation.result.null}")
     private List<StepCountResult> results;
 }
