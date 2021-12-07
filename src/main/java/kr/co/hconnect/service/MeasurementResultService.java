@@ -1,6 +1,8 @@
 package kr.co.hconnect.service;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import kr.co.hconnect.common.ItemId;
+import kr.co.hconnect.common.ResultType;
 import kr.co.hconnect.domain.*;
 import kr.co.hconnect.repository.MeasurementResultDao;
 import kr.co.hconnect.vo.AdmissionVO;
@@ -53,7 +55,7 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
      * @return 측정일자별 상세체온목록
      */
     public List<BtResult> selectBtLIst(SearchResultInfo searchResultInfo) {
-        searchResultInfo.setItemId("I0001");
+        searchResultInfo.setItemId(ItemId.BODY_TEMPERATURE.getItemId());
         return dao.selectBtList(searchResultInfo);
     }
 
@@ -64,7 +66,7 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
      * @return 측정일자별 상세심박수 목록
      */
     public List<HrResult> selectHrList(SearchResultInfo searchResultInfo) {
-        searchResultInfo.setItemId("I0002");
+        searchResultInfo.setItemId(ItemId.HEART_RATE.getItemId());
         return dao.selectHrList(searchResultInfo);
     }
 
@@ -75,7 +77,7 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
      * @return 측정일자별 상세산소포화도 목록
      */
     public List<SpO2Result> selectSpO2List(SearchResultInfo searchResultInfo) {
-        searchResultInfo.setItemId("I0003");
+        searchResultInfo.setItemId(ItemId.OXYGEN_SATURATION.getItemId());
         return dao.selectSpO2List(searchResultInfo);
     }
 
@@ -88,9 +90,11 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
      */
     public List<BpResult> selectBpList(SearchResultInfos searchResultInfos) {
 
-        searchResultInfos.setItemId("I0005");
-        searchResultInfos.setFirstResultType("02");
-        searchResultInfos.setSecondResultType("03");
+        searchResultInfos.setItemId(ItemId.BLOOD_PRESSURE.getItemId());
+        //최저
+        searchResultInfos.setFirstResultType(ResultType.MINIMUM_BLOOD_PRESSURE.getResultType());
+        //최고
+        searchResultInfos.setSecondResultType(ResultType.MAXIMUM_BLOOD_PRESSURE.getResultType());
 
         return dao.selectBpList(searchResultInfos);
     }
@@ -103,9 +107,11 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
      */
     public List<StepCountResult> selectStepList(SearchResultInfos searchResultInfos) {
 
-        searchResultInfos.setItemId("I0004");
-        searchResultInfos.setFirstResultType("04");
-        searchResultInfos.setSecondResultType("05");
+        searchResultInfos.setItemId(ItemId.STEP_COUNT.getItemId());
+        //걸음수
+        searchResultInfos.setFirstResultType(ResultType.STEP_COUNT.getResultType());
+        //거리
+        searchResultInfos.setSecondResultType(ResultType.DISTANCE.getResultType());
 
         return dao.selectStepList(searchResultInfos);
     }
