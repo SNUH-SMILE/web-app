@@ -27,7 +27,7 @@ public class Patient extends BaseResponse {
      * 가입/수정 구분 (A : 가입, M : 수정)
      */
     @NotNull(message = "가입/수정 구분이 누락되었습니다.")
-    @Pattern(regexp = "^[AM]$", message = "가입/수정 구분을 확인하세요.")
+    @Pattern(regexp = "^[AM]$", message = "{validation.flag.patternMismatch}")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String flag;
     /**
@@ -55,6 +55,7 @@ public class Patient extends BaseResponse {
     /**
      * 주민번호
      */
+    @NotNull(message = "{validation.ssn.null}")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String ssn;
     /**
@@ -67,13 +68,13 @@ public class Patient extends BaseResponse {
      * 성별
      */
     @NotNull(message = "{validation.sex.null}")
-    @Pattern(regexp = "^[MF]$", message = "성별을 확인하세요.")
+    @Pattern(regexp = "^[MF]$", message = "{validation.sex.patternMismatch}")
     private String sex;
     /**
      * 휴대폰
      */
     @NotNull(message = "{validation.cellphone.null}")
-    @Pattern(regexp = "^[0-9]+$")
+    @Pattern(regexp = "^[0-9]+$",message = "{validation.cellphone.patternMismatch}")
     private String cellPhone;
     /**
      * 우편번호

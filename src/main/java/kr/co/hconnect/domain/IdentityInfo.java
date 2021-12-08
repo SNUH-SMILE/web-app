@@ -22,6 +22,6 @@ public class IdentityInfo implements Serializable {
     /**
      * 주민번호
      */
-    @NotNull
+    @NotNull(message = "{validation.ssn.null}")
     private String ssn;
 }

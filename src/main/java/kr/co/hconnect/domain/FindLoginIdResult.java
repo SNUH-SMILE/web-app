@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * 아이디 검색 정보
  */
@@ -19,5 +21,6 @@ public class FindLoginIdResult extends BaseResponse {
     /**
      * 아이디
      */
+    @NotNull(message = "{validation.loginId.null}")
     private String loginId;
 }

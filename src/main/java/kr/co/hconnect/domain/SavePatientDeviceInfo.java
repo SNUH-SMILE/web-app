@@ -29,7 +29,7 @@ public class SavePatientDeviceInfo implements Serializable {
     /**
      * 장비리스트
      */
-    @NotNull
+    @NotNull(message = "{validation.deviceInfo.null}")
     @JsonProperty(value = "devices")
     private List<PatientDevice> patientDeviceList;
 }

@@ -29,7 +29,7 @@ public class SaveQuarantineStatusInfo extends BaseResponse {
     /**
      * 격리 상태 구분 (0 : 정상, 1 : 이탈)
      */
-    @NotNull
-    @Pattern(regexp = "^[01]$")
+    @NotNull(message = "{validation.quarantineStatus.null}")
+    @Pattern(regexp = "^[01]$",message = "{validation.quarantineStatus.patternMismatch}")
     private String quarantineStatusDiv;
 }

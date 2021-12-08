@@ -30,36 +30,36 @@ public class SaveSleepTimeResult implements Serializable {
     /**
      * 측정시작일자
      */
-    @NotNull
+    @NotNull(message = "{validation.resultStartDate.null}")
     @JsonFormat(pattern = "yyyyMMdd")
     private LocalDate resultStartDate;
     /**
      * 측정시작시간
      */
-    @NotNull
+    @NotNull(message = "{validation.resultStartTime.null}")
     @JsonFormat(pattern = "HHmm")
     private LocalTime resultStartTime;
     /**
      * 측정종료일자
      */
-    @NotNull
+    @NotNull(message = "{validation.resultEndDate.null}")
     @JsonFormat(pattern = "yyyyMMdd")
     private LocalDate resultEndDate;
     /**
      * 측정종료시간
      */
-    @NotNull
+    @NotNull(message = "{validation.resultEndTime.null}")
     @JsonFormat(pattern = "HHmm")
     private LocalTime resultEndTime;
     /**
      * 수면유형 (0:깊은잠, 1:얕은잠, 2:기상)
      */
-    @NotNull
+    @NotNull(message = "{validation.sleepType.null}")
     @Pattern(regexp = "^[012]$", message = "{validation.sleepType.patternMismatch}")
     private String sleepType;
     /**
      * 디바이스ID
      */
-    @NotNull
+    @NotNull(message = "{validation.deviceId.null}")
     private String deviceId;
 }

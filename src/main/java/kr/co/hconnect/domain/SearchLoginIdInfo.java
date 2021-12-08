@@ -29,6 +29,6 @@ public class SearchLoginIdInfo implements Serializable {
      * 휴대폰
      */
     @NotNull(message = "{validation.cellphone.null}")
-    @Pattern(regexp = "^[0-9]+$")
+    @Pattern(regexp = "^[0-9]+$",message = "{validation.cellphone.patternMismatch}")
     private String cellPhone;
 }

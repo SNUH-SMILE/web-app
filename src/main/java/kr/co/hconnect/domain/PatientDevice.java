@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 /**
@@ -28,15 +29,16 @@ public class PatientDevice implements Serializable {
     /**
      * 장비ID
      */
-    @NotNull
+    @NotNull(message = "{validation.deviceId.null}")
     private String deviceId;
     /**
      * 장비명
      */
-    @NotNull
+    @NotNull(message = "{validation.deviceNm.null}")
     private String deviceNm;
     /**
      * 사용여부
      */
+    @Pattern(regexp = "^[YN]$", message = "{validation.existYn.patternMismatch}")
     private String useYn;
 }

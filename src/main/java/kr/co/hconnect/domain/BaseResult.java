@@ -32,13 +32,13 @@ public class BaseResult implements Serializable {
     /**
      * 측정시간
      */
-    @NotNull
+    @NotNull(message = "{validation.resultTime.null}")
     @JsonFormat(pattern = "HHmmss")
     private LocalTime resultTime;
     /**
      * 디바이스ID
      */
-    @NotNull
+    @NotNull(message = "{validation.deviceId.null}")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String deviceId;
 
