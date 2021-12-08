@@ -9,6 +9,7 @@ import kr.co.hconnect.service.MeasurementResultService;
 import kr.co.hconnect.service.ResultService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 메인화면 컨트롤러
@@ -41,6 +43,9 @@ public class MeasurementResultRestController {
      */
     private final ResultService resultService;
 
+
+    private final MessageSource messageSource;
+
     /**
      * 생성자
      *
@@ -49,10 +54,11 @@ public class MeasurementResultRestController {
      * @param resultService            측정결과 Service
      */
     @Autowired
-    public MeasurementResultRestController(MeasurementResultService measurementResultService, AdmissionService admissionService, ResultService resultService) {
+    public MeasurementResultRestController(MeasurementResultService measurementResultService, AdmissionService admissionService, ResultService resultService, MessageSource messageSource) {
         this.measurementResultService = measurementResultService;
         this.admissionService = admissionService;
         this.resultService = resultService;
+        this.messageSource = messageSource;
     }
 
     /**
@@ -86,11 +92,11 @@ public class MeasurementResultRestController {
         resultListsSize += mainContentDetail.getTodayStepCountList().size();
         if(resultListsSize>0){
             mainContentDetail.setCode("00");
-            mainContentDetail.setMessage("메인컨텐츠가 조회 되었습니다.");
+            mainContentDetail.setMessage(messageSource.getMessage("message.searchResultList.success",new String[]{}, Locale.getDefault()));
         }
         else if(resultListsSize==0){
             mainContentDetail.setCode("00");
-            mainContentDetail.setMessage("메인컨텐츠가 측정결과 목록이 없습니다.");
+            mainContentDetail.setMessage(messageSource.getMessage("message.searchResultList.notfound",new String[]{}, Locale.getDefault()));
         }
         return mainContentDetail;
     }
@@ -113,12 +119,12 @@ public class MeasurementResultRestController {
         existResult.setCode("00");
         // 알림 있을때
         if (result > 0) {
-            existResult.setMessage("신규 알림이 있습니다.");
+            existResult.setMessage(messageSource.getMessage("message.notice.found",new String[]{}, Locale.getDefault()));;
             existResult.setExistYn("Y");
         }
         //알림 없을때
         else if (result == 0) {
-            existResult.setMessage("신규 알림이 없습니다.");
+            existResult.setMessage(messageSource.getMessage("message.notice.notfound",new String[]{}, Locale.getDefault()));;
             existResult.setExistYn("N");
         }
         return existResult;
@@ -141,11 +147,12 @@ public class MeasurementResultRestController {
         btResultDetail.setBtList(measurementResultService.selectBtLIst(searchResultInfo));
         if(btResultDetail.getBtList().size() > 0){
             btResultDetail.setCode("00");
-            btResultDetail.setMessage("체온 상세목록 조회 되었습니다.");
+            btResultDetail.setMessage(messageSource.getMessage("message.searchResultList.success",new String[]{}, Locale.getDefault()));
+
         }
         else if(btResultDetail.getBtList().size() == 0){
             btResultDetail.setCode("00");
-            btResultDetail.setMessage("체온 상세목록이 없습니다.");
+            btResultDetail.setMessage(messageSource.getMessage("message.searchResultList.notfound",new String[]{}, Locale.getDefault()));
         }
         return btResultDetail;
     }
@@ -167,11 +174,11 @@ public class MeasurementResultRestController {
         hrResultDetail.setHrList(measurementResultService.selectHrList(searchResultInfo));
         if(hrResultDetail.getHrList().size() > 0){
             hrResultDetail.setCode("00");
-            hrResultDetail.setMessage("심박수 상세목록 조회 되었습니다.");
+            hrResultDetail.setMessage(messageSource.getMessage("message.searchResultList.success",new String[]{}, Locale.getDefault()));
         }
         else if(hrResultDetail.getHrList().size() == 0){
             hrResultDetail.setCode("00");
-            hrResultDetail.setMessage("심박수 상세목록이 없습니다.");
+            hrResultDetail.setMessage(messageSource.getMessage("message.searchResultList.notfound",new String[]{}, Locale.getDefault()));
         }
         return hrResultDetail;
     }
@@ -194,11 +201,11 @@ public class MeasurementResultRestController {
         spO2ResultDetail.setSpO2List(measurementResultService.selectSpO2List(searchResultInfo));
         if(spO2ResultDetail.getSpO2List().size() > 0){
             spO2ResultDetail.setCode("00");
-            spO2ResultDetail.setMessage("산소포화도 상세목록 조회 되었습니다.");
+            spO2ResultDetail.setMessage(messageSource.getMessage("message.searchResultList.success",new String[]{}, Locale.getDefault()));
         }
         else if(spO2ResultDetail.getSpO2List().size() == 0){
             spO2ResultDetail.setCode("00");
-            spO2ResultDetail.setMessage("산소포화도 상세목록이 없습니다.");
+            spO2ResultDetail.setMessage(messageSource.getMessage("message.searchResultList.notfound",new String[]{}, Locale.getDefault()));
         }
         return spO2ResultDetail;
     }
@@ -209,7 +216,7 @@ public class MeasurementResultRestController {
      * @param searchResultInfos 측정결과 검색 조건
      * @return StepCountResultDetail bpResultDetail
      */
-    @RequestMapping(value = "/result/step", method = RequestMethod.GET)
+    @RequestMapping(value = "/result/stepCount", method = RequestMethod.GET)
     public StepCountResultDetail selectStepList(@Valid @RequestBody SearchResultInfos searchResultInfos, BindingResult bindingResult) {
         //유효성 검사
         if (bindingResult.hasErrors()) {
@@ -222,11 +229,11 @@ public class MeasurementResultRestController {
         stepCountResultDetail.setStepCountList(measurementResultService.selectStepList(searchResultInfos));
         if(stepCountResultDetail.getStepCountList().size() > 0){
             stepCountResultDetail.setCode("00");
-            stepCountResultDetail.setMessage("걸음 상세목록 조회 되었습니다.");
+            stepCountResultDetail.setMessage(messageSource.getMessage("message.searchResultList.success",new String[]{}, Locale.getDefault()));
         }
         else if(stepCountResultDetail.getStepCountList().size() == 0){
             stepCountResultDetail.setCode("00");
-            stepCountResultDetail.setMessage("걸음 상세목록이 없습니다.");
+            stepCountResultDetail.setMessage(messageSource.getMessage("message.searchResultList.notfound",new String[]{}, Locale.getDefault()));
         }
         return stepCountResultDetail;
     }
@@ -249,11 +256,11 @@ public class MeasurementResultRestController {
         bpResultDetail.setBpList(measurementResultService.selectBpList(searchResultInfos));
         if(bpResultDetail.getBpList().size() > 0){
             bpResultDetail.setCode("00");
-            bpResultDetail.setMessage("혈압 상세목록 조회 되었습니다.");
+            bpResultDetail.setMessage(messageSource.getMessage("message.searchResultList.success",new String[]{}, Locale.getDefault()));
         }
         else if(bpResultDetail.getBpList().size() == 0){
             bpResultDetail.setCode("00");
-            bpResultDetail.setMessage("혈압 상세목록이 없습니다.");
+            bpResultDetail.setMessage(messageSource.getMessage("message.searchResultList.notfound",new String[]{}, Locale.getDefault()));
         }
         return bpResultDetail;
     }
@@ -265,7 +272,7 @@ public class MeasurementResultRestController {
      * @param searchSleepResultInfo 수면 측정결과 검색 조건
      * @return SleepTimeResultDetail sleepTimeResultDetail
      */
-    @RequestMapping(value = "/result/sleep", method = RequestMethod.GET)
+    @RequestMapping(value = "/result/sleepTime", method = RequestMethod.GET)
     public SleepTimeResultDetail selectSleepList(@Valid @RequestBody SearchSleepResultInfo searchSleepResultInfo
             , BindingResult bindingResult) {
         //유효성 검사
@@ -283,7 +290,7 @@ public class MeasurementResultRestController {
         sleepTimeResultDetail.setSleepTimeList(measurementResultService.selectSleepTimeList(searchSleepResultInfo));
         if(sleepTimeResultDetail.getSleepTimeList().size() > 0){
             sleepTimeResultDetail.setCode("00");
-            sleepTimeResultDetail.setMessage("수면시간 상세목록 조회 되었습니다.");
+            sleepTimeResultDetail.setMessage(messageSource.getMessage("message.searchResultList.success",new String[]{}, Locale.getDefault()));
             //총 수면시간
             List<SleepTimeResult> sleepTimeResultList = sleepTimeResultDetail.getSleepTimeList();
             int tempTotalSleep = measurementResultService.getTempTotalSleep(sleepTimeResultList);
@@ -291,7 +298,7 @@ public class MeasurementResultRestController {
         }
         else if(sleepTimeResultDetail.getSleepTimeList().size() == 0){
             sleepTimeResultDetail.setCode("00");
-            sleepTimeResultDetail.setMessage("수면시간 상세목록이 없습니다.");
+            sleepTimeResultDetail.setMessage(messageSource.getMessage("message.searchResultList.notfound",new String[]{}, Locale.getDefault()));
             sleepTimeResultDetail.setTotalSleepTime("0");
         }
 
@@ -346,7 +353,7 @@ public class MeasurementResultRestController {
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setCode("00");
-        baseResponse.setMessage("체온 측정결과 저장 완료");
+        baseResponse.setMessage(messageSource.getMessage("message.saveResult.success",new String[]{}, Locale.getDefault()));
 
         return baseResponse;
     }
@@ -404,7 +411,7 @@ public class MeasurementResultRestController {
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setCode("00");
-        baseResponse.setMessage("혈압 측정결과 저장 완료");
+        baseResponse.setMessage(messageSource.getMessage("message.saveResult.success",new String[]{}, Locale.getDefault()));
 
         return baseResponse;
     }
@@ -455,7 +462,7 @@ public class MeasurementResultRestController {
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setCode("00");
-        baseResponse.setMessage("심박수 측정결과 저장 완료");
+        baseResponse.setMessage(messageSource.getMessage("message.saveResult.success",new String[]{}, Locale.getDefault()));
 
         return baseResponse;
     }
@@ -506,7 +513,7 @@ public class MeasurementResultRestController {
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setCode("00");
-        baseResponse.setMessage("산소포화도 측정결과 저장 완료");
+        baseResponse.setMessage(messageSource.getMessage("message.saveResult.success",new String[]{}, Locale.getDefault()));
 
         return baseResponse;
     }
@@ -564,7 +571,7 @@ public class MeasurementResultRestController {
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setCode("00");
-        baseResponse.setMessage("걸음수 측정결과 저장 완료");
+        baseResponse.setMessage(messageSource.getMessage("message.saveResult.success",new String[]{}, Locale.getDefault()));
 
         return baseResponse;
     }
@@ -587,7 +594,7 @@ public class MeasurementResultRestController {
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setCode("00");
-        baseResponse.setMessage("수면 정보 측정결과 저장 완료");
+        baseResponse.setMessage(messageSource.getMessage("message.saveResult.success",new String[]{}, Locale.getDefault()));
 
         return baseResponse;
     }

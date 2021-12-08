@@ -8,10 +8,12 @@ import kr.co.hconnect.exception.NotFoundPatientInfoException;
 import kr.co.hconnect.exception.NotMatchPatientPasswordException;
 import kr.co.hconnect.repository.PatientDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 환자관리 Service
@@ -25,9 +27,12 @@ public class PatientService extends EgovAbstractServiceImpl {
      */
     private final PatientDao patientDao;
 
+    private final MessageSource messageSource;
+
     @Autowired
-    public PatientService (PatientDao patientDao) {
+    public PatientService(PatientDao patientDao, MessageSource messageSource) {
         this.patientDao = patientDao;
+        this.messageSource = messageSource;
     }
 
     /**
@@ -57,7 +62,9 @@ public class PatientService extends EgovAbstractServiceImpl {
         String encryptPassword = CryptoUtils.encrypt(loginInfo.getPassword());
 
         if (patient == null) {
-            throw new NotFoundPatientInfoException(String.format("[%s] 로그인ID의 환자정보가 존재하지 않습니다.", loginInfo.getLoginId()));
+            // throw new NotFoundPatientInfoException(String.format("[%s] 로그인ID의 환자정보가 존재하지 않습니다.", loginInfo.getLoginId()));
+            throw new NotFoundPatientInfoException(messageSource.getMessage("message.patientInfo.notfound"
+                                                   ,new String[]{}, Locale.getDefault()));
         } else if (!patient.getPassword().equals(encryptPassword)) {
             throw new NotMatchPatientPasswordException("");
         }
@@ -97,7 +104,9 @@ public class PatientService extends EgovAbstractServiceImpl {
             // 주민번호 기준 환자정보 존재여부 확인
             Patient patientBySsn = patientDao.selectPatientBySsn(CryptoUtils.encrypt(patient.getSsn()));
             if (patientBySsn == null) {
-                throw new NotFoundPatientInfoException("해당 주민번호로 생성된 환자정보가 존재하지 않습니다.");
+                // throw new NotFoundPatientInfoException("해당 주민번호로 생성된 환자정보가 존재하지 않습니다.");
+                throw new NotFoundPatientInfoException(messageSource.getMessage("message.ssn.notfound"
+                    ,new String[]{}, Locale.getDefault()));
             }
 
             // 로그인ID 중복체크
@@ -111,7 +120,9 @@ public class PatientService extends EgovAbstractServiceImpl {
             Patient patientByLoginId = patientDao.selectPatientByLoginId(patient.getLoginId());
 
             if (patientByLoginId == null) {
-                throw new NotFoundPatientInfoException("해당 로그인 아이디가 존재하지 않습니다.");
+                // throw new NotFoundPatientInfoException("해당 로그인 아이디가 존재하지 않습니다.");
+                throw new NotFoundPatientInfoException(messageSource.getMessage("message.loginId.notfound"
+                    ,new String[]{}, Locale.getDefault()));
             }
 
             patient.setPatientId(patientByLoginId.getPatientId());
@@ -155,7 +166,9 @@ public class PatientService extends EgovAbstractServiceImpl {
         // 환자정보 확인
         Patient patient = selectPatientByLoginId(loginInfo.getLoginId());
         if (patient == null) {
-            throw new NotFoundPatientInfoException(String.format("[%s] 로그인ID의 환자정보가 존재하지 않습니다.", loginInfo.getLoginId()));
+            // throw new NotFoundPatientInfoException(String.format("[%s] 로그인ID의 환자정보가 존재하지 않습니다.", loginInfo.getLoginId()));
+            throw new NotFoundPatientInfoException(messageSource.getMessage("message.patientInfo.notfound"
+                ,new String[]{}, Locale.getDefault()));
         }
 
         // 비밀번호 암호화

@@ -6,6 +6,7 @@ import kr.co.hconnect.domain.SavePatientDeviceInfo;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.service.AdmissionService;
 import kr.co.hconnect.service.PatientDeviceService;
+import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api")
@@ -28,15 +30,18 @@ public class PatientDeviceRestController {
      */
     private final AdmissionService admissionService;
 
+    private final MessageSource messageSource;
     /**
      * 생성자
      *
      * @param patientDeviceService 환자별 장비 Service
      * @param admissionService 격리/입소내역 관리 Service
      */
-    public PatientDeviceRestController(PatientDeviceService patientDeviceService, AdmissionService admissionService) {
+    public PatientDeviceRestController(PatientDeviceService patientDeviceService, AdmissionService admissionService
+                                      ,MessageSource messageSource) {
         this.patientDeviceService = patientDeviceService;
         this.admissionService = admissionService;
+        this.messageSource = messageSource;
     }
 
     /**
@@ -65,7 +70,8 @@ public class PatientDeviceRestController {
 
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setCode("00");
-        baseResponse.setMessage("환자별 장비 저장 완료.");
+        // baseResponse.setMessage("환자별 장비 저장 완료.");
+        baseResponse.setMessage(messageSource.getMessage("message.savePatientDevice.success",new String[]{}, Locale.getDefault()));
 
         return baseResponse;
     }

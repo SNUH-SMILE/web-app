@@ -15,10 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 격리/입소내역 관리 Service
@@ -47,21 +49,24 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 	 */
     private final EgovIdGnrService admissionIdGnrService;
 
+    private final MessageSource messageSource;
+
 	// SLF4J (Simple Logging Facade for Java), log4j2
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdmissionService.class);
 
 	
 	@Autowired
 	public AdmissionService(AdmissionDao dao
-			, PatientDao patientDao
-			, @Qualifier("patientIdGnrService") EgovIdGnrService patientIdGnrService
-	        , @Qualifier("admissionIdGnrService") EgovIdGnrService admissionIdGnrService) {
+        , PatientDao patientDao
+        , @Qualifier("patientIdGnrService") EgovIdGnrService patientIdGnrService
+        , @Qualifier("admissionIdGnrService") EgovIdGnrService admissionIdGnrService, MessageSource messageSource) {
 		this.dao = dao;
 		this.patientDao = patientDao;
 		this.patientIdGnrService = patientIdGnrService;
 		this.admissionIdGnrService = admissionIdGnrService;
+        this.messageSource = messageSource;
 
-		LOGGER.info("Dao {}", dao);
+        LOGGER.info("Dao {}", dao);
 	}
 
 	/**
@@ -75,9 +80,12 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 		List<AdmissionVO> admissionVOS = dao.selectActiveAdmissionListByLoginId(loginId);
 
 		if (admissionVOS == null || admissionVOS.size() == 0) {
-			throw new NotFoundAdmissionInfoException("내원중인 격리/입소내역이 존재하지 않습니다.");
+			// throw new NotFoundAdmissionInfoException("내원중인 격리/입소내역이 존재하지 않습니다");
+			throw new NotFoundAdmissionInfoException(messageSource.getMessage("message.admissionInfo.notfound",new String[]{}, Locale.getDefault()));
 		} else if (admissionVOS.size() > 1) {
-            throw new NotFoundAdmissionInfoException(String.format("내원중인 격리/입소내역이 %d건 존재합니다.", admissionVOS.size()));
+            // throw new NotFoundAdmissionInfoException(String.format("내원중인 격리/입소내역이 %d건 존재합니다.", admissionVOS.size()));
+            throw new NotFoundAdmissionInfoException(messageSource.getMessage("message.searchQuarantine.duplicate"
+                                                                  ,new String[]{Integer.toString(admissionVOS.size())}, Locale.getDefault()));
 		}
 
 		return admissionVOS.get(0);

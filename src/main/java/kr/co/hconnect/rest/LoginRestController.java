@@ -10,6 +10,7 @@ import org.mybatis.spring.MyBatisSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api")
@@ -33,12 +35,15 @@ public class LoginRestController {
      * 생성자
      *
      * @param patientService 환자관리 Service
+     * @param messageSource
      */
     @Autowired
-    public LoginRestController(PatientService patientService) {
+    public LoginRestController(PatientService patientService, MessageSource messageSource) {
         this.patientService = patientService;
+        this.messageSource = messageSource;
     }
 
+    private final MessageSource messageSource;
     /**
      * 본인인증
      *
@@ -60,15 +65,16 @@ public class LoginRestController {
             if (identityResult != null) {
                 // 환자정보 존재
                 identityResult.setCode("00");
-                identityResult.setMessage("본인인증 조회 완료");
+                // identityResult.setMessage("본인인증 조회 완료");
+                identityResult.setMessage(messageSource.getMessage("message.Identity.success",new String[]{}, Locale.getDefault()));;
             } else {
                 // 환자정보 존재하지 않음
-                identityResult = setFailIdentityResult("00", "본인인증 조회 완료");
+                identityResult = setFailIdentityResult("00", messageSource.getMessage("message.Identity.success",new String[]{}, Locale.getDefault()));
             }
         } catch (MyBatisSystemException e) {
             // 다중 입소내역으로 인한 오류
             if (e.getCause() instanceof TooManyResultsException) {
-                identityResult = setFailIdentityResult("99", "본인인증 조회 실패");
+                identityResult = setFailIdentityResult("99", messageSource.getMessage("message.Identity.fail",new String[]{}, Locale.getDefault()));
             }
         }
 
@@ -109,7 +115,8 @@ public class LoginRestController {
         try {
             Patient patient = patientService.selectPatientByLoginInfo(loginInfo);
             baseResponse.setCode("00");
-            baseResponse.setMessage(String.format("%s 님 로그인 성공", patient.getPatientNm()));
+            // baseResponse.setMessage(String.format("%s 님 로그인 성공", patient.getPatientNm()));
+            baseResponse.setMessage(messageSource.getMessage("message.login.success",new String[]{}, Locale.getDefault()));
         } catch (NotFoundPatientInfoException e) {
             baseResponse.setCode("99");
             baseResponse.setMessage(e.getMessage());

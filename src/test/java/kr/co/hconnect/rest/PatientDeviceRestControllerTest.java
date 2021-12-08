@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -54,6 +55,8 @@ public class PatientDeviceRestControllerTest {
 
     @Autowired
     private DataSource dataSource;
+    @Autowired
+    private MessageSource messageSource;
 
     @Before
     public void setUp() {
@@ -62,7 +65,7 @@ public class PatientDeviceRestControllerTest {
         resourceDatabasePopulator.execute(dataSource);
 
         mvc = MockMvcBuilders.standaloneSetup(
-                new PatientDeviceRestController(patientDeviceService, admissionService))
+                new PatientDeviceRestController(patientDeviceService, admissionService,messageSource))
             .setControllerAdvice(new RestControllerExceptionHandler())
             .build();
     }

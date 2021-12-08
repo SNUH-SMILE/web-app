@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -52,13 +53,17 @@ public class LoginRestControllerTest {
     @Autowired
     private DataSource dataSource;
 
+    @Autowired
+    private MessageSource messageSource;
+
+
     @Before
     public void setMockMvc() {
         ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator();
         resourceDatabasePopulator.addScript(new ClassPathResource("/sql-script/beforeSetLoginRestControllerTest.sql"));
         resourceDatabasePopulator.execute(dataSource);
 
-        mvc = MockMvcBuilders.standaloneSetup(new LoginRestController(patientService)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new LoginRestController(patientService, messageSource)).build();
     }
 
     /**
