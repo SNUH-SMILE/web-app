@@ -1,7 +1,5 @@
 package kr.co.hconnect.exception;
 
-import org.springframework.util.StringUtils;
-
 /**
  * 환자 비밀번호 불일치 Exception
  */
@@ -20,10 +18,6 @@ public class NotMatchPatientPasswordException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        if (StringUtils.isEmpty(errorMessage)) {
-            return "비밀번호가 일치하지 않습니다.";
-        } else {
-            return errorMessage;
-        }
+        return errorMessage;
     }
 }

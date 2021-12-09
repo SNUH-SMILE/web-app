@@ -80,12 +80,11 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 		List<AdmissionVO> admissionVOS = dao.selectActiveAdmissionListByLoginId(loginId);
 
 		if (admissionVOS == null || admissionVOS.size() == 0) {
-			// throw new NotFoundAdmissionInfoException("내원중인 격리/입소내역이 존재하지 않습니다");
-			throw new NotFoundAdmissionInfoException(messageSource.getMessage("message.admissionInfo.notfound",new String[]{}, Locale.getDefault()));
+			throw new NotFoundAdmissionInfoException(messageSource.getMessage("message.admissionInfo.notfound"
+                , null, Locale.getDefault()));
 		} else if (admissionVOS.size() > 1) {
-            // throw new NotFoundAdmissionInfoException(String.format("내원중인 격리/입소내역이 %d건 존재합니다.", admissionVOS.size()));
-            throw new NotFoundAdmissionInfoException(messageSource.getMessage("message.searchQuarantine.duplicate"
-                                                                  ,new String[]{Integer.toString(admissionVOS.size())}, Locale.getDefault()));
+            throw new NotFoundAdmissionInfoException(messageSource.getMessage("message.admissionInfo.duplicate"
+                , null, Locale.getDefault()));
 		}
 
 		return admissionVOS.get(0);
