@@ -22,7 +22,7 @@ public class HrResult extends BaseResult {
     /**
      * 심박수 측정결과
      */
-    @NotNull(message = "{validation.result.null}")
+    @NotNull(message = "{validation.null.result}")
     @JsonProperty("hr")
     private String result;
     

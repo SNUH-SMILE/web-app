@@ -22,13 +22,13 @@ public class StepCountResult extends BaseResult {
     /**
      * 걸음수 측정결과
      */
-    @NotNull(message = "{validation.result.null}")
+    @NotNull(message = "{validation.null.result}")
     @JsonProperty("stepCount")
     private String resultStepCount;
     /**
      * 거리 측정결과
      */
-    @NotNull(message = "{validation.result.null}")
+    @NotNull(message = "{validation.null.result}")
     @JsonProperty("distance")
     private String resultDistance;
 }

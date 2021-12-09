@@ -66,15 +66,15 @@ public class LoginRestController {
                 // 환자정보 존재
                 identityResult.setCode("00");
                 // identityResult.setMessage("본인인증 조회 완료");
-                identityResult.setMessage(messageSource.getMessage("message.Identity.success", null, Locale.getDefault()));;
+                identityResult.setMessage(messageSource.getMessage("message.success.Identity", null, Locale.getDefault()));;
             } else {
                 // 환자정보 존재하지 않음
-                identityResult = setFailIdentityResult("00", messageSource.getMessage("message.Identity.success", null, Locale.getDefault()));
+                identityResult = setFailIdentityResult("00", messageSource.getMessage("message.success.Identity", null, Locale.getDefault()));
             }
         } catch (MyBatisSystemException e) {
             // 다중 입소내역으로 인한 오류
             if (e.getCause() instanceof TooManyResultsException) {
-                identityResult = setFailIdentityResult("22", messageSource.getMessage("message.admissionInfo.duplicate", null, Locale.getDefault()));
+                identityResult = setFailIdentityResult("22", messageSource.getMessage("message.duplicate.admissionInfo", null, Locale.getDefault()));
             }
         }
 
@@ -116,7 +116,7 @@ public class LoginRestController {
             Patient patient = patientService.selectPatientByLoginInfo(loginInfo);
             baseResponse.setCode("00");
             // baseResponse.setMessage(String.format("%s 님 로그인 성공", patient.getPatientNm()));
-            baseResponse.setMessage(messageSource.getMessage("message.login.success", null, Locale.getDefault()));
+            baseResponse.setMessage(messageSource.getMessage("message.success.login", null, Locale.getDefault()));
         } catch (NotFoundPatientInfoException e) {
             baseResponse.setCode("11");
             baseResponse.setMessage(e.getMessage());

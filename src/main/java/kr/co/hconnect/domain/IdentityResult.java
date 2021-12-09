@@ -22,12 +22,12 @@ public class IdentityResult extends BaseResponse {
      * 격리/입소 구분 - CD004
      * (0:대상자 아님, 1:자가격리 대상자, 2:생활치료센터 입소 대상자)
      */
-    @Pattern(regexp = "^[012]$", message = "{validation.sleepType.patternMismatch}")
+    @Pattern(regexp = "^[012]$", message = "{validation.patternMismatch.sleepType}")
     private String quarantineDiv;
     /**
      * 회원가업여부
      */
-    @Pattern(regexp = "^[YN]$", message = "{validation.existYn.patternMismatch}")
+    @Pattern(regexp = "^[YN]$", message = "{validation.patternMismatch.existYn}")
     private String registerYn;
 
 }

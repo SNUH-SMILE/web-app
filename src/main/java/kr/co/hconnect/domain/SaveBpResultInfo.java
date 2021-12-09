@@ -24,12 +24,12 @@ public class SaveBpResultInfo implements Serializable {
     /**
      * 아이디
      */
-    @NotNull(message = "{validation.loginId.null}")
+    @NotNull(message = "{validation.null.loginId}")
     private String loginId;
     /**
      * 혈압 측졍 결과
      */
     @JsonProperty("bpList")
-    @NotNull(message = "{validation.result.null}")
+    @NotNull(message = "{validation.null.result}")
     private List<BpResult> results;
 }

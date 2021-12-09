@@ -24,20 +24,20 @@ public class SearchSleepResultInfo implements Serializable {
     /**
      * 아이디
      */
-    @NotNull(message = "{validation.loginId.null}")
+    @NotNull(message = "{validation.null.loginId}")
     private String loginId;
 
     /**
      * 측정시작일시
      */
-    @NotNull(message = "{validation.resultStartDateTime.null}")
+    @NotNull(message = "{validation.null.resultStartDateTime}")
     @JsonFormat(pattern = "yyyyMMddHH")
     private LocalDateTime resultStartDateTime;
 
     /**
      * 측정종료일시
      */
-    @NotNull(message = "{validation.resultEndDateTime.null}")
+    @NotNull(message = "{validation.null.resultEndDateTime}")
     @JsonFormat(pattern = "yyyyMMddHH")
     private LocalDateTime resultEndDateTime;
     /**

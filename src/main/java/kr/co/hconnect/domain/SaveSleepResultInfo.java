@@ -24,12 +24,12 @@ public class SaveSleepResultInfo implements Serializable {
     /**
      * 아이디
      */
-    @NotNull(message = "{validation.loginId.null}")
+    @NotNull(message = "{validation.null.loginId}")
     private String loginId;
     /**
      * 수면 측정 결과
      */
     @JsonProperty("sleepTimeList")
-    @NotNull(message = "{validation.result.null}")
+    @NotNull(message = "{validation.null.result}")
     private List<SaveSleepTimeResult> results;
 }

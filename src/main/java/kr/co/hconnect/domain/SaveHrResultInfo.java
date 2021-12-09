@@ -24,12 +24,12 @@ public class SaveHrResultInfo implements Serializable {
     /**
      * 아이디
      */
-    @NotNull(message = "{validation.loginId.null}")
+    @NotNull(message = "{validation.null.loginId}")
     private String loginId;
     /**
      * 심박수 측정결과
      */
     @JsonProperty("hrList")
-    @NotNull(message = "{validation.result.null}")
+    @NotNull(message = "{validation.null.result}")
     private List<HrResult> results;
 }

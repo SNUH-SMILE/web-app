@@ -22,12 +22,12 @@ public class LoginInfo implements Serializable {
     /**
      * 아이디
      */
-    @NotNull(message = "{validation.loginId.null}")
+    @NotNull(message = "{validation.null.loginId}")
     private String loginId;
     /**
      * 비밀번호
      */
-    @NotNull(message = "{validation.password.null}")
+    @NotNull(message = "{validation.null.password}")
     private String password;
 
 }

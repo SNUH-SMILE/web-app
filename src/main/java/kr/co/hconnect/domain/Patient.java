@@ -36,64 +36,64 @@ public class Patient extends BaseResponse {
     /**
      * 아이디
      */
-    @NotNull(message = "{validation.loginId.null}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class})
+    @NotNull(message = "{validation.null.loginId}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class})
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String loginId;
     /**
      * 비밀번호
      */
-    @NotNull(message = "{validation.password.null}", groups = { PatientValidationGroups.add.class })
+    @NotNull(message = "{validation.null.password}", groups = { PatientValidationGroups.add.class })
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     /**
      * 성명
      */
-    @NotNull(message = "{validation.name.null}", groups = { PatientValidationGroups.add.class })
+    @NotNull(message = "{validation.null.name}", groups = { PatientValidationGroups.add.class })
     private String patientNm;
     /**
      * 주민번호
      */
-    @NotNull(message = "{validation.ssn.null}", groups = { PatientValidationGroups.add.class })
-    @Pattern(regexp = "^[0-9]{13}", message = "{validation.ssn.checked}", groups = { PatientValidationGroups.add.class })
+    @NotNull(message = "{validation.null.ssn}", groups = { PatientValidationGroups.add.class })
+    @Pattern(regexp = "^[0-9]{13}", message = "{validation.checked.ssn}", groups = { PatientValidationGroups.add.class })
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String ssn;
     /**
      * 생년월일
      */
-    @NotNull(message = "{validation.birthday.null}", groups = { PatientValidationGroups.add.class })
+    @NotNull(message = "{validation.null.birthday}", groups = { PatientValidationGroups.add.class })
     @JsonFormat(pattern = "yyyyMMdd")
     private LocalDate birthDate;
     /**
      * 성별
      */
-    @NotNull(message = "{validation.sex.null}", groups = { PatientValidationGroups.add.class })
-    @Pattern(regexp = "^[MF]$", message = "{validation.sex.patternMismatch}", groups = { PatientValidationGroups.add.class })
+    @NotNull(message = "{validation.null.sex}", groups = { PatientValidationGroups.add.class })
+    @Pattern(regexp = "^[MF]$", message = "{validation.patternMismatch.sex}", groups = { PatientValidationGroups.add.class })
     private String sex;
     /**
      * 휴대폰
      */
-    @NotNull(message = "{validation.cellphone.null}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
-    @Pattern(regexp = "^[0-9]+$",message = "{validation.cellphone.patternMismatch}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
+    @NotNull(message = "{validation.null.cellphone}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
+    @Pattern(regexp = "^[0-9]+$",message = "{validation.patternMismatch.cellphone}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
     private String cellPhone;
     /**
      * 보호자연락처
      */
-    @NotNull(message = "{validation.guardianCellPhone.null}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
-    @Pattern(regexp = "^[0-9]+$",message = "{validation.guardianCellPhone.patternMismatch}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
+    @NotNull(message = "{validation.null.guardianCellPhone}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
+    @Pattern(regexp = "^[0-9]+$",message = "{validation.patternMismatch.guardianCellPhone}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
     private String guardianCellPhone;
     /**
      * 우편번호
      */
-    @NotNull(message = "{validation.zipcode.null}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
+    @NotNull(message = "{validation.null.zipcode}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
     private String zipCode;
     /**
      * 주소
      */
-    @NotNull(message = "{validation.address.null}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
+    @NotNull(message = "{validation.null.address}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
     private String address1;
     /**
      * 상세주소
      */
-    @NotNull(message = "{validation.addressDetail.null}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
+    @NotNull(message = "{validation.null.addressDetail}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
     private String address2;
 }

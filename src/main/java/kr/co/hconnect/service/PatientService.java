@@ -64,10 +64,10 @@ public class PatientService extends EgovAbstractServiceImpl {
         String encryptPassword = CryptoUtils.encrypt(loginInfo.getPassword());
 
         if (patient == null) {
-            throw new NotFoundPatientInfoException(messageSource.getMessage("message.patientInfo.notfound"
+            throw new NotFoundPatientInfoException(messageSource.getMessage("message.notfound.patientInfo"
                 ,null, Locale.getDefault()));
         } else if (!patient.getPassword().equals(encryptPassword)) {
-            throw new NotMatchPatientPasswordException(messageSource.getMessage("message.password.mismatch"
+            throw new NotMatchPatientPasswordException(messageSource.getMessage("message.mismatch.password"
                 , null, Locale.getDefault()));
         }
 
@@ -108,18 +108,18 @@ public class PatientService extends EgovAbstractServiceImpl {
             
             if (patientBySsn == null) {
                 // 전달받은 주민번호 기준 환자정보 존재여부 확인
-                throw new NotFoundPatientInfoException(messageSource.getMessage("message.ssn.notfound"
+                throw new NotFoundPatientInfoException(messageSource.getMessage("message.notfound.ssn"
                     , null, Locale.getDefault()));
             } else if (!StringUtils.isEmpty(patientBySsn.getLoginId())) {
                 // 전달받은 주민번호 기준 로그인ID 생성여부 확인
-                throw new DuplicatePatientInfoException(messageSource.getMessage("message.patientInfo.duplicate"
+                throw new DuplicatePatientInfoException(messageSource.getMessage("message.duplicate.patientInfo"
                     , null, Locale.getDefault()));
             }
 
             // 로그인ID 중복체크
             if (checkDuplicateLoginId(patient.getLoginId())) {
                 //throw new DuplicatePatientLoginIdException(patient.getLoginId());
-                throw new DuplicatePatientLoginIdException(messageSource.getMessage("message.loginId.used"
+                throw new DuplicatePatientLoginIdException(messageSource.getMessage("message.used.loginId"
                     , null, Locale.getDefault()));
             }
 
@@ -136,7 +136,7 @@ public class PatientService extends EgovAbstractServiceImpl {
             Patient patientByLoginId = patientDao.selectPatientByLoginId(patient.getLoginId());
 
             if (patientByLoginId == null) {
-                throw new NotFoundPatientInfoException(messageSource.getMessage("message.loginId.notfound"
+                throw new NotFoundPatientInfoException(messageSource.getMessage("message.notfound.loginId"
                     , null, Locale.getDefault()));
             }
 
@@ -178,7 +178,7 @@ public class PatientService extends EgovAbstractServiceImpl {
         // 환자정보 확인
         Patient patient = selectPatientByLoginId(loginInfo.getLoginId());
         if (patient == null) {
-            throw new NotFoundPatientInfoException(messageSource.getMessage("message.patientInfo.notfound"
+            throw new NotFoundPatientInfoException(messageSource.getMessage("message.notfound.patientInfo"
                 , null, Locale.getDefault()));
         }
 

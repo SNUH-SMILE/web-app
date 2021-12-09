@@ -26,7 +26,7 @@ public class SleepTimeResult implements Serializable {
     /**
      * 수면타입 (0 : 기상, 1 : 얕은잠, 2 : 깊은잠)
      */
-    @Pattern(regexp = "^[012]$", message = "{validation.sleepType.patternMismatch}")
+    @Pattern(regexp = "^[012]$", message = "{validation.patternMismatch.sleepType}")
     private String sleepType;
     /**
      * 수면 시작일

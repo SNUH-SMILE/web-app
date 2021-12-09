@@ -24,13 +24,13 @@ public class SaveBtResultInfo implements Serializable {
     /**
      * 아이디
      */
-    @NotNull(message = "{validation.loginId.null}")
+    @NotNull(message = "{validation.null.loginId}")
     private String loginId;
     /**
      * 체온 측정 결과
      */
     @JsonProperty("btList")
-    @NotNull(message = "{validation.result.null}")
+    @NotNull(message = "{validation.null.result}")
     private List<BtResult> results;
 
 }

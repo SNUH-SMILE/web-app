@@ -21,6 +21,6 @@ public class FindLoginIdResult extends BaseResponse {
     /**
      * 아이디
      */
-    @NotNull(message = "{validation.loginId.null}")
+    @NotNull(message = "{validation.null.loginId}")
     private String loginId;
 }

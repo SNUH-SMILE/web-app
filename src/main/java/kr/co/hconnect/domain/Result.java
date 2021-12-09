@@ -36,17 +36,17 @@ public class Result implements Serializable {
     /**
      * 측정일자
      */
-    @NotNull(message = "{validation.resultDate.null}")
+    @NotNull(message = "{validation.null.resultDate}")
     private LocalDate resultDate;
     /**
      * 측정시간
      */
-    @NotNull(message = "{validation.resultTime.null}")
+    @NotNull(message = "{validation.null.resultTime}")
     private LocalTime resultTime;
     /**
      * 디바이스ID
      */
-    @NotNull(message = "{validation.deviceId.null}")
+    @NotNull(message = "{validation.null.deviceId}")
     private String deviceId;
 
 }

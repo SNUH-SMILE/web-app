@@ -71,7 +71,7 @@ public class PatientDeviceRestController {
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setCode("00");
         // baseResponse.setMessage("환자별 장비 저장 완료.");
-        baseResponse.setMessage(messageSource.getMessage("message.savePatientDevice.success", null, Locale.getDefault()));
+        baseResponse.setMessage(messageSource.getMessage("message.success.savePatientDevice", null, Locale.getDefault()));
 
         return baseResponse;
     }

@@ -22,13 +22,13 @@ public class BpResult extends BaseResult {
     /**
      * 최고혈압 측정결과
      */
-    @NotNull(message = "{validation.result.null}")
+    @NotNull(message = "{validation.null.result}")
     @JsonProperty("sbp")
     private String resultSbp;
     /**
      * 최저혈압 측정결과
      */
-    @NotNull(message = "{validation.result.null}")
+    @NotNull(message = "{validation.null.result}")
     @JsonProperty("dbp")
     private String resultDbp;
 

@@ -24,12 +24,12 @@ public class SavePatientDeviceInfo implements Serializable {
     /**
      * 로그인ID
      */
-    @NotNull(message = "{validation.loginId.null}")
+    @NotNull(message = "{validation.null.loginId}")
     private String loginId;
     /**
      * 장비리스트
      */
-    @NotNull(message = "{validation.deviceInfo.null}")
+    @NotNull(message = "{validation.null.deviceInfo}")
     @JsonProperty(value = "devices")
     private List<PatientDevice> patientDeviceList;
 }

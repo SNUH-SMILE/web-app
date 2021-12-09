@@ -29,16 +29,16 @@ public class PatientDevice implements Serializable {
     /**
      * 장비ID
      */
-    @NotNull(message = "{validation.deviceId.null}")
+    @NotNull(message = "{validation.null.deviceId}")
     private String deviceId;
     /**
      * 장비명
      */
-    @NotNull(message = "{validation.deviceNm.null}")
+    @NotNull(message = "{validation.null.deviceNm}")
     private String deviceNm;
     /**
      * 사용여부
      */
-    @Pattern(regexp = "^[YN]$", message = "{validation.existYn.patternMismatch}")
+    @Pattern(regexp = "^[YN]$", message = "{validation.patternMismatch.existYn}")
     private String useYn;
 }

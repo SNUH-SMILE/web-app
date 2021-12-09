@@ -23,13 +23,13 @@ public class SaveQuarantineStatusInfo extends BaseResponse {
     /**
      * 로그인ID
      */
-    @NotNull(message = "{validation.loginId.null}")
+    @NotNull(message = "{validation.null.loginId}")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String loginId;
     /**
      * 격리 상태 구분 (0 : 정상, 1 : 이탈)
      */
-    @NotNull(message = "{validation.quarantineStatus.null}")
-    @Pattern(regexp = "^[01]$",message = "{validation.quarantineStatus.patternMismatch}")
+    @NotNull(message = "{validation.null.quarantineStatus}")
+    @Pattern(regexp = "^[01]$",message = "{validation.patternMismatch.quarantineStatus}")
     private String quarantineStatusDiv;
 }

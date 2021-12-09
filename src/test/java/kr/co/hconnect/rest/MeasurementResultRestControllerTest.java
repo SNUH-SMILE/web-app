@@ -112,7 +112,7 @@ public class MeasurementResultRestControllerTest {
                 .content(jsonString))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("99"))
-            .andExpect(jsonPath("$.message").value("{validation.loginId.null}"))
+            .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
     }
     /**
@@ -129,7 +129,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value("21"))
             .andExpect(jsonPath("$.message").value("내원중인 격리/입소내역이 존재하지 않습니다"))
             .andDo(print());
     }
@@ -190,9 +190,9 @@ public class MeasurementResultRestControllerTest {
             .andExpect(jsonPath("$.code").value("99"))
             .andExpect(jsonPath("$.message",anyOf(
                 // is("사용자 아이디가 누락되었습니다측정일자가 누락되었습니다"),
-                is("{validation.loginId.null}{validation.resultDate.null}"),
+                is("{validation.null.loginId}{validation.null.resultDate}"),
                 // is("측정일자가 누락되었습니다사용자 아이디가 누락되었습니다")
-                is("{validation.resultDate.null}{validation.loginId.null}")
+                is("{validation.null.resultDate}{validation.null.loginId}")
             )))
             .andDo(print());
     }
@@ -212,7 +212,7 @@ public class MeasurementResultRestControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("99"))
             // .andExpect(jsonPath("$.message").value("사용자 아이디가 누락되었습니다"))
-            .andExpect(jsonPath("$.message").value("{validation.loginId.null}"))
+            .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
     }
 
@@ -231,7 +231,7 @@ public class MeasurementResultRestControllerTest {
                 .content(jsonString))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("99"))
-            .andExpect(jsonPath("$.message").value("{validation.resultDate.null}"))
+            .andExpect(jsonPath("$.message").value("{validation.null.resultDate}"))
             .andDo(print());
     }
 
@@ -249,7 +249,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value("21"))
             .andExpect(jsonPath("$.message").value("내원중인 격리/입소내역이 존재하지 않습니다"))
             .andDo(print());
     }
@@ -313,9 +313,9 @@ public class MeasurementResultRestControllerTest {
             .andExpect(jsonPath("$.code").value("99"))
             .andExpect(jsonPath("$.message",anyOf(
                 // is("사용자 아이디가 누락되었습니다측정일자가 누락되었습니다"),
-                is("{validation.loginId.null}{validation.resultDate.null}"),
+                is("{validation.null.loginId}{validation.null.resultDate}"),
                 // is("측정일자가 누락되었습니다사용자 아이디가 누락되었습니다")
-                is("{validation.resultDate.null}{validation.loginId.null}")
+                is("{validation.null.resultDate}{validation.null.loginId}")
             )))
             .andDo(print());
     }
@@ -335,7 +335,7 @@ public class MeasurementResultRestControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("99"))
             // .andExpect(jsonPath("$.message").value("사용자 아이디가 누락되었습니다"))
-            .andExpect(jsonPath("$.message").value("{validation.loginId.null}"))
+            .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
     }
 
@@ -355,7 +355,7 @@ public class MeasurementResultRestControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("99"))
             // .andExpect(jsonPath("$.message").value("측정일자가 누락되었습니다"))
-            .andExpect(jsonPath("$.message").value("{validation.resultDate.null}"))
+            .andExpect(jsonPath("$.message").value("{validation.null.resultDate}"))
             .andDo(print());
     }
 
@@ -373,7 +373,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value("21"))
             .andExpect(jsonPath("$.message").value("내원중인 격리/입소내역이 존재하지 않습니다"))
             .andDo(print());
     }
@@ -436,9 +436,9 @@ public class MeasurementResultRestControllerTest {
             .andExpect(jsonPath("$.code").value("99"))
             .andExpect(jsonPath("$.message",anyOf(
                 // is("사용자 아이디가 누락되었습니다측정일자가 누락되었습니다"),
-                is("{validation.loginId.null}{validation.resultDate.null}"),
+                is("{validation.null.loginId}{validation.null.resultDate}"),
                 // is("측정일자가 누락되었습니다사용자 아이디가 누락되었습니다")
-                is("{validation.resultDate.null}{validation.loginId.null}")
+                is("{validation.null.resultDate}{validation.null.loginId}")
             )))
             .andDo(print());
     }
@@ -458,7 +458,7 @@ public class MeasurementResultRestControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("99"))
             // .andExpect(jsonPath("$.message").value("사용자 아이디가 누락되었습니다"))
-            .andExpect(jsonPath("$.message").value("{validation.loginId.null}"))
+            .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
     }
 
@@ -478,7 +478,7 @@ public class MeasurementResultRestControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("99"))
             // .andExpect(jsonPath("$.message").value("측정일자가 누락되었습니다"))
-            .andExpect(jsonPath("$.message").value("{validation.resultDate.null}"))
+            .andExpect(jsonPath("$.message").value("{validation.null.resultDate}"))
             .andDo(print());
     }
 
@@ -496,7 +496,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value("21"))
             .andExpect(jsonPath("$.message").value("내원중인 격리/입소내역이 존재하지 않습니다"))
             .andDo(print());
     }
@@ -560,9 +560,9 @@ public class MeasurementResultRestControllerTest {
             .andExpect(jsonPath("$.code").value("99"))
             .andExpect(jsonPath("$.message",anyOf(
                 // is("사용자 아이디가 누락되었습니다측정일자가 누락되었습니다"),
-                is("{validation.loginId.null}{validation.resultDate.null}"),
+                is("{validation.null.loginId}{validation.null.resultDate}"),
                 // is("측정일자가 누락되었습니다사용자 아이디가 누락되었습니다")
-                is("{validation.resultDate.null}{validation.loginId.null}")
+                is("{validation.null.resultDate}{validation.null.loginId}")
             )))
             .andDo(print());
     }
@@ -582,7 +582,7 @@ public class MeasurementResultRestControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("99"))
             // .andExpect(jsonPath("$.message").value("사용자 아이디가 누락되었습니다"))
-            .andExpect(jsonPath("$.message").value("{validation.loginId.null}"))
+            .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
     }
 
@@ -601,7 +601,7 @@ public class MeasurementResultRestControllerTest {
                 .content(jsonString))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("99"))
-            .andExpect(jsonPath("$.message").value("{validation.resultDate.null}"))
+            .andExpect(jsonPath("$.message").value("{validation.null.resultDate}"))
             .andDo(print());
     }
 
@@ -619,7 +619,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value("21"))
             .andExpect(jsonPath("$.message").value("내원중인 격리/입소내역이 존재하지 않습니다"))
             .andDo(print());
     }
@@ -681,9 +681,9 @@ public class MeasurementResultRestControllerTest {
             .andExpect(jsonPath("$.code").value("99"))
             .andExpect(jsonPath("$.message",anyOf(
                 // is("사용자 아이디가 누락되었습니다측정일자가 누락되었습니다"),
-                is("{validation.loginId.null}{validation.resultDate.null}"),
+                is("{validation.null.loginId}{validation.null.resultDate}"),
                 // is("측정일자가 누락되었습니다사용자 아이디가 누락되었습니다")
-                is("{validation.resultDate.null}{validation.loginId.null}")
+                is("{validation.null.resultDate}{validation.null.loginId}")
             )))
             .andDo(print());
     }
@@ -703,7 +703,7 @@ public class MeasurementResultRestControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("99"))
             // .andExpect(jsonPath("$.message").value("사용자 아이디가 누락되었습니다"))
-            .andExpect(jsonPath("$.message").value("{validation.loginId.null}"))
+            .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
     }
 
@@ -723,7 +723,7 @@ public class MeasurementResultRestControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("99"))
             // .andExpect(jsonPath("$.message").value("측정일자가 누락되었습니다"))
-            .andExpect(jsonPath("$.message").value("{validation.resultDate.null}"))
+            .andExpect(jsonPath("$.message").value("{validation.null.resultDate}"))
             .andDo(print());
     }
 
@@ -741,7 +741,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value("21"))
             .andExpect(jsonPath("$.message").value("내원중인 격리/입소내역이 존재하지 않습니다"))
             .andDo(print());
     }
@@ -816,17 +816,17 @@ public class MeasurementResultRestControllerTest {
             .andExpect(jsonPath("$.code").value("99"))
             .andExpect(jsonPath("$.message",anyOf(
                        // is("사용자 아이디가 누락되었습니다측정시작일시가 누락되었습니다측정종료일시가 누락되었습니다"),
-                       is("{validation.loginId.null}{validation.resultStartDateTime.null}{validation.resultEndDateTime.null}"),
+                       is("{validation.null.loginId}{validation.null.resultStartDateTime}{validation.null.resultEndDateTime}"),
                        // is("사용자 아이디가 누락되었습니다측정종료일시가 누락되었습니다측정시작일시가 누락되었습니다"),
-                       is("{validation.loginId.null}{validation.resultEndDateTime.null}{validation.resultStartDateTime.null}"),
+                       is("{validation.null.loginId}{validation.null.resultEndDateTime}{validation.null.resultStartDateTime}"),
                        // is("측정시작일시가 누락되었습니다사용자 아이디가 누락되었습니다측정종료일시가 누락되었습니다"),
-                       is("{validation.resultStartDateTime.null}{validation.loginId.null}{validation.resultEndDateTime.null}"),
+                       is("{validation.null.resultStartDateTime}{validation.null.loginId}{validation.null.resultEndDateTime}"),
                        // is("측정시작일시가 누락되었습니다측정종료일시가 누락되었습니다사용자 아이디가 누락되었습니다"),
-                       is("{validation.resultStartDateTime.null}{validation.resultEndDateTime.null}{validation.resultStartDateTime.null}{validation.loginId.null}"),
+                       is("{validation.null.resultStartDateTime}{validation.null.resultEndDateTime}{validation.null.loginId}"),
                        // is("측정종료일시가 누락되었습니다사용자 아이디가 누락되었습니다측정시작일시가 누락되었습니다"),
-                       is("{validation.resultEndDateTime.null}{validation.loginId.null}{validation.resultStartDateTime.null}"),
+                       is("{validation.null.resultEndDateTime}{validation.null.loginId}{validation.null.resultStartDateTime}"),
                        // is("측정종료일시가 누락되었습니다측정시작일시가 누락되었습니다사용자 아이디가 누락되었습니다")
-                       is("{validation.resultEndDateTime.null}{validation.resultStartDateTime.null}{validation.loginId.null}")
+                       is("{validation.null.resultEndDateTime}{validation.null.resultStartDateTime}{validation.null.loginId}")
             )))
             .andDo(print());
     }
@@ -848,7 +848,7 @@ public class MeasurementResultRestControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("99"))
             // .andExpect(jsonPath("$.message").value("사용자 아이디가 누락되었습니다"))
-            .andExpect(jsonPath("$.message").value("{validation.loginId.null}"))
+            .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
     }
     /**
@@ -868,9 +868,9 @@ public class MeasurementResultRestControllerTest {
             .andExpect(jsonPath("$.code").value("99"))
             .andExpect(jsonPath("$.message",anyOf(
                        // is("측정시작일시가 누락되었습니다측정종료일시가 누락되었습니다"),
-                       is("{validation.resultStartDateTime.null}{validation.resultEndDateTime.null}"),
+                       is("{validation.null.resultStartDateTime}{validation.null.resultEndDateTime}"),
                        // is("측정종료일시가 누락되었습니다측정시작일시가 누락되었습니다")
-                       is("{validation.resultEndDateTime.null}{validation.resultStartDateTime.null}")
+                       is("{validation.null.resultEndDateTime}{validation.null.resultStartDateTime}")
             )))
             .andDo(print());
     }
@@ -891,7 +891,7 @@ public class MeasurementResultRestControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("99"))
             // .andExpect(jsonPath("$.message").value("측정시작일시가 누락되었습니다"))
-            .andExpect(jsonPath("$.message").value("{validation.resultStartDateTime.null}"))
+            .andExpect(jsonPath("$.message").value("{validation.null.resultStartDateTime}"))
             .andDo(print());
     }
     /**
@@ -911,7 +911,7 @@ public class MeasurementResultRestControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("99"))
             // .andExpect(jsonPath("$.message").value("측정종료일시가 누락되었습니다"))
-            .andExpect(jsonPath("$.message").value("{validation.resultEndDateTime.null}"))
+            .andExpect(jsonPath("$.message").value("{validation.null.resultEndDateTime}"))
             .andDo(print());
     }
     /**
@@ -929,7 +929,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value("21"))
             .andExpect(jsonPath("$.message").value("내원중인 격리/입소내역이 존재하지 않습니다"))
             .andDo(print());
     }
@@ -1035,7 +1035,7 @@ public class MeasurementResultRestControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("99"))
             // .andExpect(jsonPath("$.message").value("사용자 아이디가 누락되었습니다"))
-            .andExpect(jsonPath("$.message").value("{validation.loginId.null}"))
+            .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
     }
     /**
@@ -1051,7 +1051,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value("21"))
             .andExpect(jsonPath("$.message").value("내원중인 격리/입소내역이 존재하지 않습니다"))
             .andDo(print());
     }
@@ -1102,7 +1102,7 @@ public class MeasurementResultRestControllerTest {
                .contentType(MediaType.APPLICATION_JSON_UTF8)
                .content(jsonString))
             .andExpect(jsonPath("$.code").value("99"))
-            .andExpect(jsonPath("$.message").value("{validation.loginId.null}"))
+            .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
     }
 

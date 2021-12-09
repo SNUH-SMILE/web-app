@@ -23,17 +23,17 @@ public class SearchExistLoginInfo implements Serializable {
     /**
      * 아이디
      */
-    @NotNull(message = "{validation.loginId.null}")
+    @NotNull(message = "{validation.null.loginId}")
     private String loginId;
     /**
      * 성명
      */
-    @NotNull(message = "{validation.name.null}")
+    @NotNull(message = "{validation.null.name}")
     private String patientNm;
     /**
      * 휴대폰
      */
-    @NotNull(message = "{validation.cellphone.null}")
-    @Pattern(regexp = "^[0-9]+$",message = "{validation.cellphone.patternMismatch}")
+    @NotNull(message = "{validation.null.cellphone}")
+    @Pattern(regexp = "^[0-9]+$",message = "{validation.patternMismatch.cellphone}")
     private String cellPhone;
 }

@@ -24,12 +24,12 @@ public class SaveSpO2ResultInfo implements Serializable {
     /**
      * 아이디
      */
-    @NotNull(message = "{validation.loginId.null}")
+    @NotNull(message = "{validation.null.loginId}")
     private String loginId;
     /**
      * 산소포화도 측정 결과
      */
     @JsonProperty("spO2List")
-    @NotNull(message = "{validation.result.null}")
+    @NotNull(message = "{validation.null.result}")
     private List<SpO2Result> results;
 }

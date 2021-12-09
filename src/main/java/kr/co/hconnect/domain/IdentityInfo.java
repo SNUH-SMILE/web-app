@@ -23,7 +23,7 @@ public class IdentityInfo implements Serializable {
     /**
      * 주민번호
      */
-    @NotNull(message = "{validation.ssn.null}")
-    @Pattern(regexp = "^[0-9]{13}", message = "{validation.ssn.checked}")
+    @NotNull(message = "{validation.null.ssn}")
+    @Pattern(regexp = "^[0-9]{13}", message = "{validation.checked.ssn}")
     private String ssn;
 }
