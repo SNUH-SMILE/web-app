@@ -118,7 +118,7 @@ public class LoginRestController {
             // baseResponse.setMessage(String.format("%s 님 로그인 성공", patient.getPatientNm()));
             baseResponse.setMessage(messageSource.getMessage("message.login.success", null, Locale.getDefault()));
         } catch (NotFoundPatientInfoException e) {
-            baseResponse.setCode("99");
+            baseResponse.setCode("11");
             baseResponse.setMessage(e.getMessage());
         } catch (NotMatchPatientPasswordException e) {
             baseResponse.setCode("10");
