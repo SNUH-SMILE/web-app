@@ -168,7 +168,7 @@ public class PatientRestController {
 
             baseResponse.setCode("00");
             // baseResponse.setMessage("비밀번호가 변경되었습니다.");
-            baseResponse.setMessage(messageSource.getMessage("message.changePassword.success", null, Locale.getDefault()));
+            baseResponse.setMessage(messageSource.getMessage("message.changedPassword.success", null, Locale.getDefault()));
         } catch (NotFoundPatientInfoException e) {
             baseResponse.setCode("99");
             baseResponse.setMessage(e.getMessage());
