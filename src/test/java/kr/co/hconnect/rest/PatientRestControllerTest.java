@@ -102,7 +102,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("99")))
+            .andExpect(jsonPath("$.code", is("11")))
             .andDo(print());
     }
 
@@ -113,7 +113,6 @@ public class PatientRestControllerTest {
     public void givenPatient_whenCreatePatient_thenSuccess() throws Exception {
         String content =
             "{\n" +
-            "  \"flag\"      : \"A\",\n" +
             "  \"loginId\"   : \"junitTestPatient\",\n" +
             "  \"password\"  : \"1234\",\n" +
             "  \"patientNm\" : \"회원가입용\",\n" +
@@ -121,6 +120,7 @@ public class PatientRestControllerTest {
             "  \"birthDate\" : \"19881205\",\n" +
             "  \"sex\"       : \"M\",\n" +
             "  \"cellPhone\" : \"01012345678\",\n" +
+            "  \"guardianCellPhone\" : \"01012345678\",\n" +
             "  \"zipCode\"   : \"12345\",\n" +
             "  \"address1\"  : \"서울시 성북구 종암동\",\n" +
             "  \"address2\"  : \"301호\"\n" +
@@ -141,20 +141,15 @@ public class PatientRestControllerTest {
     public void givenPatient_whenUpdatePatient_thenSuccess() throws Exception {
         String content =
             "{\n" +
-            "  \"flag\"      : \"M\",\n" +
             "  \"loginId\"   : \"testshy\",\n" +
-            "  \"password\"  : \"1234\",\n" +
-            "  \"patientNm\" : \"회원가입용수정\",\n" +
-            "  \"ssn\"       : \"8812051525252\",\n" +
-            "  \"birthDate\" : \"19881205\",\n" +
-            "  \"sex\"       : \"M\",\n" +
             "  \"cellPhone\" : \"01012345678\",\n" +
+            "  \"guardianCellPhone\" : \"01087654321\",\n" +
             "  \"zipCode\"   : \"12345\",\n" +
             "  \"address1\"  : \"서울시 성북구 종암동\",\n" +
             "  \"address2\"  : \"301호\"\n" +
             "}";
 
-        mvc.perform(post("/api/patient")
+        mvc.perform(put("/api/patient")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -169,24 +164,19 @@ public class PatientRestControllerTest {
     public void givenPatient_whenUpdatePatient_thenNotFoundPatientInfo() throws Exception {
         String content =
             "{\n" +
-                "  \"flag\"      : \"M\",\n" +
                 "  \"loginId\"   : \"블라블라\",\n" +
-                "  \"password\"  : \"1234\",\n" +
-                "  \"patientNm\" : \"회원가입용수정\",\n" +
-                "  \"ssn\"       : \"8812051525252\",\n" +
-                "  \"birthDate\" : \"19881205\",\n" +
-                "  \"sex\"       : \"M\",\n" +
                 "  \"cellPhone\" : \"01012345678\",\n" +
+                "  \"guardianCellPhone\" : \"01087654321\",\n" +
                 "  \"zipCode\"   : \"12345\",\n" +
                 "  \"address1\"  : \"서울시 성북구 종암동\",\n" +
                 "  \"address2\"  : \"301호\"\n" +
                 "}";
 
-        mvc.perform(post("/api/patient")
+        mvc.perform(put("/api/patient")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("99")))
+            .andExpect(jsonPath("$.code", is("11")))
             .andDo(print());
     }
 
@@ -262,7 +252,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("99")))
+            .andExpect(jsonPath("$.code", is("11")))
             .andDo(print());
     }
 
@@ -301,8 +291,8 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("99")))
-            .andExpect(jsonPath("$.message", is("환자정보가 존재하지 않습니다.")))
+            .andExpect(jsonPath("$.code", is("11")))
+            .andExpect(jsonPath("$.message", is("환자정보가 존재하지 않습니다")))
             .andDo(print());
     }
 
@@ -321,8 +311,8 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("99")))
-            .andExpect(jsonPath("$.message", is("동일한 환자정보가 존재합니다.")))
+            .andExpect(jsonPath("$.code", is("12")))
+            .andExpect(jsonPath("$.message", is("동일한 환자정보가 존재합니다")))
             .andDo(print());
     }
 
@@ -401,7 +391,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("99")))
+            .andExpect(jsonPath("$.code", is("14")))
             .andExpect(jsonPath("$.quarantineStatusDiv", is(IsNull.nullValue())))
             .andDo(print());
     }
@@ -417,7 +407,7 @@ public class PatientRestControllerTest {
                 "  \"quarantineStatusDiv\": \"0\"\n" +
                 "}";
 
-        mvc.perform(post("/api/quarantine")
+        mvc.perform(post("/api/quarantineStatus")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -436,11 +426,11 @@ public class PatientRestControllerTest {
                 "  \"quarantineStatusDiv\": \"0\"\n" +
                 "}";
 
-        mvc.perform(post("/api/quarantine")
+        mvc.perform(post("/api/quarantineStatus")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("99")))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.code", is("21")))
             .andDo(print());
     }
 }
