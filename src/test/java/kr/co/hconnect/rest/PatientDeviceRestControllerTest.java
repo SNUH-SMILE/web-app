@@ -48,11 +48,6 @@ public class PatientDeviceRestControllerTest {
     @Autowired
     private AdmissionService admissionService;
 
-    /**
-     * 환자별 장비추가 URL
-     */
-    private static final String deviceURL = "/api/device";
-
     @Autowired
     private DataSource dataSource;
     @Autowired
@@ -161,7 +156,7 @@ public class PatientDeviceRestControllerTest {
                 "  ]\n" +
                 "}";
 
-        mvc.perform(post(deviceURL)
+        mvc.perform(post("/api/device")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -193,11 +188,11 @@ public class PatientDeviceRestControllerTest {
                 "  ]\n" +
                 "}";
 
-        mvc.perform(post(deviceURL)
+        mvc.perform(post("/api/device")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().is4xxClientError())
-            .andExpect(jsonPath("$.code", is("99")))
+            .andExpect(jsonPath("$.code", is("21")))
             .andDo(print());
     }
 
@@ -225,11 +220,11 @@ public class PatientDeviceRestControllerTest {
                 "  ]\n" +
                 "}";
 
-        mvc.perform(post(deviceURL)
+        mvc.perform(post("/api/device")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().is4xxClientError())
-            .andExpect(jsonPath("$.code", is("99")))
+            .andExpect(jsonPath("$.code", is("22")))
             .andDo(print());
     }
 }
