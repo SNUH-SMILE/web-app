@@ -1,7 +1,10 @@
 package kr.co.hconnect.rest;
 
 import kr.co.hconnect.domain.*;
-import kr.co.hconnect.exception.*;
+import kr.co.hconnect.exception.DuplicatePatientInfoException;
+import kr.co.hconnect.exception.DuplicatePatientLoginIdException;
+import kr.co.hconnect.exception.InvalidRequestArgumentException;
+import kr.co.hconnect.exception.NotFoundPatientInfoException;
 import kr.co.hconnect.service.PatientService;
 import kr.co.hconnect.service.QantnStatusService;
 import org.slf4j.Logger;
@@ -231,11 +234,9 @@ public class PatientRestController {
         } else {
             if (patientList.size() == 0) {
                 findLoginIdResult.setCode("11");
-                // findLoginIdResult.setMessage("환자정보가 존재하지 않습니다.");
                 findLoginIdResult.setMessage(messageSource.getMessage("message.notfound.patientInfo", null, Locale.getDefault()));
             } else {
                 findLoginIdResult.setCode("12");
-                // findLoginIdResult.setMessage("동일한 환자정보가 존재합니다.");
                 findLoginIdResult.setMessage(messageSource.getMessage("message.duplicate.patientInfo", null, Locale.getDefault()));
             }
         }
@@ -313,7 +314,7 @@ public class PatientRestController {
      * @param saveQuarantineStatusInfo 격리상태 저장 정보
      * @return BaseResponse
      */
-    @RequestMapping(value = "/quarantine", method = RequestMethod.POST)
+    @RequestMapping(value = "/quarantineStatus", method = RequestMethod.POST)
     public BaseResponse saveQuarantine(@Valid @RequestBody SaveQuarantineStatusInfo saveQuarantineStatusInfo
         , BindingResult result) {
         if (result.hasErrors()) {
@@ -322,16 +323,11 @@ public class PatientRestController {
 
         BaseResponse baseResponse = new BaseResponse();
 
-        try {
-            qantnStatusService.insertQantnStatus(saveQuarantineStatusInfo);
+        qantnStatusService.insertQantnStatus(saveQuarantineStatusInfo);
 
-            baseResponse.setCode("00");
-            // baseResponse.setMessage("격리 상태 저장 완료");
-            baseResponse.setMessage(messageSource.getMessage("message.success.saveQuarantine", null, Locale.getDefault()));
-        } catch (NotFoundAdmissionInfoException e) {
-            baseResponse.setCode("11");
-            baseResponse.setMessage(e.getMessage());
-        }
+        baseResponse.setCode("00");
+        // baseResponse.setMessage("격리 상태 저장 완료");
+        baseResponse.setMessage(messageSource.getMessage("message.success.saveQuarantine", null, Locale.getDefault()));
 
         return baseResponse;
     }
