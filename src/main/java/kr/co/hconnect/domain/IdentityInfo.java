@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 /**
@@ -23,5 +24,6 @@ public class IdentityInfo implements Serializable {
      * 주민번호
      */
     @NotNull(message = "{validation.ssn.null}")
+    @Pattern(regexp = "^[0-9]{13}", message = "{message.ssn.checked}")
     private String ssn;
 }
