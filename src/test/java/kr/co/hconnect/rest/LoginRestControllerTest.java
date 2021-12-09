@@ -35,16 +35,6 @@ public class LoginRestControllerTest {
     private static MockMvc mvc;
 
     /**
-     * 로그인 URL
-     */
-    private static final String loginURL = "/api/login";
-
-    /**
-     * 본인인증 URL
-     */
-    private static final String identityURL = "/api/identity";
-
-    /**
      * 환자관리 서비스
      */
     @Autowired
@@ -77,7 +67,7 @@ public class LoginRestControllerTest {
             "    \"password\": \"1234\"\n" +
             "}";
 
-        mvc.perform(get(loginURL)
+        mvc.perform(get("/api/login")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -108,11 +98,11 @@ public class LoginRestControllerTest {
                 "    \"password\": \"testshy1321\"\n" +
                 "}";
 
-        mvc.perform(get(loginURL)
+        mvc.perform(get("/api/login")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("99")))
+            .andExpect(jsonPath("$.code", is("10")))
             .andDo(print());
     }
 
@@ -127,11 +117,11 @@ public class LoginRestControllerTest {
             "    \"password\": \"1234\"\n" +
             "}";
 
-        mvc.perform(get(loginURL)
+        mvc.perform(get("/api/login")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("99")))
+            .andExpect(jsonPath("$.code", is("11")))
             .andDo(print());
     }
 
@@ -145,7 +135,7 @@ public class LoginRestControllerTest {
             "  \"ssn\": \"8812051999999\"\n" +
             "}";
 
-        mvc.perform(get(identityURL)
+        mvc.perform(get("/api/identity")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -165,7 +155,7 @@ public class LoginRestControllerTest {
                 "  \"ssn\": \"8812059999999\"\n" +
                 "}";
 
-        mvc.perform(get(identityURL)
+        mvc.perform(get("/api/identity")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -185,11 +175,11 @@ public class LoginRestControllerTest {
                 "  \"ssn\": \"8812051555555\"\n" +
                 "}";
 
-        mvc.perform(get(identityURL)
+        mvc.perform(get("/api/identity")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("99")))
+            .andExpect(jsonPath("$.code", is("22")))
             .andExpect(jsonPath("$.quarantineDiv", is("0")))
             .andExpect(jsonPath("$.registerYn", is("N")))
             .andDo(print());
