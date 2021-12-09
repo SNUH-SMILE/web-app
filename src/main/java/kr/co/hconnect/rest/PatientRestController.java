@@ -226,15 +226,14 @@ public class PatientRestController {
 
         if (patientList.size() == 1) {
             findLoginIdResult.setCode("00");
+            findLoginIdResult.setMessage(messageSource.getMessage("message.searchPatientInfo.success", null, Locale.getDefault()));
             findLoginIdResult.setLoginId(patientList.get(0).getLoginId());
         } else {
             if (patientList.size() == 0) {
                 findLoginIdResult.setCode("11");
-                // findLoginIdResult.setMessage("환자정보가 존재하지 않습니다.");
-                findLoginIdResult.setMessage(messageSource.getMessage("message.patientInfo.notFound", null, Locale.getDefault()));
+                findLoginIdResult.setMessage(messageSource.getMessage("message.patientInfo.notfound", null, Locale.getDefault()));
             } else {
                 findLoginIdResult.setCode("12");
-                // findLoginIdResult.setMessage("동일한 환자정보가 존재합니다.");
                 findLoginIdResult.setMessage(messageSource.getMessage("message.patientInfo.duplicate", null, Locale.getDefault()));
             }
         }
