@@ -145,7 +145,7 @@ public class MeasurementResultRestControllerTest {
             "  \"loginId\": \"wtest\",\n" +
             "  \"resultDate\":\"20211206\"\n" +
             "}";
-        mvc.perform(get("/api/result/bt")
+        mvc.perform(get("/api/results/bt")
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .content(jsonString))
             .andExpect(status().isOk())
@@ -165,7 +165,7 @@ public class MeasurementResultRestControllerTest {
             "  \"loginId\": \"wtest\",\n" +
             "  \"resultDate\":\"20001130\"\n" +
             "}";
-        mvc.perform(get("/api/result/bt")
+        mvc.perform(get("/api/results/bt")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
@@ -183,7 +183,7 @@ public class MeasurementResultRestControllerTest {
         String jsonString ="{\n" +
             "}";
 
-        mvc.perform(get("/api/result/bt")
+        mvc.perform(get("/api/results/bt")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -206,7 +206,7 @@ public class MeasurementResultRestControllerTest {
             "  \"resultDate\":\"20211206\"\n" +
             "}";
 
-        mvc.perform(get("/api/result/bt")
+        mvc.perform(get("/api/results/bt")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -226,7 +226,7 @@ public class MeasurementResultRestControllerTest {
             " \"loginId\": \"wtest\"\n" +
             "}";
 
-        mvc.perform(get("/api/result/bt")
+        mvc.perform(get("/api/results/bt")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -245,7 +245,7 @@ public class MeasurementResultRestControllerTest {
             " \"loginId\": \"Exception\",\n" +
             " \"resultDate\":\"20201212\"\n" +
             "}";
-        mvc.perform(get("/api/result/bt")
+        mvc.perform(get("/api/results/bt")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -266,7 +266,7 @@ public class MeasurementResultRestControllerTest {
             "  \"loginId\": \"wtest\",\n" +
             "  \"resultDate\":\"20211206\"\n" +
             "}";
-        mvc.perform(get("/api/result/bp")
+        mvc.perform(get("/api/results/bp")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
@@ -287,7 +287,7 @@ public class MeasurementResultRestControllerTest {
             "  \"loginId\": \"wtest\",\n" +
             "  \"resultDate\":\"20001130\"\n" +
             "}";
-        mvc.perform(get("/api/result/bp")
+        mvc.perform(get("/api/results/bp")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
@@ -306,7 +306,7 @@ public class MeasurementResultRestControllerTest {
         String jsonString ="{\n" +
             "}";
 
-        mvc.perform(get("/api/result/bp")
+        mvc.perform(get("/api/results/bp")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -329,7 +329,7 @@ public class MeasurementResultRestControllerTest {
             "  \"resultDate\":\"20211206\"\n" +
             "}";
 
-        mvc.perform(get("/api/result/bp")
+        mvc.perform(get("/api/results/bp")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -349,7 +349,7 @@ public class MeasurementResultRestControllerTest {
             " \"loginId\": \"wtest\"\n" +
             "}";
 
-        mvc.perform(get("/api/result/bp")
+        mvc.perform(get("/api/results/bp")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -369,7 +369,7 @@ public class MeasurementResultRestControllerTest {
             " \"loginId\": \"Exception\",\n" +
             " \"resultDate\":\"20201212\"\n" +
             "}";
-        mvc.perform(get("/api/result/bp")
+        mvc.perform(get("/api/results/bp")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -390,7 +390,7 @@ public class MeasurementResultRestControllerTest {
             "  \"loginId\": \"wtest\",\n" +
             "  \"resultDate\":\"20211206\"\n" +
             "}";
-        mvc.perform(get("/api/result/hr")
+        mvc.perform(get("/api/results/hr")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
@@ -410,7 +410,7 @@ public class MeasurementResultRestControllerTest {
             "  \"loginId\": \"wtest\",\n" +
             "  \"resultDate\":\"20001201\"\n" +
             "}";
-        mvc.perform(get("/api/result/hr")
+        mvc.perform(get("/api/results/hr")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
@@ -429,7 +429,7 @@ public class MeasurementResultRestControllerTest {
         String jsonString ="{\n" +
             "}";
 
-        mvc.perform(get("/api/result/hr")
+        mvc.perform(get("/api/results/hr")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -452,7 +452,7 @@ public class MeasurementResultRestControllerTest {
             "  \"resultDate\":\"20211206\"\n" +
             "}";
 
-        mvc.perform(get("/api/result/hr")
+        mvc.perform(get("/api/results/hr")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -472,7 +472,7 @@ public class MeasurementResultRestControllerTest {
             " \"loginId\": \"wtest\"\n" +
             "}";
 
-        mvc.perform(get("/api/result/hr")
+        mvc.perform(get("/api/results/hr")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -492,7 +492,7 @@ public class MeasurementResultRestControllerTest {
             " \"loginId\": \"Exception\",\n" +
             " \"resultDate\":\"20201212\"\n" +
             "}";
-        mvc.perform(get("/api/result/hr")
+        mvc.perform(get("/api/results/hr")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -513,7 +513,7 @@ public class MeasurementResultRestControllerTest {
             "  \"loginId\": \"wtest\",\n" +
             "  \"resultDate\":\"20211206\"\n" +
             "}";
-        mvc.perform(get("/api/result/spO2")
+        mvc.perform(get("/api/results/spO2")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
@@ -534,7 +534,7 @@ public class MeasurementResultRestControllerTest {
             "  \"loginId\": \"wtest\",\n" +
             "  \"resultDate\":\"20001130\"\n" +
             "}";
-        mvc.perform(get("/api/result/spO2")
+        mvc.perform(get("/api/results/spO2")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
@@ -553,7 +553,7 @@ public class MeasurementResultRestControllerTest {
         String jsonString ="{\n" +
             "}";
 
-        mvc.perform(get("/api/result/spO2")
+        mvc.perform(get("/api/results/spO2")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -576,7 +576,7 @@ public class MeasurementResultRestControllerTest {
             "  \"resultDate\":\"20211206\"\n" +
             "}";
 
-        mvc.perform(get("/api/result/spO2")
+        mvc.perform(get("/api/results/spO2")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -596,7 +596,7 @@ public class MeasurementResultRestControllerTest {
             " \"loginId\": \"wtest\"\n" +
             "}";
 
-        mvc.perform(get("/api/result/spO2")
+        mvc.perform(get("/api/results/spO2")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -615,7 +615,7 @@ public class MeasurementResultRestControllerTest {
             " \"loginId\": \"Exception\",\n" +
             " \"resultDate\":\"20201212\"\n" +
             "}";
-        mvc.perform(get("/api/result/spO2")
+        mvc.perform(get("/api/results/spO2")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -635,7 +635,7 @@ public class MeasurementResultRestControllerTest {
             "  \"loginId\": \"wtest\",\n" +
             "  \"resultDate\":\"20211206\"\n" +
             "}";
-        mvc.perform(get("/api/result/stepCount")
+        mvc.perform(get("/api/results/stepCount")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
@@ -656,7 +656,7 @@ public class MeasurementResultRestControllerTest {
             "  \"loginId\": \"wtest\",\n" +
             "  \"resultDate\":\"20001130\"\n" +
             "}";
-        mvc.perform(get("/api/result/stepCount")
+        mvc.perform(get("/api/results/stepCount")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
@@ -674,7 +674,7 @@ public class MeasurementResultRestControllerTest {
         String jsonString ="{\n" +
             "}";
 
-        mvc.perform(get("/api/result/stepCount")
+        mvc.perform(get("/api/results/stepCount")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -697,7 +697,7 @@ public class MeasurementResultRestControllerTest {
             "  \"resultDate\":\"20211206\"\n" +
             "}";
 
-        mvc.perform(get("/api/result/stepCount")
+        mvc.perform(get("/api/results/stepCount")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -717,7 +717,7 @@ public class MeasurementResultRestControllerTest {
             " \"loginId\": \"wtest\"\n" +
             "}";
 
-        mvc.perform(get("/api/result/stepCount")
+        mvc.perform(get("/api/results/stepCount")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -737,7 +737,7 @@ public class MeasurementResultRestControllerTest {
             " \"loginId\": \"Exception\",\n" +
             " \"resultDate\":\"20201212\"\n" +
             "}";
-        mvc.perform(get("/api/result/stepCount")
+        mvc.perform(get("/api/results/stepCount")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -760,7 +760,7 @@ public class MeasurementResultRestControllerTest {
             "  \"resultEndDateTime\":\"2021120709\"\n" +
             "\n" +
             "}";
-        mvc.perform(get("/api/result/sleepTime")
+        mvc.perform(get("/api/results/sleepTime")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
@@ -789,7 +789,7 @@ public class MeasurementResultRestControllerTest {
             "  \"resultEndDateTime\":\"1999120109\"\n" +
             "\n" +
             "}";
-        mvc.perform(get("/api/result/sleepTime")
+        mvc.perform(get("/api/results/sleepTime")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
@@ -809,7 +809,7 @@ public class MeasurementResultRestControllerTest {
         String jsonString ="{\n" +
             "}";
 
-        mvc.perform(get("/api/result/sleepTime")
+        mvc.perform(get("/api/results/sleepTime")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -842,7 +842,7 @@ public class MeasurementResultRestControllerTest {
             " \"resultEndDateTime\": \"2021120609\"\n" +
             "}";
 
-        mvc.perform(get("/api/result/sleepTime")
+        mvc.perform(get("/api/results/sleepTime")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -861,7 +861,7 @@ public class MeasurementResultRestControllerTest {
             " \"loginId\": \"wtest\"\n" +
             "}";
 
-        mvc.perform(get("/api/result/sleepTime")
+        mvc.perform(get("/api/results/sleepTime")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -885,7 +885,7 @@ public class MeasurementResultRestControllerTest {
             " \"resultEndDateTime\": \"2021120609\"\n" +
             "}";
 
-        mvc.perform(get("/api/result/sleepTime")
+        mvc.perform(get("/api/results/sleepTime")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -905,7 +905,7 @@ public class MeasurementResultRestControllerTest {
             " \"resultStartDateTime\": \"2021120609\"\n" +
             "}";
 
-        mvc.perform(get("/api/result/sleepTime")
+        mvc.perform(get("/api/results/sleepTime")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -925,7 +925,7 @@ public class MeasurementResultRestControllerTest {
             " \"resultStartDateTime\": \"2021120621\"\n," +
             " \"resultEndDateTime\": \"2021120709\"\n" +
             "}";
-        mvc.perform(get("/api/result/sleepTime")
+        mvc.perform(get("/api/results/sleepTime")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
@@ -1074,7 +1074,7 @@ public class MeasurementResultRestControllerTest {
             "    }\n" +
             "  ]\n" +
             "}";
-        mvc.perform(post("/api/result/bt")
+        mvc.perform(post("/api/results/bt")
                .contentType(MediaType.APPLICATION_JSON_UTF8)
                .content(jsonString))
             .andExpect(jsonPath("$.code").value("00"))
@@ -1098,11 +1098,35 @@ public class MeasurementResultRestControllerTest {
             "    }\n" +
             "  ]\n" +
             "}";
-        mvc.perform(post("/api/result/bt")
+        mvc.perform(post("/api/results/bt")
                .contentType(MediaType.APPLICATION_JSON_UTF8)
                .content(jsonString))
             .andExpect(jsonPath("$.code").value("99"))
             .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
+            .andDo(print());
+    }
+    /**
+     * 체온 저장시 측정값이 누락된 경우
+     */
+    @Test()
+    public void givenBtInfoWithoutResult_whenSaveBtRequested_thenCode_99() throws Exception{
+        String jsonString="\n" +
+            "{\n" +
+            "  \"loginId\": \"wtest\",\n" +
+            "  \"btList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"bt\": null,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+        mvc.perform(post("/api/results/bt")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonString))
+            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.message").value("{validation.null.result}"))
             .andDo(print());
     }
 
@@ -1124,7 +1148,7 @@ public class MeasurementResultRestControllerTest {
             "    }\n" +
             "  ]\n" +
             "}";
-        mvc.perform(post("/api/result/hr")
+        mvc.perform(post("/api/results/hr")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(jsonPath("$.code").value("00"))
@@ -1150,7 +1174,7 @@ public class MeasurementResultRestControllerTest {
             "    }\n" +
             "  ]\n" +
             "}";
-        mvc.perform(post("/api/result/spO2")
+        mvc.perform(post("/api/results/spO2")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(jsonPath("$.code").value("00"))
@@ -1176,7 +1200,7 @@ public class MeasurementResultRestControllerTest {
             "    }\n" +
             "  ]\n" +
             "}";
-        mvc.perform(post("/api/result/bp")
+        mvc.perform(post("/api/results/bp")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(jsonPath("$.code").value("00"))
@@ -1203,7 +1227,7 @@ public class MeasurementResultRestControllerTest {
             "    }\n" +
             "  ]\n" +
             "}";
-        mvc.perform(post("/api/result/stepCount")
+        mvc.perform(post("/api/results/stepCount")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(jsonPath("$.code").value("00"))
@@ -1229,7 +1253,7 @@ public class MeasurementResultRestControllerTest {
             "    }\n" +
             "  ]\n" +
             "}";
-        mvc.perform(post("/api/result/sleepTime")
+        mvc.perform(post("/api/results/sleepTime")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(jsonPath("$.code").value("00"))

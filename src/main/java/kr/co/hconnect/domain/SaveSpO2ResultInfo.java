@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
@@ -31,5 +32,6 @@ public class SaveSpO2ResultInfo implements Serializable {
      */
     @JsonProperty("spO2List")
     @NotNull(message = "{validation.null.result}")
+    @Valid
     private List<SpO2Result> results;
 }

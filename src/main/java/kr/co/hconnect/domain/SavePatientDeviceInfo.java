@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
@@ -31,5 +32,6 @@ public class SavePatientDeviceInfo implements Serializable {
      */
     @NotNull(message = "{validation.null.deviceInfo}")
     @JsonProperty(value = "devices")
+    @Valid
     private List<PatientDevice> patientDeviceList;
 }

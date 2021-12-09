@@ -227,4 +227,35 @@ public class PatientDeviceRestControllerTest {
             .andExpect(jsonPath("$.code", is("22")))
             .andDo(print());
     }
+
+    /**
+     * 환자별 장비추가 - 디바이스 아이디 누락
+     */
+    @Test
+    public void givenSavePatientDeviceInfo_whenAddDevice_thenFailDeviceId() throws Exception {
+        String content =
+            "{\n" +
+                "  \"loginId\": \"testshy51\",\n" +
+                "  \"devices\": [\n" +
+                "    {\n" +
+                "      \"deviceId\": null,\n" +
+                "      \"deviceNm\": \"디바이스1\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"deviceId\": \"device002\",\n" +
+                "      \"deviceNm\": \"디바이스3\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"deviceId\": \"device002\",\n" +
+                "      \"deviceNm\": \"디바이스3\"\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        mvc.perform(post("/api/device")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(content))
+            .andExpect(jsonPath("$.code", is("99")))
+            .andDo(print());
+    }
 }

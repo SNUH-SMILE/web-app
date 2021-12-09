@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
@@ -31,6 +32,7 @@ public class SaveBtResultInfo implements Serializable {
      */
     @JsonProperty("btList")
     @NotNull(message = "{validation.null.result}")
+    @Valid
     private List<BtResult> results;
 
 }
