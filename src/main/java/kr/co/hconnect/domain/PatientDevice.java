@@ -6,7 +6,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 /**
@@ -39,6 +38,5 @@ public class PatientDevice implements Serializable {
     /**
      * 사용여부
      */
-    @Pattern(regexp = "^[YN]$", message = "{validation.patternMismatch.existYn}")
     private String useYn;
 }
