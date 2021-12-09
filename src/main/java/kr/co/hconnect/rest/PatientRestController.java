@@ -104,7 +104,7 @@ public class PatientRestController {
             Patient savePatientInfo = patientService.savePatientInfo(patient);
 
             baseResponse.setCode("00");
-            baseResponse.setMessage(messageSource.getMessage("message.savePatientInfo.success", null, Locale.getDefault()));
+            baseResponse.setMessage(messageSource.getMessage("message.success.savePatientInfo", null, Locale.getDefault()));
         } catch (NotFoundPatientInfoException e) {
             baseResponse.setCode("11");
             baseResponse.setMessage(e.getMessage());
@@ -142,7 +142,7 @@ public class PatientRestController {
             Patient savePatientInfo = patientService.savePatientInfo(patient);
 
             baseResponse.setCode("00");
-            baseResponse.setMessage(messageSource.getMessage("message.savePatientInfo.success", null, Locale.getDefault()));
+            baseResponse.setMessage(messageSource.getMessage("message.success.savePatientInfo", null, Locale.getDefault()));
         } catch (NotFoundPatientInfoException e) {
             baseResponse.setCode("11");
             baseResponse.setMessage(e.getMessage());
