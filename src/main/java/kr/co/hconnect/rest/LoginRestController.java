@@ -74,7 +74,7 @@ public class LoginRestController {
         } catch (MyBatisSystemException e) {
             // 다중 입소내역으로 인한 오류
             if (e.getCause() instanceof TooManyResultsException) {
-                identityResult = setFailIdentityResult("99", messageSource.getMessage("message.Identity.fail", null, Locale.getDefault()));
+                identityResult = setFailIdentityResult("22", messageSource.getMessage("message.admissionInfo.duplicate", null, Locale.getDefault()));
             }
         }
 
@@ -121,7 +121,7 @@ public class LoginRestController {
             baseResponse.setCode("99");
             baseResponse.setMessage(e.getMessage());
         } catch (NotMatchPatientPasswordException e) {
-            baseResponse.setCode("99");
+            baseResponse.setCode("10");
             baseResponse.setMessage(e.getMessage());
         }
 

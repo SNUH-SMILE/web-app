@@ -80,10 +80,10 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 		List<AdmissionVO> admissionVOS = dao.selectActiveAdmissionListByLoginId(loginId);
 
 		if (admissionVOS == null || admissionVOS.size() == 0) {
-			throw new NotFoundAdmissionInfoException(messageSource.getMessage("message.admissionInfo.notfound"
+			throw new NotFoundAdmissionInfoException("21", messageSource.getMessage("message.admissionInfo.notfound"
                 , null, Locale.getDefault()));
 		} else if (admissionVOS.size() > 1) {
-            throw new NotFoundAdmissionInfoException(messageSource.getMessage("message.admissionInfo.duplicate"
+            throw new NotFoundAdmissionInfoException("22", messageSource.getMessage("message.admissionInfo.duplicate"
                 , null, Locale.getDefault()));
 		}
 

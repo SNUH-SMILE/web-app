@@ -73,9 +73,9 @@ public class PatientRestController {
             patient.setMessage(messageSource.getMessage("message.searchPatientInfo.success", null, Locale.getDefault()));
         } else {
             patient = new Patient();
-            patient.setCode("99");
+            patient.setCode("11");
             // patient.setMessage("회원정보가 존재하지 않습니다.");
-            patient.setMessage(messageSource.getMessage("message.searchPatientInfo.notfound", null, Locale.getDefault()));
+            patient.setMessage(messageSource.getMessage("message.patientInfo.notfound", null, Locale.getDefault()));
         }
 
         return patient;
@@ -112,10 +112,10 @@ public class PatientRestController {
             baseResponse.setCode("00");
             patient.setMessage(messageSource.getMessage("message.savePatientInfo.success", null, Locale.getDefault()));
         } catch (NotFoundPatientInfoException e) {
-            baseResponse.setCode("99");
+            baseResponse.setCode("11");
             baseResponse.setMessage(e.getMessage());
         } catch (DuplicatePatientLoginIdException e) {
-            baseResponse.setCode("99");
+            baseResponse.setCode("12");
             baseResponse.setMessage(e.getMessage());
         }
 
@@ -170,7 +170,7 @@ public class PatientRestController {
             // baseResponse.setMessage("비밀번호가 변경되었습니다.");
             baseResponse.setMessage(messageSource.getMessage("message.changedPassword.success", null, Locale.getDefault()));
         } catch (NotFoundPatientInfoException e) {
-            baseResponse.setCode("99");
+            baseResponse.setCode("11");
             baseResponse.setMessage(e.getMessage());
         }
 
@@ -199,12 +199,12 @@ public class PatientRestController {
             findLoginIdResult.setCode("00");
             findLoginIdResult.setLoginId(patientList.get(0).getLoginId());
         } else {
-            findLoginIdResult.setCode("99");
-
             if (patientList.size() == 0) {
+                findLoginIdResult.setCode("11");
                 // findLoginIdResult.setMessage("환자정보가 존재하지 않습니다.");
                 findLoginIdResult.setMessage(messageSource.getMessage("message.patientInfo.notFound", null, Locale.getDefault()));
             } else {
+                findLoginIdResult.setCode("12");
                 // findLoginIdResult.setMessage("동일한 환자정보가 존재합니다.");
                 findLoginIdResult.setMessage(messageSource.getMessage("message.patientInfo.duplicate", null, Locale.getDefault()));
             }
@@ -269,7 +269,7 @@ public class PatientRestController {
             saveQuarantineStatusInfo.setMessage(messageSource.getMessage("message.searchQuarantine.success", null, Locale.getDefault()));
             saveQuarantineStatusInfo.setQuarantineStatusDiv(qantnStatus.getQantnStatusDiv());
         } else {
-            saveQuarantineStatusInfo.setCode("99");
+            saveQuarantineStatusInfo.setCode("13");
             // saveQuarantineStatusInfo.setMessage("격리상태 내역이 존재하지 않습니다.");
             saveQuarantineStatusInfo.setMessage(messageSource.getMessage("message.searchQuarantine.notfound", null, Locale.getDefault()));
         }
@@ -299,7 +299,7 @@ public class PatientRestController {
             // baseResponse.setMessage("격리 상태 저장 완료");
             baseResponse.setMessage(messageSource.getMessage("message.saveQuarantine.success", null, Locale.getDefault()));
         } catch (NotFoundAdmissionInfoException e) {
-            baseResponse.setCode("99");
+            baseResponse.setCode("11");
             baseResponse.setMessage(e.getMessage());
         }
 

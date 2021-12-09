@@ -63,7 +63,7 @@ public class RestControllerExceptionHandler {
     @ExceptionHandler(NotFoundAdmissionInfoException.class)
     public BaseResponse handleNotFoundAdmissionInfoException(NotFoundAdmissionInfoException e) {
         BaseResponse resp = new BaseResponse();
-        resp.setCode(CODE_INVALID_REQUEST_PARAMETER);
+        resp.setCode(e.getErrorCode());
         resp.setMessage(e.getMessage());
         return resp;
     }
