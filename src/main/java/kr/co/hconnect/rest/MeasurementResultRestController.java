@@ -136,7 +136,7 @@ public class MeasurementResultRestController {
      * @param searchResultInfo 측정결과 검색 조건
      * @return BtResultDetail btResultDetail
      */
-    @RequestMapping(value = "/result/bt", method = RequestMethod.GET)
+    @RequestMapping(value = "/results/bt", method = RequestMethod.GET)
     public BtResultDetail selectBtList(@Valid @RequestBody SearchResultInfo searchResultInfo, BindingResult bindingResult) {
         //유효성 검사
         if (bindingResult.hasErrors()) {
@@ -163,7 +163,7 @@ public class MeasurementResultRestController {
      * @param searchResultInfo 측정결과 검색 조건
      * @return HrResultDetail hrResultDetail
      */
-    @RequestMapping(value = "/result/hr", method = RequestMethod.GET)
+    @RequestMapping(value = "/results/hr", method = RequestMethod.GET)
     public HrResultDetail selectHrList(@Valid @RequestBody SearchResultInfo searchResultInfo, BindingResult bindingResult) {
         //유효성 검사
         if (bindingResult.hasErrors()) {
@@ -189,7 +189,7 @@ public class MeasurementResultRestController {
      * @param searchResultInfo 측정결과 검색 조건
      * @return SpO2ResultDetail spO2ResultDetail
      */
-    @RequestMapping(value = "/result/spO2", method = RequestMethod.GET)
+    @RequestMapping(value = "/results/spO2", method = RequestMethod.GET)
     public SpO2ResultDetail selectSpO2List(@Valid @RequestBody SearchResultInfo searchResultInfo, BindingResult bindingResult) {
         //유효성 검사
         if (bindingResult.hasErrors()) {
@@ -216,7 +216,7 @@ public class MeasurementResultRestController {
      * @param searchResultInfos 측정결과 검색 조건
      * @return StepCountResultDetail bpResultDetail
      */
-    @RequestMapping(value = "/result/stepCount", method = RequestMethod.GET)
+    @RequestMapping(value = "/results/stepCount", method = RequestMethod.GET)
     public StepCountResultDetail selectStepList(@Valid @RequestBody SearchResultInfos searchResultInfos, BindingResult bindingResult) {
         //유효성 검사
         if (bindingResult.hasErrors()) {
@@ -244,7 +244,7 @@ public class MeasurementResultRestController {
      * @param searchResultInfos 결과 타입이 2개인 측정결과 검색 조건
      * @return BpResultDetail bpResultDetail
      */
-    @RequestMapping(value = "/result/bp", method = RequestMethod.GET)
+    @RequestMapping(value = "/results/bp", method = RequestMethod.GET)
     public BpResultDetail selectBpList(@Valid @RequestBody SearchResultInfos searchResultInfos, BindingResult bindingResult) {
         //유효성 검사
         if (bindingResult.hasErrors()) {
@@ -272,7 +272,7 @@ public class MeasurementResultRestController {
      * @param searchSleepResultInfo 수면 측정결과 검색 조건
      * @return SleepTimeResultDetail sleepTimeResultDetail
      */
-    @RequestMapping(value = "/result/sleepTime", method = RequestMethod.GET)
+    @RequestMapping(value = "/results/sleepTime", method = RequestMethod.GET)
     public SleepTimeResultDetail selectSleepList(@Valid @RequestBody SearchSleepResultInfo searchSleepResultInfo
             , BindingResult bindingResult) {
         //유효성 검사
@@ -313,7 +313,7 @@ public class MeasurementResultRestController {
      * @param resultInfo 체온 측정 결과 정보
      * @return BaseResponse
      */
-    @RequestMapping(value = "/result/bt", method = RequestMethod.POST)
+    @RequestMapping(value = "/results/bt", method = RequestMethod.POST)
     public BaseResponse saveBtResult(@Valid @RequestBody SaveBtResultInfo resultInfo, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
@@ -364,7 +364,7 @@ public class MeasurementResultRestController {
      * @param resultInfo 혈압 측정 결과 정보
      * @return BaseResponse
      */
-    @RequestMapping(value = "/result/bp", method = RequestMethod.POST)
+    @RequestMapping(value = "/results/bp", method = RequestMethod.POST)
     public BaseResponse saveBpResult(@Valid @RequestBody SaveBpResultInfo resultInfo, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
@@ -422,7 +422,7 @@ public class MeasurementResultRestController {
      * @param resultInfo 심박수 측정 결과 정보
      * @return BaseResponse
      */
-    @RequestMapping(value = "/result/hr", method = RequestMethod.POST)
+    @RequestMapping(value = "/results/hr", method = RequestMethod.POST)
     public BaseResponse saveHrResult(@Valid @RequestBody SaveHrResultInfo resultInfo, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
@@ -473,7 +473,7 @@ public class MeasurementResultRestController {
      * @param resultInfo 산소포화도 측정 결과 정보
      * @return BaseResponse
      */
-    @RequestMapping(value = "/result/spO2", method = RequestMethod.POST)
+    @RequestMapping(value = "/results/spO2", method = RequestMethod.POST)
     public BaseResponse saveSpO2Result(@Valid @RequestBody SaveSpO2ResultInfo resultInfo, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
@@ -524,7 +524,7 @@ public class MeasurementResultRestController {
      * @param resultInfo 걸음수 측정 결과 정보
      * @return BaseResponse
      */
-    @RequestMapping(value = "/result/stepCount", method = RequestMethod.POST)
+    @RequestMapping(value = "/results/stepCount", method = RequestMethod.POST)
     public BaseResponse saveStepCountResult(@Valid @RequestBody SaveStepCountResultInfo resultInfo, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
@@ -582,7 +582,7 @@ public class MeasurementResultRestController {
      * @param resultInfo 수면 측정결과 저장 정보
      * @return BaseResponse
      */
-    @RequestMapping(value = "/result/sleepTime", method = RequestMethod.POST)
+    @RequestMapping(value = "/results/sleepTime", method = RequestMethod.POST)
     public BaseResponse saveSleepTimeResult(@Valid @RequestBody SaveSleepResultInfo resultInfo, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
