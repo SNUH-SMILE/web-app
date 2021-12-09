@@ -3,6 +3,7 @@ package kr.co.hconnect.service;
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import kr.co.hconnect.common.CryptoUtils;
 import kr.co.hconnect.domain.*;
+import kr.co.hconnect.exception.DuplicatePatientInfoException;
 import kr.co.hconnect.exception.DuplicatePatientLoginIdException;
 import kr.co.hconnect.exception.NotFoundPatientInfoException;
 import kr.co.hconnect.exception.NotMatchPatientPasswordException;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Locale;
@@ -97,14 +99,20 @@ public class PatientService extends EgovAbstractServiceImpl {
      * @return Patient 환자정보
      */
     public Patient savePatientInfo(Patient patient)
-        throws NotFoundPatientInfoException, DuplicatePatientLoginIdException {
+        throws NotFoundPatientInfoException, DuplicatePatientLoginIdException, DuplicatePatientInfoException {
 
         // 환자정보 신규생성
         if (patient.getFlag().equals("A")) {
             // 주민번호 기준 환자정보 존재여부 확인
             Patient patientBySsn = patientDao.selectPatientBySsn(CryptoUtils.encrypt(patient.getSsn()));
+            
             if (patientBySsn == null) {
+                // 전달받은 주민번호 기준 환자정보 존재여부 확인
                 throw new NotFoundPatientInfoException(messageSource.getMessage("message.ssn.notfound"
+                    , null, Locale.getDefault()));
+            } else if (!StringUtils.isEmpty(patientBySsn.getLoginId())) {
+                // 전달받은 주민번호 기준 로그인ID 생성여부 확인
+                throw new DuplicatePatientInfoException(messageSource.getMessage("message.patientInfo.duplicate"
                     , null, Locale.getDefault()));
             }
 
@@ -116,6 +124,13 @@ public class PatientService extends EgovAbstractServiceImpl {
             }
 
             patient.setPatientId(patientBySsn.getPatientId());
+
+            // 비밀번호 암호화
+            patient.setPassword(CryptoUtils.encrypt(patient.getPassword()));
+
+            // 환자정보 생성 - 업데이트
+            patientDao.createPatientInfo(patient);
+
         } else if (patient.getFlag().equals("M")) {
             // 환자정보 수정
             Patient patientByLoginId = patientDao.selectPatientByLoginId(patient.getLoginId());
@@ -126,13 +141,10 @@ public class PatientService extends EgovAbstractServiceImpl {
             }
 
             patient.setPatientId(patientByLoginId.getPatientId());
+
+            // 환자정보 업데이트
+            patientDao.updatePatientInfo(patient);
         }
-
-        // 비밀번호 암호화
-        patient.setPassword(CryptoUtils.encrypt(patient.getPassword()));
-
-        // 환자정보 업데이트
-        int affectedRow = patientDao.updatePatientInfo(patient);
 
         return patientDao.selectPatientByLoginId(patient.getLoginId());
     }

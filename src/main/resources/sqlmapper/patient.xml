@@ -85,19 +85,35 @@
 	<update id="addPatientInfo" parameterType="kr.co.hconnect.domain.Patient">
 	<![CDATA[
 		UPDATE PATIENT
-		   SET LOGIN_ID   = #{loginId}
-		     , PASSWORD   = #{password}
-		     , PATIENT_NM = #{patientNm}
-		     , BIRTH_DATE = #{birthDate}
-		     , SEX        = #{sex}
-		     , CELL_PHONE = #{cellPhone}
-		     , ZIP_CODE   = #{zipCode}
-		     , ADDRESS1   = #{address1}
-		     , ADDRESS2   = #{address2}
-			 , UPD_DT     = NOW()
+		   SET LOGIN_ID             = #{loginId}
+		     , PASSWORD             = #{password}
+		     , PATIENT_NM           = #{patientNm}
+		     , BIRTH_DATE           = #{birthDate}
+		     , SEX                  = #{sex}
+		     , CELL_PHONE           = #{cellPhone}
+		     , GUARDIAN_CELL_PHONE  = #{guardianCellPhone}
+		     , ZIP_CODE             = #{zipCode}
+		     , ADDRESS1             = #{address1}
+		     , ADDRESS2             = #{address2}
+			 , UPD_DT               = NOW()
 		 WHERE PATIENT_ID = #{patientId};
 
 	]]>
+	</update>
+
+    <!-- 환자 정보 업데이트 -->
+    <update id="updatePatientInfo" parameterType="kr.co.hconnect.domain.Patient">
+	<![CDATA[
+        UPDATE PATIENT
+           SET CELL_PHONE           = #{cellPhone}
+             , GUARDIAN_CELL_PHONE  = #{guardianCellPhone}
+             , ZIP_CODE             = #{zipCode}
+             , ADDRESS1             = #{address1}
+             , ADDRESS2             = #{address2}
+             , UPD_DT               = NOW()
+         WHERE PATIENT_ID = #{patientId};
+
+    ]]>
 	</update>
 
     <!-- 환자 비밀번호 변경-LoginId 기준 -->

@@ -1,10 +1,7 @@
 package kr.co.hconnect.rest;
 
 import kr.co.hconnect.domain.*;
-import kr.co.hconnect.exception.DuplicatePatientLoginIdException;
-import kr.co.hconnect.exception.InvalidRequestArgumentException;
-import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
-import kr.co.hconnect.exception.NotFoundPatientInfoException;
+import kr.co.hconnect.exception.*;
 import kr.co.hconnect.service.PatientService;
 import kr.co.hconnect.service.QantnStatusService;
 import org.slf4j.Logger;
@@ -12,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -82,40 +80,71 @@ public class PatientRestController {
     }
 
     /**
-     * 환자정보 저장
+     * 회원가입
      *
      * @param patient 환자 저장 정보
      * @return BaseResponse
      */
     @RequestMapping(value = "/patient", method = RequestMethod.POST)
-    public BaseResponse savePatient(@Valid @RequestBody Patient patient, BindingResult result) {
+    public BaseResponse createPatient(@Validated(PatientValidationGroups.add.class) @RequestBody Patient patient, BindingResult result) {
         if (result.hasErrors()) {
             throw new InvalidRequestArgumentException(result);
         }
 
-        BaseResponse baseResponse = new BaseResponse();
+        // 신규 모드 설정
+        patient.setFlag("A");
 
-        // 신규 가입일 경우 데이터 확인
-        if (patient.getFlag().equals("A")) {
-            if (!patient.getSsn().matches("^[0-9]{13}")) {
-                // 주민번호 입력형태 확인
-                baseResponse.setCode("99");
-                patient.setMessage(messageSource.getMessage("message.ssn.checked", null, Locale.getDefault()));
-                return baseResponse;
-            }
-        }
+        BaseResponse baseResponse = new BaseResponse();
 
         try {
             // 환자정보 저장
             Patient savePatientInfo = patientService.savePatientInfo(patient);
 
             baseResponse.setCode("00");
-            patient.setMessage(messageSource.getMessage("message.savePatientInfo.success", null, Locale.getDefault()));
+            baseResponse.setMessage(messageSource.getMessage("message.savePatientInfo.success", null, Locale.getDefault()));
+        } catch (NotFoundPatientInfoException e) {
+            baseResponse.setCode("11");
+            baseResponse.setMessage(e.getMessage());
+        } catch (DuplicatePatientInfoException e) {
+            baseResponse.setCode("12");
+            baseResponse.setMessage(e.getMessage());
+        }
+        catch (DuplicatePatientLoginIdException e) {
+            baseResponse.setCode("13");
+            baseResponse.setMessage(e.getMessage());
+        }
+
+        return baseResponse;
+    }
+
+    /**
+     * 환자정보수정
+     *
+     * @param patient 환자 저장 정보
+     * @return BaseResponse
+     */
+    @RequestMapping(value = "/patient", method = RequestMethod.PUT)
+    public BaseResponse updatePatient(@Validated(PatientValidationGroups.modify.class) @RequestBody Patient patient, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new InvalidRequestArgumentException(result);
+        }
+
+        // 수정 모드 설정
+        patient.setFlag("M");
+
+        BaseResponse baseResponse = new BaseResponse();
+
+        try {
+            // 환자정보 저장
+            Patient savePatientInfo = patientService.savePatientInfo(patient);
+
+            baseResponse.setCode("00");
+            baseResponse.setMessage(messageSource.getMessage("message.savePatientInfo.success", null, Locale.getDefault()));
         } catch (NotFoundPatientInfoException e) {
             baseResponse.setCode("11");
             baseResponse.setMessage(e.getMessage());
         } catch (DuplicatePatientLoginIdException e) {
-            baseResponse.setCode("12");
+            baseResponse.setCode("13");
             baseResponse.setMessage(e.getMessage());
         }
 
@@ -269,7 +298,7 @@ public class PatientRestController {
             saveQuarantineStatusInfo.setMessage(messageSource.getMessage("message.searchQuarantine.success", null, Locale.getDefault()));
             saveQuarantineStatusInfo.setQuarantineStatusDiv(qantnStatus.getQantnStatusDiv());
         } else {
-            saveQuarantineStatusInfo.setCode("13");
+            saveQuarantineStatusInfo.setCode("14");
             // saveQuarantineStatusInfo.setMessage("격리상태 내역이 존재하지 않습니다.");
             saveQuarantineStatusInfo.setMessage(messageSource.getMessage("message.searchQuarantine.notfound", null, Locale.getDefault()));
         }

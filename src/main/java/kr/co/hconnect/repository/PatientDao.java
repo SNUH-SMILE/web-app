@@ -67,8 +67,18 @@ public class PatientDao extends EgovAbstractMapper {
      * @param patient 환자정보
      * @return affectedRow
      */
-    public int updatePatientInfo(Patient patient) {
+    public int createPatientInfo(Patient patient) {
         return update("kr.co.hconnect.sqlmapper.addPatientInfo", patient);
+    }
+
+    /**
+     * 환자 정보 업데이트
+     *
+     * @param patient 환자정보
+     * @return affectedRow
+     */
+    public int updatePatientInfo(Patient patient) {
+        return update("kr.co.hconnect.sqlmapper.updatePatientInfo", patient);
     }
 
 	/**
