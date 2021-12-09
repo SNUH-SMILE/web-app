@@ -283,7 +283,7 @@ public class PatientRestController {
      * @param loginId 로그인ID VO
      * @return SaveQuarantineStatusInfo
      */
-    @RequestMapping(value = "/quarantine", method = RequestMethod.GET)
+    @RequestMapping(value = "/quarantineStatus", method = RequestMethod.GET)
     public SaveQuarantineStatusInfo selectQuarantine(@Valid @RequestBody LoginId loginId, BindingResult result) {
         if (result.hasErrors()) {
             throw new InvalidRequestArgumentException(result);

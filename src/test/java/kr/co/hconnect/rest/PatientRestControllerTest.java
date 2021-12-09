@@ -368,7 +368,7 @@ public class PatientRestControllerTest {
                 "  \"loginId\": \"testshy\"\n" +
                 "}";
 
-        mvc.perform(get("/api/quarantine")
+        mvc.perform(get("/api/quarantineStatus")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -387,7 +387,7 @@ public class PatientRestControllerTest {
                 "  \"loginId\": \"testshydup1\"\n" +
                 "}";
 
-        mvc.perform(get("/api/quarantine")
+        mvc.perform(get("/api/quarantineStatus")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
