@@ -5,17 +5,18 @@
     <!-- 환자정보 조회-로그인ID 기준 -->
 	<select id="selectPatientByLoginId" parameterType="String" resultType="kr.co.hconnect.domain.Patient">
 	<![CDATA[
-		SELECT PATIENT_ID -- 환자ID
-             , LOGIN_ID   -- 로그인ID
-             , PASSWORD   -- 비밀번호
-             , PATIENT_NM -- 성명
-             , SSN        -- 주민번호
-             , BIRTH_DATE -- 생년월일
-             , SEX        -- 성별
-             , CELL_PHONE -- 휴대폰
-             , ZIP_CODE   -- 우편번호
-             , ADDRESS1   -- 주소
-             , ADDRESS2   -- 상세주소
+		SELECT PATIENT_ID           -- 환자ID
+             , LOGIN_ID             -- 로그인ID
+             , PASSWORD             -- 비밀번호
+             , PATIENT_NM           -- 성명
+             , SSN                  -- 주민번호
+             , BIRTH_DATE           -- 생년월일
+             , SEX                  -- 성별
+             , CELL_PHONE           -- 휴대폰
+		     , GUARDIAN_CELL_PHONE  -- 보호자연락처
+             , ZIP_CODE             -- 우편번호
+             , ADDRESS1             -- 주소
+             , ADDRESS2             -- 상세주소
           FROM PATIENT
          WHERE LOGIN_ID = #{loginId}
 	]]>
@@ -24,17 +25,18 @@
 	<!-- 환자정보 조회-주민번호(암호화) 기준 -->
 	<select id="selectPatientBySsn" parameterType="String" resultType="kr.co.hconnect.domain.Patient">
 	<![CDATA[
-		SELECT PATIENT_ID		-- 환자ID
-			 , LOGIN_ID         -- 로그인ID
-			 , PASSWORD         -- 비밀번호
-			 , PATIENT_NM       -- 성명
-			 , SSN              -- 주민번호
-			 , BIRTH_DATE       -- 생년월일
-			 , SEX              -- 성별
-			 , CELL_PHONE       -- 휴대폰
-			 , ZIP_CODE         -- 우편번호
-			 , ADDRESS1         -- 주소
-			 , ADDRESS2         -- 상세주소
+		SELECT PATIENT_ID		    -- 환자ID
+			 , LOGIN_ID             -- 로그인ID
+			 , PASSWORD             -- 비밀번호
+			 , PATIENT_NM           -- 성명
+			 , SSN                  -- 주민번호
+			 , BIRTH_DATE           -- 생년월일
+			 , SEX                  -- 성별
+			 , CELL_PHONE           -- 휴대폰
+		     , GUARDIAN_CELL_PHONE  -- 보호자연락처
+			 , ZIP_CODE             -- 우편번호
+			 , ADDRESS1             -- 주소
+			 , ADDRESS2             -- 상세주소
 		  FROM PATIENT
 		 WHERE SSN = #{ssn}
 	]]>
@@ -43,17 +45,18 @@
 	<!-- 환자정보 조회-아이디 검색 조건 정보 기준 -->
 	<select id="selectPatientBySearchLoginIdInfo" parameterType="kr.co.hconnect.domain.SearchLoginIdInfo" resultType="kr.co.hconnect.domain.Patient">
 	<![CDATA[
-		SELECT PATIENT_ID		-- 환자ID
-			 , LOGIN_ID         -- 로그인ID
-			 , PASSWORD         -- 비밀번호
-			 , PATIENT_NM       -- 성명
-			 , SSN              -- 주민번호
-			 , BIRTH_DATE       -- 생년월일
-			 , SEX              -- 성별
-			 , CELL_PHONE       -- 휴대폰
-			 , ZIP_CODE         -- 우편번호
-			 , ADDRESS1         -- 주소
-			 , ADDRESS2         -- 상세주소
+        SELECT PATIENT_ID		    -- 환자ID
+             , LOGIN_ID             -- 로그인ID
+             , PASSWORD             -- 비밀번호
+             , PATIENT_NM           -- 성명
+             , SSN                  -- 주민번호
+             , BIRTH_DATE           -- 생년월일
+             , SEX                  -- 성별
+             , CELL_PHONE           -- 휴대폰
+             , GUARDIAN_CELL_PHONE  -- 보호자연락처
+             , ZIP_CODE             -- 우편번호
+             , ADDRESS1             -- 주소
+             , ADDRESS2             -- 상세주소
 		  FROM PATIENT
 		 WHERE PATIENT_NM = #{patientNm}
            AND CELL_PHONE = #{cellPhone}
@@ -63,17 +66,18 @@
 	<!-- 환자정보 조회-개인정보 확인 검색 조건 기준 -->
 	<select id="selectPatientBySearchExistLoginInfo" parameterType="kr.co.hconnect.domain.SearchExistLoginInfo" resultType="kr.co.hconnect.domain.Patient">
 	<![CDATA[
-		SELECT PATIENT_ID		-- 환자ID
-			 , LOGIN_ID         -- 로그인ID
-			 , PASSWORD         -- 비밀번호
-			 , PATIENT_NM       -- 성명
-			 , SSN              -- 주민번호
-			 , BIRTH_DATE       -- 생년월일
-			 , SEX              -- 성별
-			 , CELL_PHONE       -- 휴대폰
-			 , ZIP_CODE         -- 우편번호
-			 , ADDRESS1         -- 주소
-			 , ADDRESS2         -- 상세주소
+        SELECT PATIENT_ID		    -- 환자ID
+             , LOGIN_ID             -- 로그인ID
+             , PASSWORD             -- 비밀번호
+             , PATIENT_NM           -- 성명
+             , SSN                  -- 주민번호
+             , BIRTH_DATE           -- 생년월일
+             , SEX                  -- 성별
+             , CELL_PHONE           -- 휴대폰
+             , GUARDIAN_CELL_PHONE  -- 보호자연락처
+             , ZIP_CODE             -- 우편번호
+             , ADDRESS1             -- 주소
+             , ADDRESS2             -- 상세주소
 	      FROM PATIENT
 		 WHERE LOGIN_ID = #{loginId}
 		   AND PATIENT_NM = #{patientNm}
