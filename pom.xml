@@ -147,7 +147,6 @@
             <scope>provided</scope>
         </dependency>
 
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
@@ -160,7 +159,36 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
-    
+
+    <distributionManagement>
+        <repository>
+            <id>SMILE-DEV</id>
+            <url>http://210.116.119.130:8080/manager/text</url>
+        </repository>
+    </distributionManagement>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M5</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <url>http://210.116.119.130:8080/manager/text</url>
+                    <server>SMILE-DEV</server>
+                    <path>/</path>
+                    <update>true</update>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
