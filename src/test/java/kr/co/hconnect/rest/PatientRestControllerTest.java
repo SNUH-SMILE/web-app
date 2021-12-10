@@ -1,5 +1,6 @@
 package kr.co.hconnect.rest;
 
+import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.common.RestControllerExceptionHandler;
 import kr.co.hconnect.service.PatientService;
 import kr.co.hconnect.service.QantnStatusService;
@@ -84,7 +85,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("00")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
             .andDo(print());
     }
 
@@ -102,7 +103,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("11")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.NOT_FOUND_PATIENT_INFO.getCode())))
             .andDo(print());
     }
 
@@ -130,7 +131,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("00")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
             .andDo(print());
     }
 
@@ -153,7 +154,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("00")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
             .andDo(print());
     }
 
@@ -176,7 +177,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("11")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.NOT_FOUND_PATIENT_INFO.getCode())))
             .andDo(print());
     }
 
@@ -194,7 +195,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("00")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
             .andExpect(jsonPath("$.dupYn", is("Y")))
             .andDo(print());
     }
@@ -213,7 +214,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("00")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
             .andExpect(jsonPath("$.dupYn", is("N")))
             .andDo(print());
     }
@@ -233,7 +234,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("00")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
             .andDo(print());
     }
 
@@ -252,7 +253,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("11")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.NOT_FOUND_PATIENT_INFO.getCode())))
             .andDo(print());
     }
 
@@ -271,7 +272,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("00")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
             .andExpect(jsonPath("$.loginId", is("testshy")))
             .andDo(print());
     }
@@ -291,7 +292,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("11")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.NOT_FOUND_PATIENT_INFO.getCode())))
             .andExpect(jsonPath("$.message", is("환자정보가 존재하지 않습니다")))
             .andDo(print());
     }
@@ -311,7 +312,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("12")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.DUPLICATE_PATIENT_INFO.getCode())))
             .andExpect(jsonPath("$.message", is("동일한 환자정보가 존재합니다")))
             .andDo(print());
     }
@@ -332,7 +333,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("00")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
             .andExpect(jsonPath("$.existYn", is("Y")))
             .andDo(print());
     }
@@ -353,7 +354,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("00")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
             .andExpect(jsonPath("$.existYn", is("N")))
             .andDo(print());
     }
@@ -372,7 +373,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("00")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
             .andExpect(jsonPath("$.quarantineStatusDiv", is("1")))
             .andDo(print());
     }
@@ -391,7 +392,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("14")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.NOT_FOUND_QUARANTINE_INFO.getCode())))
             .andExpect(jsonPath("$.quarantineStatusDiv", is(IsNull.nullValue())))
             .andDo(print());
     }
@@ -411,7 +412,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("00")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
             .andDo(print());
     }
 
@@ -430,7 +431,7 @@ public class PatientRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().is4xxClientError())
-            .andExpect(jsonPath("$.code", is("21")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode())))
             .andDo(print());
     }
 }

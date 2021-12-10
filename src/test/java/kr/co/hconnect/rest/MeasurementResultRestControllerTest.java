@@ -1,5 +1,6 @@
 package kr.co.hconnect.rest;
 
+import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.common.RestControllerExceptionHandler;
 import kr.co.hconnect.service.AdmissionService;
 import kr.co.hconnect.service.MeasurementResultService;
@@ -74,7 +75,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.existYn").value("Y"))
             .andDo(print());
     }
@@ -94,7 +95,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.existYn").value("N"))
             .andDo(print());
     }
@@ -111,7 +112,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
     }
@@ -129,7 +130,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("21"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()))
             .andExpect(jsonPath("$.message").value("내원중인 격리/입소내역이 존재하지 않습니다"))
             .andDo(print());
     }
@@ -149,7 +150,7 @@ public class MeasurementResultRestControllerTest {
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .content(jsonString))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value("측정결과 조회 완료"))
             .andExpect(jsonPath("$.btList").isNotEmpty())
             .andExpect(jsonPath("$.btList[0].bt").value("36"))
@@ -169,7 +170,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value("측정결과가 존재하지 않습니다"))
             .andExpect(jsonPath("$.btList").isEmpty())
             .andDo(print());
@@ -187,7 +188,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             .andExpect(jsonPath("$.message",anyOf(
                 // is("사용자 아이디가 누락되었습니다측정일자가 누락되었습니다"),
                 is("{validation.null.loginId}{validation.null.resultDate}"),
@@ -210,7 +211,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             // .andExpect(jsonPath("$.message").value("사용자 아이디가 누락되었습니다"))
             .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
@@ -230,7 +231,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             .andExpect(jsonPath("$.message").value("{validation.null.resultDate}"))
             .andDo(print());
     }
@@ -249,7 +250,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("21"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()))
             .andExpect(jsonPath("$.message").value("내원중인 격리/입소내역이 존재하지 않습니다"))
             .andDo(print());
     }
@@ -270,7 +271,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value("측정결과 조회 완료"))
             .andExpect(jsonPath("$.bpList").isNotEmpty())
             .andExpect(jsonPath("$.bpList[0].dbp").value("50"))
@@ -291,7 +292,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             // .andExpect(jsonPath("$.message").value("혈압 상세목록이 없습니다"))
             .andExpect(jsonPath("$.message").value("측정결과가 존재하지 않습니다"))
             .andExpect(jsonPath("$.bpList").isEmpty())
@@ -310,7 +311,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             .andExpect(jsonPath("$.message",anyOf(
                 // is("사용자 아이디가 누락되었습니다측정일자가 누락되었습니다"),
                 is("{validation.null.loginId}{validation.null.resultDate}"),
@@ -333,7 +334,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             // .andExpect(jsonPath("$.message").value("사용자 아이디가 누락되었습니다"))
             .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
@@ -353,7 +354,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             // .andExpect(jsonPath("$.message").value("측정일자가 누락되었습니다"))
             .andExpect(jsonPath("$.message").value("{validation.null.resultDate}"))
             .andDo(print());
@@ -373,7 +374,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("21"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()))
             .andExpect(jsonPath("$.message").value("내원중인 격리/입소내역이 존재하지 않습니다"))
             .andDo(print());
     }
@@ -394,7 +395,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value("측정결과 조회 완료"))
             .andExpect(jsonPath("$.hrList").isNotEmpty())
             .andExpect(jsonPath("$.hrList[0].hr").value("95"))
@@ -414,7 +415,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             // .andExpect(jsonPath("$.message").value("심박수 상세목록이 없습니다"))
             .andExpect(jsonPath("$.message").value("측정결과가 존재하지 않습니다"))
             .andExpect(jsonPath("$.hrList").isEmpty())
@@ -433,7 +434,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             .andExpect(jsonPath("$.message",anyOf(
                 // is("사용자 아이디가 누락되었습니다측정일자가 누락되었습니다"),
                 is("{validation.null.loginId}{validation.null.resultDate}"),
@@ -456,7 +457,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             // .andExpect(jsonPath("$.message").value("사용자 아이디가 누락되었습니다"))
             .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
@@ -476,7 +477,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             // .andExpect(jsonPath("$.message").value("측정일자가 누락되었습니다"))
             .andExpect(jsonPath("$.message").value("{validation.null.resultDate}"))
             .andDo(print());
@@ -496,7 +497,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("21"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()))
             .andExpect(jsonPath("$.message").value("내원중인 격리/입소내역이 존재하지 않습니다"))
             .andDo(print());
     }
@@ -517,7 +518,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             // .andExpect(jsonPath("$.message").value("산소포화도 상세목록 조회 되었습니다"))
             .andExpect(jsonPath("$.message").value("측정결과 조회 완료"))
             .andExpect(jsonPath("$.spO2List").isNotEmpty())
@@ -538,7 +539,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             // .andExpect(jsonPath("$.message").value("산소포화도 상세목록이 없습니다"))
             .andExpect(jsonPath("$.message").value("측정결과가 존재하지 않습니다"))
             .andExpect(jsonPath("$.spO2List").isEmpty())
@@ -557,7 +558,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             .andExpect(jsonPath("$.message",anyOf(
                 // is("사용자 아이디가 누락되었습니다측정일자가 누락되었습니다"),
                 is("{validation.null.loginId}{validation.null.resultDate}"),
@@ -580,7 +581,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             // .andExpect(jsonPath("$.message").value("사용자 아이디가 누락되었습니다"))
             .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
@@ -600,7 +601,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             .andExpect(jsonPath("$.message").value("{validation.null.resultDate}"))
             .andDo(print());
     }
@@ -619,7 +620,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("21"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()))
             .andExpect(jsonPath("$.message").value("내원중인 격리/입소내역이 존재하지 않습니다"))
             .andDo(print());
     }
@@ -639,7 +640,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value("측정결과 조회 완료"))
             .andExpect(jsonPath("$.stepCountList").isNotEmpty())
             .andExpect(jsonPath("$.stepCountList[0].stepCount").value("150"))
@@ -660,7 +661,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value("측정결과가 존재하지 않습니다"))
             .andExpect(jsonPath("$.stepCountList").isEmpty())
             .andDo(print());
@@ -678,7 +679,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             .andExpect(jsonPath("$.message",anyOf(
                 // is("사용자 아이디가 누락되었습니다측정일자가 누락되었습니다"),
                 is("{validation.null.loginId}{validation.null.resultDate}"),
@@ -701,7 +702,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             // .andExpect(jsonPath("$.message").value("사용자 아이디가 누락되었습니다"))
             .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
@@ -721,7 +722,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             // .andExpect(jsonPath("$.message").value("측정일자가 누락되었습니다"))
             .andExpect(jsonPath("$.message").value("{validation.null.resultDate}"))
             .andDo(print());
@@ -741,7 +742,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("21"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()))
             .andExpect(jsonPath("$.message").value("내원중인 격리/입소내역이 존재하지 않습니다"))
             .andDo(print());
     }
@@ -764,7 +765,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             // .andExpect(jsonPath("$.message").value("수면시간 상세목록이 조회 되었습니다"))
             .andExpect(jsonPath("$.message").value("측정결과 조회 완료"))
             .andExpect(jsonPath("$.totalSleepTime").value("1"))
@@ -793,7 +794,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value("측정결과가 존재하지 않습니다"))
             .andExpect(jsonPath("$.totalSleepTime").value("0"))
             .andExpect(jsonPath("$.sleepTimeList").isEmpty())
@@ -813,7 +814,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             .andExpect(jsonPath("$.message",anyOf(
                        // is("사용자 아이디가 누락되었습니다측정시작일시가 누락되었습니다측정종료일시가 누락되었습니다"),
                        is("{validation.null.loginId}{validation.null.resultStartDateTime}{validation.null.resultEndDateTime}"),
@@ -846,7 +847,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             // .andExpect(jsonPath("$.message").value("사용자 아이디가 누락되었습니다"))
             .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
@@ -865,7 +866,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             .andExpect(jsonPath("$.message",anyOf(
                        // is("측정시작일시가 누락되었습니다측정종료일시가 누락되었습니다"),
                        is("{validation.null.resultStartDateTime}{validation.null.resultEndDateTime}"),
@@ -889,7 +890,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             // .andExpect(jsonPath("$.message").value("측정시작일시가 누락되었습니다"))
             .andExpect(jsonPath("$.message").value("{validation.null.resultStartDateTime}"))
             .andDo(print());
@@ -909,7 +910,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             // .andExpect(jsonPath("$.message").value("측정종료일시가 누락되었습니다"))
             .andExpect(jsonPath("$.message").value("{validation.null.resultEndDateTime}"))
             .andDo(print());
@@ -929,7 +930,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("21"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()))
             .andExpect(jsonPath("$.message").value("내원중인 격리/입소내역이 존재하지 않습니다"))
             .andDo(print());
     }
@@ -948,7 +949,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value(containsString("측정결과가 존재하지 않습니다")))
             .andExpect(jsonPath("$.patientNm").value("P123456789"))
             .andExpect(jsonPath("$.admissionDate").value("20211205"))
@@ -986,7 +987,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value(containsString("측정결과 조회 완료")))
             .andExpect(jsonPath("$.patientNm").value("P123456789"))
             .andExpect(jsonPath("$.admissionDate").value("20211205"))
@@ -1033,7 +1034,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             // .andExpect(jsonPath("$.message").value("사용자 아이디가 누락되었습니다"))
             .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
@@ -1051,7 +1052,7 @@ public class MeasurementResultRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("21"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()))
             .andExpect(jsonPath("$.message").value("내원중인 격리/입소내역이 존재하지 않습니다"))
             .andDo(print());
     }
@@ -1077,7 +1078,7 @@ public class MeasurementResultRestControllerTest {
         mvc.perform(post("/api/results/bt")
                .contentType(MediaType.APPLICATION_JSON_UTF8)
                .content(jsonString))
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value("측정결과 저장 완료"))
             .andDo(print());
     }
@@ -1101,7 +1102,7 @@ public class MeasurementResultRestControllerTest {
         mvc.perform(post("/api/results/bt")
                .contentType(MediaType.APPLICATION_JSON_UTF8)
                .content(jsonString))
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
             .andDo(print());
     }
@@ -1125,7 +1126,7 @@ public class MeasurementResultRestControllerTest {
         mvc.perform(post("/api/results/bt")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
-            .andExpect(jsonPath("$.code").value("99"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
             .andExpect(jsonPath("$.message").value("{validation.null.result}"))
             .andDo(print());
     }
@@ -1151,7 +1152,7 @@ public class MeasurementResultRestControllerTest {
         mvc.perform(post("/api/results/hr")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value("측정결과 저장 완료"))
             .andDo(print());
     }
@@ -1177,7 +1178,7 @@ public class MeasurementResultRestControllerTest {
         mvc.perform(post("/api/results/spO2")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value("측정결과 저장 완료"))
             .andDo(print());
     }
@@ -1203,7 +1204,7 @@ public class MeasurementResultRestControllerTest {
         mvc.perform(post("/api/results/bp")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             // .andExpect(jsonPath("$.message").value("혈압 측정결과 저장 완료"))
             .andExpect(jsonPath("$.message").value("측정결과 저장 완료"))
             .andDo(print());
@@ -1230,7 +1231,7 @@ public class MeasurementResultRestControllerTest {
         mvc.perform(post("/api/results/stepCount")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value("측정결과 저장 완료"))
             .andDo(print());
     }
@@ -1256,7 +1257,7 @@ public class MeasurementResultRestControllerTest {
         mvc.perform(post("/api/results/sleepTime")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonString))
-            .andExpect(jsonPath("$.code").value("00"))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value("측정결과 저장 완료"))
             .andDo(print());
     }

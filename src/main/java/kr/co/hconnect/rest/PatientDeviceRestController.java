@@ -1,5 +1,6 @@
 package kr.co.hconnect.rest;
 
+import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.domain.BaseResponse;
 import kr.co.hconnect.domain.PatientDevice;
 import kr.co.hconnect.domain.SavePatientDeviceInfo;
@@ -69,7 +70,7 @@ public class PatientDeviceRestController {
         patientDeviceService.insertPatientDevice(savePatientDeviceInfo.getPatientDeviceList());
 
         BaseResponse baseResponse = new BaseResponse();
-        baseResponse.setCode("00");
+        baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
         // baseResponse.setMessage("환자별 장비 저장 완료.");
         baseResponse.setMessage(messageSource.getMessage("message.success.savePatientDevice", null, Locale.getDefault()));
 

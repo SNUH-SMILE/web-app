@@ -1,5 +1,6 @@
 package kr.co.hconnect.rest;
 
+import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.common.RestControllerExceptionHandler;
 import kr.co.hconnect.service.AdmissionService;
 import kr.co.hconnect.service.PatientDeviceService;
@@ -160,7 +161,7 @@ public class PatientDeviceRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("00")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
             .andDo(print());
     }
 
@@ -192,7 +193,7 @@ public class PatientDeviceRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().is4xxClientError())
-            .andExpect(jsonPath("$.code", is("21")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode())))
             .andDo(print());
     }
 
@@ -224,7 +225,7 @@ public class PatientDeviceRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().is4xxClientError())
-            .andExpect(jsonPath("$.code", is("22")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.DUPLICATE_ACTIVE_ADMISSION_INFO.getCode())))
             .andDo(print());
     }
 
@@ -255,7 +256,7 @@ public class PatientDeviceRestControllerTest {
         mvc.perform(post("/api/device")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
-            .andExpect(jsonPath("$.code", is("99")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode())))
             .andDo(print());
     }
 }

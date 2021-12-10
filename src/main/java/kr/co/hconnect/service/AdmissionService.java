@@ -3,6 +3,7 @@ package kr.co.hconnect.service;
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.rte.fdl.cmmn.exception.FdlException;
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
+import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
 import kr.co.hconnect.repository.AdmissionDao;
 import kr.co.hconnect.repository.PatientDao;
@@ -80,10 +81,12 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 		List<AdmissionVO> admissionVOS = dao.selectActiveAdmissionListByLoginId(loginId);
 
 		if (admissionVOS == null || admissionVOS.size() == 0) {
-			throw new NotFoundAdmissionInfoException("21", messageSource.getMessage("message.notfound.admissionInfo"
+			throw new NotFoundAdmissionInfoException(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()
+                , messageSource.getMessage("message.notfound.admissionInfo"
                 , null, Locale.getDefault()));
 		} else if (admissionVOS.size() > 1) {
-            throw new NotFoundAdmissionInfoException("22", messageSource.getMessage("message.duplicate.admissionInfo"
+            throw new NotFoundAdmissionInfoException(ApiResponseCode.DUPLICATE_ACTIVE_ADMISSION_INFO.getCode()
+                , messageSource.getMessage("message.duplicate.admissionInfo"
                 , null, Locale.getDefault()));
 		}
 

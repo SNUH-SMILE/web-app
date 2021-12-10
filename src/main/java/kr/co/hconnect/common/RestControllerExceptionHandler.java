@@ -19,7 +19,7 @@ public class RestControllerExceptionHandler {
     /**
      * 유효하지 않은 요청 파라메터 코드
      */
-    public static final String CODE_INVALID_REQUEST_PARAMETER = "99";
+    public static final String CODE_INVALID_REQUEST_PARAMETER = ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode();
 
     /**
      * {@link InvalidFormatException} 예외 처리

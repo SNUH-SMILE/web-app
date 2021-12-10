@@ -1,5 +1,6 @@
 package kr.co.hconnect.rest;
 
+import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.common.ItemId;
 import kr.co.hconnect.common.ResultType;
 import kr.co.hconnect.domain.*;
@@ -91,11 +92,11 @@ public class MeasurementResultRestController {
         resultListsSize += mainContentDetail.getTodaySleepTimeList().size();
         resultListsSize += mainContentDetail.getTodayStepCountList().size();
         if(resultListsSize>0){
-            mainContentDetail.setCode("00");
+            mainContentDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             mainContentDetail.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
         }
         else if(resultListsSize==0){
-            mainContentDetail.setCode("00");
+            mainContentDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             mainContentDetail.setMessage(messageSource.getMessage("message.notfound.searchResultList", null, Locale.getDefault()));
         }
         return mainContentDetail;
@@ -116,7 +117,7 @@ public class MeasurementResultRestController {
 
         int result = measurementResultService.unReadNotice(getAdmissionId(loginId.getLoginId()));
         ExistResult existResult = new ExistResult();
-        existResult.setCode("00");
+        existResult.setCode(ApiResponseCode.SUCCESS.getCode());
         // 알림 있을때
         if (result > 0) {
             existResult.setMessage(messageSource.getMessage("message.found.notice", null, Locale.getDefault()));;
@@ -146,12 +147,12 @@ public class MeasurementResultRestController {
         BtResultDetail btResultDetail = new BtResultDetail();
         btResultDetail.setBtList(measurementResultService.selectBtLIst(searchResultInfo));
         if(btResultDetail.getBtList().size() > 0){
-            btResultDetail.setCode("00");
+            btResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             btResultDetail.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
 
         }
         else if(btResultDetail.getBtList().size() == 0){
-            btResultDetail.setCode("00");
+            btResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             btResultDetail.setMessage(messageSource.getMessage("message.notfound.searchResultList", null, Locale.getDefault()));
         }
         return btResultDetail;
@@ -173,11 +174,11 @@ public class MeasurementResultRestController {
         HrResultDetail hrResultDetail = new HrResultDetail();
         hrResultDetail.setHrList(measurementResultService.selectHrList(searchResultInfo));
         if(hrResultDetail.getHrList().size() > 0){
-            hrResultDetail.setCode("00");
+            hrResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             hrResultDetail.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
         }
         else if(hrResultDetail.getHrList().size() == 0){
-            hrResultDetail.setCode("00");
+            hrResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             hrResultDetail.setMessage(messageSource.getMessage("message.notfound.searchResultList", null, Locale.getDefault()));
         }
         return hrResultDetail;
@@ -200,11 +201,11 @@ public class MeasurementResultRestController {
         SpO2ResultDetail spO2ResultDetail = new SpO2ResultDetail();
         spO2ResultDetail.setSpO2List(measurementResultService.selectSpO2List(searchResultInfo));
         if(spO2ResultDetail.getSpO2List().size() > 0){
-            spO2ResultDetail.setCode("00");
+            spO2ResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             spO2ResultDetail.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
         }
         else if(spO2ResultDetail.getSpO2List().size() == 0){
-            spO2ResultDetail.setCode("00");
+            spO2ResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             spO2ResultDetail.setMessage(messageSource.getMessage("message.notfound.searchResultList", null, Locale.getDefault()));
         }
         return spO2ResultDetail;
@@ -228,11 +229,11 @@ public class MeasurementResultRestController {
         StepCountResultDetail stepCountResultDetail = new StepCountResultDetail();
         stepCountResultDetail.setStepCountList(measurementResultService.selectStepList(searchResultInfos));
         if(stepCountResultDetail.getStepCountList().size() > 0){
-            stepCountResultDetail.setCode("00");
+            stepCountResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             stepCountResultDetail.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
         }
         else if(stepCountResultDetail.getStepCountList().size() == 0){
-            stepCountResultDetail.setCode("00");
+            stepCountResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             stepCountResultDetail.setMessage(messageSource.getMessage("message.notfound.searchResultList", null, Locale.getDefault()));
         }
         return stepCountResultDetail;
@@ -255,11 +256,11 @@ public class MeasurementResultRestController {
         BpResultDetail bpResultDetail = new BpResultDetail();
         bpResultDetail.setBpList(measurementResultService.selectBpList(searchResultInfos));
         if(bpResultDetail.getBpList().size() > 0){
-            bpResultDetail.setCode("00");
+            bpResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             bpResultDetail.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
         }
         else if(bpResultDetail.getBpList().size() == 0){
-            bpResultDetail.setCode("00");
+            bpResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             bpResultDetail.setMessage(messageSource.getMessage("message.notfound.searchResultList", null, Locale.getDefault()));
         }
         return bpResultDetail;
@@ -289,7 +290,7 @@ public class MeasurementResultRestController {
 
         sleepTimeResultDetail.setSleepTimeList(measurementResultService.selectSleepTimeList(searchSleepResultInfo));
         if(sleepTimeResultDetail.getSleepTimeList().size() > 0){
-            sleepTimeResultDetail.setCode("00");
+            sleepTimeResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             sleepTimeResultDetail.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
             //총 수면시간
             List<SleepTimeResult> sleepTimeResultList = sleepTimeResultDetail.getSleepTimeList();
@@ -297,7 +298,7 @@ public class MeasurementResultRestController {
             sleepTimeResultDetail.setTotalSleepTime(Integer.toString(tempTotalSleep / 60));
         }
         else if(sleepTimeResultDetail.getSleepTimeList().size() == 0){
-            sleepTimeResultDetail.setCode("00");
+            sleepTimeResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             sleepTimeResultDetail.setMessage(messageSource.getMessage("message.notfound.searchResultList", null, Locale.getDefault()));
             sleepTimeResultDetail.setTotalSleepTime("0");
         }
@@ -352,7 +353,7 @@ public class MeasurementResultRestController {
 
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
-        baseResponse.setCode("00");
+        baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
         baseResponse.setMessage(messageSource.getMessage("message.success.saveResult", null, Locale.getDefault()));
 
         return baseResponse;
@@ -410,7 +411,7 @@ public class MeasurementResultRestController {
 
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
-        baseResponse.setCode("00");
+        baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
         baseResponse.setMessage(messageSource.getMessage("message.success.saveResult", null, Locale.getDefault()));
 
         return baseResponse;
@@ -461,7 +462,7 @@ public class MeasurementResultRestController {
 
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
-        baseResponse.setCode("00");
+        baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
         baseResponse.setMessage(messageSource.getMessage("message.success.saveResult", null, Locale.getDefault()));
 
         return baseResponse;
@@ -512,7 +513,7 @@ public class MeasurementResultRestController {
 
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
-        baseResponse.setCode("00");
+        baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
         baseResponse.setMessage(messageSource.getMessage("message.success.saveResult", null, Locale.getDefault()));
 
         return baseResponse;
@@ -570,7 +571,7 @@ public class MeasurementResultRestController {
 
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
-        baseResponse.setCode("00");
+        baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
         baseResponse.setMessage(messageSource.getMessage("message.success.saveResult", null, Locale.getDefault()));
 
         return baseResponse;
@@ -593,7 +594,7 @@ public class MeasurementResultRestController {
 
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
-        baseResponse.setCode("00");
+        baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
         baseResponse.setMessage(messageSource.getMessage("message.success.saveResult", null, Locale.getDefault()));
 
         return baseResponse;

@@ -1,5 +1,6 @@
 package kr.co.hconnect.rest;
 
+import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.domain.*;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.exception.NotFoundPatientInfoException;
@@ -64,17 +65,18 @@ public class LoginRestController {
 
             if (identityResult != null) {
                 // 환자정보 존재
-                identityResult.setCode("00");
-                // identityResult.setMessage("본인인증 조회 완료");
+                identityResult.setCode(ApiResponseCode.SUCCESS.getCode());
                 identityResult.setMessage(messageSource.getMessage("message.success.Identity", null, Locale.getDefault()));;
             } else {
                 // 환자정보 존재하지 않음
-                identityResult = setFailIdentityResult("00", messageSource.getMessage("message.success.Identity", null, Locale.getDefault()));
+                identityResult = setFailIdentityResult(ApiResponseCode.SUCCESS.getCode()
+                    , messageSource.getMessage("message.success.Identity", null, Locale.getDefault()));
             }
         } catch (MyBatisSystemException e) {
             // 다중 입소내역으로 인한 오류
             if (e.getCause() instanceof TooManyResultsException) {
-                identityResult = setFailIdentityResult("22", messageSource.getMessage("message.duplicate.admissionInfo", null, Locale.getDefault()));
+                identityResult = setFailIdentityResult(ApiResponseCode.DUPLICATE_ACTIVE_ADMISSION_INFO.getCode()
+                    , messageSource.getMessage("message.duplicate.admissionInfo", null, Locale.getDefault()));
             }
         }
 
@@ -114,14 +116,13 @@ public class LoginRestController {
 
         try {
             Patient patient = patientService.selectPatientByLoginInfo(loginInfo);
-            baseResponse.setCode("00");
-            // baseResponse.setMessage(String.format("%s 님 로그인 성공", patient.getPatientNm()));
+            baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
             baseResponse.setMessage(messageSource.getMessage("message.success.login", null, Locale.getDefault()));
         } catch (NotFoundPatientInfoException e) {
-            baseResponse.setCode("11");
+            baseResponse.setCode(ApiResponseCode.NOT_FOUND_PATIENT_INFO.getCode());
             baseResponse.setMessage(e.getMessage());
         } catch (NotMatchPatientPasswordException e) {
-            baseResponse.setCode("10");
+            baseResponse.setCode(ApiResponseCode.NOT_MATCH_PATIENT_PASSWORD.getCode());
             baseResponse.setMessage(e.getMessage());
         }
 

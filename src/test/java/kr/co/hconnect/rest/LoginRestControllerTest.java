@@ -1,5 +1,6 @@
 package kr.co.hconnect.rest;
 
+import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.service.PatientService;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +72,7 @@ public class LoginRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("00")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
             .andDo(print());
 
 
@@ -102,7 +103,7 @@ public class LoginRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("10")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.NOT_MATCH_PATIENT_PASSWORD.getCode())))
             .andDo(print());
     }
 
@@ -121,7 +122,7 @@ public class LoginRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("11")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.NOT_FOUND_PATIENT_INFO.getCode())))
             .andDo(print());
     }
 
@@ -139,7 +140,7 @@ public class LoginRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("00")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
             .andExpect(jsonPath("$.quarantineDiv", is("1")))
             .andExpect(jsonPath("$.registerYn", is("Y")))
             .andDo(print());
@@ -159,7 +160,7 @@ public class LoginRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("00")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
             .andExpect(jsonPath("$.quarantineDiv", is("0")))
             .andExpect(jsonPath("$.registerYn", is("N")))
             .andDo(print());
@@ -179,7 +180,7 @@ public class LoginRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code", is("22")))
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.DUPLICATE_ACTIVE_ADMISSION_INFO.getCode())))
             .andExpect(jsonPath("$.quarantineDiv", is("0")))
             .andExpect(jsonPath("$.registerYn", is("N")))
             .andDo(print());
