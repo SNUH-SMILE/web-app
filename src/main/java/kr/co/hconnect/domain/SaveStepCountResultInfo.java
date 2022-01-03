@@ -9,6 +9,7 @@ import lombok.ToString;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString
-public class SaveStepCountResultInfo implements Serializable {
+public class SaveStepCountResultInfo implements Serializable, SaveResult {
 
     private static final long serialVersionUID = -3386649844875205459L;
 
@@ -34,4 +35,11 @@ public class SaveStepCountResultInfo implements Serializable {
     @NotNull(message = "{validation.null.result}")
     @Valid
     private List<StepCountResult> results;
+
+    /**
+     * 걸은수 측정 결과
+     */
+    public List<ResultValue> getResultList() {
+        return new ArrayList<>(results);
+    }
 }

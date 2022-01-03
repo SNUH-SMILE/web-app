@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 @ToString
-public class StepCountResult extends BaseResult {
+public class StepCountResult extends BaseResult implements ResultValue {
 
     private static final long serialVersionUID = -7647935258239993387L;
 
@@ -24,11 +24,11 @@ public class StepCountResult extends BaseResult {
      */
     @NotNull(message = "{validation.null.result}")
     @JsonProperty("stepCount")
-    private String resultStepCount;
+    private String result;
     /**
      * 거리 측정결과
      */
     @NotNull(message = "{validation.null.result}")
     @JsonProperty("distance")
-    private String resultDistance;
+    private String result2;
 }

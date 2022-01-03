@@ -9,6 +9,7 @@ import lombok.ToString;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString
-public class SaveHrResultInfo implements Serializable {
+public class SaveHrResultInfo implements Serializable, SaveResult {
 
     private static final long serialVersionUID = 1263304633019181010L;
 
@@ -34,4 +35,11 @@ public class SaveHrResultInfo implements Serializable {
     @NotNull(message = "{validation.null.result}")
     @Valid
     private List<HrResult> results;
+
+    /**
+     * 심박수 측정결과
+     */
+    public List<ResultValue> getResultList() {
+        return new ArrayList<>(results);
+    }
 }

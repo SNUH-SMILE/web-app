@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 @ToString
-public class BpResult extends BaseResult {
+public class BpResult extends BaseResult implements ResultValue {
 
     private static final long serialVersionUID = 3856975045053471529L;
 
@@ -24,12 +24,12 @@ public class BpResult extends BaseResult {
      */
     @NotNull(message = "{validation.null.result}")
     @JsonProperty("sbp")
-    private String resultSbp;
+    private String result;
     /**
      * 최저혈압 측정결과
      */
     @NotNull(message = "{validation.null.result}")
     @JsonProperty("dbp")
-    private String resultDbp;
+    private String result2;
 
 }

@@ -9,6 +9,7 @@ import lombok.ToString;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString
-public class SaveBtResultInfo implements Serializable {
+public class SaveBtResultInfo implements Serializable, SaveResult {
 
     private static final long serialVersionUID = -4753288242715285488L;
 
@@ -35,4 +36,10 @@ public class SaveBtResultInfo implements Serializable {
     @Valid
     private List<BtResult> results;
 
+    /**
+     * 체온 측정 결과
+     */
+    public List<ResultValue> getResultList() {
+        return new ArrayList<>(results);
+    }
 }

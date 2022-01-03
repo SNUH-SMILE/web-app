@@ -120,12 +120,12 @@ public class MeasurementResultRestController {
         existResult.setCode(ApiResponseCode.SUCCESS.getCode());
         // 알림 있을때
         if (result > 0) {
-            existResult.setMessage(messageSource.getMessage("message.found.notice", null, Locale.getDefault()));;
+            existResult.setMessage(messageSource.getMessage("message.found.notice", null, Locale.getDefault()));
             existResult.setExistYn("Y");
         }
         //알림 없을때
         else if (result == 0) {
-            existResult.setMessage(messageSource.getMessage("message.notfound.notice", null, Locale.getDefault()));;
+            existResult.setMessage(messageSource.getMessage("message.notfound.notice", null, Locale.getDefault()));
             existResult.setExistYn("N");
         }
         return existResult;
@@ -307,6 +307,43 @@ public class MeasurementResultRestController {
         return sleepTimeResultDetail;
     }
 
+    /**
+     * 전체 측정 결과 저장
+     *
+     * @param saveTotalResultInfo 전체 측정결과 저장 정보
+     * @return BaseResponse
+     */
+    @RequestMapping(value = "/results/total", method = RequestMethod.POST)
+    public BaseResponse saveTotalResult(@Valid @RequestBody SaveTotalResultInfo saveTotalResultInfo
+        , BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+
+        // 반환정보
+        BaseResponse baseResponse = new BaseResponse();
+
+        // 전체 측정결과 저장정보 생성
+        ResultTotalSavedInformationData resultTotalSavedInformationData
+            = getTotalResultSavedInfo(saveTotalResultInfo);
+
+        // 저장 데이터 확인
+        if (resultTotalSavedInformationData.isEmpty()) {
+            baseResponse.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            baseResponse.setMessage(messageSource.getMessage("validation.null.result"
+                , null, Locale.getDefault()));
+            return baseResponse;
+        }
+
+        // 측정결과 저장
+        resultService.saveTotalResult(resultTotalSavedInformationData);
+
+        baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
+        baseResponse.setMessage(messageSource.getMessage("message.success.saveResult"
+            , null, Locale.getDefault()));
+
+        return baseResponse;
+    }
 
     /**
      * 체온 측정 정보 저장
@@ -320,33 +357,9 @@ public class MeasurementResultRestController {
             throw new InvalidRequestArgumentException(bindingResult);
         }
 
-        String loginId = resultInfo.getLoginId();
-
         // 측정결과 저장정보 생성
-        List<ResultSavedInformationData> resultSavedInformationDataList = new ArrayList<>();
-        for (BtResult oriResult : resultInfo.getResults()) {
-            // 01. 측정결과 내역
-            Result result = new Result();
-            BeanUtils.copyProperties(oriResult, result, "resultSeq", "admissionId", "itemId");
-            result.setItemId(ItemId.BODY_TEMPERATURE.getItemId());
-
-            // 02. 측정결과 상세 내역
-            ResultDetail resultDetail = new ResultDetail();
-            resultDetail.setResultType(ResultType.SINGLE_RESULT.getResultType());
-            resultDetail.setResult(oriResult.getResult());
-
-            List<ResultDetail> resultDetailList = new ArrayList<>();
-            resultDetailList.add(resultDetail);
-
-            // 03. 측정결과 저장정보 구성
-            ResultSavedInformationData data = new ResultSavedInformationData();
-            data.setLoginId(loginId);
-            data.setResult(result);
-            data.setResultDetails(resultDetailList);
-
-            // 측정결과 저장정보 추가
-            resultSavedInformationDataList.add(data);
-        }
+        List<ResultSavedInformationData> resultSavedInformationDataList
+            = convertResultSavedInfo(ItemId.BODY_TEMPERATURE, resultInfo);
 
         // 측정결과 저장
         resultService.saveResult(resultSavedInformationDataList);
@@ -354,7 +367,8 @@ public class MeasurementResultRestController {
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
-        baseResponse.setMessage(messageSource.getMessage("message.success.saveResult", null, Locale.getDefault()));
+        baseResponse.setMessage(messageSource.getMessage("message.success.saveResult"
+            , null, Locale.getDefault()));
 
         return baseResponse;
     }
@@ -371,40 +385,9 @@ public class MeasurementResultRestController {
             throw new InvalidRequestArgumentException(bindingResult);
         }
 
-        String loginId = resultInfo.getLoginId();
-
         // 측정결과 저장정보 생성
-        List<ResultSavedInformationData> resultSavedInformationDataList = new ArrayList<>();
-        for (BpResult oriResult : resultInfo.getResults()) {
-            // 01. 측정결과 내역
-            Result result = new Result();
-            BeanUtils.copyProperties(oriResult, result, "resultSeq", "admissionId", "itemId");
-            result.setItemId(ItemId.BLOOD_PRESSURE.getItemId());
-
-            // 02. 측정결과 상세 내역
-            // 최저혈압
-            ResultDetail resultDetailSbp = new ResultDetail();
-            resultDetailSbp.setResultType(ResultType.MINIMUM_BLOOD_PRESSURE.getResultType());
-            resultDetailSbp.setResult(oriResult.getResultSbp());
-
-            // 최고혈압
-            ResultDetail resultDetailDbp = new ResultDetail();
-            resultDetailDbp.setResultType(ResultType.MAXIMUM_BLOOD_PRESSURE.getResultType());
-            resultDetailDbp.setResult(oriResult.getResultDbp());
-
-            List<ResultDetail> resultDetailList = new ArrayList<>();
-            resultDetailList.add(resultDetailSbp);
-            resultDetailList.add(resultDetailDbp);
-
-            // 03. 측정결과 저장정보 구성
-            ResultSavedInformationData data = new ResultSavedInformationData();
-            data.setLoginId(loginId);
-            data.setResult(result);
-            data.setResultDetails(resultDetailList);
-
-            // 측정결과 저장정보 추가
-            resultSavedInformationDataList.add(data);
-        }
+        List<ResultSavedInformationData> resultSavedInformationDataList
+            = convertResultSavedInfo(ItemId.BLOOD_PRESSURE, resultInfo);
 
         // 측정결과 저장
         resultService.saveResult(resultSavedInformationDataList);
@@ -412,7 +395,8 @@ public class MeasurementResultRestController {
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
-        baseResponse.setMessage(messageSource.getMessage("message.success.saveResult", null, Locale.getDefault()));
+        baseResponse.setMessage(messageSource.getMessage("message.success.saveResult"
+            , null, Locale.getDefault()));
 
         return baseResponse;
     }
@@ -429,33 +413,9 @@ public class MeasurementResultRestController {
             throw new InvalidRequestArgumentException(bindingResult);
         }
 
-        String loginId = resultInfo.getLoginId();
-
         // 측정결과 저장정보 생성
-        List<ResultSavedInformationData> resultSavedInformationDataList = new ArrayList<>();
-        for (HrResult oriResult : resultInfo.getResults()) {
-            // 01. 측정결과 내역
-            Result result = new Result();
-            BeanUtils.copyProperties(oriResult, result, "resultSeq", "admissionId", "itemId");
-            result.setItemId(ItemId.HEART_RATE.getItemId());
-
-            // 02. 측정결과 상세 내역
-            ResultDetail resultDetail = new ResultDetail();
-            resultDetail.setResultType(ResultType.SINGLE_RESULT.getResultType());
-            resultDetail.setResult(oriResult.getResult());
-
-            List<ResultDetail> resultDetailList = new ArrayList<>();
-            resultDetailList.add(resultDetail);
-
-            // 03. 측정결과 저장정보 구성
-            ResultSavedInformationData data = new ResultSavedInformationData();
-            data.setLoginId(loginId);
-            data.setResult(result);
-            data.setResultDetails(resultDetailList);
-
-            // 측정결과 저장정보 추가
-            resultSavedInformationDataList.add(data);
-        }
+        List<ResultSavedInformationData> resultSavedInformationDataList
+            = convertResultSavedInfo(ItemId.HEART_RATE, resultInfo);
 
         // 측정결과 저장
         resultService.saveResult(resultSavedInformationDataList);
@@ -463,7 +423,8 @@ public class MeasurementResultRestController {
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
-        baseResponse.setMessage(messageSource.getMessage("message.success.saveResult", null, Locale.getDefault()));
+        baseResponse.setMessage(messageSource.getMessage("message.success.saveResult"
+            , null, Locale.getDefault()));
 
         return baseResponse;
     }
@@ -480,33 +441,9 @@ public class MeasurementResultRestController {
             throw new InvalidRequestArgumentException(bindingResult);
         }
 
-        String loginId = resultInfo.getLoginId();
-
         // 측정결과 저장정보 생성
-        List<ResultSavedInformationData> resultSavedInformationDataList = new ArrayList<>();
-        for (SpO2Result oriResult : resultInfo.getResults()) {
-            // 01. 측정결과 내역
-            Result result = new Result();
-            BeanUtils.copyProperties(oriResult, result, "resultSeq", "admissionId", "itemId");
-            result.setItemId(ItemId.OXYGEN_SATURATION.getItemId());
-
-            // 02. 측정결과 상세 내역
-            ResultDetail resultDetail = new ResultDetail();
-            resultDetail.setResultType(ResultType.SINGLE_RESULT.getResultType());
-            resultDetail.setResult(oriResult.getResult());
-
-            List<ResultDetail> resultDetailList = new ArrayList<>();
-            resultDetailList.add(resultDetail);
-
-            // 03. 측정결과 저장정보 구성
-            ResultSavedInformationData data = new ResultSavedInformationData();
-            data.setLoginId(loginId);
-            data.setResult(result);
-            data.setResultDetails(resultDetailList);
-
-            // 측정결과 저장정보 추가
-            resultSavedInformationDataList.add(data);
-        }
+        List<ResultSavedInformationData> resultSavedInformationDataList
+            = convertResultSavedInfo(ItemId.OXYGEN_SATURATION, resultInfo);
 
         // 측정결과 저장
         resultService.saveResult(resultSavedInformationDataList);
@@ -514,7 +451,8 @@ public class MeasurementResultRestController {
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
-        baseResponse.setMessage(messageSource.getMessage("message.success.saveResult", null, Locale.getDefault()));
+        baseResponse.setMessage(messageSource.getMessage("message.success.saveResult"
+            , null, Locale.getDefault()));
 
         return baseResponse;
     }
@@ -531,40 +469,9 @@ public class MeasurementResultRestController {
             throw new InvalidRequestArgumentException(bindingResult);
         }
 
-        String loginId = resultInfo.getLoginId();
-
         // 측정결과 저장정보 생성
-        List<ResultSavedInformationData> resultSavedInformationDataList = new ArrayList<>();
-        for (StepCountResult oriResult : resultInfo.getResults()) {
-            // 01. 측정결과 내역
-            Result result = new Result();
-            BeanUtils.copyProperties(oriResult, result, "resultSeq", "admissionId", "itemId");
-            result.setItemId(ItemId.STEP_COUNT.getItemId());
-
-            // 02. 측정결과 상세 내역
-            // 걸음수
-            ResultDetail resultDetailStepCount = new ResultDetail();
-            resultDetailStepCount.setResultType(ResultType.STEP_COUNT.getResultType());
-            resultDetailStepCount.setResult(oriResult.getResultStepCount());
-
-            // 거리
-            ResultDetail resultDetailDistance = new ResultDetail();
-            resultDetailDistance.setResultType(ResultType.DISTANCE.getResultType());
-            resultDetailDistance.setResult(oriResult.getResultDistance());
-
-            List<ResultDetail> resultDetailList = new ArrayList<>();
-            resultDetailList.add(resultDetailStepCount);
-            resultDetailList.add(resultDetailDistance);
-
-            // 03. 측정결과 저장정보 구성
-            ResultSavedInformationData data = new ResultSavedInformationData();
-            data.setLoginId(loginId);
-            data.setResult(result);
-            data.setResultDetails(resultDetailList);
-
-            // 측정결과 저장정보 추가
-            resultSavedInformationDataList.add(data);
-        }
+        List<ResultSavedInformationData> resultSavedInformationDataList
+            = convertResultSavedInfo(ItemId.STEP_COUNT, resultInfo);
 
         // 측정결과 저장
         resultService.saveResult(resultSavedInformationDataList);
@@ -572,7 +479,8 @@ public class MeasurementResultRestController {
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
-        baseResponse.setMessage(messageSource.getMessage("message.success.saveResult", null, Locale.getDefault()));
+        baseResponse.setMessage(messageSource.getMessage("message.success.saveResult"
+            , null, Locale.getDefault()));
 
         return baseResponse;
     }
@@ -595,8 +503,149 @@ public class MeasurementResultRestController {
         // 반환정보
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
-        baseResponse.setMessage(messageSource.getMessage("message.success.saveResult", null, Locale.getDefault()));
+        baseResponse.setMessage(messageSource.getMessage("message.success.saveResult"
+            , null, Locale.getDefault()));
 
         return baseResponse;
+    }
+
+    /**
+     * 전체 측정결과 저장 데이터 생성
+     * @param saveTotalResultInfo 전체 측정결과 저장 정보
+     * @return 전체 측정결과 저장 정보 데이터
+     */
+    private ResultTotalSavedInformationData getTotalResultSavedInfo(SaveTotalResultInfo saveTotalResultInfo) {
+        ResultTotalSavedInformationData resultTotalSavedInformationData = new ResultTotalSavedInformationData();
+
+        List<ResultSavedInformationData> savedInformationData = new ArrayList<>();
+
+        String loginId = saveTotalResultInfo.getLoginId();
+
+        // 체온
+        if (saveTotalResultInfo.getBtResults() != null && !saveTotalResultInfo.getBtResults().isEmpty()) {
+            SaveBtResultInfo saveBtResultInfo = new SaveBtResultInfo();
+            saveBtResultInfo.setLoginId(loginId);
+            saveBtResultInfo.setResults(saveTotalResultInfo.getBtResults());
+            savedInformationData.addAll(convertResultSavedInfo(ItemId.BODY_TEMPERATURE, saveBtResultInfo));
+        }
+        // 혈압
+        if (saveTotalResultInfo.getBpResults() != null && !saveTotalResultInfo.getBpResults().isEmpty()) {
+            SaveBpResultInfo saveBpResultInfo = new SaveBpResultInfo();
+            saveBpResultInfo.setLoginId(loginId);
+            saveBpResultInfo.setResults(saveTotalResultInfo.getBpResults());
+            savedInformationData.addAll(convertResultSavedInfo(ItemId.BLOOD_PRESSURE, saveBpResultInfo));
+        }
+        // 심박수
+        if (saveTotalResultInfo.getHrResults() != null && !saveTotalResultInfo.getHrResults().isEmpty()) {
+            SaveHrResultInfo saveHrResultInfo = new SaveHrResultInfo();
+            saveHrResultInfo.setLoginId(loginId);
+            saveHrResultInfo.setResults(saveTotalResultInfo.getHrResults());
+            savedInformationData.addAll(convertResultSavedInfo(ItemId.HEART_RATE, saveHrResultInfo));
+        }
+        // 산소포화도
+        if (saveTotalResultInfo.getSpO2Results() != null && !saveTotalResultInfo.getSpO2Results().isEmpty()) {
+            SaveSpO2ResultInfo saveSpO2ResultInfo = new SaveSpO2ResultInfo();
+            saveSpO2ResultInfo.setLoginId(loginId);
+            saveSpO2ResultInfo.setResults(saveTotalResultInfo.getSpO2Results());
+            savedInformationData.addAll(convertResultSavedInfo(ItemId.OXYGEN_SATURATION, saveSpO2ResultInfo));
+        }
+        // 걸음수
+        if (saveTotalResultInfo.getStepCountResults() != null && !saveTotalResultInfo.getStepCountResults().isEmpty()) {
+            SaveStepCountResultInfo saveStepCountResultInfo = new SaveStepCountResultInfo();
+            saveStepCountResultInfo.setLoginId(loginId);
+            saveStepCountResultInfo.setResults(saveTotalResultInfo.getStepCountResults());
+            savedInformationData.addAll(convertResultSavedInfo(ItemId.STEP_COUNT, saveStepCountResultInfo));
+        }
+
+        // 1. VitalSign 측정결과 전체 저장 정보
+        if (!savedInformationData.isEmpty()) {
+            resultTotalSavedInformationData.setResultSavedInformationDataList(savedInformationData);
+        }
+        // 2. 수면 정보 측정결과 저장 정보
+        if (saveTotalResultInfo.getSleepTimeResults() != null && !saveTotalResultInfo.getSleepTimeResults().isEmpty()) {
+            SaveSleepResultInfo saveSleepResultInfo = new SaveSleepResultInfo();
+            saveSleepResultInfo.setLoginId(loginId);
+            saveSleepResultInfo.setResults(saveTotalResultInfo.getSleepTimeResults());
+            resultTotalSavedInformationData.setSaveSleepResultInfo(saveSleepResultInfo);
+        }
+
+        return resultTotalSavedInformationData;
+    }
+
+    /**
+     * Result 저장 데이터 정보 생성
+     * @return List&lt;ResultSavedInformationData&gt;
+     */
+    private List<ResultSavedInformationData> convertResultSavedInfo(ItemId itemId, SaveResult saveResult) {
+        // 측정결과 저장 데이터
+        List<ResultSavedInformationData> resultSavedInformationDataList = new ArrayList<>();
+
+        // 로그인ID
+        String loginId = saveResult.getLoginId();
+
+        for (ResultValue oriResult : saveResult.getResultList()) {
+            // 측정결과 저장 정보 데이터
+            ResultSavedInformationData data = new ResultSavedInformationData();
+
+            // 01. 측정결과 내역
+            Result result = new Result();
+            BeanUtils.copyProperties(oriResult, result, "resultSeq", "admissionId", "itemId");
+            result.setItemId(itemId.getItemId());
+
+            // 02. 측정결과 상세 내역
+            List<ResultDetail> resultDetailList = new ArrayList<>();
+            switch (itemId) {
+                case BODY_TEMPERATURE:
+                case HEART_RATE:
+                case OXYGEN_SATURATION:
+                    ResultDetail resultDetail = new ResultDetail();
+                    resultDetail.setResultType(ResultType.SINGLE_RESULT.getResultType());
+                    resultDetail.setResult(oriResult.getResult());
+                    resultDetailList.add(resultDetail);
+
+                    break;
+                case BLOOD_PRESSURE:
+                    // 최고혈압
+                    ResultDetail resultDetailSbp = new ResultDetail();
+                    resultDetailSbp.setResultType(ResultType.MAXIMUM_BLOOD_PRESSURE.getResultType());
+                    resultDetailSbp.setResult(oriResult.getResult());
+
+                    // 최저혈압
+                    ResultDetail resultDetailDbp = new ResultDetail();
+                    resultDetailDbp.setResultType(ResultType.MINIMUM_BLOOD_PRESSURE.getResultType());
+                    resultDetailDbp.setResult(oriResult.getResult2());
+
+                    resultDetailList.add(resultDetailSbp);
+                    resultDetailList.add(resultDetailDbp);
+
+                    break;
+                case STEP_COUNT:
+                    // 걸음수
+                    ResultDetail resultDetailStepCount = new ResultDetail();
+                    resultDetailStepCount.setResultType(ResultType.STEP_COUNT.getResultType());
+                    resultDetailStepCount.setResult(oriResult.getResult());
+
+                    // 거리
+                    ResultDetail resultDetailDistance = new ResultDetail();
+                    resultDetailDistance.setResultType(ResultType.DISTANCE.getResultType());
+                    resultDetailDistance.setResult(oriResult.getResult2());
+
+                    resultDetailList.add(resultDetailStepCount);
+                    resultDetailList.add(resultDetailDistance);
+
+                    break;
+
+            }
+
+            // 03. 측정결과 저장정보 구성
+            data.setLoginId(loginId);
+            data.setResult(result);
+            data.setResultDetails(resultDetailList);
+
+            // 측정결과 저장정보 추가
+            resultSavedInformationDataList.add(data);
+        }
+
+        return resultSavedInformationDataList;
     }
 }

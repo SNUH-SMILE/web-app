@@ -41,10 +41,33 @@ public class ResultService extends EgovAbstractServiceImpl {
     }
 
     /**
+     * 전체 측정결과 저장
+     * @param resultTotalSavedInformationData 전체 측정결과 저장 정보 데이터
+     * @return boolean 저장성공여부
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public boolean saveTotalResult(ResultTotalSavedInformationData resultTotalSavedInformationData) {
+        int affectedRow = 0;
+
+        // vitalSign 저장
+        if (resultTotalSavedInformationData.getResultSavedInformationDataList() != null &&
+            !resultTotalSavedInformationData.getResultSavedInformationDataList().isEmpty()) {
+            saveResult(resultTotalSavedInformationData.getResultSavedInformationDataList());
+        }
+        // 수면 측정결과 저장
+        if (resultTotalSavedInformationData.getSaveSleepResultInfo() != null &&
+            !resultTotalSavedInformationData.getSaveSleepResultInfo().getResults().isEmpty()) {
+            saveResultSleep(resultTotalSavedInformationData.getSaveSleepResultInfo());
+        }
+
+        return true;
+    }
+
+    /**
      * 측정결과 내역 저장
      *
      * @param resultSavedInformationDataList 측정결과 저장정보 데이터 리스트
-     * @return boolean 저장성공여부
+     * @return affectedRow
      */
     @Transactional(rollbackFor = Exception.class)
     public boolean saveResult(List<ResultSavedInformationData> resultSavedInformationDataList) {

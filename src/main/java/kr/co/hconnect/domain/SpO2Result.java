@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 @ToString
-public class SpO2Result extends BaseResult {
+public class SpO2Result extends BaseResult implements ResultValue {
 
     private static final long serialVersionUID = 704469605148079253L;
 

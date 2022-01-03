@@ -9,6 +9,7 @@ import lombok.ToString;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString
-public class SaveSpO2ResultInfo implements Serializable {
+public class SaveSpO2ResultInfo implements Serializable, SaveResult {
 
     private static final long serialVersionUID = -7475744117489798364L;
 
@@ -34,4 +35,11 @@ public class SaveSpO2ResultInfo implements Serializable {
     @NotNull(message = "{validation.null.result}")
     @Valid
     private List<SpO2Result> results;
+
+    /**
+     * 산소포화도 측정 결과
+     */
+    public List<ResultValue> getResultList() {
+        return new ArrayList<>(results);
+    }
 }

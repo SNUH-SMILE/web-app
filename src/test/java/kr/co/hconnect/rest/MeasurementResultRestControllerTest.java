@@ -8,6 +8,8 @@ import kr.co.hconnect.service.ResultService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.ClassPathResource;
@@ -16,6 +18,7 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +38,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(locations = { "/config/context-*.xml", "/test-context-servlet.xml" })
 @Transactional
 public class MeasurementResultRestControllerTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MeasurementResultRestControllerTest.class);
 
     private static MockMvc mvc;
     @Autowired
@@ -58,6 +63,14 @@ public class MeasurementResultRestControllerTest {
                 new MeasurementResultRestController(measurementResultService, admissionService, resultService,messageSource))
             .setControllerAdvice(new RestControllerExceptionHandler())
             .build();
+    }
+
+    @AfterTransaction
+    public void tearDownAfterTx() {
+        // RESULT, RESULT_SLEEP auto_increment 초기화 처리
+        ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator();
+        resourceDatabasePopulator.addScript(new ClassPathResource("/sql-script/afterMeasurementResultRestControllerTest.sql"));
+        resourceDatabasePopulator.execute(dataSource);
     }
 
     /**
@@ -1259,6 +1272,243 @@ public class MeasurementResultRestControllerTest {
                 .content(jsonString))
             .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value("측정결과 저장 완료"))
+            .andDo(print());
+    }
+
+    /**
+     * 전체 측정정보 저장-정상저장
+     */
+    @Test()
+    public void givenResultTotalDomain_whenRequestedSaveTotalResult_thenSuccess() throws Exception {
+        String jsonString = "\n" +
+            "{\n" +
+            "  \"loginId\": \"wtest\",\n" +
+            // 체온
+            "  \"btList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"bt\": 36,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 혈압
+            "  \"bpList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"dbp\": 90,\n" +
+            "      \"sbp\": 110,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 심박수
+            "  \"hrList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"hr\": 80,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 산소포화도
+            "  \"spO2List\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"spO2\": 80,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 걸음수
+            "  \"stepCountList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"stepCount\": \"190\",\n" +
+            "      \"distance\": \"20\",\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 수면
+            "  \"sleepTimeList\": [\n" +
+            "    {\n" +
+            "      \"resultStartDate\": \"20211207\",\n" +
+            "      \"resultStartTime\": \"1200\",\n" +
+            "      \"resultEndDate\": \"20211207\",\n" +
+            "      \"resultEndTime\": \"1300\",\n" +
+            "      \"sleepType\": \"0\",\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+
+        mvc.perform(post("/api/results/total")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonString))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
+            .andExpect(jsonPath("$.message").value("측정결과 저장 완료"))
+            .andDo(print());
+    }
+
+    /**
+     * 전체 측정정보 부분 저장-정상저장
+     */
+    @Test()
+    public void givenResultTotalDomain_whenRequestedSaveTotalResult_thenSuccess2() throws Exception {
+        String jsonString = "\n" +
+            "{\n" +
+            "  \"loginId\": \"wtest\",\n" +
+            // 체온
+            "  \"btList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"bt\": 36,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120100\",\n" +
+            "      \"bt\": 37,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120500\",\n" +
+            "      \"bt\": 36,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 혈압
+            "  \"bpList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"dbp\": 90,\n" +
+            "      \"sbp\": 110,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 심박수
+            "  \"hrList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"hr\": 80,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 산소포화도
+            "  \"spO2List\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"spO2\": 80,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+
+        mvc.perform(post("/api/results/total")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonString))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
+            .andExpect(jsonPath("$.message").value("측정결과 저장 완료"))
+            .andDo(print());
+    }
+
+    /**
+     * 전체 측정정보 저장-LoginId 누락
+     */
+    @Test()
+    public void givenResultTotalDomain_whenRequestedSaveTotalResult_thenNullLoginId() throws Exception {
+        String jsonString = "\n" +
+            "{\n" +
+            "  \"loginId\": null,\n" +
+            // 체온
+            "  \"btList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"bt\": 36,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 혈압
+            "  \"bpList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"dbp\": 90,\n" +
+            "      \"sbp\": 110,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 심박수
+            "  \"hrList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"hr\": 80,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 산소포화도
+            "  \"spO2List\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"spO2\": 80,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 걸음수
+            "  \"stepCountList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"stepCount\": \"190\",\n" +
+            "      \"distance\": \"20\",\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 수면
+            "  \"sleepTimeList\": [\n" +
+            "    {\n" +
+            "      \"resultStartDate\": \"20211207\",\n" +
+            "      \"resultStartTime\": \"1200\",\n" +
+            "      \"resultEndDate\": \"20211207\",\n" +
+            "      \"resultEndTime\": \"1300\",\n" +
+            "      \"sleepType\": \"0\",\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+
+        mvc.perform(post("/api/results/total")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonString))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
+            .andExpect(jsonPath("$.message").value("{validation.null.loginId}"))
+            .andDo(print());
+    }
+
+    /**
+     * 전체 측정정보 저장-결과내역 누락
+     */
+    @Test()
+    public void givenResultTotalDomain_whenRequestedSaveTotalResult_thenNullResult() throws Exception {
+        String jsonString = "\n" +
+            "{\n" +
+            "  \"loginId\": \"wtest\"\n" +
+            "}";
+
+        mvc.perform(post("/api/results/total")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonString))
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
+            .andExpect(jsonPath("$.message").value("측정결과 누락"))
             .andDo(print());
     }
 }

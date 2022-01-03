@@ -7,9 +7,9 @@
         <![CDATA[
             SELECT A.RESULT_DATE                      -- 측정 일자
                  , A.RESULT_TIME                      -- 측정 시간
-                 , C.RESULT         AS RESULT_DBP     -- 측정 결과 (최저혈압)
-                 , D.RESULT         AS RESULT_SBP     -- 측정 결과 (최고혈압)
-              FROM RESULT A
+                 , D.RESULT         AS RESULT         -- 측정 결과 (최고혈압)
+                 , C.RESULT         AS RESULT2        -- 측정 결과 (최저혈압)
+            FROM RESULT A
                   INNER JOIN ITEM B
                           ON A.ITEM_ID = B.ITEM_ID
                          AND B.ITEM_ID = #{itemId}

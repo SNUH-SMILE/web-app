@@ -7,8 +7,8 @@
         <![CDATA[
             SELECT A.RESULT_DATE                      -- 측정 일자
                  , a.RESULT_TIME                      -- 측정 시간
-                 , C.RESULT     AS RESULT_STEP_COUNT  -- 측정 결과(걸음수)
-                 , D.RESULT     AS RESULT_DISTANCE    -- 측정 결과(거리)
+                 , C.RESULT     AS RESULT             -- 측정 결과(걸음수)
+                 , D.RESULT     AS RESULT2            -- 측정 결과(거리)
               FROM RESULT A
                    INNER JOIN ITEM B
                            ON A.ITEM_ID     = B.ITEM_ID

@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 @ToString
-public class BtResult extends BaseResult {
+public class BtResult extends BaseResult implements ResultValue {
 
     private static final long serialVersionUID = -5344118631588677759L;
 
