@@ -11,13 +11,23 @@ import org.springframework.stereotype.Repository;
 public class PatientDeviceDao extends EgovAbstractMapper {
 
     /**
+     * 환자 장비 사용이력 조회
+     *
+     * @param patientDevice - 환자별 장비
+     * @return int - 다른내원 사용이력 카운트
+     */
+    public int selectPatientDeviceUseHistory(PatientDevice patientDevice) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectPatientDeviceUseHistory", patientDevice);
+    }
+
+    /**
      * 환자별 장비 사용여부 수정-격리/입소내역ID 기준
      *
-     * @param patientDevice 환자별 장비
+     * @param admissionId 격리/입소내역ID
      * @return affectedRow
      */
-    public int updatePatientDeviceUseYnByAdmissionId(PatientDevice patientDevice) {
-        return update("kr.co.hconnect.sqlmapper.updatePatientDeviceUseYnByAdmissionId", patientDevice);
+    public int updatePatientDeviceNotUseByAdmissionId(String admissionId) {
+        return update("kr.co.hconnect.sqlmapper.updatePatientDeviceNotUseByAdmissionId", admissionId);
     }
 
     /**

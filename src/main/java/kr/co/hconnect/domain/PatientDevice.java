@@ -16,7 +16,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @ToString
 public class PatientDevice implements Serializable {
+
     private static final long serialVersionUID = -6242820788394809935L;
+
     /**
      * 장비순번
      */

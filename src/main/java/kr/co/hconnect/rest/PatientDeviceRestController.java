@@ -1,12 +1,14 @@
 package kr.co.hconnect.rest;
 
 import kr.co.hconnect.common.ApiResponseCode;
-import kr.co.hconnect.domain.BaseResponse;
 import kr.co.hconnect.domain.PatientDevice;
+import kr.co.hconnect.domain.PatientDeviceSavedInfo;
+import kr.co.hconnect.domain.PatientDeviceUseHistory;
 import kr.co.hconnect.domain.SavePatientDeviceInfo;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.service.AdmissionService;
 import kr.co.hconnect.service.PatientDeviceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Locale;
 
 @RestController
@@ -38,6 +41,7 @@ public class PatientDeviceRestController {
      * @param patientDeviceService 환자별 장비 Service
      * @param admissionService 격리/입소내역 관리 Service
      */
+    @Autowired
     public PatientDeviceRestController(PatientDeviceService patientDeviceService, AdmissionService admissionService
                                       ,MessageSource messageSource) {
         this.patientDeviceService = patientDeviceService;
@@ -52,7 +56,7 @@ public class PatientDeviceRestController {
      * @return BaseResponse
      */
     @RequestMapping(value = "/device", method = RequestMethod.POST)
-    public BaseResponse insertPatientDevice(@Valid @RequestBody SavePatientDeviceInfo savePatientDeviceInfo
+    public PatientDeviceSavedInfo insertPatientDevice(@Valid @RequestBody SavePatientDeviceInfo savePatientDeviceInfo
         , BindingResult result) {
         if (result.hasErrors()) {
             throw new InvalidRequestArgumentException(result);
@@ -67,13 +71,16 @@ public class PatientDeviceRestController {
         }
 
         // 환자별 장비 등록
-        patientDeviceService.insertPatientDevice(savePatientDeviceInfo.getPatientDeviceList());
+        List<PatientDeviceUseHistory> patientDeviceUseHistories =
+            patientDeviceService.insertPatientDevice(admissionId, savePatientDeviceInfo.getPatientDeviceList());
 
-        BaseResponse baseResponse = new BaseResponse();
-        baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
-        // baseResponse.setMessage("환자별 장비 저장 완료.");
-        baseResponse.setMessage(messageSource.getMessage("message.success.savePatientDevice", null, Locale.getDefault()));
+        // 저장 결과정보 생성
+        PatientDeviceSavedInfo patientDeviceSavedInfo = new PatientDeviceSavedInfo();
+        patientDeviceSavedInfo.setCode(ApiResponseCode.SUCCESS.getCode());
+        patientDeviceSavedInfo.setMessage(messageSource.getMessage("message.success.savePatientDevice"
+            , null, Locale.getDefault()));
+        patientDeviceSavedInfo.setDeviceUseHistoryList(patientDeviceUseHistories);
 
-        return baseResponse;
+        return patientDeviceSavedInfo;
     }
 }
