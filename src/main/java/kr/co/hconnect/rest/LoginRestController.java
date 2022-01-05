@@ -32,11 +32,13 @@ public class LoginRestController {
      */
     private final PatientService patientService;
 
+    private final MessageSource messageSource;
+
     /**
      * 생성자
      *
      * @param patientService 환자관리 Service
-     * @param messageSource
+     * @param messageSource MessageSource
      */
     @Autowired
     public LoginRestController(PatientService patientService, MessageSource messageSource) {
@@ -44,7 +46,6 @@ public class LoginRestController {
         this.messageSource = messageSource;
     }
 
-    private final MessageSource messageSource;
     /**
      * 본인인증
      *
@@ -66,7 +67,7 @@ public class LoginRestController {
             if (identityResult != null) {
                 // 환자정보 존재
                 identityResult.setCode(ApiResponseCode.SUCCESS.getCode());
-                identityResult.setMessage(messageSource.getMessage("message.success.Identity", null, Locale.getDefault()));;
+                identityResult.setMessage(messageSource.getMessage("message.success.Identity", null, Locale.getDefault()));
             } else {
                 // 환자정보 존재하지 않음
                 identityResult = setFailIdentityResult(ApiResponseCode.SUCCESS.getCode()

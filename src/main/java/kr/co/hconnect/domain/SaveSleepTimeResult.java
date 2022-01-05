@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -61,5 +62,6 @@ public class SaveSleepTimeResult implements Serializable {
      * 디바이스ID
      */
     @NotNull(message = "{validation.null.deviceId}")
+    @Size(max = 20, message = "{validation.size.deviceId}")
     private String deviceId;
 }

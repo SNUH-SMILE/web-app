@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -109,6 +110,40 @@ public class PatientDeviceRestControllerTest {
             .andExpect(jsonPath("$.deviceUseHistoryList[0].deviceId", is("device001")))
             .andExpect(jsonPath("$.deviceUseHistoryList[1].deviceId", is("device002")))
             .andExpect(jsonPath("$.deviceUseHistoryList[2].deviceId", is("device003")))
+            .andDo(print());
+    }
+
+    /**
+     * 환자별 장비추가 - 데이터 사이즈 초과 확인
+     */
+    @Test
+    public void givenSavePatientDeviceInfoOverSizeParam_whenAddDevice_thenSizeCheckedFail() throws Exception {
+        String content =
+            "{\n" +
+                "  \"loginId\": \"testshy51\",\n" +
+                "  \"devices\": [\n" +
+                "    {\n" +
+                "      \"deviceId\": \"123456789012345678901\",\n" +
+                "      \"deviceNm\": \"123456789012345678901234567890123456789012345678901\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"deviceId\": \"device002\",\n" +
+                "      \"deviceNm\": \"디바이스3\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"deviceId\": \"device003\",\n" +
+                "      \"deviceNm\": \"디바이스3\"\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        mvc.perform(post("/api/device")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(content))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode())))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.deviceId}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.deviceNm}")))
             .andDo(print());
     }
 

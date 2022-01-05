@@ -35,11 +35,13 @@ public class PatientDeviceRestController {
     private final AdmissionService admissionService;
 
     private final MessageSource messageSource;
+
     /**
      * 생성자
      *
      * @param patientDeviceService 환자별 장비 Service
      * @param admissionService 격리/입소내역 관리 Service
+     * @param messageSource MessageSource
      */
     @Autowired
     public PatientDeviceRestController(PatientDeviceService patientDeviceService, AdmissionService admissionService

@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * 혈압 구성정보
@@ -23,12 +24,14 @@ public class BpResult extends BaseResult implements ResultValue {
      * 최고혈압 측정결과
      */
     @NotNull(message = "{validation.null.result}")
+    @Size(max = 10, message = "{validation.size.sbpResult}")
     @JsonProperty("sbp")
     private String result;
     /**
      * 최저혈압 측정결과
      */
     @NotNull(message = "{validation.null.result}")
+    @Size(max = 10, message = "{validation.size.dbpResult}")
     @JsonProperty("dbp")
     private String result2;
 

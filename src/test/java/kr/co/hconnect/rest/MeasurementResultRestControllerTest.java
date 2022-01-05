@@ -1095,6 +1095,34 @@ public class MeasurementResultRestControllerTest {
             .andExpect(jsonPath("$.message").value("측정결과 저장 완료"))
             .andDo(print());
     }
+
+    /**
+     * 체온 저장 - 데이터 사이즈 체크
+     */
+    @Test()
+    public void givenBtInfoOverSizeParam_whenSaveBtRequested_thenSizeCheckedFail() throws Exception{
+        String jsonString="\n" +
+            "{\n" +
+            "  \"loginId\": \"wtest\",\n" +
+            "  \"btList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"bt\": 12345678901,\n" +
+            "      \"deviceId\": \"123456789012345678901\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+        mvc.perform(post("/api/results/bt")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonString))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.deviceId}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.btResult}")))
+            .andDo(print());
+    }
+
     /**
      * 체온 저장시 loginId가 누락일때
      * @throws Exception mvc.perform
@@ -1171,6 +1199,34 @@ public class MeasurementResultRestControllerTest {
     }
 
     /**
+     * 심박수 저장 - 데이터 사이즈 체크
+     * @throws Exception mvc.perform
+     */
+    @Test()
+    public void givenOverSizeParam_whenRequestedSaveResultForHr_thenSizeCheckedFail() throws Exception{
+        String jsonString="\n" +
+            "{\n" +
+            "  \"loginId\": \"wtest\",\n" +
+            "  \"hrList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"hr\": 12345678901,\n" +
+            "      \"deviceId\": \"123456789012345678901\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+        mvc.perform(post("/api/results/hr")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonString))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.deviceId}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.hrResult}")))
+            .andDo(print());
+    }
+
+    /**
      * 산소포화도 저장
      * @throws Exception mvc.perform
      */
@@ -1195,6 +1251,35 @@ public class MeasurementResultRestControllerTest {
             .andExpect(jsonPath("$.message").value("측정결과 저장 완료"))
             .andDo(print());
     }
+
+    /**
+     * 산소포화도 저장 - 데이터 사이즈 체크
+     * @throws Exception mvc.perform
+     */
+    @Test()
+    public void givenOverSizeParam_whenRequestedSaveResultForSpO2_thenSizeCheckedFail() throws Exception{
+        String jsonString="\n" +
+            "{\n" +
+            "  \"loginId\": \"wtest\",\n" +
+            "  \"spO2List\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"spO2\": \"12345678901\",\n" +
+            "      \"deviceId\": \"123456789012345678901\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+        mvc.perform(post("/api/results/spO2")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonString))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.spO2Result}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.deviceId}")))
+            .andDo(print());
+    }
+
     /**
      * 혈압 저장
      * @throws Exception mvc.perform
@@ -1222,6 +1307,37 @@ public class MeasurementResultRestControllerTest {
             .andExpect(jsonPath("$.message").value("측정결과 저장 완료"))
             .andDo(print());
     }
+
+    /**
+     * 혈압 저장 - 데이터 사이즈 체크
+     * @throws Exception mvc.perform
+     */
+    @Test()
+    public void givenOverSizeParam_whenRequestedSaveResultForBp_thenSizeCheckedFail() throws Exception{
+        String jsonString="\n" +
+            "{\n" +
+            "  \"loginId\": \"wtest\",\n" +
+            "  \"bpList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"dbp\": 13245678901,\n" +
+            "      \"sbp\": 13245678901,\n" +
+            "      \"deviceId\": \"132456789013245678901\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+        mvc.perform(post("/api/results/bp")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonString))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.dbpResult}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.deviceId}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.sbpResult}")))
+            .andDo(print());
+    }
+
     /**
      * 걸음 저장
      * @throws Exception mvc.perform
@@ -1248,6 +1364,37 @@ public class MeasurementResultRestControllerTest {
             .andExpect(jsonPath("$.message").value("측정결과 저장 완료"))
             .andDo(print());
     }
+
+    /**
+     * 걸음 저장 - 데이터 사이즈 체크
+     * @throws Exception mvc.perform
+     */
+    @Test()
+    public void givenOverSizeParam_whenRequestedSaveResultForStep_thenSizeCheckedFail() throws Exception{
+        String jsonString="\n" +
+            "{\n" +
+            "  \"loginId\": \"wtest\",\n" +
+            "  \"stepCountList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"stepCount\": \"13245678901\",\n" +
+            "      \"distance\": \"13245678901\",\n" +
+            "      \"deviceId\": \"132456789013245678901\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+        mvc.perform(post("/api/results/stepCount")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonString))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.deviceId}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.stepCountResult}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.distanceResult}")))
+            .andDo(print());
+    }
+
     /**
      * 수면 저장
      * @throws Exception mvc.perform
@@ -1272,6 +1419,34 @@ public class MeasurementResultRestControllerTest {
                 .content(jsonString))
             .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value("측정결과 저장 완료"))
+            .andDo(print());
+    }
+
+    /**
+     * 수면 저장 - 데이터 사이즈 체크
+     * @throws Exception mvc.perform
+     */
+    @Test()
+    public void givenOverSizeParam_whenRequestedSaveResultForSleep_thenSizeCheckedFail() throws Exception{
+        String jsonString="{\n" +
+            "  \"loginId\": \"wtest\",\n" +
+            "  \"sleepTimeList\": [\n" +
+            "    {\n" +
+            "      \"resultStartDate\": \"20211207\",\n" +
+            "      \"resultStartTime\": \"1200\",\n" +
+            "      \"resultEndDate\": \"20211207\",\n" +
+            "      \"resultEndTime\": \"1300\",\n" +
+            "      \"sleepType\": \"0\",\n" +
+            "      \"deviceId\": \"123456789012345678901\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+        mvc.perform(post("/api/results/sleepTime")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonString))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.deviceId}")))
             .andDo(print());
     }
 
@@ -1415,6 +1590,91 @@ public class MeasurementResultRestControllerTest {
                 .content(jsonString))
             .andExpect(jsonPath("$.code").value(ApiResponseCode.SUCCESS.getCode()))
             .andExpect(jsonPath("$.message").value("측정결과 저장 완료"))
+            .andDo(print());
+    }
+
+    /**
+     * 전체 측정정보 저장 - 데이터 사이즈 초과
+     */
+    @Test()
+    public void givenResultTotalOverSizeParam_whenRequestedSaveTotalResult_thenSizeCheckedFail() throws Exception {
+        String jsonString = "\n" +
+            "{\n" +
+            "  \"loginId\": \"wtest\",\n" +
+            // 체온
+            "  \"btList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"bt\": 12345678901,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 혈압
+            "  \"bpList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"dbp\": 12345678901,\n" +
+            "      \"sbp\": 12345678901,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 심박수
+            "  \"hrList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"hr\": 12345678901,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 산소포화도
+            "  \"spO2List\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"spO2\": 12345678901,\n" +
+            "      \"deviceId\": \"testDevice\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 걸음수
+            "  \"stepCountList\": [\n" +
+            "    {\n" +
+            "      \"resultDate\": \"20211207\",\n" +
+            "      \"resultTime\": \"120000\",\n" +
+            "      \"stepCount\": \"12345678901\",\n" +
+            "      \"distance\": \"12345678901\",\n" +
+            "      \"deviceId\": \"123456789012345678901\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            // 수면
+            "  \"sleepTimeList\": [\n" +
+            "    {\n" +
+            "      \"resultStartDate\": \"20211207\",\n" +
+            "      \"resultStartTime\": \"1200\",\n" +
+            "      \"resultEndDate\": \"20211207\",\n" +
+            "      \"resultEndTime\": \"1300\",\n" +
+            "      \"sleepType\": \"0\",\n" +
+            "      \"deviceId\": \"123456789012345678901\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+
+        mvc.perform(post("/api/results/total")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonString))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.code").value(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode()))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.hrResult}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.dbpResult}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.deviceId}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.stepCountResult}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.sbpResult}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.deviceId}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.btResult}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.distanceResult}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.spO2Result}")))
             .andDo(print());
     }
 

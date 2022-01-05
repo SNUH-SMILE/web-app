@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -28,6 +29,7 @@ public class LoginInfo implements Serializable {
      * 비밀번호
      */
     @NotNull(message = "{validation.null.password}")
+    @Size(max = 20, message = "{validation.size.password}")
     private String password;
 
 }

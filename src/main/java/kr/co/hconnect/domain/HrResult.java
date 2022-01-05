@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * 심박수 구성정보
@@ -23,6 +24,7 @@ public class HrResult extends BaseResult implements ResultValue {
      * 심박수 측정결과
      */
     @NotNull(message = "{validation.null.result}")
+    @Size(max = 10, message = "{validation.size.hrResult}")
     @JsonProperty("hr")
     private String result;
     

@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -136,25 +137,90 @@ public class PatientRestControllerTest {
     }
 
     /**
+     * 환자정보 저장 - 데이터 사이즈 초과 확인
+     */
+    @Test
+    public void givenPatientOverSizeParam_whenCreatePatient_thenSizeCheckedFail() throws Exception {
+        String content =
+            "{\n" +
+                "  \"loginId\"   : \"123456789012345678901\",\n" +
+                "  \"password\"  : \"123456789012345678901\",\n" +
+                "  \"patientNm\" : \"123456789012345678901234567890123456789012345678901\",\n" +
+                "  \"ssn\"       : \"8812051525252\",\n" +
+                "  \"birthDate\" : \"19881205\",\n" +
+                "  \"sex\"       : \"M\",\n" +
+                "  \"cellPhone\" : \"1234567890123451\",\n" +
+                "  \"guardianCellPhone\" : \"1234567890123451\",\n" +
+                "  \"zipCode\"   : \"1234567\",\n" +
+                "  \"address1\"  : \"123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901\",\n" +
+                "  \"address2\"  : \"123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901\"\n" +
+                "}";
+
+        mvc.perform(post("/api/patient")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(content))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode())))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.loginId}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.password}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.patientNm}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.cellPhone}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.guardianCellPhone}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.zipCode}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.address1}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.address2}")))
+            .andDo(print());
+    }
+
+    /**
      * 환자정보 수정 성공
      */
     @Test
     public void givenPatient_whenUpdatePatient_thenSuccess() throws Exception {
         String content =
             "{\n" +
-            "  \"loginId\"   : \"testshy\",\n" +
-            "  \"cellPhone\" : \"01012345678\",\n" +
-            "  \"guardianCellPhone\" : \"01087654321\",\n" +
-            "  \"zipCode\"   : \"12345\",\n" +
-            "  \"address1\"  : \"서울시 성북구 종암동\",\n" +
-            "  \"address2\"  : \"301호\"\n" +
-            "}";
+                "  \"loginId\"   : \"testshy\",\n" +
+                "  \"cellPhone\" : \"01012345678\",\n" +
+                "  \"guardianCellPhone\" : \"01087654321\",\n" +
+                "  \"zipCode\"   : \"12345\",\n" +
+                "  \"address1\"  : \"서울시 성북구 종암동\",\n" +
+                "  \"address2\"  : \"301호\"\n" +
+                "}";
 
         mvc.perform(put("/api/patient")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
+            .andDo(print());
+    }
+
+    /**
+     * 환자정보 수정 - 데이터 사이즈 초과 확인
+     */
+    @Test
+    public void givenPatientOverSizeParam_whenUpdatePatient_thenSizeCheckedFail() throws Exception {
+        String content =
+            "{\n" +
+                "  \"loginId\"   : \"123456789012345678901\",\n" +
+                "  \"cellPhone\" : \"1234567890123451\",\n" +
+                "  \"guardianCellPhone\" : \"1234567890123451\",\n" +
+                "  \"zipCode\"   : \"1234567\",\n" +
+                "  \"address1\"  : \"123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901\",\n" +
+                "  \"address2\"  : \"123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901\"\n" +
+                "}";
+
+        mvc.perform(put("/api/patient")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(content))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode())))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.loginId}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.cellPhone}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.guardianCellPhone}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.zipCode}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.address1}")))
+            .andExpect(jsonPath("$.message", containsString("{validation.size.address2}")))
             .andDo(print());
     }
 
@@ -226,15 +292,35 @@ public class PatientRestControllerTest {
     public void givenLoginInfo_whenChangePassword_thenSuccess() throws Exception {
         String content =
             "{\n" +
-            "  \"loginId\": \"testshy\",\n" +
-            "  \"password\": \"5678\"\n" +
-            "}";
+                "  \"loginId\": \"testshy\",\n" +
+                "  \"password\": \"5678\"\n" +
+                "}";
 
         mvc.perform(put("/api/patient/password")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.code", is(ApiResponseCode.SUCCESS.getCode())))
+            .andDo(print());
+    }
+
+    /**
+     * 환자 비밀번호 수정 - 데이터 사이즈 초과 확인
+     */
+    @Test
+    public void givenLoginInfoOverSizeParam_whenChangePassword_thenSizeCheckedFail() throws Exception {
+        String content =
+            "{\n" +
+                "  \"loginId\": \"testshy\",\n" +
+                "  \"password\": \"123456789012345678901\"\n" +
+                "}";
+
+        mvc.perform(put("/api/patient/password")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(content))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.code", is(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode())))
+            .andExpect(jsonPath("$.message", is("{validation.size.password}")))
             .andDo(print());
     }
 

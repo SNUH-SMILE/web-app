@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -31,7 +30,6 @@ public class SaveQuarantineStatusInfo extends BaseResponse {
      * 격리 상태 구분 (0 : 정상, 1 : 이탈)
      */
     @NotNull(message = "{validation.null.quarantineStatus}")
-    @Pattern(regexp = "^[01]$",message = "{validation.patternMismatch.quarantineStatus}")
-    @Valid
+    @Pattern(regexp = "^[01]$", message = "{validation.patternMismatch.quarantineStatus}")
     private String quarantineStatusDiv;
 }

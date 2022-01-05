@@ -45,7 +45,7 @@ public class PatientRestController {
      * 생성자
      * @param patientService 환자관리 Service
      * @param qantnStatusService 격리상태 관리 Service
-     * @param messageSource
+     * @param messageSource MessageSource
      */
     @Autowired
     public PatientRestController(PatientService patientService, QantnStatusService qantnStatusService, MessageSource messageSource) {

@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * 체온 구성정보
@@ -23,6 +24,7 @@ public class BtResult extends BaseResult implements ResultValue {
      * 체온 측정결과
      */
     @NotNull(message = "{validation.null.result}")
+    @Size(max = 10, message = "{validation.size.btResult}")
     @JsonProperty("bt")
     private String result;
 

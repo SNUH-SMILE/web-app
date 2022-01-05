@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -31,11 +32,13 @@ public class PatientDevice implements Serializable {
      * 장비ID
      */
     @NotNull(message = "{validation.null.deviceId}")
+    @Size(max = 20, message = "{validation.size.deviceId}")
     private String deviceId;
     /**
      * 장비명
      */
     @NotNull(message = "{validation.null.deviceNm}")
+    @Size(max = 50, message = "{validation.size.deviceNm}")
     private String deviceNm;
     /**
      * 사용여부
