@@ -39,6 +39,19 @@ public enum ApiResponseCode {
      */
     DUPLICATE_ACTIVE_ADMISSION_INFO("22"),
 
+    /**
+     * 토큰정보 만료
+     */
+    EXPIRED_TOKEN("80"),
+    /**
+     * 토큰정보가 존재하지 않습니다
+     */
+    INVALID_TOKEN("81"),
+    /**
+     * 토큰정보가 유효하지 않습니다
+     */
+    ILLEGAL_TOKEN("82"),
+
 
     /**
      * 유효하지 않은 요청 파라메터 코드

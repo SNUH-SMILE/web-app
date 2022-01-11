@@ -5,6 +5,7 @@ import kr.co.hconnect.domain.*;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.exception.NotFoundPatientInfoException;
 import kr.co.hconnect.exception.NotMatchPatientPasswordException;
+import kr.co.hconnect.jwt.TokenProvider;
 import kr.co.hconnect.service.PatientService;
 import org.apache.ibatis.exceptions.TooManyResultsException;
 import org.mybatis.spring.MyBatisSystemException;
@@ -32,17 +33,20 @@ public class LoginRestController {
      */
     private final PatientService patientService;
 
+    private final TokenProvider tokenProvider;
+
     private final MessageSource messageSource;
 
     /**
      * 생성자
-     *
-     * @param patientService 환자관리 Service
+     *  @param patientService 환자관리 Service
+     * @param tokenProvider jwt Token 관리
      * @param messageSource MessageSource
      */
     @Autowired
-    public LoginRestController(PatientService patientService, MessageSource messageSource) {
+    public LoginRestController(PatientService patientService, TokenProvider tokenProvider, MessageSource messageSource) {
         this.patientService = patientService;
+        this.tokenProvider = tokenProvider;
         this.messageSource = messageSource;
     }
 
@@ -108,25 +112,32 @@ public class LoginRestController {
      * @return BaseResponse
      */
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public BaseResponse login(@Valid @RequestBody LoginInfo loginInfo, BindingResult result) {
+    public LoginSuccessInfo login(@Valid @RequestBody LoginInfo loginInfo, BindingResult result) {
         if (result.hasErrors()) {
             throw new InvalidRequestArgumentException(result);
         }
 
-        BaseResponse baseResponse = new BaseResponse();
+        LoginSuccessInfo loginSuccessInfo = new LoginSuccessInfo();
 
         try {
+            // 로그인 정보 확인
             Patient patient = patientService.selectPatientByLoginInfo(loginInfo);
-            baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
-            baseResponse.setMessage(messageSource.getMessage("message.success.login", null, Locale.getDefault()));
+
+            // Token 발행
+            String jwtToken = tokenProvider.createToken();
+
+            // 응답데이터 구성
+            loginSuccessInfo.setCode(ApiResponseCode.SUCCESS.getCode());
+            loginSuccessInfo.setMessage(messageSource.getMessage("message.success.login", null, Locale.getDefault()));
+            loginSuccessInfo.setToken(jwtToken);
         } catch (NotFoundPatientInfoException e) {
-            baseResponse.setCode(ApiResponseCode.NOT_FOUND_PATIENT_INFO.getCode());
-            baseResponse.setMessage(e.getMessage());
+            loginSuccessInfo.setCode(ApiResponseCode.NOT_FOUND_PATIENT_INFO.getCode());
+            loginSuccessInfo.setMessage(e.getMessage());
         } catch (NotMatchPatientPasswordException e) {
-            baseResponse.setCode(ApiResponseCode.NOT_MATCH_PATIENT_PASSWORD.getCode());
-            baseResponse.setMessage(e.getMessage());
+            loginSuccessInfo.setCode(ApiResponseCode.NOT_MATCH_PATIENT_PASSWORD.getCode());
+            loginSuccessInfo.setMessage(e.getMessage());
         }
 
-        return baseResponse;
+        return loginSuccessInfo;
     }
 }

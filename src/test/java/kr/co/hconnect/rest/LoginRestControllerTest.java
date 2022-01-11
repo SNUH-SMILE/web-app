@@ -1,6 +1,7 @@
 package kr.co.hconnect.rest;
 
 import kr.co.hconnect.common.ApiResponseCode;
+import kr.co.hconnect.jwt.TokenProvider;
 import kr.co.hconnect.service.PatientService;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,11 +43,13 @@ public class LoginRestControllerTest {
     private PatientService patientService;
 
     @Autowired
-    private DataSource dataSource;
+    private TokenProvider tokenProvider;
 
     @Autowired
     private MessageSource messageSource;
 
+    @Autowired
+    private DataSource dataSource;
 
     @Before
     public void setMockMvc() {
@@ -54,7 +57,7 @@ public class LoginRestControllerTest {
         resourceDatabasePopulator.addScript(new ClassPathResource("/sql-script/beforeSetLoginRestControllerTest.sql"));
         resourceDatabasePopulator.execute(dataSource);
 
-        mvc = MockMvcBuilders.standaloneSetup(new LoginRestController(patientService, messageSource)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new LoginRestController(patientService, tokenProvider, messageSource)).build();
     }
 
     /**
