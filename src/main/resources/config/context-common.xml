@@ -68,4 +68,25 @@
     <bean id="dataSourceCryptoEnvConfigService" class="kr.co.hconnect.common.DataSourceCryptoEnvConfigService">
         <property name="encryptedPassword" value="${db.password}"/>
     </bean>
+
+    <!-- JwtFilter -->
+    <bean id="tokenProvider" class="kr.co.hconnect.jwt.TokenProvider">
+        <property name="validity" value="${token.validity}" />
+    </bean>
+    <bean id="jwtFilter" class="kr.co.hconnect.jwt.JwtFilter">
+        <constructor-arg name="tokenProvider" ref="tokenProvider" />
+        <constructor-arg name="messageSource" ref="messageSource" />
+        <property name="passUrls">
+            <list>
+                <value>/api/identity</value>
+                <value>/api/login</value>
+                <value>/api/patient</value>
+                <value>/api/patient/duplicate</value>
+                <value>/api/patient/password</value>
+                <value>/api/patients/findById</value>
+                <value>/api/patients/find</value>
+            </list>
+        </property>
+    </bean>
+
 </beans>
