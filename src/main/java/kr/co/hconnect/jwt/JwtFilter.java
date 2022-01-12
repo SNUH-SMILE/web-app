@@ -12,12 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -25,11 +23,13 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-public class JwtFilter extends GenericFilterBean {
+public class JwtFilter extends OncePerRequestFilter {
 
     private final Logger LOGGER = LoggerFactory.getLogger(JwtFilter.class);
 
-    private final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+
+    private static final String BEARER_TYPE = "Bearer";
 
     private final TokenProvider tokenProvider;
 
@@ -68,14 +68,13 @@ public class JwtFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        String requestURI = httpServletRequest.getRequestURI();
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        String requestURI = request.getRequestURI();
 
         // passUrl 확인
         if (!passUrls.contains(requestURI)) {
-            String jwt = resolveToken(httpServletRequest);
+            String jwt = resolveToken(request);
 
             BaseResponse baseResponse = null;
             if (StringUtils.hasText(jwt)) {
@@ -104,14 +103,15 @@ public class JwtFilter extends GenericFilterBean {
             }
 
             if (baseResponse != null) {
-                httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-                httpServletResponse.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
 
-                objectMapper.writeValue(httpServletResponse.getWriter(), baseResponse);
+                objectMapper.writeValue(response.getWriter(), baseResponse);
+                return;
             }
         }
 
-        chain.doFilter(httpServletRequest, httpServletResponse);
+        filterChain.doFilter(request, response);
     }
 
     /**
@@ -141,12 +141,13 @@ public class JwtFilter extends GenericFilterBean {
      * @param request HttpServletRequest
      * @return 토큰정보
      */
-    private String resolveToken(HttpServletRequest request) {
+    public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
             return bearerToken.substring(7);
         }
 
         return null;
     }
+
 }

@@ -17,22 +17,30 @@ public class TokenProvider {
 
     private final Logger LOGGER = LoggerFactory.getLogger(TokenProvider.class);
 
-    private final String secret = "Smart-Monitoring-solution-for-Infectious-disease-management-through-Lifestyle-Evaluation";
+    /**
+     * 서명 알고리즘
+     */
     private final SignatureAlgorithm keyAlg = SignatureAlgorithm.HS256;
 
-    private final byte[] keyBytes = DatatypeConverter.parseBase64Binary(secret);
-    private final Key key = new SecretKeySpec(keyBytes, keyAlg.getJcaName());
+    /**
+     * 인증키
+     */
+    private final Key key;
 
     /**
      * 토큰 만료시간 - milliseconds
      */
-    private Integer validity;
+    private final Integer validity;
 
     /**
-     * 토큰 만료시간 Setter
+     * 생성자
+     *
+     * @param secretKey 암호키
      * @param validity 토큰 만료시간(초단위)
      */
-    public void setValidity(Integer validity) {
+    public TokenProvider(String secretKey, Integer validity) {
+        byte[] keyBytes = DatatypeConverter.parseBase64Binary(secretKey);
+        this.key = new SecretKeySpec(keyBytes, keyAlg.getJcaName());
         this.validity = validity * 1000;
     }
 

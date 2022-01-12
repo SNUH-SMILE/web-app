@@ -71,7 +71,8 @@
 
     <!-- JwtFilter -->
     <bean id="tokenProvider" class="kr.co.hconnect.jwt.TokenProvider">
-        <property name="validity" value="${token.validity}" />
+        <constructor-arg name="secretKey" value="${token.secretKey}" type="java.lang.String" />
+        <constructor-arg name="validity" value="${token.validity}" type="java.lang.Integer" />
     </bean>
     <bean id="jwtFilter" class="kr.co.hconnect.jwt.JwtFilter">
         <constructor-arg name="tokenProvider" ref="tokenProvider" />
