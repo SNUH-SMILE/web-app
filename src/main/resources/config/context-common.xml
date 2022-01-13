@@ -78,15 +78,43 @@
         <constructor-arg name="tokenProvider" ref="tokenProvider" />
         <constructor-arg name="messageSource" ref="messageSource" />
         <property name="passUrls">
-            <list>
-                <value>/api/identity</value>
-                <value>/api/login</value>
-                <value>/api/patient</value>
-                <value>/api/patient/duplicate</value>
-                <value>/api/patient/password</value>
-                <value>/api/patients/findById</value>
-                <value>/api/patients/find</value>
-            </list>
+            <map>
+                <entry key="/api/identity">
+                    <list>
+                        <value>GET</value>
+                    </list>
+                </entry>
+                <entry key="/api/login">
+                    <list>
+                        <value>GET</value>
+                    </list>
+                </entry>
+                <entry key="/api/patient">
+                    <list>
+                        <value>POST</value>
+                    </list>
+                </entry>
+                <entry key="/api/patient/duplicate">
+                    <list>
+                        <value>GET</value>
+                    </list>
+                </entry>
+                <entry key="/api/patient/password">
+                    <list>
+                        <value>GET</value>
+                    </list>
+                </entry>
+                <entry key="/api/patients/findById">
+                    <list>
+                        <value>GET</value>
+                    </list>
+                </entry>
+                <entry key="/api/patients/find">
+                    <list>
+                        <value>GET</value>
+                    </list>
+                </entry>
+            </map>
         </property>
     </bean>
 

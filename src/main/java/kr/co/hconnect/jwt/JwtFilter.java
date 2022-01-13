@@ -19,8 +19,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 public class JwtFilter extends OncePerRequestFilter {
@@ -35,7 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final Set<String> passUrls = new HashSet<>();
+    private final Map<String, Set<String>> passUrls = new HashMap<>();
 
     private final MessageSource messageSource;
 
@@ -43,15 +44,13 @@ public class JwtFilter extends OncePerRequestFilter {
      * token 유효성 검사 제외 URL 목록 Setter
      * @param passUrls token 유효성 검사 제외 URL 목록
      */
-    public void setPassUrls(String... passUrls) {
+    public void setPassUrls(Map<String, Set<String>> passUrls) {
         this.passUrls.clear();
         if (!ObjectUtils.isEmpty(passUrls)) {
-            for (String passUrl : passUrls) {
-                if (StringUtils.isEmpty(passUrl) || this.passUrls.contains(passUrl)) {
-                    continue;
+            for (Map.Entry<String, Set<String>> passUrl : passUrls.entrySet()) {
+                if (!StringUtils.isEmpty(passUrl.getKey()) && !this.passUrls.containsKey(passUrl.getKey())) {
+                    this.passUrls.put(passUrl.getKey(), passUrl.getValue());
                 }
-
-                this.passUrls.add(passUrl);
             }
         }
     }
@@ -71,9 +70,10 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String requestURI = request.getRequestURI();
+        String requestMethod = request.getMethod();
 
         // passUrl 확인
-        if (!passUrls.contains(requestURI)) {
+        if (!(this.passUrls.containsKey(requestURI) && this.passUrls.get(requestURI).contains(requestMethod))) {
             String jwt = resolveToken(request);
 
             BaseResponse baseResponse = null;
