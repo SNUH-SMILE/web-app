@@ -79,6 +79,11 @@
         <constructor-arg name="messageSource" ref="messageSource" />
         <property name="passUrls">
             <map>
+                <entry key="/api/now">
+                    <list>
+                        <value>GET</value>
+                    </list>
+                </entry>
                 <entry key="/api/identity">
                     <list>
                         <value>GET</value>
