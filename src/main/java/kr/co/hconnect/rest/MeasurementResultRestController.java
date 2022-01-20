@@ -78,7 +78,7 @@ public class MeasurementResultRestController {
      * @param loginId 로그인Id
      * @return MainContentDetail
      */
-    @RequestMapping(value = "/main", method = RequestMethod.GET)
+    @RequestMapping(value = "/main", method = RequestMethod.POST)
     public MainContentDetail mainContent(@Valid @RequestBody LoginId loginId, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
@@ -109,7 +109,7 @@ public class MeasurementResultRestController {
      * @param loginId 로그인 Id
      * @return ExistResult
      */
-    @RequestMapping(value = "/main/notice", method = RequestMethod.GET)
+    @RequestMapping(value = "/main/notice", method = RequestMethod.POST)
     public ExistResult unReadNotice(@Valid @RequestBody LoginId loginId, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
@@ -137,7 +137,7 @@ public class MeasurementResultRestController {
      * @param searchResultInfo 측정결과 검색 조건
      * @return BtResultDetail btResultDetail
      */
-    @RequestMapping(value = "/results/bt", method = RequestMethod.GET)
+    @RequestMapping(value = "/results/getBt", method = RequestMethod.POST)
     public BtResultDetail selectBtList(@Valid @RequestBody SearchResultInfo searchResultInfo, BindingResult bindingResult) {
         //유효성 검사
         if (bindingResult.hasErrors()) {
@@ -164,7 +164,7 @@ public class MeasurementResultRestController {
      * @param searchResultInfo 측정결과 검색 조건
      * @return HrResultDetail hrResultDetail
      */
-    @RequestMapping(value = "/results/hr", method = RequestMethod.GET)
+    @RequestMapping(value = "/results/getHr", method = RequestMethod.POST)
     public HrResultDetail selectHrList(@Valid @RequestBody SearchResultInfo searchResultInfo, BindingResult bindingResult) {
         //유효성 검사
         if (bindingResult.hasErrors()) {
@@ -190,7 +190,7 @@ public class MeasurementResultRestController {
      * @param searchResultInfo 측정결과 검색 조건
      * @return SpO2ResultDetail spO2ResultDetail
      */
-    @RequestMapping(value = "/results/spO2", method = RequestMethod.GET)
+    @RequestMapping(value = "/results/getSpO2", method = RequestMethod.POST)
     public SpO2ResultDetail selectSpO2List(@Valid @RequestBody SearchResultInfo searchResultInfo, BindingResult bindingResult) {
         //유효성 검사
         if (bindingResult.hasErrors()) {
@@ -217,7 +217,7 @@ public class MeasurementResultRestController {
      * @param searchResultInfos 측정결과 검색 조건
      * @return StepCountResultDetail bpResultDetail
      */
-    @RequestMapping(value = "/results/stepCount", method = RequestMethod.GET)
+    @RequestMapping(value = "/results/getStepCount", method = RequestMethod.POST)
     public StepCountResultDetail selectStepList(@Valid @RequestBody SearchResultInfos searchResultInfos, BindingResult bindingResult) {
         //유효성 검사
         if (bindingResult.hasErrors()) {
@@ -245,7 +245,7 @@ public class MeasurementResultRestController {
      * @param searchResultInfos 결과 타입이 2개인 측정결과 검색 조건
      * @return BpResultDetail bpResultDetail
      */
-    @RequestMapping(value = "/results/bp", method = RequestMethod.GET)
+    @RequestMapping(value = "/results/getBp", method = RequestMethod.POST)
     public BpResultDetail selectBpList(@Valid @RequestBody SearchResultInfos searchResultInfos, BindingResult bindingResult) {
         //유효성 검사
         if (bindingResult.hasErrors()) {
@@ -273,7 +273,7 @@ public class MeasurementResultRestController {
      * @param searchSleepResultInfo 수면 측정결과 검색 조건
      * @return SleepTimeResultDetail sleepTimeResultDetail
      */
-    @RequestMapping(value = "/results/sleepTime", method = RequestMethod.GET)
+    @RequestMapping(value = "/results/getSleepTime", method = RequestMethod.POST)
     public SleepTimeResultDetail selectSleepList(@Valid @RequestBody SearchSleepResultInfo searchSleepResultInfo
             , BindingResult bindingResult) {
         //유효성 검사

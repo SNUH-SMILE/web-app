@@ -60,7 +60,7 @@ public class PatientRestController {
      * @param loginId 로그인ID VO
      * @return Patient 회원정보
      */
-    @RequestMapping(value = "/patient", method = RequestMethod.GET)
+    @RequestMapping(value = "/getPatient", method = RequestMethod.POST)
     public Patient selectPatient(@Valid @RequestBody LoginId loginId, BindingResult result) {
         if (result.hasErrors()) {
             throw new InvalidRequestArgumentException(result);
@@ -161,7 +161,7 @@ public class PatientRestController {
      * @param loginId 로그인ID
      * @return LoginDuplicateResult 로그인ID 중복 확인 정보
      */
-    @RequestMapping(value = "/patient/duplicate", method = RequestMethod.GET)
+    @RequestMapping(value = "/patient/duplicate", method = RequestMethod.POST)
     public LoginDuplicateResult checkDuplicateLoginId(@Valid @RequestBody LoginId loginId, BindingResult result) {
         if (result.hasErrors()) {
             throw new InvalidRequestArgumentException(result);
@@ -212,7 +212,7 @@ public class PatientRestController {
      * @param searchLoginIdInfo 아이디 검색 조건 정보
      * @return FindLoginIdResult
      */
-    @RequestMapping(value = "/patients/findById", method = RequestMethod.GET)
+    @RequestMapping(value = "/patients/findById", method = RequestMethod.POST)
     public FindLoginIdResult selectPatientLoginId(@Valid @RequestBody SearchLoginIdInfo searchLoginIdInfo
             , BindingResult result) {
         if (result.hasErrors()) {
@@ -247,7 +247,7 @@ public class PatientRestController {
      * @param searchExistLoginInfo 개인정보 확인 검색 조건
      * @return ExistResult
      */
-    @RequestMapping(value = "/patients/find", method = RequestMethod.GET)
+    @RequestMapping(value = "/patients/find", method = RequestMethod.POST)
     public ExistResult checkExistLoginInfo(@Valid @RequestBody SearchExistLoginInfo searchExistLoginInfo
             , BindingResult result) {
         if (result.hasErrors()) {
@@ -278,7 +278,7 @@ public class PatientRestController {
      * @param loginId 로그인ID VO
      * @return SaveQuarantineStatusInfo
      */
-    @RequestMapping(value = "/quarantineStatus", method = RequestMethod.GET)
+    @RequestMapping(value = "/getQuarantineStatus", method = RequestMethod.POST)
     public SaveQuarantineStatusInfo selectQuarantine(@Valid @RequestBody LoginId loginId, BindingResult result) {
         if (result.hasErrors()) {
             throw new InvalidRequestArgumentException(result);

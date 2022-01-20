@@ -86,27 +86,22 @@
                 </entry>
                 <entry key="/api/identity">
                     <list>
-                        <value>GET</value>
+                        <value>POST</value>
                     </list>
                 </entry>
                 <entry key="/api/login">
-                    <list>
-                        <value>GET</value>
-                    </list>
-                </entry>
-                <entry key="/api/patient">
                     <list>
                         <value>POST</value>
                     </list>
                 </entry>
                 <entry key="/api/patient/duplicate">
                     <list>
-                        <value>GET</value>
+                        <value>POST</value>
                     </list>
                 </entry>
-                <entry key="/api/patient/password">
+                <entry key="/api/patient">
                     <list>
-                        <value>GET</value>
+                        <value>POST</value>
                     </list>
                 </entry>
                 <entry key="/api/patients/findById">

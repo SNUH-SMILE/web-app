@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -71,7 +72,7 @@ public class LoginRestControllerTest {
             "    \"password\": \"1234\"\n" +
             "}";
 
-        mvc.perform(get("/api/login")
+        mvc.perform(post("/api/login")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -102,7 +103,7 @@ public class LoginRestControllerTest {
                 "    \"password\": \"testshy1321\"\n" +
                 "}";
 
-        mvc.perform(get("/api/login")
+        mvc.perform(post("/api/login")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -121,7 +122,7 @@ public class LoginRestControllerTest {
             "    \"password\": \"1234\"\n" +
             "}";
 
-        mvc.perform(get("/api/login")
+        mvc.perform(post("/api/login")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -139,7 +140,7 @@ public class LoginRestControllerTest {
             "  \"ssn\": \"8812051999999\"\n" +
             "}";
 
-        mvc.perform(get("/api/identity")
+        mvc.perform(post("/api/identity")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -159,7 +160,7 @@ public class LoginRestControllerTest {
                 "  \"ssn\": \"8812059999999\"\n" +
                 "}";
 
-        mvc.perform(get("/api/identity")
+        mvc.perform(post("/api/identity")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -179,7 +180,7 @@ public class LoginRestControllerTest {
                 "  \"ssn\": \"8812051555555\"\n" +
                 "}";
 
-        mvc.perform(get("/api/identity")
+        mvc.perform(post("/api/identity")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())

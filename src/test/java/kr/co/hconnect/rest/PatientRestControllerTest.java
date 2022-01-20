@@ -82,7 +82,7 @@ public class PatientRestControllerTest {
             "  \"loginId\": \"testshy\"\n" +
             "}";
 
-        mvc.perform(get("/api/patient")
+        mvc.perform(post("/api/getPatient")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -100,7 +100,7 @@ public class PatientRestControllerTest {
             "  \"loginId\": \"testshy5252\"\n" +
             "}";
 
-        mvc.perform(get("/api/patient")
+        mvc.perform(post("/api/getPatient")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -257,7 +257,7 @@ public class PatientRestControllerTest {
             "  \"loginId\": \"testshy\"\n" +
             "}";
 
-        mvc.perform(get("/api/patient/duplicate")
+        mvc.perform(post("/api/patient/duplicate")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -276,7 +276,7 @@ public class PatientRestControllerTest {
             "  \"loginId\": \"블라블라\"\n" +
             "}";
 
-        mvc.perform(get("/api/patient/duplicate")
+        mvc.perform(post("/api/patient/duplicate")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -354,7 +354,7 @@ public class PatientRestControllerTest {
             "  \"cellPhone\": \"01092615960\"\n" +
             "}";
 
-        mvc.perform(get("/api/patients/findById")
+        mvc.perform(post("/api/patients/findById")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -374,7 +374,7 @@ public class PatientRestControllerTest {
             "  \"cellPhone\": \"01092615960\"\n" +
             "}";
 
-        mvc.perform(get("/api/patients/findById")
+        mvc.perform(post("/api/patients/findById")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -394,7 +394,7 @@ public class PatientRestControllerTest {
             "  \"cellPhone\": \"01092615960\"\n" +
             "}";
 
-        mvc.perform(get("/api/patients/findById")
+        mvc.perform(post("/api/patients/findById")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -415,7 +415,7 @@ public class PatientRestControllerTest {
             "  \"cellPhone\": \"01092615960\"\n" +
             "}";
 
-        mvc.perform(get("/api/patients/find")
+        mvc.perform(post("/api/patients/find")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -436,7 +436,7 @@ public class PatientRestControllerTest {
             "  \"cellPhone\": \"01092610000\"\n" +
             "}";
 
-        mvc.perform(get("/api/patients/find")
+        mvc.perform(post("/api/patients/find")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -455,7 +455,7 @@ public class PatientRestControllerTest {
                 "  \"loginId\": \"testshy\"\n" +
                 "}";
 
-        mvc.perform(get("/api/quarantineStatus")
+        mvc.perform(post("/api/getQuarantineStatus")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
@@ -474,7 +474,7 @@ public class PatientRestControllerTest {
                 "  \"loginId\": \"testshydup1\"\n" +
                 "}";
 
-        mvc.perform(get("/api/quarantineStatus")
+        mvc.perform(post("/api/getQuarantineStatus")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))
             .andExpect(status().isOk())
