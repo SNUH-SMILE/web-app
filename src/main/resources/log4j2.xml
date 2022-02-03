@@ -29,6 +29,10 @@
             <AppenderRef ref="console" />
             <AppenderRef ref="rollingFile"/>
         </Logger>
+        <Logger name="org.springframework.web.filter" level="DEBUG" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="rollingFile"/>
+        </Logger>
 
         <Logger name="jdbc" level="OFF" />
         <Logger name="jdbc.connection" level="OFF" />

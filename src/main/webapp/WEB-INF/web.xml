@@ -61,6 +61,38 @@
         <url-pattern>/api/*</url-pattern>
     </filter-mapping>
 
+    <!-- REST API Logging -->
+    <filter>
+        <filter-name>requestLoggingFilter</filter-name>
+        <filter-class>
+            kr.co.hconnect.common.CommonRequestResponseLoggingFilter
+        </filter-class>
+        <init-param>
+            <param-name>includePayload</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>includeHeaders</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>includeClientInfo</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>includeQueryString</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>maxPayloadLength</param-name>
+            <param-value>5000</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>requestLoggingFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
