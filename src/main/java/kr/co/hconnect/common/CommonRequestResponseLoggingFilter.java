@@ -16,7 +16,12 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+/**
+ * 요청,응답 로깅 필터
+ */
 public class CommonRequestResponseLoggingFilter extends OncePerRequestFilter {
+
+    private static final String NEW_LINE = System.getProperty("line.separator");
 
     private static final int DEFAULT_MAX_PAYLOAD_LENGTH = 50;
 
@@ -153,15 +158,15 @@ public class CommonRequestResponseLoggingFilter extends OncePerRequestFilter {
         StringBuilder msg = new StringBuilder();
 
         // Request 정보
-        msg.append(System.getProperty("line.separator"))
+        msg.append(NEW_LINE)
             .append("Request [")
-            .append(System.getProperty("line.separator"))
+            .append(NEW_LINE)
             .append("  uri=").append(request.getRequestURI());
 
         if (isIncludeQueryString()) {
             String queryString = request.getQueryString();
             if (queryString != null) {
-                msg.append(System.getProperty("line.separator"))
+                msg.append(NEW_LINE)
                     .append("  ?").append(queryString);
             }
         }
@@ -169,23 +174,23 @@ public class CommonRequestResponseLoggingFilter extends OncePerRequestFilter {
         if (isIncludeClientInfo()) {
             String client = request.getRemoteAddr();
             if (StringUtils.hasLength(client)) {
-                msg.append(System.getProperty("line.separator"))
+                msg.append(NEW_LINE)
                     .append("  client=").append(client);
             }
             HttpSession session = request.getSession(false);
             if (session != null) {
-                msg.append(System.getProperty("line.separator"))
+                msg.append(NEW_LINE)
                     .append("  session=").append(session.getId());
             }
             String user = request.getRemoteUser();
             if (user != null) {
-                msg.append(System.getProperty("line.separator"))
+                msg.append(NEW_LINE)
                     .append("  user=").append(user);
             }
         }
 
         if (isIncludeHeaders()) {
-            msg.append(System.getProperty("line.separator"))
+            msg.append(NEW_LINE)
                 .append("  headers=").append(new ServletServerHttpRequest(request).getHeaders());
         }
 
@@ -203,13 +208,13 @@ public class CommonRequestResponseLoggingFilter extends OncePerRequestFilter {
                     catch (UnsupportedEncodingException ex) {
                         payload = "[unknown]";
                     }
-                    msg.append(System.getProperty("line.separator"))
+                    msg.append(NEW_LINE)
                         .append("  payload=").append(payload);
                 }
             }
         }
 
-        msg.append(System.getProperty("line.separator"))
+        msg.append(NEW_LINE)
             .append("]");
 
 
@@ -220,7 +225,7 @@ public class CommonRequestResponseLoggingFilter extends OncePerRequestFilter {
 
             byte[] buf = responseWrapper.getContentAsByteArray();
             if (buf.length > 0) {
-                msg.append(System.getProperty("line.separator"))
+                msg.append(NEW_LINE)
                     .append("Response [ ");
 
                 int length = Math.min(buf.length, getMaxPayloadLength());
@@ -232,10 +237,10 @@ public class CommonRequestResponseLoggingFilter extends OncePerRequestFilter {
                 catch (UnsupportedEncodingException ex) {
                     payload = "[unknown]";
                 }
-                msg.append(System.getProperty("line.separator"))
+                msg.append(NEW_LINE)
                     .append("  payload=").append(payload);
 
-                msg.append(System.getProperty("line.separator"));
+                msg.append(NEW_LINE);
                 msg.append("]");
             }
 
