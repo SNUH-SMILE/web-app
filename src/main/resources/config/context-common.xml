@@ -106,12 +106,12 @@
                 </entry>
                 <entry key="/api/patients/findById">
                     <list>
-                        <value>GET</value>
+                        <value>POST</value>
                     </list>
                 </entry>
                 <entry key="/api/patients/find">
                     <list>
-                        <value>GET</value>
+                        <value>POST</value>
                     </list>
                 </entry>
             </map>
