@@ -1,1 +1,1 @@
-<%--<jsp:forward page="/login/login.do" />--%>
+<jsp:forward page="/login/login.do" />

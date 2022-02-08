@@ -13,10 +13,10 @@
 		     , (SELECT COUNT(X.ADMISSION_ID) 
 		          FROM ADMISSION X 
 		         WHERE X.CENTER_ID = A.CENTER_ID
-		           AND X.DISCHARGE_DATE IS NULL)    AS ADMISSION_COUNT  -- 입소자수
+		           AND X.DSCHGE_DATE IS NULL)       AS ADMISSION_COUNT  -- 입소자수
 		     , B.DETAIL_CD_NM                       AS HOSPITAL_NM      -- 병원명 
 		  FROM TREATMENT_CENTER A
-		       INNER JOIN COM_CD_DETAIL  B  ON B.COM_CD = 'CD001'
+		       INNER JOIN COM_CD_DETAIL  B  ON B.COM_CD = 'CD002'
 		                                   AND A.HOSPITAL_CD = B.DETAIL_CD   
 		 WHERE A.CENTER_ID = #{centerId}
 	]]>
@@ -28,105 +28,115 @@
 	    -- 환자 대쉬보드 리스트 조회
 	    -- selectPatientDashboardList
 		/* TODO::V/S ITEM_CD 확정 후 쿼리 수정 필요 */
-        SELECT A.ADMISSION_ID                        AS ADMISSION_ID   -- 입소ID
-             , A.PATIENT_ID                          AS PATIENT_ID     -- 환자ID
-             , B.NAME                                AS NAME           -- 이름
-             , CASE B.SEX WHEN 'M' THEN '남'
-                          WHEN 'F' THEN '여'
-                          ELSE          ''
-               END                                   AS SEX_NM         -- 성별 
-             , TRUNCATE((TO_DAYS(NOW()) - TO_DAYS(B.BIRTH_DATE)) / 365, 0)       
-                                                     AS AGE            -- 나이(만)
-             , C.DETAIL_CD_NM                        AS LOCATION_NM    -- 위치명
-             , IBP.ITEM_NM                           AS BP_NM          -- 혈압 명칭
-             , IBP.UNIT                              AS BP_UNIT        -- 혈압 단위
-             , RBP.RESULT                            AS BP             -- 혈압 측정값
-             , CASE WHEN SUBSTRING_INDEX(RBP.RESULT, '/', 1) >= 135
-                         THEN 'Y'
-                    ELSE      'N'
-               END                                   AS BP_RISK_YN     -- 혈압 위험 여부
-             , IPR.ITEM_NM                           AS PR_NM          -- 맥박 명칭
-             , IPR.UNIT                              AS PR_UNIT        -- 맥박 단위
-             , RPR.RESULT                            AS PR             -- 맥박 측정값
-             , CASE WHEN RPR.RESULT >= 135
-                         THEN 'Y'
-                    ELSE      'N'
-               END                                   AS PR_RISK_YN     -- 맥박 위험 여부
-             , IBT.ITEM_NM                           AS BT_NM          -- 체온 명칭
-             , IBT.UNIT                              AS BT_UNIT        -- 체온 단위
-             , RBT.RESULT                            AS BT             -- 체온 측정값
-             , CASE WHEN RBT.RESULT >= 37.5
-                        THEN 'Y'
-                    ELSE     'N'
-               END                                   AS BT_RISK_YN     -- 체온 위험 여부
-             , IRR.ITEM_NM                           AS RR_NM          -- 호흡 명칭
-             , IRR.UNIT                              AS RR_UNIT        -- 호흡 단위
-             , RRR.RESULT                            AS RR             -- 호흡 측정값
-             , CASE WHEN RRR.RESULT >= 20
-                        THEN 'Y'
-                    ELSE     'N'
-               END                                   AS RR_RISK_YN     -- 호흡 위험 여부
-             , ISP.ITEM_NM                           AS SPO2_NM        -- 산소포화도 명칭
-             , ISP.UNIT                              AS SPO2_UNIT      -- 산소포화도 단위
-             , RSP.RESULT                            AS SPO2           -- 산소포화도 측정값
-             , CASE WHEN RSP.RESULT <= 90
-                        THEN 'Y'
-                    ELSE     'N'
-               END                                   AS SPO2_RISK_YN   -- 산소포화도 위험 여부
-          FROM ADMISSION A 
-               INNER JOIN PATIENT          B    ON A.PATIENT_ID  = B.PATIENT_ID
-               /* 위치 */
-               INNER JOIN COM_CD_DETAIL    C    ON C.COM_CD   = 'ROOM' -- TODO::공통코드 확정 후 변경 필요
-                                               AND A.LOCATION = C.DETAIL_CD
-               /* 혈압 */
-               INNER JOIN ITEM             IBP  ON IBP.ITEM_ID = 'I0025'
-               LEFT OUTER JOIN RESULT      RBP  ON RBP.RESULT_SEQ = (SELECT X.RESULT_SEQ 
-                                                                       FROM RESULT X 
+        SELECT A.ADMISSION_ID                               AS ADMISSION_ID
+             , B.PATIENT_ID                                 AS PATIENT_ID
+             , B.PATIENT_NM                                 AS NAME
+             , SEX.DETAIL_CD_NM                             AS SEX_NM
+             , TRUNCATE((TO_DAYS(NOW()) - TO_DAYS(B.BIRTH_DATE)) / 365, 0)
+                                                            AS AGE
+             , ROOM.DETAIL_CD_NM                            AS LOCATION_NM
+            /* 혈압 */
+             , IBP.ITEM_NM                                  AS BP_NM
+             , IBP.UNIT                                     AS BP_UNIT
+             , CONCAT(RSBP.RESULT, '/', RDBP.RESULT)        AS BP
+             , 'N'                                          AS BP_RISK_YN
+            /* 맥박 */
+             , IPR.ITEM_NM                                  AS PR_NM
+             , IPR.UNIT                                     AS PR_UNIT
+             , RPR.RESULT                                   AS PR
+             , 'N'                                          AS PR_RISK_YN
+            /* 체온 */
+             , IBT.ITEM_NM                                  AS BT_NM
+             , IBT.UNIT                                     AS BT_UNIT
+             , RBT.RESULT                                   AS BT
+             , 'N'                                          AS BT_RISK_YN
+            /*     , CASE WHEN CONCAT('', (RBT.RESULT * 1)) = RBT.RESULT
+                             THEN
+                                  CASE WHEN RBT.RESULT > IBT.REF_FROM
+                                            THEN 'H'
+                                       WHEN RBT.RESULT < IBT.REF_TO
+                                            THEN 'L'
+                                       ELSE      ''
+                                  END
+                        ELSE      ''
+                   END                 AS BT_RIST_GB */
+            /* 호흡 */
+             , IRR.ITEM_NM                                  AS RR_NM
+             , IRR.UNIT                                     AS RR_UNIT
+             , RRR1.RESULT                                  AS RR
+             , RRR2.RESULT                                  AS RR2
+             , 'N'                                          AS RR_RISK_YN
+            /* 산소포화도 */
+             , ISP.ITEM_NM                                  AS SPO2_NM
+             , ISP.UNIT                                     AS SPO2_UNIT
+             , RSP.RESULT                                   AS SPO2
+             , 'N'                                          AS SPO2_RISK_YN
+        FROM ADMISSION A
+             INNER JOIN PATIENT          B     ON A.PATIENT_ID = B.PATIENT_ID
+             LEFT JOIN COM_CD_DETAIL     SEX   ON SEX.COM_CD = 'CD003'
+                                              AND B.SEX = SEX.DETAIL_CD
+             LEFT JOIN COM_CD_DETAIL     ROOM  ON ROOM.COM_CD = 'CD005'
+                                              AND A.ROOM = ROOM.DETAIL_CD
+             /* 혈압 */
+             INNER JOIN ITEM             IBP   ON IBP.ITEM_ID = 'I0005'
+             LEFT JOIN RESULT_DETAIL     RSBP  ON RSBP.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                       FROM RESULT X
                                                                       WHERE X.ADMISSION_ID = A.ADMISSION_ID
                                                                         AND X.ITEM_ID = IBP.ITEM_ID
-                                                                      ORDER
-                                                                         BY X.RESULT_DT DESC
+                                                                      ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
                                                                       LIMIT 1)
-               /* 맥박 */
-               INNER JOIN ITEM             IPR  ON IPR.ITEM_ID = 'I0026'
-               LEFT OUTER JOIN RESULT      RPR  ON RPR.RESULT_SEQ = (SELECT X.RESULT_SEQ 
-                                                                       FROM RESULT X 
+                                              AND RSBP.RESULT_TYPE = '03'
+             LEFT JOIN RESULT_DETAIL    RDBP   ON RDBP.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                       FROM RESULT X
                                                                       WHERE X.ADMISSION_ID = A.ADMISSION_ID
-                                                                        AND X.ITEM_ID = IPR.ITEM_ID
-                                                                      ORDER
-                                                                         BY X.RESULT_DT DESC
+                                                                        AND X.ITEM_ID = IBP.ITEM_ID
+                                                                      ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
                                                                       LIMIT 1)
-               /* 체온 */
-               INNER JOIN ITEM             IBT  ON IBT.ITEM_ID = 'I0027'               
-               LEFT OUTER JOIN RESULT      RBT  ON RBT.RESULT_SEQ = (SELECT X.RESULT_SEQ 
-                                                                       FROM RESULT X 
+                                              AND RDBP.RESULT_TYPE = '02'
+             /* 심박수-맥박 */
+             INNER JOIN ITEM             IPR   ON IPR.ITEM_ID = 'I0002'
+             LEFT JOIN RESULT_DETAIL     RPR   ON RPR.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                      FROM RESULT X
+                                                                     WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                       AND X.ITEM_ID = IPR.ITEM_ID
+                                                                     ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                     LIMIT 1)
+             /* 체온 */
+             INNER JOIN ITEM             IBT   ON IBT.ITEM_ID = 'I0001'
+             LEFT JOIN RESULT_DETAIL     RBT   ON RBT.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                      FROM RESULT X
+                                                                     WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                       AND X.ITEM_ID = IBT.ITEM_ID
+                                                                     ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                     LIMIT 1)
+             /* 걸음수-호흡 */
+             INNER JOIN ITEM             IRR   ON IRR.ITEM_ID = 'I0004'
+             LEFT JOIN RESULT_DETAIL     RRR1  ON RRR1.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                       FROM RESULT X
                                                                       WHERE X.ADMISSION_ID = A.ADMISSION_ID
-                                                                        AND X.ITEM_ID = IBT.ITEM_ID
-                                                                      ORDER
-                                                                         BY X.RESULT_DT DESC
+                                                                        AND X.ITEM_ID = IRR.ITEM_ID
+                                                                      ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
                                                                       LIMIT 1)
-               /* 호흡 */
-               INNER JOIN ITEM             IRR  ON IRR.ITEM_ID = 'I0028'
-               LEFT OUTER JOIN RESULT      RRR  ON RRR.RESULT_SEQ = (SELECT X.RESULT_SEQ 
-                                                                       FROM RESULT X 
+                                              AND RRR1.RESULT_TYPE = '04'
+             LEFT JOIN RESULT_DETAIL     RRR2  ON RRR2.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                       FROM RESULT X
                                                                       WHERE X.ADMISSION_ID = A.ADMISSION_ID
-                                                                        AND X.ITEM_ID = IRR.ITEM_ID 
-                                                                      ORDER
-                                                                         BY X.RESULT_DT DESC
+                                                                        AND X.ITEM_ID = IRR.ITEM_ID
+                                                                      ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
                                                                       LIMIT 1)
-               /* 산소포화도 */
-               INNER JOIN ITEM             ISP  ON ISP.ITEM_ID = 'I0029'
-               LEFT OUTER JOIN RESULT      RSP  ON RSP.RESULT_SEQ = (SELECT X.RESULT_SEQ 
-                                                                       FROM RESULT X 
-                                                                      WHERE X.ADMISSION_ID = A.ADMISSION_ID
-                                                                        AND X.ITEM_ID = ISP.ITEM_ID
-                                                                      ORDER
-                                                                         BY X.RESULT_DT DESC
-                                                                      LIMIT 1)
-         WHERE A.CENTER_ID = #{centerId}
-           AND A.DISCHARGE_DATE IS NULL
-         ORDER
-            BY B.NAME
+                                              AND RRR2.RESULT_TYPE = '05'
+             /* 산소포화도 */
+             LEFT JOIN ITEM              ISP   ON ISP.ITEM_ID = 'I0003'
+             LEFT JOIN RESULT_DETAIL     RSP   ON RSP.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                      FROM RESULT X
+                                                                     WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                       AND X.ITEM_ID = ISP.ITEM_ID
+                                                                     ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                     LIMIT 1)
+        WHERE CENTER_ID = #{centerId}
+          AND QANTN_DIV = '1' -- '2'
+          AND DSCHGE_DATE IS NULL
+        ORDER BY B.PATIENT_NM
 	]]>
 	</select>
 

@@ -10,10 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -52,13 +49,14 @@ public class PatientDetailDashboardController {
 	@RequestMapping(value = "/patientHome.do", method = RequestMethod.GET)
 	public String selectPatientInfo(@RequestParam(value = "admissionId", required = false) String admissionId
 			, @RequestParam(value = "centerId", required = false) String centerId
+            , @SessionAttribute SessionVO sessionVO
 			, Model model) {
 		LOGGER.info("ADMISSION ID = {}", admissionId);
 
 		// 전달된 센터가 없을 경우 로그인 사용자 센터 지정 처리
 		if (StringUtils.isEmpty(centerId)) {
 			// TODO::사용자 센터 정보 변경
-			centerId = "C999";
+			centerId = sessionVO.getCenterId();
 		}
 
 		List<ItemVO> centerItemListVO = service.selectCenterItemListVO();
@@ -88,25 +86,6 @@ public class PatientDetailDashboardController {
 		PatientDetailDashboardPatientInfoVO patientDetailDashboardPatientInfoVO = service.selectPatientDetailDashboardPatientInfo(admissionId);
 
 		return ResponseEntity.ok(patientDetailDashboardPatientInfoVO);
-	}
-
-	/**
-	 * 환자 V/S 최신 정보 조회
-	 * @param admissionId - 입소ID
-	 * @return ResponseEntity<?> - 응답 에러 메세지 또는 PatientRecentVitalVO
-	 */
-	@RequestMapping(value = "/patientRecentVitals.ajax")
-	public ResponseEntity<?> selectPatientRecentVital(@RequestParam String admissionId){
-
-		if(StringUtils.isEmpty(admissionId)){
-			return ResponseEntity.badRequest()
-					.contentType(MediaType.APPLICATION_JSON_UTF8)
-					.body("입소ID는 필수입니다. 입소ID와 함께 다시 요청해주세요.");
-		}
-
-		PatientRecentVitalVO patientRecentVitalVO = service.selectPatientRecentVital(admissionId);
-
-		return ResponseEntity.ok(patientRecentVitalVO);
 	}
 
 	/**

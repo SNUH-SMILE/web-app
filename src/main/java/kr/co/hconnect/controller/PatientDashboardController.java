@@ -1,7 +1,9 @@
 package kr.co.hconnect.controller;
 
-import java.util.List;
-
+import kr.co.hconnect.service.PatientDashboardService;
+import kr.co.hconnect.vo.PatientDashboardCenterInfoVO;
+import kr.co.hconnect.vo.PatientDashboardVO;
+import kr.co.hconnect.vo.SessionVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,10 +11,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
-import kr.co.hconnect.service.PatientDashboardService;
-import kr.co.hconnect.vo.PatientDashboardCenterInfoVO;
-import kr.co.hconnect.vo.PatientDashboardVO;
+import java.util.List;
 
 /**
  * 환자 대쉬보드 컨트롤러
@@ -38,12 +39,14 @@ public class PatientDashboardController {
 	 * @return
 	 */
 	@RequestMapping(value = "/call.do")
-	public String selectCenterInfo(@RequestParam(value = "centerId", required = false) String centerId, Model model) {
+	public String selectCenterInfo(@RequestParam(value = "centerId", required = false) String centerId
+            , @SessionAttribute SessionVO sessionVO
+            , Model model) {
 		
 		// 전달된 센터가 없을 경우 로그인 사용자 센터 지정 처리
 		if (StringUtils.isEmpty(centerId)) {
 			// TODO::사용자 센터 정보 변경
-			centerId = "C999";
+			centerId = sessionVO.getCenterId();
 		}
 		
 		PatientDashboardCenterInfoVO centerInfoVO = service.selectPatientDashboardCenterInfo(centerId);
@@ -61,12 +64,13 @@ public class PatientDashboardController {
 	@RequestMapping(value = "/list.ajax")
 	@ResponseBody
 	public List<PatientDashboardVO> selectPatientDashboardList(
-			@RequestParam(value = "centerId", required = false) String centerId) {
+              @RequestParam(value = "centerId", required = false) String centerId
+            , @SessionAttribute SessionVO sessionVO) {
 		
 		// 전달된 센터가 없을 경우 로그인 사용자 센터 지정 처리
 		if (StringUtils.isEmpty(centerId)) {
 			// TODO::사용자 센터 정보 변경
-			centerId = "C999";
+			centerId = sessionVO.getCenterId();
 		}
 		
 		return service.selectPatientDashboardList(centerId);

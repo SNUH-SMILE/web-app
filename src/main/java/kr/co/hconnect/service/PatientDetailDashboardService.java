@@ -41,15 +41,6 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 	}
 
 	/**
-	 * 환자 V/S 최신 정보 조회
-	 * @param admissionId - 입소ID
-	 * @return PatientRecentVitalVO - V/S 정보VO
-	 */
-	public PatientRecentVitalVO selectPatientRecentVital(String admissionId) {
-		return patientDetailDashboardDao.selectRecentVitalResults(admissionId);
-	}
-	
-	/**
 	 * 환자 상세 대쉬보드 측졍결과 리스트 조회
 	 * @param patientDetailDashboardResultSearchVO - 측정결과 조회 조건
 	 * @return List<PatientDetailDashboardResultVO> - 환자 상세 대쉬보드 측정결과 리스트
@@ -98,7 +89,7 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 		/*
 		  TODO 측정 ITEM 항목 변경하기 (임시 로직)
 		 */
-		String[] items = {"I0025", "I0026", "I0027", "I0028", "I0029"};
+		String[] items = {"I0001", "I0002", "I0003", "I0004", "I0005"};
 		List<ItemVO> itemVOList = new ArrayList<>();
 
 		Arrays.asList(items).forEach((item)->{
