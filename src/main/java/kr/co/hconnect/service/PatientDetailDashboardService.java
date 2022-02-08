@@ -89,7 +89,7 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 		/*
 		  TODO 측정 ITEM 항목 변경하기 (임시 로직)
 		 */
-		String[] items = {"I0001", "I0002", "I0003", "I0004", "I0005"};
+		String[] items = {"I0005", "I0002", "I0001", "I0004", "I0003"};
 		List<ItemVO> itemVOList = new ArrayList<>();
 
 		Arrays.asList(items).forEach((item)->{
