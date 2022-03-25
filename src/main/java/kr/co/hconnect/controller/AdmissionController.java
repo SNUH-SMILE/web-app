@@ -1,29 +1,18 @@
 package kr.co.hconnect.controller;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttribute;
-import org.springframework.web.servlet.ModelAndView;
-
 import egovframework.rte.fdl.cmmn.exception.FdlException;
+import kr.co.hconnect.common.ComCd;
 import kr.co.hconnect.service.AdmissionService;
 import kr.co.hconnect.service.ComCdManagerService;
 import kr.co.hconnect.service.TreatmentCenterService;
-import kr.co.hconnect.vo.AdmissionInfoVO;
-import kr.co.hconnect.vo.AdmissionListVO;
-import kr.co.hconnect.vo.AdmissionVO;
-import kr.co.hconnect.vo.ComCdDetailListVO;
-import kr.co.hconnect.vo.PatientVO;
-import kr.co.hconnect.vo.SessionVO;
-import kr.co.hconnect.vo.TreatmentCenterVO;
+import kr.co.hconnect.vo.*;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.List;
 
 /**
  * 입소내역 관리 컨트롤러
@@ -82,15 +71,14 @@ public class AdmissionController {
 	
 	/**
 	 * 위치 정보 리스트 조회
-	 * @param vo 공통코드상세 리스트  VO
+	 * @param centerId 센터ID
 	 * @return List<ComCdDetailListVO> 위치 정보 리스트
 	 */
 	@RequestMapping(value = "/locationList.ajax")
 	@ResponseBody
 	public List<ComCdDetailListVO> selectLocationList(@RequestParam(value = "centerId") String centerId) {
 		ComCdDetailListVO vo = new ComCdDetailListVO();
-		// TODO::공통코드 확정 후 enum변경
-		vo.setComCd("ROOM");
+		vo.setComCd(ComCd.LOCATION_IN_CENTER.getDbValue());
 		vo.setUseYn("Y");
 		vo.setProperty1(centerId);
 		
@@ -136,7 +124,6 @@ public class AdmissionController {
 	 * @param patientVO	환자VO
 	 * @param admissionVO 입소내역VO
 	 * @return ModelAndView(AdmissionInfoVO-입소내역 정보, List<ComCdDetailListVO>-위치정보) 입소내역 정보
-	 * @throws FdlException
 	 */
 	@RequestMapping(value = "/save.ajax", method = RequestMethod.POST)
 	public ModelAndView saveAdmission(@ModelAttribute PatientVO patientVO
@@ -167,7 +154,7 @@ public class AdmissionController {
 	
 	/**
 	 * 퇴실처리
-	 * @param admissionVO
+	 * @param admissionVO 겨리/입소내역 VO
 	 * @return List<AdmissionListVO> 입소내역 리스트
 	 */
 	@RequestMapping(value = "/discharge.ajax", method = RequestMethod.POST)

@@ -7,7 +7,7 @@ public enum ComCd {
     /**
      * 병원코드
      */
-    HOSPITAL_CD("CD001"),
+    HOSPITAL_CD("CD002"),
     /**
      * 한양대병원 코드
      */
@@ -15,7 +15,7 @@ public enum ComCd {
     /**
      * 센터내 위치
      */
-    LOCATION_IN_CENTER("CD002"),        // 센터내 위치
+    LOCATION_IN_CENTER("CD005"),        // 센터내 위치
 
     /**
      * 테스트 com cd

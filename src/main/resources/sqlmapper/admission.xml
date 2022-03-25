@@ -33,21 +33,24 @@
 	<![CDATA[
 		-- 입소자내역 리스트 조회
 		-- selectAdmissionList
-		SELECT A.ADMISSION_ID 					        -- 입소내역ID 
-		     , A.CENTER_ID                              -- 생활치료센터ID
-		     , A.HOSPITAL_CD                            -- 병원코드
-		     , A.HOSPITAL_PATIENT_ID                    -- 병원환자ID
-		     , B.PATIENT_ID                             -- 환자ID
-		     , B.NAME                                   -- 이름
-		     , B.BIRTH_DATE                             -- 생년월일
-		     , B.CONTACT                                -- 연락처
-		     , CASE B.SEX WHEN 'M' THEN '남' 
-		                  WHEN 'F' THEN '여' 
-		                           ELSE ''
-		       END                          AS DISP_SEX	-- 성별
+		SELECT A.ADMISSION_ID 					              -- 입소내역ID
+			 , A.CENTER_ID                                    -- 생활치료센터ID
+			 , C.HOSPITAL_CD                                  -- 병원코드
+			 , NULL                    AS HOSPITAL_PATIENT_ID -- 병원환자ID
+			 , B.PATIENT_ID                                   -- 환자ID
+			 , B.PATIENT_NM            AS NAME                -- 이름
+			 , B.BIRTH_DATE                                   -- 생년월일
+			 , B.CELL_PHONE            AS CONTACT             -- 연락처
+			 , CASE B.SEX WHEN 'M' THEN '남'
+						  WHEN 'F' THEN '여'
+						  ELSE ''
+			   END                     AS DISP_SEX	          -- 성별
 		  FROM ADMISSION A
-		       INNER JOIN PATIENT B ON A.PATIENT_ID = B.PATIENT_ID
-		 WHERE A.DISCHARGE_DATE IS NULL
+			   INNER JOIN PATIENT 			B  ON A.PATIENT_ID = B.PATIENT_ID
+			   INNER JOIN TREATMENT_CENTER 	C  ON A.CENTER_ID = C.CENTER_ID
+			   INNER JOIN COM_CD_DETAIL 	D  ON D.COM_CD = 'CD002'
+										      AND D.DETAIL_CD = C.HOSPITAL_CD
+		WHERE A.DSCHGE_DATE IS NULL
 	]]>
 	</select>
 	
