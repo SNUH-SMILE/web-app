@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -137,7 +136,10 @@ public class LoginRestControllerTest {
     public void givenIdentityInfo_whenIdentity_thenSuccess() throws Exception {
         String content =
             "{\n" +
-            "  \"ssn\": \"8812051999999\"\n" +
+            "  \"patientNm\": \"shy-unittest\",\n" +
+            "  \"birthDate\": \"19881205\",\n" +
+            "  \"sex\": \"M\",\n" +
+            "  \"cellPhone\": \"01092615960\"\n" +
             "}";
 
         mvc.perform(post("/api/identity")
@@ -157,8 +159,11 @@ public class LoginRestControllerTest {
     public void givenIdentityInfo_whenIdentity_thenSuccessNotFound() throws Exception {
         String content =
             "{\n" +
-                "  \"ssn\": \"8812059999999\"\n" +
-                "}";
+            "  \"patientNm\": \"shy-unittest1111111\",\n" +
+            "  \"birthDate\": \"19881205\",\n" +
+            "  \"sex\": \"M\",\n" +
+            "  \"cellPhone\": \"01092615960\"\n" +
+            "}";
 
         mvc.perform(post("/api/identity")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -177,8 +182,11 @@ public class LoginRestControllerTest {
     public void givenIdentityInfo_whenIdentity_thenFailMultiAdmission() throws Exception {
         String content =
             "{\n" +
-                "  \"ssn\": \"8812051555555\"\n" +
-                "}";
+            "  \"patientNm\": \"shy-unittest2\",\n" +
+            "  \"birthDate\": \"19881205\",\n" +
+            "  \"sex\": \"M\",\n" +
+            "  \"cellPhone\": \"01092619999\"\n" +
+            "}";
 
         mvc.perform(post("/api/identity")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)

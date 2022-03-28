@@ -103,14 +103,20 @@ public class PatientService extends EgovAbstractServiceImpl {
 
         // 환자정보 신규생성
         if (patient.getFlag().equals("A")) {
-            // 주민번호 기준 환자정보 존재여부 확인
-            Patient patientBySsn = patientDao.selectPatientBySsn(CryptoUtils.encrypt(patient.getSsn()));
+            // 환자정보 존재여부 확인 (성명, 생년월일, 성별, 휴대폰)
+            IdentityInfo identityInfo = new IdentityInfo();
+            identityInfo.setPatientNm(patient.getPatientNm());
+            identityInfo.setBirthDate(patient.getBirthDate());
+            identityInfo.setSex(patient.getSex());
+            identityInfo.setCellPhone(patient.getCellPhone());
+
+            Patient patientByIdentityInfo = patientDao.selectPatientByIdentityInfo(identityInfo);
             
-            if (patientBySsn == null) {
-                // 전달받은 주민번호 기준 환자정보 존재여부 확인
-                throw new NotFoundPatientInfoException(messageSource.getMessage("message.notfound.ssn"
+            if (patientByIdentityInfo == null) {
+                // 전달받은 본인인증 기준 환자정보 존재여부 확인
+                throw new NotFoundPatientInfoException(messageSource.getMessage("message.notfound.IdentityInfo"
                     , null, Locale.getDefault()));
-            } else if (!StringUtils.isEmpty(patientBySsn.getLoginId())) {
+            } else if (!StringUtils.isEmpty(patientByIdentityInfo.getLoginId())) {
                 // 전달받은 주민번호 기준 로그인ID 생성여부 확인
                 throw new DuplicatePatientInfoException(messageSource.getMessage("message.duplicate.patientInfo"
                     , null, Locale.getDefault()));
@@ -123,7 +129,7 @@ public class PatientService extends EgovAbstractServiceImpl {
                     , null, Locale.getDefault()));
             }
 
-            patient.setPatientId(patientBySsn.getPatientId());
+            patient.setPatientId(patientByIdentityInfo.getPatientId());
 
             // 비밀번호 암호화
             patient.setPassword(CryptoUtils.encrypt(patient.getPassword()));
@@ -191,10 +197,10 @@ public class PatientService extends EgovAbstractServiceImpl {
     /**
      * 본인인증 내역 확인
      *
-     * @param ssn 주민번호
-     * @return IdentityResult
+     * @param identityInfo 본인인증 확인 정보 (성명, 생년월일, 성별, 휴대폰)
+     * @return IdentityResult 본인인증 완료 정보
      */
-    public IdentityResult selectIdentityInfo(String ssn) throws NotFoundPatientInfoException {
-        return patientDao.selectIdentityInfo(CryptoUtils.encrypt(ssn));
+    public IdentityResult selectIdentityInfo(IdentityInfo identityInfo) throws NotFoundPatientInfoException {
+        return patientDao.selectIdentityInfo(identityInfo);
     }
 }

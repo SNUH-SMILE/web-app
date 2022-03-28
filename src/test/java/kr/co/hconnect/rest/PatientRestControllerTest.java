@@ -25,7 +25,8 @@ import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -118,7 +119,7 @@ public class PatientRestControllerTest {
             "  \"loginId\"   : \"junitTestPatient\",\n" +
             "  \"password\"  : \"1234\",\n" +
             "  \"patientNm\" : \"회원가입용\",\n" +
-            "  \"ssn\"       : \"8812051525252\",\n" +
+//            "  \"ssn\"       : \"8812051525252\",\n" +
             "  \"birthDate\" : \"19881205\",\n" +
             "  \"sex\"       : \"M\",\n" +
             "  \"cellPhone\" : \"01012345678\",\n" +
@@ -146,7 +147,7 @@ public class PatientRestControllerTest {
                 "  \"loginId\"   : \"123456789012345678901\",\n" +
                 "  \"password\"  : \"123456789012345678901\",\n" +
                 "  \"patientNm\" : \"123456789012345678901234567890123456789012345678901\",\n" +
-                "  \"ssn\"       : \"8812051525252\",\n" +
+//                "  \"ssn\"       : \"8812051525252\",\n" +
                 "  \"birthDate\" : \"19881205\",\n" +
                 "  \"sex\"       : \"M\",\n" +
                 "  \"cellPhone\" : \"1234567890123451\",\n" +

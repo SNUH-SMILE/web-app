@@ -66,7 +66,7 @@ public class LoginRestController {
 
         try {
             // 본인인증 내역 확인
-            identityResult = patientService.selectIdentityInfo(identityInfo.getSsn());
+            identityResult = patientService.selectIdentityInfo(identityInfo);
 
             if (identityResult != null) {
                 // 환자정보 존재

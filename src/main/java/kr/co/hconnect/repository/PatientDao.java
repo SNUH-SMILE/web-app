@@ -24,12 +24,12 @@ public class PatientDao extends EgovAbstractMapper {
 	}
 
 	/**
-	 * 환자정보 조회-주민번호(암호화) 기준
-	 * @param ssn 주민번호(암호화)
+	 * 환자정보 조회-본인인증 확인 정보 기준
+	 * @param identityInfo 본인인증 확인 정보 (성명, 생년월일, 성별, 휴대폰)
 	 * @return Patient
 	 */
-	public Patient selectPatientBySsn(String ssn) {
-		return selectOne("kr.co.hconnect.sqlmapper.selectPatientBySsn", ssn);
+	public Patient selectPatientByIdentityInfo(IdentityInfo identityInfo) {
+		return selectOne("kr.co.hconnect.sqlmapper.selectPatientByIdentityInfo", identityInfo);
 	}
 
 	/**
@@ -54,11 +54,11 @@ public class PatientDao extends EgovAbstractMapper {
     /**
      * 본인인증 내역 확인
      *
-     * @param ssn 주민번호(암호화)
+     * @param identityInfo 본인인증 확인 정보 (성명, 생년월일, 성별, 휴대폰)
      * @return IdentityResult
      */
-    public IdentityResult selectIdentityInfo(String ssn) throws TooManyResultsException {
-        return selectOne("kr.co.hconnect.sqlmapper.selectIdentityInfo", ssn);
+    public IdentityResult selectIdentityInfo(IdentityInfo identityInfo) throws TooManyResultsException {
+        return selectOne("kr.co.hconnect.sqlmapper.selectIdentityInfo", identityInfo);
     }
 
     /**

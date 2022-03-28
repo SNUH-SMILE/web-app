@@ -55,13 +55,6 @@ public class Patient extends BaseResponse {
     @Size(max = 50, message = "{validation.size.patientNm}", groups = { PatientValidationGroups.add.class })
     private String patientNm;
     /**
-     * 주민번호
-     */
-    @NotNull(message = "{validation.null.ssn}", groups = { PatientValidationGroups.add.class })
-    @Pattern(regexp = "^[0-9]{13}", message = "{validation.checked.ssn}", groups = { PatientValidationGroups.add.class })
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String ssn;
-    /**
      * 생년월일
      */
     @NotNull(message = "{validation.null.birthday}", groups = { PatientValidationGroups.add.class })
