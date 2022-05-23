@@ -11,6 +11,7 @@ import kr.co.hconnect.service.UserService;
 import kr.co.hconnect.vo.UserVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +36,7 @@ public class UserLoginRestController {
      * @param tokenProvider Token 관리
      * @param userService 사용자 서비스
      */
+    @Autowired
     public UserLoginRestController(TokenProvider tokenProvider, UserService userService) {
         this.tokenProvider = tokenProvider;
         this.userService = userService;
