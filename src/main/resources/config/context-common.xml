@@ -114,6 +114,11 @@
                         <value>POST</value>
                     </list>
                 </entry>
+                <entry key="/api/userLogin">
+                    <list>
+                        <value>POST</value>
+                    </list>
+                </entry>
             </map>
         </property>
     </bean>

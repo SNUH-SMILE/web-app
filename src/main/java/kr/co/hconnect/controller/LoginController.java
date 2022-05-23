@@ -1,8 +1,6 @@
 package kr.co.hconnect.controller;
 
 import kr.co.hconnect.service.UserService;
-import kr.co.hconnect.vo.LoginVO;
-import kr.co.hconnect.vo.SessionVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * 로그인 컨트롤러
  */
+@Deprecated
 @Controller
 @RequestMapping("/login")
 public class LoginController {
@@ -48,20 +47,21 @@ public class LoginController {
 		, @RequestParam(value = "password") String password
 		, HttpServletRequest request) {
 
-		// 로그인 정보 조회
-		LoginVO loginVO = service.selectLoginInfo(userId, password);
-		
-		// 로그인 사용자 정보 세션에 설정
-		if (loginVO.getUserVO() != null) {
-			SessionVO sessionVO = new SessionVO();
-			sessionVO.setUserId(loginVO.getUserVO().getUserId());
-			sessionVO.setUserNm(loginVO.getUserVO().getUserNm());
-			sessionVO.setCenterId(loginVO.getUserVO().getCenterId());
-			request.getSession().setAttribute("sessionVO", sessionVO);
-		}
-		
+//		// 로그인 정보 조회
+//		LoginVO loginVO = service.selectLoginInfo(userId, password);
+//
+//		// 로그인 사용자 정보 세션에 설정
+//		if (loginVO.getUserVO() != null) {
+//			SessionVO sessionVO = new SessionVO();
+//			sessionVO.setUserId(loginVO.getUserVO().getUserId());
+//			sessionVO.setUserNm(loginVO.getUserVO().getUserNm());
+//			sessionVO.setCenterId(loginVO.getUserVO().getCenterId());
+//			request.getSession().setAttribute("sessionVO", sessionVO);
+//		}
+//
 		ModelAndView mv = new ModelAndView("jsonView");
-		mv.addObject("loginFailMessage", loginVO.getFailMessage());	// 로그인 실패 사유
+//		mv.addObject("loginFailMessage", loginVO.getFailMessage());	// 로그인 실패 사유
+		mv.addObject("loginFailMessage", "");	// 로그인 실패 사유
 		return mv;
 	}
 

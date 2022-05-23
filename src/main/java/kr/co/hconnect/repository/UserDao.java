@@ -46,6 +46,14 @@ public class UserDao extends EgovAbstractMapper {
     }
 
     /**
+     * 로그인 정보 업데이트
+     * @param vo UserVO
+     */
+    public void updateUserLoginInfo(UserVO vo) {
+        update("kr.co.hconnect.sqlmapper.updateUserLoginInfo", vo);
+    }
+
+    /**
      *유저정보 삭제
      * @param userId 유저Id
      */

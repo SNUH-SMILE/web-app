@@ -4,17 +4,21 @@ import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.rte.fdl.cmmn.exception.FdlException;
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
 import kr.co.hconnect.common.CryptoUtils;
+import kr.co.hconnect.domain.UserLoginInfo;
+import kr.co.hconnect.exception.NotFoundUserInfoException;
+import kr.co.hconnect.exception.NotMatchPatientPasswordException;
 import kr.co.hconnect.repository.UserDao;
-import kr.co.hconnect.vo.LoginVO;
 import kr.co.hconnect.vo.UserVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 사용자 서비스
@@ -25,18 +29,30 @@ public class UserService extends EgovAbstractServiceImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
-    private final UserDao userDao;                      // 사용자 Dao
-    private final EgovIdGnrService userIdGnrService;    // 사용자ID 채번 서비스
+    /**
+     * 사용자 Dao
+     */
+    private final UserDao userDao;
+    /**
+     * 사용자ID 채번 서비스
+     */
+    private final EgovIdGnrService userIdGnrService;
+    /**
+     * MessageSource
+     */
+    private final MessageSource messageSource;
 
     /**
      * 생성자
      * @param userDao 사용자 Dao
      * @param userIdGnrService 사용자ID 채번 서비스
+     * @param messageSource MessageSource
      */
     @Autowired
-    public UserService(UserDao userDao, @Qualifier("userIdGnrService") EgovIdGnrService userIdGnrService) {
+    public UserService(UserDao userDao, @Qualifier("userIdGnrService") EgovIdGnrService userIdGnrService, MessageSource messageSource) {
         this.userDao = userDao;
         this.userIdGnrService = userIdGnrService;
+        this.messageSource = messageSource;
     }
 
     /**
@@ -52,30 +68,27 @@ public class UserService extends EgovAbstractServiceImpl {
             userVO.setPassword(CryptoUtils.decrypt(userVO.getPassword()));
         return userVO;
     }
-    
+
     /**
      * 로그인 정보 조회
-     * @param userId 사용자ID
-     * @param password 패스워드
+     * @param userLoginInfo UserLoginInfo
      * @return 로그인VO
      */
-    public LoginVO selectLoginInfo(String userId, String password) {
+    //public LoginVO selectLoginInfo(String userId, String password) {
+     public UserVO selectLoginInfo(UserLoginInfo userLoginInfo)
+             throws NotFoundUserInfoException, NotMatchPatientPasswordException {
         // 사용자 정보 조회
-    	LoginVO loginVO = new LoginVO();
-    	UserVO userVO = selectUserInfo(userId);
-    	
-    	// 로그인 성공 여부 확인
-    	if (userVO == null) {
-    		loginVO.setFailMessage("사용자 정보를 확인하세요.");
-    	} else {
-            // 암호확인
-            if (!password.equals(userVO.getPassword())) {
-            	loginVO.setFailMessage("암호를 확인하세요.");
-            }
-    	}
+    	UserVO userVO = selectUserInfo(userLoginInfo.getLoginId());
 
-        loginVO.setUserVO(userVO);
-    	return loginVO;
+         if (userVO == null) {
+             throw new NotFoundUserInfoException(messageSource.getMessage("message.notfound.userInfo"
+                     ,null, Locale.getDefault()));
+         } else if (userVO.getPassword().equals(userLoginInfo.getPassword())) {
+             throw new NotMatchPatientPasswordException(messageSource.getMessage("message.mismatch.password"
+                     , null, Locale.getDefault()));
+         }
+
+         return userVO;
     }
 
     /**
@@ -139,6 +152,15 @@ public class UserService extends EgovAbstractServiceImpl {
         
         // 사용자 수정
         userDao.updateUser(vo);
+    }
+
+    /**
+     * 로그인 정보 업데이트
+     * @param vo UserVO
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUserLoginInfo(UserVO vo) {
+        userDao.updateUserLoginInfo(vo);
     }
 
     /**

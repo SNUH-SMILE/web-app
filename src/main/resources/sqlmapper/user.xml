@@ -10,6 +10,7 @@
              , USER_NM          AS USER_NM      -- 사용자명
              , CENTER_ID        AS CENTER_ID    -- 센터ID
              , REMARK           AS REMARK       -- 리마크
+             , REMEMBER_YN      AS REMEMBER_YN  -- 로그인 유지 여부
              , REG_ID           AS REG_ID       -- 등록자ID
              , REG_DT           AS REG_DT       -- 등록일시
              , UPD_ID           AS UPD_ID       -- 수정자ID
@@ -70,6 +71,15 @@
              , UPD_ID                   = #{updId}      -- 수정자
          WHERE USER_ID                  = #{userId}
         ]]>
+	</update>
+
+	<!-- 로그인 정보 업데이트 -->
+	<update id="updateUserLoginInfo" parameterType="kr.co.hconnect.vo.UserVO">
+	<![CDATA[
+		UPDATE USER
+           SET REMEMBER_YN = #{rememberYn}
+         WHERE USER_ID = #{userId}
+	]]>
 	</update>
 
     <!-- 사용자 삭제 -->

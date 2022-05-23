@@ -1,7 +1,6 @@
 package kr.co.hconnect.vo;
 
 import kr.co.hconnect.common.BaseDefaultVO;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,7 +37,13 @@ public class UserVO extends BaseDefaultVO {
 	 * 리마크
 	 */
 	private String remark;
-
-	//센터명
+	/**
+	 * 센터명
+	 */
 	private String centerNm;
+	/**
+	 * 로그인 유지 여부 
+	 */
+	private String rememberYn;
+	
 }

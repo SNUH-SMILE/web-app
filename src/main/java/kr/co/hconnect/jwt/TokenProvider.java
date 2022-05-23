@@ -2,6 +2,7 @@ package kr.co.hconnect.jwt;
 
 import io.jsonwebtoken.*;
 import kr.co.hconnect.common.TokenStatus;
+import kr.co.hconnect.vo.UserVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +61,30 @@ public class TokenProvider {
             .setIssuedAt(now)                               // 발급시간
             .setExpiration(validityInterval)                // 만료시간
             .signWith(key, keyAlg)                          // 키정보 및 해싱 알고리즘 정보
+            .claim("tokenType", "app")
             .compact();
+    }
+
+    /**
+     * web 사용자 토큰 생성
+     *
+     * @return 토큰 정보
+     */
+    public String createUserToken(UserVO userVO) {
+        Date now = new Date();
+        // 토큰 만료시간
+        Date validityInterval = new Date(now.getTime() + this.validity);
+
+        return Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)   // 헤더 타입 지정
+                .setIssuer("HealthConnect")                     // 발급자 정보
+                .setIssuedAt(now)                               // 발급시간
+                .setExpiration(validityInterval)                // 만료시간
+                .signWith(key, keyAlg)                          // 키정보 및 해싱 알고리즘 정보
+                .claim("tokenType", "web")
+                .claim("userId", userVO.getUserId())
+                .claim("userNm", userVO.getUserNm())
+                .compact();
     }
 
     /**

@@ -29,6 +29,10 @@ public enum ApiResponseCode {
      * 격리상태 내역이 존재하지 않는 경우
      */
     NOT_FOUND_QUARANTINE_INFO("14"),
+    /**
+     * 사용자 정보가 존재하지 않는 경우
+     */
+    NOT_FOUND_USER_INFO("15"),
 
     /**
      * 내원중인 격리/입소내역이 존재하지 않는 경우
