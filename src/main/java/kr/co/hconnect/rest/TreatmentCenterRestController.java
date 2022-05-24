@@ -2,6 +2,7 @@ package kr.co.hconnect.rest;
 
 import kr.co.hconnect.service.TreatmentCenterService;
 import kr.co.hconnect.vo.TreatmentCenterVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +23,7 @@ public class TreatmentCenterRestController {
      *
      * @param treatmentCenterService 생활치료센터 Service
      */
+    @Autowired
     public TreatmentCenterRestController(TreatmentCenterService treatmentCenterService) {
         this.treatmentCenterService = treatmentCenterService;
     }
