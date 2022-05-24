@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/treatmentCenter")
-public class TreatmentCenterController {
+public class TreatmentCenterRestController {
 
     /**
      * 생활치료센터 Service
@@ -22,7 +22,7 @@ public class TreatmentCenterController {
      *
      * @param treatmentCenterService 생활치료센터 Service
      */
-    public TreatmentCenterController(TreatmentCenterService treatmentCenterService) {
+    public TreatmentCenterRestController(TreatmentCenterService treatmentCenterService) {
         this.treatmentCenterService = treatmentCenterService;
     }
 
