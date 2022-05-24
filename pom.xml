@@ -193,6 +193,14 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+
+        <!--CorsFilter-->
+        <dependency>
+            <groupId>org.opendaylight.controller.thirdparty</groupId>
+            <artifactId>org.apache.catalina.filters.CorsFilter</artifactId>
+            <version>7.0.42</version>
+        </dependency>
+
     </dependencies>
 
     <distributionManagement>
