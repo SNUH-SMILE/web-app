@@ -83,7 +83,7 @@ public class UserService extends EgovAbstractServiceImpl {
          if (userVO == null) {
              throw new NotFoundUserInfoException(messageSource.getMessage("message.notfound.userInfo"
                      ,null, Locale.getDefault()));
-         } else if (userVO.getPassword().equals(userLoginInfo.getPassword())) {
+         } else if (!userVO.getPassword().equals(userLoginInfo.getPassword())) {
              throw new NotMatchPatientPasswordException(messageSource.getMessage("message.mismatch.password"
                      , null, Locale.getDefault()));
          }
