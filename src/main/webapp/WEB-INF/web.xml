@@ -25,8 +25,6 @@
 
     <servlet-mapping>
         <servlet-name>dispatcherServlet</servlet-name>
-        <url-pattern>*.do</url-pattern>
-        <url-pattern>*.ajax</url-pattern>
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
 
@@ -52,6 +50,7 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <!--
     <filter>
         <filter-name>corsFilter</filter-name>
         <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
@@ -84,6 +83,7 @@
         <filter-name>corsFilter</filter-name>
         <url-pattern>/api/*</url-pattern>
     </filter-mapping>
+    -->
 
     <filter>
         <filter-name>jwtFilter</filter-name>
@@ -97,9 +97,7 @@
     <!-- REST API Logging -->
     <filter>
         <filter-name>requestLoggingFilter</filter-name>
-        <filter-class>
-            kr.co.hconnect.common.CommonRequestResponseLoggingFilter
-        </filter-class>
+        <filter-class>kr.co.hconnect.common.CommonRequestResponseLoggingFilter</filter-class>
         <init-param>
             <param-name>includePayload</param-name>
             <param-value>true</param-value>
