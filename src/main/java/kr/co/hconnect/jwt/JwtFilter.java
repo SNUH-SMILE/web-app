@@ -73,7 +73,8 @@ public class JwtFilter extends OncePerRequestFilter {
         String requestMethod = request.getMethod();
 
         // passUrl 확인
-        if (!(this.passUrls.containsKey(requestURI) && this.passUrls.get(requestURI).contains(requestMethod))) {
+        if (!(this.passUrls.containsKey(requestURI) && this.passUrls.get(requestURI).contains(requestMethod))
+            && !requestMethod.equals("OPTIONS")) {
             String jwt = resolveToken(request);
 
             BaseResponse baseResponse = null;
