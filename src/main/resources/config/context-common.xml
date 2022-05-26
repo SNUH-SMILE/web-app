@@ -122,7 +122,7 @@
                 </entry>
                 <entry key="/api/tokenStatus">
                     <list>
-                        <value>GET</value>
+                        <value>POST</value>
                     </list>
                 </entry>
                 <entry key="/api/tokenReissue">
