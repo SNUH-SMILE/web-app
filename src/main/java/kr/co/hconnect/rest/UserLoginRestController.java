@@ -103,7 +103,7 @@ public class UserLoginRestController {
      * @param tokenInfo 토큰 정보
      * @return TokenStatusInfo 토큰 정보
      */
-    @RequestMapping(value = "/tokenStatus", method = RequestMethod.GET)
+    @RequestMapping(value = "/tokenStatus", method = RequestMethod.POST)
     public TokenStatusInfo checkTokenStatus(@Valid @RequestBody TokenStatusInfo tokenInfo, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
