@@ -1,6 +1,7 @@
 package kr.co.hconnect.rest;
 
 import kr.co.hconnect.common.ApiResponseCode;
+import kr.co.hconnect.common.TokenType;
 import kr.co.hconnect.domain.*;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.exception.NotFoundPatientInfoException;
@@ -124,7 +125,7 @@ public class LoginRestController {
             Patient patient = patientService.selectPatientByLoginInfo(loginInfo);
 
             // Token 발행
-            String jwtToken = tokenProvider.createToken();
+            String jwtToken = tokenProvider.createToken(TokenType.APP, patient.getLoginId(), patient.getPatientNm());
 
             // 응답데이터 구성
             loginSuccessInfo.setCode(ApiResponseCode.SUCCESS.getCode());

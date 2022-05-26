@@ -73,6 +73,7 @@
     <bean id="tokenProvider" class="kr.co.hconnect.jwt.TokenProvider">
         <constructor-arg name="secretKey" value="${token.secretKey}" type="java.lang.String" />
         <constructor-arg name="validity" value="${token.validity}" type="java.lang.Integer" />
+        <constructor-arg name="expiryDay" value="${token.expiryDay}" type="java.lang.Integer" />
     </bean>
     <bean id="jwtFilter" class="kr.co.hconnect.jwt.JwtFilter">
         <constructor-arg name="tokenProvider" ref="tokenProvider" />
@@ -115,6 +116,16 @@
                     </list>
                 </entry>
                 <entry key="/api/userLogin">
+                    <list>
+                        <value>POST</value>
+                    </list>
+                </entry>
+                <entry key="/api/tokenStatus">
+                    <list>
+                        <value>GET</value>
+                    </list>
+                </entry>
+                <entry key="/api/tokenReissue">
                     <list>
                         <value>POST</value>
                     </list>

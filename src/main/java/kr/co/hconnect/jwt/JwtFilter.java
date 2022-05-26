@@ -3,7 +3,7 @@ package kr.co.hconnect.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.common.TokenStatus;
-import kr.co.hconnect.domain.BaseResponse;
+import kr.co.hconnect.common.TokenType;
 import kr.co.hconnect.domain.LoginSuccessInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,37 +77,40 @@ public class JwtFilter extends OncePerRequestFilter {
             && !requestMethod.equals("OPTIONS")) {
             String jwt = resolveToken(request);
 
-            BaseResponse baseResponse = null;
+            TokenStatus tokenStatus;
+
             if (StringUtils.hasText(jwt)) {
-
-                TokenStatus tokenStatus = tokenProvider.validateToken(jwt);
-
-                if (tokenStatus == TokenStatus.EXPIRED) {
-                    baseResponse = getBaseResponseByTokenInfo(ApiResponseCode.EXPIRED_TOKEN
-                        //, "토큰이 만료되었습니다"
-                        , messageSource.getMessage("message.jwtToken.expired", null, Locale.getDefault())
-                        , true);
-                } else if (tokenStatus == TokenStatus.ILLEGAL) {
-                    baseResponse = getBaseResponseByTokenInfo(ApiResponseCode.ILLEGAL_TOKEN
-                        // , "토큰정보가 유효하지 않습니다"
-                        , messageSource.getMessage("message.jwtToken.illegal", null, Locale.getDefault())
-                        , false);
-                }
-
+                tokenStatus = tokenProvider.validateToken(jwt).getTokenStatus();
             } else {
-                LOGGER.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
-
-                baseResponse = getBaseResponseByTokenInfo(ApiResponseCode.INVALID_TOKEN
-                    // , "토큰정보가 존재하지 않습니다"
-                    , messageSource.getMessage("message.jwtToken.invalid", null, Locale.getDefault())
-                    , false);
+                tokenStatus = TokenStatus.INVALID;
             }
 
-            if (baseResponse != null) {
+            if (tokenStatus != TokenStatus.OK) {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
 
-                objectMapper.writeValue(response.getWriter(), baseResponse);
+                LoginSuccessInfo loginSuccessInfo = null;
+
+                switch (tokenStatus) {
+                    case EXPIRED:
+                        loginSuccessInfo = getBaseResponseByTokenInfo(ApiResponseCode.EXPIRED_TOKEN
+                                , messageSource.getMessage("message.jwtToken.expired", null, Locale.getDefault())
+                                , true, jwt);
+                        break;
+                    case ILLEGAL:
+                        loginSuccessInfo = getBaseResponseByTokenInfo(ApiResponseCode.ILLEGAL_TOKEN
+                                , messageSource.getMessage("message.jwtToken.illegal", null, Locale.getDefault())
+                                , false, "");
+                        break;
+                    case INVALID:
+                        LOGGER.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
+                        loginSuccessInfo = getBaseResponseByTokenInfo(ApiResponseCode.INVALID_TOKEN
+                                , messageSource.getMessage("message.jwtToken.invalid", null, Locale.getDefault())
+                                , false, "");
+                        break;
+                }
+
+                objectMapper.writeValue(response.getWriter(), loginSuccessInfo);
                 return;
             }
         }
@@ -124,16 +127,16 @@ public class JwtFilter extends OncePerRequestFilter {
      * @return Token
      */
     private LoginSuccessInfo getBaseResponseByTokenInfo(ApiResponseCode apiResponseCode, String message
-        , boolean isNewToken) {
-        LoginSuccessInfo token = new LoginSuccessInfo();
-        token.setCode(apiResponseCode.getCode());
-        token.setMessage(message);
+            , boolean isNewToken, String expiredToken) {
+        LoginSuccessInfo loginSuccessInfo = new LoginSuccessInfo();
+        loginSuccessInfo.setCode(apiResponseCode.getCode());
+        loginSuccessInfo.setMessage(message);
 
-        if (isNewToken) {
-            token.setToken(tokenProvider.createToken());
+        if (isNewToken && !StringUtils.isEmpty(expiredToken)) {
+            loginSuccessInfo.setToken(tokenProvider.createToken(expiredToken, TokenType.APP));
         }
 
-        return token;
+        return loginSuccessInfo;
     }
 
     /**

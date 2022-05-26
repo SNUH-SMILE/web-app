@@ -15,5 +15,9 @@ public enum TokenStatus {
     /**
      * 부적합
      */
-    ILLEGAL
+    ILLEGAL,
+    /**
+     * 유효하지 않은 토큰
+     */
+    INVALID
 }

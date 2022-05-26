@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+
+    <!-- 토큰 발급정보 조회(kr.co.hconnect.sqlmapper.selectTokenHistory) -->
+    <select id="selectTokenHistory" parameterType="String" resultType="kr.co.hconnect.domain.TokenHistory">
+    <![CDATA[
+        SELECT TOKEN
+             , TOKEN_TYPE
+             , ID
+             , CASE WHEN A.TOKEN_TYPE = 'WEB'
+                         THEN (SELECT X.USER_NM FROM user X WHERE X.USER_ID = A.ID)
+                    WHEN A.TOKEN_TYPE = 'APP'
+                         THEN (SELECT X.PATIENT_NM FROM patient X WHERE X.LOGIN_ID = A.ID)
+               END              AS NAME
+             , ISSUE_DT
+          FROM TOKEN_HISTORY A
+         WHERE TOKEN = #{token}
+    ]]>
+    </select>
+
+    <!-- 토큰 발급 이력 생성(kr.co.hconnect.sqlmapper.insertTokenHistory) -->
+    <insert id="insertTokenHistory" parameterType="kr.co.hconnect.domain.TokenHistory">
+    <![CDATA[
+        INSERT
+          INTO TOKEN_HISTORY
+             ( TOKEN
+             , TOKEN_TYPE
+             , ID
+             )
+        VALUES
+             (
+               #{token}
+             , #{tokenType}
+             , #{id}
+             )
+	]]>
+    </insert>
+
+    <!-- 토큰 삭제(kr.co.hconnect.sqlmapper.deleteTokenHistory) -->
+    <delete id="deleteTokenHistory" parameterType="String">
+        DELETE
+          FROM TOKEN_HISTORY
+         WHERE TOKEN = #{TOKEN}
+    </delete>
+
+    <!-- 만료 토큰 삭제(kr.co.hconnect.sqlmapper.deleteTokenHistoryById) -->
+    <delete id="deleteTokenHistoryById" parameterType="kr.co.hconnect.domain.TokenHistory">
+    <![CDATA[
+        DELETE
+          FROM TOKEN_HISTORY
+         WHERE TOKEN_TYPE   = #{tokenType}
+           AND ID           = #{id}
+           AND ISSUE_DT     < #{expiryDt}
+    ]]>
+    </delete>
+
+</mapper>
