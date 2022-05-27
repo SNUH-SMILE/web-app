@@ -86,7 +86,7 @@ public class TokenProvider {
                 .compact();
 
         // 토큰 이력 생성
-        Date expiryDate = DateUtils.addDays(now, expiryDay);
+        Date expiryDate = DateUtils.addDays(now, -expiryDay);
         TokenHistory tokenHistory = new TokenHistory();
         tokenHistory.setToken(token);
         tokenHistory.setTokenType(tokenType.getTokenType());
