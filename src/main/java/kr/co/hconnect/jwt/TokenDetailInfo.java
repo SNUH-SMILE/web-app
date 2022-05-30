@@ -21,6 +21,10 @@ public class TokenDetailInfo implements Serializable {
     private static final long serialVersionUID = 2730027757782228759L;
 
     /**
+     * 토큰 정보
+     */
+    private String token;
+    /**
      * 토큰 상태 정보
      */
     private TokenStatus tokenStatus;

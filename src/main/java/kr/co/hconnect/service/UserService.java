@@ -7,6 +7,7 @@ import kr.co.hconnect.common.CryptoUtils;
 import kr.co.hconnect.domain.UserLoginInfo;
 import kr.co.hconnect.exception.NotFoundUserInfoException;
 import kr.co.hconnect.exception.NotMatchPatientPasswordException;
+import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.repository.UserDao;
 import kr.co.hconnect.vo.UserVO;
 import org.slf4j.Logger;
@@ -38,6 +39,10 @@ public class UserService extends EgovAbstractServiceImpl {
      */
     private final EgovIdGnrService userIdGnrService;
     /**
+     * 토큰 발급 이력 Service
+     */
+    private final TokenHistoryService tokenHistoryService;
+    /**
      * MessageSource
      */
     private final MessageSource messageSource;
@@ -46,12 +51,14 @@ public class UserService extends EgovAbstractServiceImpl {
      * 생성자
      * @param userDao 사용자 Dao
      * @param userIdGnrService 사용자ID 채번 서비스
+     * @param tokenHistoryService 토큰 발급 이력 Service
      * @param messageSource MessageSource
      */
     @Autowired
-    public UserService(UserDao userDao, @Qualifier("userIdGnrService") EgovIdGnrService userIdGnrService, MessageSource messageSource) {
+    public UserService(UserDao userDao, @Qualifier("userIdGnrService") EgovIdGnrService userIdGnrService, TokenHistoryService tokenHistoryService, MessageSource messageSource) {
         this.userDao = userDao;
         this.userIdGnrService = userIdGnrService;
+        this.tokenHistoryService = tokenHistoryService;
         this.messageSource = messageSource;
     }
 
@@ -74,7 +81,6 @@ public class UserService extends EgovAbstractServiceImpl {
      * @param userLoginInfo UserLoginInfo
      * @return 로그인VO
      */
-    //public LoginVO selectLoginInfo(String userId, String password) {
      public UserVO selectLoginInfo(UserLoginInfo userLoginInfo)
              throws NotFoundUserInfoException, NotMatchPatientPasswordException {
         // 사용자 정보 조회
@@ -155,6 +161,15 @@ public class UserService extends EgovAbstractServiceImpl {
     }
 
     /**
+     * 사용자 삭제
+     * @param userId 사용자Id
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteUser(String userId) {
+        userDao.deleteUser(userId);
+    }
+
+    /**
      * 로그인 정보 업데이트
      * @param vo UserVO
      */
@@ -164,12 +179,18 @@ public class UserService extends EgovAbstractServiceImpl {
     }
 
     /**
-     * 사용자 삭제
-     * @param userId 사용자Id
+     * 로그아웃 정보 업데이트
+     * @param tokenDetailInfo 토큰 상세 정보
      */
     @Transactional(rollbackFor = Exception.class)
-    public void deleteUser(String userId) {
-        userDao.deleteUser(userId);
+    public void updateUserLogoutInfo(TokenDetailInfo tokenDetailInfo) {
+        // 1. 로그인 유지 여부 초기화
+        UserVO vo = selectUserInfo(tokenDetailInfo.getId());
+        vo.setRememberYn("N");
+        updateUserLoginInfo(vo);
+
+        // 2. 토큰 내역 삭제
+        tokenHistoryService.deleteTokenHistory(tokenDetailInfo.getToken());
     }
 
 }

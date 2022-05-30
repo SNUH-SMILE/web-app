@@ -155,6 +155,7 @@ public class TokenProvider {
             tokenStatus = TokenStatus.ILLEGAL;
         }
 
+        tokenDetailInfo.setToken(token);
         tokenDetailInfo.setTokenStatus(tokenStatus);
 
         return tokenDetailInfo;

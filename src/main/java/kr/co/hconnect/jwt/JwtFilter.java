@@ -72,19 +72,20 @@ public class JwtFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
         String requestMethod = request.getMethod();
 
+        String jwt = resolveToken(request);
+        TokenDetailInfo tokenDetailInfo = null;
+        TokenStatus tokenStatus;
+
+        if (StringUtils.hasText(jwt)) {
+            tokenDetailInfo = tokenProvider.validateToken(jwt);
+            tokenStatus = tokenDetailInfo.getTokenStatus();
+        } else {
+            tokenStatus = TokenStatus.INVALID;
+        }
+
         // passUrl 확인
         if (!(this.passUrls.containsKey(requestURI) && this.passUrls.get(requestURI).contains(requestMethod))
-            && !requestMethod.equals("OPTIONS")) {
-            String jwt = resolveToken(request);
-
-            TokenStatus tokenStatus;
-
-            if (StringUtils.hasText(jwt)) {
-                tokenStatus = tokenProvider.validateToken(jwt).getTokenStatus();
-            } else {
-                tokenStatus = TokenStatus.INVALID;
-            }
-
+                && !requestMethod.equals("OPTIONS")) {
             if (tokenStatus != TokenStatus.OK) {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
@@ -114,6 +115,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 return;
             }
         }
+
+        request.setAttribute("tokenDetailInfo", tokenDetailInfo);
 
         filterChain.doFilter(request, response);
     }

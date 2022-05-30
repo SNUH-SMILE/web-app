@@ -3,10 +3,7 @@ package kr.co.hconnect.rest;
 import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.common.TokenStatus;
 import kr.co.hconnect.common.TokenType;
-import kr.co.hconnect.domain.LoginSuccessInfo;
-import kr.co.hconnect.domain.TokenHistory;
-import kr.co.hconnect.domain.TokenStatusInfo;
-import kr.co.hconnect.domain.UserLoginInfo;
+import kr.co.hconnect.domain.*;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.exception.NotFoundUserInfoException;
 import kr.co.hconnect.exception.NotMatchPatientPasswordException;
@@ -20,10 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -176,6 +170,30 @@ public class UserLoginRestController {
         }
 
         return loginSuccessInfo;
+    }
+
+    /**
+     * 로그아웃 처리
+     *
+     * @param tokenDetailInfo 토큰 정보
+     * @return BaseResponse 로그아웃 성공 여부
+     */
+    @RequestMapping(value = "/userLogout", method = RequestMethod.GET)
+    public BaseResponse userLogout(@RequestAttribute TokenDetailInfo tokenDetailInfo) {
+        BaseResponse baseResponse = new BaseResponse();
+
+        if (tokenDetailInfo.getTokenStatus() == TokenStatus.OK && tokenDetailInfo.getTokenType() == TokenType.WEB) {
+            // 로그아웃 정보 업데이트
+            userService.updateUserLogoutInfo(tokenDetailInfo);
+
+            baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
+            baseResponse.setMessage("로그아웃 성공");
+        } else {
+            baseResponse.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            baseResponse.setMessage("로그아웃 실패");
+        }
+
+        return baseResponse;
     }
 
 }
