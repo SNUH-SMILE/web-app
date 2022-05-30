@@ -4,11 +4,11 @@ import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.rte.fdl.cmmn.exception.FdlException;
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
 import kr.co.hconnect.common.CryptoUtils;
-import kr.co.hconnect.domain.UserLoginInfo;
 import kr.co.hconnect.exception.NotFoundUserInfoException;
 import kr.co.hconnect.exception.NotMatchPatientPasswordException;
 import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.repository.UserDao;
+import kr.co.hconnect.vo.UserLoginInfoVO;
 import kr.co.hconnect.vo.UserVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,18 +78,18 @@ public class UserService extends EgovAbstractServiceImpl {
 
     /**
      * 로그인 정보 조회
-     * @param userLoginInfo UserLoginInfo
+     * @param userLoginInfoVO UserLoginInfo
      * @return 로그인VO
      */
-     public UserVO selectLoginInfo(UserLoginInfo userLoginInfo)
+     public UserVO selectLoginInfo(UserLoginInfoVO userLoginInfoVO)
              throws NotFoundUserInfoException, NotMatchPatientPasswordException {
         // 사용자 정보 조회
-    	UserVO userVO = selectUserInfo(userLoginInfo.getLoginId());
+    	UserVO userVO = selectUserInfo(userLoginInfoVO.getLoginId());
 
          if (userVO == null) {
              throw new NotFoundUserInfoException(messageSource.getMessage("message.notfound.userInfo"
                      ,null, Locale.getDefault()));
-         } else if (!userVO.getPassword().equals(userLoginInfo.getPassword())) {
+         } else if (!userVO.getPassword().equals(userLoginInfoVO.getPassword())) {
              throw new NotMatchPatientPasswordException(messageSource.getMessage("message.mismatch.password"
                      , null, Locale.getDefault()));
          }

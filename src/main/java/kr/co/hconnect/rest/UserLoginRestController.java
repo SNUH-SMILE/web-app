@@ -3,7 +3,10 @@ package kr.co.hconnect.rest;
 import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.common.TokenStatus;
 import kr.co.hconnect.common.TokenType;
-import kr.co.hconnect.domain.*;
+import kr.co.hconnect.domain.BaseResponse;
+import kr.co.hconnect.domain.LoginSuccessInfo;
+import kr.co.hconnect.domain.TokenHistory;
+import kr.co.hconnect.domain.TokenStatusInfo;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.exception.NotFoundUserInfoException;
 import kr.co.hconnect.exception.NotMatchPatientPasswordException;
@@ -11,6 +14,7 @@ import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.jwt.TokenProvider;
 import kr.co.hconnect.service.TokenHistoryService;
 import kr.co.hconnect.service.UserService;
+import kr.co.hconnect.vo.UserLoginInfoVO;
 import kr.co.hconnect.vo.UserVO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -59,7 +63,7 @@ public class UserLoginRestController {
      * 로그인 정보 확인
      */
     @RequestMapping(value="/userLogin", method = RequestMethod.POST)
-    public LoginSuccessInfo checkLogin(@Valid @RequestBody UserLoginInfo userLoginInfo, BindingResult bindingResult) {
+    public LoginSuccessInfo checkLogin(@Valid @RequestBody UserLoginInfoVO userLoginInfoVO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
@@ -68,10 +72,10 @@ public class UserLoginRestController {
 
         try {
             // 로그인 정보 조회
-            UserVO userVO = userService.selectLoginInfo(userLoginInfo);
+            UserVO userVO = userService.selectLoginInfo(userLoginInfoVO);
 
             // 사용자 로그인 정보 업데이트
-            userVO.setRememberYn(userLoginInfo.getRememberYn());
+            userVO.setRememberYn(userLoginInfoVO.getRememberYn());
             userService.updateUserLoginInfo(userVO);
 
             // Token 발행

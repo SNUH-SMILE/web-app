@@ -1,4 +1,4 @@
-package kr.co.hconnect.domain;
+package kr.co.hconnect.vo;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +17,7 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @ToString
-public class UserLoginInfo implements Serializable {
+public class UserLoginInfoVO implements Serializable {
 
     private static final long serialVersionUID = -1773620410222057699L;
 
