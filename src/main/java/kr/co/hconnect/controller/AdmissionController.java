@@ -67,7 +67,6 @@ public class AdmissionController {
 	@ResponseBody
 	public List<TreatmentCenterVO> selectTreatmentCenterList() {
 		TreatmentCenterVO vo = new TreatmentCenterVO();
-		vo.setUseYn("Y");
 		return serviceTreatmentCenter.selectTreatmentCenterList(vo);
 	}
 	

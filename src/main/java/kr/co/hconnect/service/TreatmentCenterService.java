@@ -36,7 +36,17 @@ public class TreatmentCenterService extends EgovAbstractServiceImpl {
     }
 
     /**
-     *생활치료센터 리스트
+     * 생활치료센터 정보 조회
+     * @param vo 생활치료센터 조회 조건
+     * @return 생활치료센터 정보
+     */
+    public TreatmentCenterVO selectTreatmentCenter(TreatmentCenterVO vo) {
+        return treatmentCenterDao.selectTreatmentCenter(vo);
+    }
+
+
+    /**
+     * 생활치료센터 리스트
      * @return 생활치료센터 목록
      */
     public List<TreatmentCenterVO> selectTreatmentCenterList(TreatmentCenterVO vo){
@@ -44,24 +54,22 @@ public class TreatmentCenterService extends EgovAbstractServiceImpl {
     }
 
     /**
-     *생활치료센터 저장
-     * @param vo 생활치료센터VO
+     * 생활치료센터 저장
+     * @param vo 생활치료센터 저장 정보
      */
     @Transactional(rollbackFor = Exception.class)
-    public void insertTreatmentCenter(TreatmentCenterVO vo) {
-        try {
-            String centerId = centerIdGnrService.getNextStringId(); //생활치료센터 Id
-            vo.setCenterId(centerId);
-        } catch (FdlException e) {
-            e.printStackTrace();
-        }
+    public String insertTreatmentCenter(TreatmentCenterVO vo) throws FdlException {
+        String centerId = centerIdGnrService.getNextStringId(); //생활치료센터 Id
+        vo.setCenterId(centerId);
 
         treatmentCenterDao.insertTreatmentCenter(vo);
+
+        return centerId;
     }
 
     /**
-     *생활치료센터 수정
-     * @param vo 생활치료센터VO
+     * 생활치료센터 수정
+     * @param vo 생활치료센터 수정 정보
      */
     @Transactional(rollbackFor = Exception.class)
     public void updateTreatmentCenter(TreatmentCenterVO vo) {
@@ -69,11 +77,11 @@ public class TreatmentCenterService extends EgovAbstractServiceImpl {
     }
 
     /**
-     *생활치료센터 삭제
-     * @param centerId 생활치료센터 Id
+     * 생활치료센터 삭제
+     * @param vo 생활치료센터 삭제 정보
      */
     @Transactional(rollbackFor = Exception.class)
-    public void deleteTreatmentCenter(String centerId){
-        treatmentCenterDao.deleteTreatmentCenter(centerId);
+    public void deleteTreatmentCenter(TreatmentCenterVO vo){
+        treatmentCenterDao.deleteTreatmentCenter(vo);
     }
 }

@@ -2,7 +2,27 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.hconnect.sqlmapper">
 
-    <!-- 생활치료센터 리스트 조회 -->
+	<!-- 생활치료센터 정보 조회 - kr.co.hconnect.sqlmapper.selectTreatmentCenter -->
+	<select id="selectTreatmentCenter" parameterType="kr.co.hconnect.vo.TreatmentCenterVO"
+			resultType="kr.co.hconnect.vo.TreatmentCenterVO">
+		SELECT A.CENTER_ID                        -- 센터 id
+		     , A.CENTER_NM                        -- 센터명
+		     , A.CENTER_LOCATION                  -- 센터위치
+		     , A.HOSPITAL_CD                      -- 병원코드
+		     , B.DETAIL_CD_NM   AS HOSPITAL_NM    -- 병원명
+		     , A.USE_YN                           -- 사용여부
+		     , A.REG_ID
+		     , A.REG_DT
+		     , A.UPD_ID
+		     , A.UPD_DT
+		  FROM TREATMENT_CENTER A
+		       LEFT JOIN COM_CD_DETAIL B  ON B.COM_CD = 'CD002'
+		                                 AND B.DETAIL_CD = A.HOSPITAL_CD
+		 WHERE A.USE_YN = 'Y'
+		   AND A.CENTER_ID = #{centerId}
+	</select>
+
+    <!-- 생활치료센터 리스트 조회 - kr.co.hconnect.sqlmapper.selectTreatmentCenterList -->
 	<select id="selectTreatmentCenterList" parameterType="kr.co.hconnect.vo.TreatmentCenterVO"
 			resultType="kr.co.hconnect.vo.TreatmentCenterVO">
 		SELECT A.CENTER_ID                        -- 센터 id
@@ -18,7 +38,7 @@
 		  FROM TREATMENT_CENTER A
 		       LEFT JOIN COM_CD_DETAIL B  ON B.COM_CD = 'CD002'
                                          AND B.DETAIL_CD = A.HOSPITAL_CD
-         WHERE A.USE_YN = #{useYn}
+         WHERE A.USE_YN = 'Y'
 
 		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(centerId)">
 		   AND A.CENTER_ID = #{centerId}
@@ -34,45 +54,50 @@
 	</select>
 
 
-	<!-- 센터 정보 입력 -->
+	<!-- 생활치료센터 생성 - kr.co.hconnect.sqlmapper.insertTreatmentCenter -->
 	<insert id="insertTreatmentCenter" parameterType="kr.co.hconnect.vo.TreatmentCenterVO">
 	<![CDATA[
-		INSERT INTO
-		    treatment_center (
-				     CENTER_ID                 -- 센터id
-				   , CENTER_NM                 -- 센터명
-				   , CENTER_LOCATION           -- 센터위치
-				   , HOSPITAL_CD               -- 병원코드
-				   , REG_ID                    -- 생성자
-				   , UPD_ID					   -- 수정자
-		    )
-			VALUES (
-					 #{centerId}
-				   , #{centerNm}
-				   , #{centerLocation}
-				   , #{hospitalCd}
-				   , #{regId}
-				   , #{regId}
-			)
-		]]>
+		INSERT
+		  INTO TREATMENT_CENTER
+             ( CENTER_ID                 -- 센터ID
+             , CENTER_NM                 -- 센터명
+             , CENTER_LOCATION           -- 센터위치
+             , HOSPITAL_CD               -- 병원코드
+             , REG_ID                    -- 생성자
+             , UPD_ID					 -- 수정자
+             )
+        VALUES
+             ( #{centerId}
+             , #{centerNm}
+             , #{centerLocation}
+             , #{hospitalCd}
+             , #{regId}
+             , #{regId}
+             )
+	]]>
 	</insert>
-	<!-- 센터 정보 업데이트 -->
+
+	<!-- 센터 정보 업데이트 - kr.co.hconnect.sqlmapper.updateTreatmentCenter -->
 	<update id="updateTreatmentCenter" parameterType="kr.co.hconnect.vo.TreatmentCenterVO">
 	<![CDATA[
-		UPDATE treatment_center
-		   SET
-		       CENTER_NM       = #{centerNm}                 -- 센터명
+		UPDATE TREATMENT_CENTER
+		   SET CENTER_NM       = #{centerNm}                 -- 센터명
 		     , CENTER_LOCATION = #{centerLocation}           -- 센터위치
 		     , HOSPITAL_CD     = #{hospitalCd}               -- 병원코드
 			 , UPD_ID          = #{updId}                    -- 수정자
+			 , UPD_DT          = NOW()                       -- 수정일시
 		 WHERE CENTER_ID       = #{centerId}
 		]]>
 	</update>
 
-	<!-- 센터 정보 삭제 -->
-	<delete id="deleteTreatmentCenter" parameterType="String">
+	<!-- 센터 정보 삭제 - kr.co.hconnect.sqlmapper.deleteTreatmentCenter -->
+	<delete id="deleteTreatmentCenter" parameterType="kr.co.hconnect.vo.TreatmentCenterVO">
 	<![CDATA[
-		DELETE FROM treatment_center WHERE CENTER_ID = #{centerId}                 -- 센터Id
+		UPDATE TREATMENT_CENTER
+           SET USE_YN = 'N'
+		     , UPD_ID = #{updId}
+		     , UPD_DT = NOW()
+		 WHERE CENTER_ID = #{centerId}                 -- 센터Id
 	]]>
 	</delete>
 

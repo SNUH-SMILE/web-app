@@ -13,7 +13,7 @@
     <bean name="centerIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
         <property name="dataSource" ref="dataSource"/>
         <property name="table" value="id_generation"/>
-        <property name="tableNameFieldName" value="TABLE_NM"/>
+        <property name="tableNameFieldName" value="TABLE_NAME"/>
         <property name="tableName" value="treatment_center"/>
         <property name="blockSize" value="1"/>
         <property name="strategy" ref="centerIdGnr"/>
@@ -28,7 +28,7 @@
     <bean name="userIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
         <property name="dataSource" ref="dataSource"/>
         <property name="table" value="id_generation"/>
-        <property name="tableNameFieldName" value="TABLE_NM"/>
+        <property name="tableNameFieldName" value="TABLE_NAME"/>
         <property name="tableName" value="user"/>
         <property name="blockSize" value="1"/>
         <property name="strategy" ref="userIdGnr"/>
@@ -43,7 +43,7 @@
     <bean name="patientIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
         <property name="dataSource" ref="dataSource"/>
         <property name="table" value="id_generation"/>
-        <property name="tableNameFieldName" value="TABLE_NM"/>
+        <property name="tableNameFieldName" value="TABLE_NAME"/>
         <property name="tableName" value="patient"/>
         <property name="blockSize" value="1"/>
         <property name="strategy" ref="patientIdGnr"/>
@@ -58,7 +58,7 @@
     <bean name="admissionIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
         <property name="dataSource" ref="dataSource"/>
         <property name="table" value="id_generation"/>
-        <property name="tableNameFieldName" value="TABLE_NM"/>
+        <property name="tableNameFieldName" value="TABLE_NAME"/>
         <property name="tableName" value="admission"/>
         <property name="blockSize" value="1"/>
         <property name="strategy" ref="admissionIdGnr"/>
@@ -73,7 +73,7 @@
     <bean name="itemIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
         <property name="dataSource" ref="dataSource"/>
         <property name="table" value="id_generation"/>
-        <property name="tableNameFieldName" value="TABLE_NM"/>
+        <property name="tableNameFieldName" value="TABLE_NAME"/>
         <property name="tableName" value="item"/>
         <property name="blockSize" value="1"/>
         <property name="strategy" ref="itemIdGnr"/>
@@ -88,7 +88,7 @@
     <bean name="comCdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
         <property name="dataSource" ref="dataSource"/>
         <property name="table" value="id_generation"/>
-        <property name="tableNameFieldName" value="TABLE_NM"/>
+        <property name="tableNameFieldName" value="TABLE_NAME"/>
         <property name="tableName" value="com_cd"/>
         <property name="blockSize" value="1"/>
         <property name="strategy" ref="comCdGnr"/>

@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.Pattern;
-
-//생활치료센터
+/**
+ * 생활치료센터 VO
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -36,9 +36,4 @@ public class TreatmentCenterVO extends BaseDefaultVO {
      * 생활치료센터 병원이름
      */
     private String hospitalNm;
-    /**
-     * 사용여부
-     */
-    @Pattern(regexp = "^[YN]$")
-    private String useYn;
 }

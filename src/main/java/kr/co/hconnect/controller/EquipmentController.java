@@ -54,7 +54,6 @@ public class EquipmentController {
 
         //생활치료 센터 모달 List
         TreatmentCenterVO vo = new TreatmentCenterVO();
-        vo.setUseYn("Y");
         List<TreatmentCenterVO> modalResultList = treatmentCenterService.selectTreatmentCenterList(vo);
         mav.addObject("modalResultList",modalResultList);
 
