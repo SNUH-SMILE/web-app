@@ -48,8 +48,4 @@ public class TreatmentCenterSaveVO extends BaseDefaultVO {
      */
     @NotNull(message = "{validation.null.hospitalCd}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
     private String hospitalCd;
-    /**
-     * 생활치료센터 병원이름
-     */
-    private String hospitalNm;
 }

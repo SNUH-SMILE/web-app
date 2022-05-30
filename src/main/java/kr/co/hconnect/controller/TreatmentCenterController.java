@@ -8,7 +8,7 @@ import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.service.TreatmentCenterService;
 import kr.co.hconnect.vo.ResponseVO;
-import kr.co.hconnect.vo.SaveCompletedVO;
+import kr.co.hconnect.vo.TreatmentCenterSaveCompletedVO;
 import kr.co.hconnect.vo.TreatmentCenterSaveVO;
 import kr.co.hconnect.vo.TreatmentCenterVO;
 import org.apache.commons.lang3.StringUtils;
@@ -57,6 +57,11 @@ public class TreatmentCenterController {
     // D: 삭제, delete + 메서드, remove +
     // C+U: 저장, save + 메서드
 
+    /**
+     * 생활치료센터 정보 조회
+     * @param vo 조회조건
+     * @return 생활치료센터 정보
+     */
     @RequestMapping(value = "/info", method = RequestMethod.POST)
     public ResponseVO<TreatmentCenterVO> selectTreatmentCenter(@RequestBody TreatmentCenterVO vo) {
         ResponseVO<TreatmentCenterVO> responseVO = new ResponseVO<>();
@@ -96,17 +101,17 @@ public class TreatmentCenterController {
     /**
      * 생활치료센터 입력
      * @param vo 생활치료센터 정보
-     * @return 생활치료센터 목록
+     * @return 생활치료센터 저장 정보
      */
     @RequestMapping(value = "/save", method = RequestMethod.PUT)
-    public ResponseVO<SaveCompletedVO<TreatmentCenterVO, TreatmentCenterVO>> insertTreatmentCenter(
+    public ResponseVO<TreatmentCenterSaveCompletedVO> insertTreatmentCenter(
               @Validated(VoValidationGroups.add.class) @RequestBody TreatmentCenterSaveVO vo
             , @RequestAttribute TokenDetailInfo tokenDetailInfo, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
 
-        ResponseVO<SaveCompletedVO<TreatmentCenterVO, TreatmentCenterVO>> responseVO = new ResponseVO<>();
+        ResponseVO<TreatmentCenterSaveCompletedVO> responseVO = new ResponseVO<>();
 
         // 저장정보 구성
         TreatmentCenterVO treatmentCenterVO = new TreatmentCenterVO();
@@ -114,18 +119,18 @@ public class TreatmentCenterController {
         treatmentCenterVO.setRegId(tokenDetailInfo.getId());
 
         try {
+            // 생성
             String centerId = treatmentCenterService.insertTreatmentCenter(treatmentCenterVO);
 
-            SaveCompletedVO<TreatmentCenterVO, TreatmentCenterVO> saveCompletedVO = new SaveCompletedVO<>();
-            // 저장정보 조회
+            // 반환정보 구성
+            TreatmentCenterSaveCompletedVO treatmentCenterSaveCompletedVO = new TreatmentCenterSaveCompletedVO();
             treatmentCenterVO = new TreatmentCenterVO();
             treatmentCenterVO.setCenterId(centerId);
-            saveCompletedVO.setData(treatmentCenterService.selectTreatmentCenter(treatmentCenterVO));
-            // 리스트 조회
-            saveCompletedVO.setList(treatmentCenterService.selectTreatmentCenterList(vo.getSearchInfo()));
+            treatmentCenterSaveCompletedVO.setData(treatmentCenterService.selectTreatmentCenter(treatmentCenterVO));
+            treatmentCenterSaveCompletedVO.setList(treatmentCenterService.selectTreatmentCenterList(vo.getSearchInfo()));
 
             responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
-            responseVO.setResult(saveCompletedVO);
+            responseVO.setResult(treatmentCenterSaveCompletedVO);
         } catch (FdlException e) {
             responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
             responseVO.setMessage(e.getMessage());
@@ -134,43 +139,66 @@ public class TreatmentCenterController {
         return responseVO;
     }
 
-//    /**
-//     * 생활치료센터 수정
-//     * @param vo 생활치료센터 정보
-//     * @return 생활치료센터 목록
-//     */
-//    @RequestMapping(value = "/save", method = RequestMethod.PATCH)
-//    public List<TreatmentCenterVO> updateTreatmentCenter(@Validated(VoValidationGroups.modify.class) @RequestBody TreatmentCenterSaveVO vo
-//            , @RequestAttribute TokenDetailInfo tokenDetailInfo, BindingResult bindingResult) {
-//        if (bindingResult.hasErrors()) {
-//            throw new InvalidRequestArgumentException(bindingResult);
-//        }
-//
-//        vo.setUpdId(tokenDetailInfo.getId());
-//
-//        //# 수정
-//        treatmentCenterService.updateTreatmentCenter(vo);
-//
-//        //# 목록조회
-//        return treatmentCenterService.selectTreatmentCenterList(vo);
-//    }
-//
-//    /**
-//     * 생활치료센터 삭제
-//     * @param vo 생활치료센터 정보
-//     * @return 생활치료센터 목록
-//     */
-//    @RequestMapping(value = "/save", method = RequestMethod.DELETE)
-//    public List<TreatmentCenterVO> deleteTreatmentCenter(@Validated(VoValidationGroups.delete.class) @RequestBody TreatmentCenterSaveVO vo
-//            , @RequestAttribute TokenDetailInfo tokenDetailInfo, BindingResult bindingResult) {
-//        if (bindingResult.hasErrors()) {
-//            throw new InvalidRequestArgumentException(bindingResult);
-//        }
-//
-//        //# 삭제
-//        treatmentCenterService.deleteTreatmentCenter(vo);
-//        //# 목록조회
-//        return treatmentCenterService.selectTreatmentCenterList(null);
-//    }
+    /**
+     * 생활치료센터 수정
+     * @param vo 생활치료센터 정보
+     * @return 생활치료센터 목록
+     */
+    @RequestMapping(value = "/save", method = RequestMethod.PATCH)
+    public ResponseVO<TreatmentCenterSaveCompletedVO> updateTreatmentCenter(@Validated(VoValidationGroups.modify.class) @RequestBody TreatmentCenterSaveVO vo
+            , @RequestAttribute TokenDetailInfo tokenDetailInfo, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+
+        ResponseVO<TreatmentCenterSaveCompletedVO> responseVO = new ResponseVO<>();
+
+        // 저장정보 구성
+        TreatmentCenterVO treatmentCenterVO = new TreatmentCenterVO();
+        BeanUtils.copyProperties(vo, treatmentCenterVO);
+        treatmentCenterVO.setUpdId(tokenDetailInfo.getId());
+
+        // 수정
+        treatmentCenterService.updateTreatmentCenter(treatmentCenterVO);
+
+        // 반환정보 구성
+        TreatmentCenterSaveCompletedVO treatmentCenterSaveCompletedVO = new TreatmentCenterSaveCompletedVO();
+        treatmentCenterSaveCompletedVO.setData(treatmentCenterService.selectTreatmentCenter(treatmentCenterVO));
+        treatmentCenterSaveCompletedVO.setList(treatmentCenterService.selectTreatmentCenterList(vo.getSearchInfo()));
+
+        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+        responseVO.setResult(treatmentCenterSaveCompletedVO);
+
+        return responseVO;
+    }
+
+    /**
+     * 생활치료센터 삭제
+     * @param vo 생활치료센터 정보
+     * @return 생활치료센터 목록
+     */
+    @RequestMapping(value = "/save", method = RequestMethod.DELETE)
+    public ResponseVO<List<TreatmentCenterVO>> deleteTreatmentCenter(@Validated(VoValidationGroups.delete.class) @RequestBody TreatmentCenterSaveVO vo
+            , @RequestAttribute TokenDetailInfo tokenDetailInfo, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+
+        ResponseVO<List<TreatmentCenterVO>> responseVO = new ResponseVO<>();
+
+        // 삭제정보 구성
+        TreatmentCenterVO treatmentCenterVO = new TreatmentCenterVO();
+        BeanUtils.copyProperties(vo, treatmentCenterVO);
+        treatmentCenterVO.setUpdId(tokenDetailInfo.getId());
+
+        // 삭제
+        treatmentCenterService.deleteTreatmentCenter(treatmentCenterVO);
+
+        // 반환정보 구성
+        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+        responseVO.setResult(treatmentCenterService.selectTreatmentCenterList(vo.getSearchInfo()));
+
+        return responseVO;
+    }
 
 }

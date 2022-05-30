@@ -97,7 +97,7 @@
            SET USE_YN = 'N'
 		     , UPD_ID = #{updId}
 		     , UPD_DT = NOW()
-		 WHERE CENTER_ID = #{centerId}                 -- 센터Id
+		 WHERE CENTER_ID = #{centerId}    -- 센터Id
 	]]>
 	</delete>
 
