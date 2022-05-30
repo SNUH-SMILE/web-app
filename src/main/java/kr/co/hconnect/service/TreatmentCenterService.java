@@ -39,8 +39,8 @@ public class TreatmentCenterService extends EgovAbstractServiceImpl {
      *생활치료센터 리스트
      * @return 생활치료센터 목록
      */
-    public List<TreatmentCenterVO> selectTreatmentCenterList(){
-        return treatmentCenterDao.selectTreatmentCenterList();
+    public List<TreatmentCenterVO> selectTreatmentCenterList(TreatmentCenterVO vo){
+        return treatmentCenterDao.selectTreatmentCenterList(vo);
     }
 
     /**
@@ -48,7 +48,7 @@ public class TreatmentCenterService extends EgovAbstractServiceImpl {
      * @param vo 생활치료센터VO
      */
     @Transactional(rollbackFor = Exception.class)
-    public void insertTreatmentCenter(TreatmentCenterVO vo ) {
+    public void insertTreatmentCenter(TreatmentCenterVO vo) {
         try {
             String centerId = centerIdGnrService.getNextStringId(); //생활치료센터 Id
             vo.setCenterId(centerId);

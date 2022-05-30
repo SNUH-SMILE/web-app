@@ -66,7 +66,9 @@ public class AdmissionController {
 	@RequestMapping(value = "/treatmentCenterList.ajax")
 	@ResponseBody
 	public List<TreatmentCenterVO> selectTreatmentCenterList() {
-		return serviceTreatmentCenter.selectTreatmentCenterList();
+		TreatmentCenterVO vo = new TreatmentCenterVO();
+		vo.setUseYn("Y");
+		return serviceTreatmentCenter.selectTreatmentCenterList(vo);
 	}
 	
 	/**

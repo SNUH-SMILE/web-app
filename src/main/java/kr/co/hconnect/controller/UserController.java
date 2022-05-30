@@ -53,7 +53,9 @@ public class UserController {
         List<UserVO> resultList = userService.selectUserList();
         mav.addObject("resultList",resultList);
         //생활치료 센터 List(모달)
-        List<TreatmentCenterVO> modalResultList = treatmentCenterService.selectTreatmentCenterList();
+        TreatmentCenterVO vo = new TreatmentCenterVO();
+        vo.setUseYn("Y");
+        List<TreatmentCenterVO> modalResultList = treatmentCenterService.selectTreatmentCenterList(vo);
         mav.addObject("modalResultList",modalResultList);
         return mav;
     }

@@ -1,39 +1,38 @@
 package kr.co.hconnect.controller;
 
 
-import kr.co.hconnect.common.ComCd;
-import kr.co.hconnect.service.ComCdManagerService;
+import kr.co.hconnect.common.ApiResponseCode;
+import kr.co.hconnect.exception.InvalidRequestArgumentException;
+import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.service.TreatmentCenterService;
-import kr.co.hconnect.vo.ComCdDetailListVO;
-import kr.co.hconnect.vo.SessionVO;
+import kr.co.hconnect.vo.ResponseVO;
 import kr.co.hconnect.vo.TreatmentCenterVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
  * 생활치료센터
  */
-@Controller
-@RequestMapping("/treatmentCenter")
+@RestController
+@RequestMapping("/api/treatmentCenter")
 public class TreatmentCenterController {
 
-    private final TreatmentCenterService treatmentCenterService;       // 생활치료센터 서비스
-    private final ComCdManagerService comCdService;     // 공통코드 서비스
+    /**
+     * 생활치료센터 서비스
+     */
+    private final TreatmentCenterService treatmentCenterService;
 
     /**
      * 생성자
      * @param treatmentCenterService 생활치료센터 서비스
-     * @param comCdService 공통코드 서비스
      */
     @Autowired
-    public TreatmentCenterController(TreatmentCenterService treatmentCenterService, ComCdManagerService comCdService) {
+    public TreatmentCenterController(TreatmentCenterService treatmentCenterService) {
         this.treatmentCenterService = treatmentCenterService;
-        this.comCdService = comCdService;
     }
     
     // C: 입력, insert + 메서드, add +
@@ -43,33 +42,29 @@ public class TreatmentCenterController {
     // C+U: 저장, save + 메서드
 
     /**
-     * 생활치료센터 페이지 호출
-     * @param model
-     * @return 생활치료센터 페이지, 병원목록
-     */
-    @RequestMapping("/home.do")
-    public String treatmentCenterControllerHome(Model model){
-        //# 병원목록 조회
-        List<ComCdDetailListVO> comCdDetailListVOs = comCdService.selectComCdDetailList(ComCd.HOSPITAL_CD);
-        model.addAttribute("voComCdList",comCdDetailListVOs);
-        return "sys/treatmentCenter";
-    }
-
-    /**
      * 생활치료센터 리스트 검색
      * @return 생활치료센터 목록
      */
-    @RequestMapping("/list.ajax")
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ResponseBody
-    public List<TreatmentCenterVO> selectTreatmentCenterList() {
-        //# 1.
-        // ModelAndView mav = new ModelAndView("jsonView");
-        // List<TreatmentCenterVO> resultList = service.selectTreatmentCenterList();
-        // mav.addObject("resultList",resultList);
-        // return mav;
+    public ResponseVO<List<TreatmentCenterVO>> selectTreatmentCenterList(@Valid @RequestBody TreatmentCenterVO vo
+            , BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
 
-        //# 2.
-        return treatmentCenterService.selectTreatmentCenterList();
+        ResponseVO<List<TreatmentCenterVO>> responseVO = new ResponseVO<>();
+
+        try {
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("조회성공");
+            responseVO.setResult(treatmentCenterService.selectTreatmentCenterList(vo));
+        } catch (RuntimeException e) {
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
+
+        return responseVO;
     }
 
     /**
@@ -77,17 +72,17 @@ public class TreatmentCenterController {
      * @param vo 생활치료센터VO
      * @return 생활치료센터 목록
      */
-    @RequestMapping(value = "/insert.ajax")
+    @RequestMapping(value = "/insert", method = RequestMethod.POST)
     @ResponseBody
     public List<TreatmentCenterVO> insertTreatmentCenter(@RequestBody TreatmentCenterVO vo
-        , @SessionAttribute SessionVO sessionVO) {
+            , @RequestAttribute TokenDetailInfo tokenDetailInfo) {
 
-        vo.setRegId(sessionVO.getUserId());
+        vo.setRegId(tokenDetailInfo.getId());
 
         //# 입력
         treatmentCenterService.insertTreatmentCenter(vo);
         //# 조회
-        return treatmentCenterService.selectTreatmentCenterList();
+        return treatmentCenterService.selectTreatmentCenterList(vo);
     }
 
     /**
@@ -95,18 +90,18 @@ public class TreatmentCenterController {
      * @param vo 생활치료센터VO
      * @return 생활치료센터 목록
      */
-    @RequestMapping(value = "/update.ajax")
+    @RequestMapping(value = "/update", method = RequestMethod.PUT)
     @ResponseBody
     public List<TreatmentCenterVO> updateTreatmentCenter(@RequestBody TreatmentCenterVO vo
-        , @SessionAttribute SessionVO sessionVO) {
+            , @RequestAttribute TokenDetailInfo tokenDetailInfo) {
 
-        vo.setUpdId(sessionVO.getUserId());
+        vo.setUpdId(tokenDetailInfo.getId());
 
         //# 수정
         treatmentCenterService.updateTreatmentCenter(vo);
 
         //# 목록조회
-        return treatmentCenterService.selectTreatmentCenterList();
+        return treatmentCenterService.selectTreatmentCenterList(vo);
     }
 
     /**
@@ -114,13 +109,13 @@ public class TreatmentCenterController {
      * @param centerId 생활치료센터 ID
      * @return 생활치료센터 목록
      */
-    @RequestMapping(value = "/delete.ajax")
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     @ResponseBody
     public List<TreatmentCenterVO> deleteTreatmentCenter(@RequestParam(name="centerId") String centerId){
         //# 삭제
         treatmentCenterService.deleteTreatmentCenter(centerId);
         //# 목록조회
-        return treatmentCenterService.selectTreatmentCenterList();
+        return treatmentCenterService.selectTreatmentCenterList(null);
     }
 
 }

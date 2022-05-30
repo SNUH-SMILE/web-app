@@ -16,8 +16,8 @@ public class TreatmentCenterDao extends EgovAbstractMapper {
      *생활치료센터 리스트 조회
      * @return 생활치료센터 목록
      */
-    public List<TreatmentCenterVO> selectTreatmentCenterList(){
-        return selectList("kr.co.hconnect.sqlmapper.selectTreatmentCenterList");
+    public List<TreatmentCenterVO> selectTreatmentCenterList(TreatmentCenterVO vo){
+        return selectList("kr.co.hconnect.sqlmapper.selectTreatmentCenterList", vo);
     }
 
     /**
