@@ -1,8 +1,6 @@
 package kr.co.hconnect.common;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,6 +26,11 @@ public class BaseDefaultVO implements Serializable {
     private String regId;
 
     /**
+     * 등록자명
+     */
+    private String regNm;
+
+    /**
      * 등록일시
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -38,6 +41,11 @@ public class BaseDefaultVO implements Serializable {
      */
     private String updId;
 
+    /**
+     * 수정자명
+     */
+    private String updNm;
+    
     /**
      * 수정일시
      */

@@ -34,6 +34,10 @@ public class ComCdDetailVO extends BaseDefaultVO {
 	 */
 	private int sortSeq;
 	/**
+	 * 사용여부
+	 */
+	private String useYn;
+	/**
 	 * 속성1
 	 */
 	private String property1;
@@ -46,9 +50,13 @@ public class ComCdDetailVO extends BaseDefaultVO {
 	 */
 	private String property3;
 	/**
-	 * 사용여부
+	 * 속성4
 	 */
-	private String useYn;
+	private String property4;
+	/**
+	 * 속성5
+	 */
+	private String property5;
 	/**
 	 * 리마크
 	 */

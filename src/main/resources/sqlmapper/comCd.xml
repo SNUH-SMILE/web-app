@@ -53,7 +53,7 @@
 </select>
 
     <!-- 공통코드상세 리스트 조회 (selectBox 바인딩용)-->
-    <select id="selectComCdDetailList" parameterType="kr.co.hconnect.vo.ComCdDetailListVO" resultType="kr.co.hconnect.vo.ComCdDetailListVO">
+    <select id="selectComCdDetailList-delete" parameterType="kr.co.hconnect.vo.ComCdDetailListVO" resultType="kr.co.hconnect.vo.ComCdDetailListVO">
         <![CDATA[
 		SELECT A.COM_CD        AS COM_CD			-- 공통코드
 		     , A.COM_CD_NM     AS COM_CD_NM         -- 공통코드명

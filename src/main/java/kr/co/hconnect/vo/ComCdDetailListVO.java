@@ -1,11 +1,11 @@
 package kr.co.hconnect.vo;
 
-import java.io.Serializable;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.io.Serializable;
 
 /**
  * 공통코드 상세 내역 리스트
@@ -14,6 +14,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
+@Deprecated
 public class ComCdDetailListVO implements Serializable {
 
 	private static final long serialVersionUID = -2392991796721941806L;
