@@ -141,7 +141,7 @@ public class UserLoginController {
 				}
 			}
 
-			if (StringUtils.isEmpty(userId)) {
+			if (!StringUtils.isEmpty(userId)) {
 				UserVO userVO = userService.selectUserInfo(userId);
 
 				if (userVO != null) {
