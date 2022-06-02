@@ -35,12 +35,12 @@ public class ItemVO extends BaseDefaultVO {
     /**
      * 참고치 From
      */
-    private String refFrom;
+    private int refFrom;
 
     /**
      * 참고치 To
      */
-    private String refTo;
+    private int refTo;
 
     /**
      * 삭제 여부

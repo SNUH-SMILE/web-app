@@ -54,14 +54,13 @@ public class ItemService extends EgovAbstractServiceImpl {
      * @param vo 측정항목VO
      */
     @Transactional(rollbackFor = Exception.class)
-    public void insertItem(ItemVO vo) {
-        try {
-            String ItemId = itemIdGnrService.getNextStringId(); //측정항목 다음 Id
-            vo.setItemId(ItemId);
-        } catch (FdlException e) {
-            e.printStackTrace();
-        }
+    public String insertItem(ItemVO vo) throws FdlException{
+        String itemId = itemIdGnrService.getNextStringId(); //측정항목 Id
+        vo.setItemId(itemId);
+
         itemDao.insertItem(vo);
+
+        return itemId;
     }
 
     /**

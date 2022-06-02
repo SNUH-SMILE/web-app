@@ -55,21 +55,25 @@
 	<!-- 측정항목 입력 -->
 	<insert id="insertItem" parameterType="kr.co.hconnect.vo.ItemVO">
 	<![CDATA[
-		INSERT INTO
-			item (
-				   ITEM_ID		  -- 측정항목 ID
-				 , ITEM_NM          -- 측정항목명
-				 , UNIT             -- 측정단위
-				 , REG_ID           -- 등록자ID
-				 , UPD_ID           -- 수정자ID
-		)
-		VALUES (
-				 #{itemId}
-			   , #{itemNm}
-			   , #{unit}
-			   , #{regId}
-			   , #{regId}
-			   )
+		INSERT
+		  INTO ITEM
+		     ( ITEM_ID		  -- 측정항목 ID
+			 , ITEM_NM          -- 측정항목명
+			 , UNIT             -- 측정단위
+			 , REF_FROM         -- 참고치 From
+			 , REF_TO           -- 참고치 To
+			 , REG_ID           -- 등록자ID
+			 , UPD_ID           -- 수정자ID
+		     )
+	  VALUES
+	         ( #{itemId}
+             , #{itemNm}
+			 , #{unit}
+			 , #{refFrom}
+			 , #{refTo}
+			 , #{regId}
+			 , #{regId}
+			 )
 		]]>
 	</insert>
 	<!-- 측정항목 업데이트 -->
