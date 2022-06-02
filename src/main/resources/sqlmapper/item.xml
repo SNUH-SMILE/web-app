@@ -3,16 +3,32 @@
 <mapper namespace="kr.co.hconnect.sqlmapper">
 
 
-	<!-- 측정항목 리스트 조회 -->
+	<!-- 측정항목 리스트 조회  - kr.co.hconnect.sqlmapper.selectItemList -->
 	<select id="selectItemList" parameterType="kr.co.hconnect.vo.ItemVO" resultType="kr.co.hconnect.vo.ItemVO">
-	<![CDATA[
 		SELECT
-			ITEM_ID		       -- 측정항목 ID
-			 , ITEM_NM             -- 측정항목명
-			 , UNIT                -- 측정단위
-		FROM item
-		ORDER BY Item_ID
-		]]>
+			   ITEM_ID		       --  측정항목 ID
+			 , ITEM_NM             --  측정항목명
+			 , UNIT                --  측정단위
+             , REF_FROM            --  참고치 From
+             , REF_TO              --  참고치 TO
+             , DEL_YN              --  삭제여부
+             , REG_ID
+             , REG_DT
+             , UPD_ID
+             , UPD_DT
+		FROM   ITEM
+
+        WHERE  DEL_YN = 'N'
+
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(itemId)">
+		   AND ITEM_ID = #{itemId}
+        </if>
+
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(itemNm)">
+           AND ITEM_NM LIKE CONCAT('%', #{itemNm}, '%')
+        </if>
+
+		ORDER BY ITEM_ID
 	</select>
 
 

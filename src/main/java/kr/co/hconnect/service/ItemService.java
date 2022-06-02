@@ -37,8 +37,8 @@ public class ItemService extends EgovAbstractServiceImpl {
      *측정항목 리스트
      * @return 측정항목 목록
      */
-    public List<ItemVO> selectItemList() {
-        return itemDao.selectItemList();
+    public List<ItemVO> selectItemList(ItemVO vo) {
+        return itemDao.selectItemList(vo);
     }
 
     /**

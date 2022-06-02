@@ -17,8 +17,8 @@ public class ItemDao extends EgovAbstractMapper {
      *측정항목 리스트 조회
      * @return 측정항목 목록
      */
-    public List<ItemVO> selectItemList() {
-        return selectList("kr.co.hconnect.sqlmapper.selectItemList");
+    public List<ItemVO> selectItemList(ItemVO vo) {
+        return selectList("kr.co.hconnect.sqlmapper.selectItemList", vo);
     }
 
     /**
