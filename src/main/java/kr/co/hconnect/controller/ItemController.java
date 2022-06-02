@@ -5,11 +5,13 @@ import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.service.ItemService;
 import kr.co.hconnect.vo.ItemVO;
 import kr.co.hconnect.vo.ResponseVO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 측정항목
@@ -56,7 +58,7 @@ public class ItemController {
             responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
             responseVO.setMessage("조회성공");
             responseVO.setResult(itemService.selectItemList(vo));
-        }catch (RuntimeException e){
+        } catch (RuntimeException e){
             responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
             responseVO.setMessage(e.getMessage());
         }
@@ -65,21 +67,28 @@ public class ItemController {
     }
 
 
-    // /**
-    //  *측정항목 생성
-    //  * @param vo 측정항목VO
-    //  * @return 측정항목 목록
-    //  */
-    // @RequestMapping("insert.ajax")
-    // @ResponseBody
-    // public List<ItemVO> insertItem(@RequestBody ItemVO vo, @SessionAttribute SessionVO sessionVO) {
-    //
-    //     vo.setRegId(sessionVO.getUserId());
-    //     //# 입력
-    //     itemService.insertItem(vo);
-    //     //# 조회
-    //     return itemService.selectItemList();
-    // }
+    /**
+    *측정항목 상세 조회
+    * @param vo 측정항목VO
+    * @return 측정항목
+    */
+    @RequestMapping(value = "/info", method = RequestMethod.POST)
+    public  ResponseVO<ItemVO> insertItem(@RequestBody ItemVO vo) {
+
+        ResponseVO<ItemVO> responseVO = new ResponseVO<>();
+
+        if (StringUtils.isEmpty(vo.getItemId())) {
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(messageSource.getMessage("validation.null.itemId"
+                , null, Locale.getDefault()));
+        } else {
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("조회성공");
+            responseVO.setResult(itemService.selectItem(vo));
+        }
+
+        return responseVO;
+    }
     //
     // /**
     //  * 측정항목 수정

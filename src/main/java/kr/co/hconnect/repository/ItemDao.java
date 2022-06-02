@@ -22,6 +22,15 @@ public class ItemDao extends EgovAbstractMapper {
     }
 
     /**
+     *측정항목 상세 조회
+     * @param vo 측정항목 조회 조건
+     * @return 측정항목
+     */
+    public ItemVO selectItem(ItemVO vo) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectItemList", vo);
+    }
+
+    /**
      *측정항목 저장
      * @param vo 측정항목 VO
      */
@@ -44,4 +53,5 @@ public class ItemDao extends EgovAbstractMapper {
     public void deleteItem(String ItemId) {
         update("kr.co.hconnect.sqlmapper.deleteItem",ItemId);
     }
+
 }

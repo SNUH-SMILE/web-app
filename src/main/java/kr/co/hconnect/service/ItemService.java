@@ -42,6 +42,14 @@ public class ItemService extends EgovAbstractServiceImpl {
     }
 
     /**
+     *측정항목 상세 조회
+     * @return 측정항목 상세 조회
+     */
+    public ItemVO selectItem(ItemVO vo) {
+        return itemDao.selectItem(vo);
+    }
+
+    /**
      *측정항목 저장
      * @param vo 측정항목VO
      */

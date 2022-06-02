@@ -31,6 +31,26 @@
 		ORDER BY ITEM_ID
 	</select>
 
+    <!-- 측정항목 상세 조회  - kr.co.hconnect.sqlmapper.selectItem -->
+    <select id="selectItem" parameterType="kr.co.hconnect.vo.ItemVO" resultType="kr.co.hconnect.vo.ItemVO">
+        SELECT
+        ITEM_ID		       --  측정항목 ID
+        , ITEM_NM             --  측정항목명
+        , UNIT                --  측정단위
+        , REF_FROM            --  참고치 From
+        , REF_TO              --  참고치 TO
+        , DEL_YN              --  삭제여부
+        , REG_ID
+        , REG_DT
+        , UPD_ID
+        , UPD_DT
+        FROM   ITEM
+
+        WHERE  DEL_YN = 'N'
+          AND  ITEM_ID = #{itemId}
+
+        ORDER BY ITEM_ID
+    </select>
 
 	<!-- 측정항목 입력 -->
 	<insert id="insertItem" parameterType="kr.co.hconnect.vo.ItemVO">
