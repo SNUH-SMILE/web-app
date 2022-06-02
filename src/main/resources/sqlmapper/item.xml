@@ -79,12 +79,15 @@
 	<!-- 측정항목 업데이트 -->
 	<update id="updateItem" parameterType="kr.co.hconnect.vo.ItemVO">
 	<![CDATA[
-		UPDATE item
-		SET
-			Item_NM         = #{itemNm}    -- 측정항목명
-		  , UNIT            = #{unit}      -- 측정단위
-		  , UPD_ID          = #{updId}     -- 수정자
-		WHERE ITEM_ID       = #{itemId}
+		UPDATE ITEM
+		   SET
+			   ITEM_NM         = #{itemNm}    -- 측정항목명
+		     , UNIT            = #{unit}      -- 측정단위
+		     , REF_FROM        = #{refFrom}   -- 측정단위
+		     , REF_TO          = #{refTo}     -- 측정단위
+		     , UPD_ID          = #{updId}     -- 수정자
+             , UPD_DT          = NOW()        -- 수정일시
+		WHERE ITEM_ID          = #{itemId}    -- 측정항목ID
 		]]>
 	</update>
 

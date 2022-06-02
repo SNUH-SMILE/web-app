@@ -137,23 +137,43 @@ public class ItemController {
 
         return responseVO;
     }
-    //
-    // /**
-    //  * 측정항목 수정
-    //  * @param vo 측정항목VO
-    //  * @return 측정항목 목록
-    //  */
-    // @RequestMapping("update.ajax")
-    // @ResponseBody
-    // public List<ItemVO> updateItem(@RequestBody ItemVO vo, @SessionAttribute SessionVO sessionVO) {
-    //
-    //     vo.setUpdId(sessionVO.getUserId());
-    //     //# 수정
-    //     itemService.updateItem(vo);
-    //     //# 조회
-    //     return itemService.selectItemList();
-    // }
-    //
+
+    /**
+     * 측정항목 수정
+     * @param vo 측정항목VO
+     * @return 측정항목 목록
+     */
+    @RequestMapping(value = "/save",method = RequestMethod.PATCH)
+    public ResponseVO<ItemSaveCompleteVO> updateItem(
+        @Validated(VoValidationGroups.modify.class) @RequestBody ItemSaveVO vo
+        , @RequestAttribute TokenDetailInfo tokenDetailInfo, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+
+        ResponseVO<ItemSaveCompleteVO> responseVO = new ResponseVO<>();
+
+        // 저장정보 구성
+        ItemVO itemVO = new ItemVO();
+        BeanUtils.copyProperties(vo, itemVO);
+        itemVO.setUpdId(tokenDetailInfo.getId());
+
+        // 수정
+        itemService.updateItem(itemVO);
+
+        // 반환정보 구성
+        ItemSaveCompleteVO itemSaveCompleteVO = new ItemSaveCompleteVO();
+        itemSaveCompleteVO.setData(itemService.selectItem(itemVO));
+        itemSaveCompleteVO.setList(itemService.selectItemList(vo.getSearchInfo()));
+
+        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+        responseVO.setMessage("수정성공");
+        responseVO.setResult(itemSaveCompleteVO);
+
+        return responseVO;
+    }
+
     // /**
     //  * 측정항목 삭제
     //  * @param itemId    측정항목Id
