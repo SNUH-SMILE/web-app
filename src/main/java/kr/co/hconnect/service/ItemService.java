@@ -74,11 +74,11 @@ public class ItemService extends EgovAbstractServiceImpl {
 
     /**
      *측정항목 삭제
-     * @param ItemId 측정항목Id
+     * @param vo 측정항목VO
      */
     @Transactional(rollbackFor = Exception.class)
-    public void deleteItem(String ItemId) {
-        itemDao.deleteItem(ItemId);
+    public void deleteItem(ItemVO vo) {
+        itemDao.deleteItem(vo);
     }
 
 }

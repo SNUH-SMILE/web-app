@@ -48,10 +48,10 @@ public class ItemDao extends EgovAbstractMapper {
 
     /**
      *측정항목 삭제
-     * @param ItemId 측정항목 Id
+     * @param vo 측정항목 VO
      */
-    public void deleteItem(String ItemId) {
-        update("kr.co.hconnect.sqlmapper.deleteItem",ItemId);
+    public void deleteItem(ItemVO vo) {
+        update("kr.co.hconnect.sqlmapper.deleteItem",vo);
     }
 
 }

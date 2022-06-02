@@ -52,7 +52,7 @@
         ORDER BY ITEM_ID
     </select>
 
-	<!-- 측정항목 입력 -->
+	<!-- 측정항목 입력 - kr.co.hconnect.sqlmapper.insertItem -->
 	<insert id="insertItem" parameterType="kr.co.hconnect.vo.ItemVO">
 	<![CDATA[
 		INSERT
@@ -74,9 +74,9 @@
 			 , #{regId}
 			 , #{regId}
 			 )
-		]]>
+	]]>
 	</insert>
-	<!-- 측정항목 업데이트 -->
+	<!-- 측정항목 업데이트 - kr.co.hconnect.sqlmapper.updateItem -->
 	<update id="updateItem" parameterType="kr.co.hconnect.vo.ItemVO">
 	<![CDATA[
 		UPDATE ITEM
@@ -88,13 +88,17 @@
 		     , UPD_ID          = #{updId}     -- 수정자
              , UPD_DT          = NOW()        -- 수정일시
 		WHERE ITEM_ID          = #{itemId}    -- 측정항목ID
-		]]>
+	]]>
 	</update>
 
-	<!-- 측정항목 삭제 -->
-	<delete id="deleteItem" parameterType="String">
+	<!-- 측정항목 삭제 - kr.co.hconnect.sqlmapper.deleteItem -->
+	<delete id="deleteItem" parameterType="kr.co.hconnect.vo.ItemVO">
 	<![CDATA[
-		DELETE FROM item WHERE ITEM_ID = #{itemId}   -- 측정항목Id
-		]]>
+        UPDATE ITEM
+           SET DEL_YN    = 'Y'
+             , UPD_ID    = #{updId}
+             , UPD_DT    = NOW()
+        WHERE  ITEM_ID   = #{itemId}    -- 센터I
+    ]]>
 	</delete>
 </mapper>

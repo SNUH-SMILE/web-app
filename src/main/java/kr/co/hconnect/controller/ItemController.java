@@ -145,7 +145,7 @@ public class ItemController {
      */
     @RequestMapping(value = "/save",method = RequestMethod.PATCH)
     public ResponseVO<ItemSaveCompleteVO> updateItem(
-        @Validated(VoValidationGroups.modify.class) @RequestBody ItemSaveVO vo
+          @Validated(VoValidationGroups.modify.class) @RequestBody ItemSaveVO vo
         , @RequestAttribute TokenDetailInfo tokenDetailInfo, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -174,17 +174,35 @@ public class ItemController {
         return responseVO;
     }
 
-    // /**
-    //  * 측정항목 삭제
-    //  * @param itemId    측정항목Id
-    //  * @return 측정항목 목록
-    //  */
-    // @RequestMapping("delete.ajax")
-    // @ResponseBody
-    // public List<ItemVO> deleteItem(@RequestParam(name = "itemId",required = false)String itemId){
-    //     //# 삭제
-    //     itemService.deleteItem(itemId);
-    //     //# 조회
-    //     return itemService.selectItemList();
-    // }
+    /**
+     * 측정항목 삭제
+     * @param vo 측정항목VO
+     * @return   측정항목 목록
+     */
+    @RequestMapping(value = "/save",method = RequestMethod.DELETE)
+    public ResponseVO<List<ItemVO>> deleteItem(
+          @Validated(VoValidationGroups.delete.class) @RequestBody ItemSaveVO vo
+        , @RequestAttribute TokenDetailInfo tokenDetailInfo, BindingResult bindingResult){
+
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+
+        ResponseVO<List<ItemVO>> responseVO = new ResponseVO<>();
+
+        // 삭제정보 구성
+        ItemVO itemVO = new ItemVO();
+        BeanUtils.copyProperties(vo, itemVO);
+        itemVO.setUpdId(tokenDetailInfo.getId());
+
+        // 삭제
+        itemService.deleteItem(itemVO);
+
+        // 반환정보 구성
+        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+        responseVO.setMessage("삭제성공");
+        responseVO.setResult(itemService.selectItemList(vo.getSearchInfo()));
+
+        return responseVO;
+    }
 }
