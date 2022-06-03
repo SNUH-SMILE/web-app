@@ -25,7 +25,7 @@ public class ItemSaveVO extends BaseDefaultVO {
     /**
      * 측정항목 ID
      */
-    // @NotBlank(message = "{validation.null.itemId}", groups = { VoValidationGroups.modify.class, VoValidationGroups.delete.class })
+    @NotBlank(message = "{validation.null.itemId}", groups = { VoValidationGroups.modify.class, VoValidationGroups.delete.class })
     private String itemId;
 
     /**
