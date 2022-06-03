@@ -7,7 +7,10 @@ import kr.co.hconnect.common.VoValidationGroups;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.service.ItemService;
-import kr.co.hconnect.vo.*;
+import kr.co.hconnect.vo.ItemSaveCompleteVO;
+import kr.co.hconnect.vo.ItemSaveVO;
+import kr.co.hconnect.vo.ItemVO;
+import kr.co.hconnect.vo.ResponseVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +33,7 @@ public class ItemController {
     /**
      * 측정항목 서비스
      */
-    private ItemService itemService;
+    private final ItemService itemService;
 
     /**
      * 생성자
@@ -42,14 +45,6 @@ public class ItemController {
         this.messageSource = messageSource;
         this.itemService = itemService;
     }
-
-
-    // C: 입력, insert + 메서드, add +
-    // R: 조회, select + 메서드, get +
-    // U: 수정, update + 메서드, modify +
-    // D: 삭제, delete + 메서드, remove +
-    // C+U: 저장, save + 메서드
-
 
     /**
      *측정항목 리스트 조회
@@ -79,7 +74,7 @@ public class ItemController {
     * @return 측정항목
     */
     @RequestMapping(value = "/info", method = RequestMethod.POST)
-    public  ResponseVO<ItemVO> insertItem(@RequestBody ItemVO vo) {
+    public ResponseVO<ItemVO> insertItem(@RequestBody ItemVO vo) {
 
         ResponseVO<ItemVO> responseVO = new ResponseVO<>();
 
@@ -101,9 +96,8 @@ public class ItemController {
      * @return 측정항목 목록
      */
     @RequestMapping(value = "/save", method = RequestMethod.PUT)
-    public ResponseVO<ItemSaveCompleteVO> insertItem(
-          @Validated(VoValidationGroups.add.class) @RequestBody ItemSaveVO vo
-        , @RequestAttribute TokenDetailInfo tokenDetailInfo, BindingResult bindingResult) {
+    public ResponseVO<ItemSaveCompleteVO> insertItem(@Validated(VoValidationGroups.add.class) @RequestBody ItemSaveVO vo
+            , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
 
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
@@ -144,9 +138,8 @@ public class ItemController {
      * @return 측정항목 목록
      */
     @RequestMapping(value = "/save",method = RequestMethod.PATCH)
-    public ResponseVO<ItemSaveCompleteVO> updateItem(
-          @Validated(VoValidationGroups.modify.class) @RequestBody ItemSaveVO vo
-        , @RequestAttribute TokenDetailInfo tokenDetailInfo, BindingResult bindingResult) {
+    public ResponseVO<ItemSaveCompleteVO> updateItem(@Validated(VoValidationGroups.modify.class) @RequestBody ItemSaveVO vo
+            , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
 
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
@@ -180,9 +173,8 @@ public class ItemController {
      * @return   측정항목 목록
      */
     @RequestMapping(value = "/save",method = RequestMethod.DELETE)
-    public ResponseVO<List<ItemVO>> deleteItem(
-          @Validated(VoValidationGroups.delete.class) @RequestBody ItemSaveVO vo
-        , @RequestAttribute TokenDetailInfo tokenDetailInfo, BindingResult bindingResult){
+    public ResponseVO<List<ItemVO>> deleteItem(@Validated(VoValidationGroups.delete.class) @RequestBody ItemSaveVO vo
+            , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo){
 
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);

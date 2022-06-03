@@ -18,9 +18,14 @@ import java.util.List;
 @Transactional(rollbackFor = Exception.class, readOnly = true)
 public class ItemService extends EgovAbstractServiceImpl {
 
-    private ItemDao itemDao; //측정항목 Dao
-
-    private final EgovIdGnrService itemIdGnrService; //측정항목 Id 채번 서비스
+    /**
+     * 측정항목 Dao
+     */
+    private final ItemDao itemDao;
+    /**
+     * 측정항목 Id 채번 서비스
+     */
+    private final EgovIdGnrService itemIdGnrService;
 
     /**
      * 생성자
