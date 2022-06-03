@@ -9,6 +9,7 @@ import lombok.ToString;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Getter
@@ -47,14 +48,14 @@ public class ItemSaveVO extends BaseDefaultVO {
     /**
      * 참고치 From
      */
-    @NotBlank(message = "{validation.null.itemRefValue}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
+    @NotNull(message = "{validation.null.itemRefValue}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
     @Max(value = 32767, message = "{validation.size.itemRefValue}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
     private int refFrom;
 
     /**
      * 참고치 To
      */
-    @NotBlank(message = "{validation.null.itemRefValue}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
+    @NotNull(message = "{validation.null.itemRefValue}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
     @Max(value = 32767, message = "{validation.size.itemRefValue}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
     private int refTo;
 
