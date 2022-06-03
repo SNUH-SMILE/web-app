@@ -82,7 +82,7 @@
             <map>
                 <entry key="/api/now">
                     <list>
-                        <value>POST</value>
+                        <value>GET</value>
                     </list>
                 </entry>
                 <entry key="/api/identity">
