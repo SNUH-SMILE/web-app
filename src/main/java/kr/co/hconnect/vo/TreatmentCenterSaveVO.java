@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 /**
@@ -29,23 +29,23 @@ public class TreatmentCenterSaveVO extends BaseDefaultVO {
     /**
      * 생활치료센터 ID
      */
-    @NotNull(message = "{validation.null.centerId}", groups = { VoValidationGroups.modify.class, VoValidationGroups.delete.class })
+    @NotBlank(message = "{validation.null.centerId}", groups = { VoValidationGroups.modify.class, VoValidationGroups.delete.class })
     private String centerId;
     /**
      * 생활치료센터명
      */
-    @NotNull(message = "{validation.null.centerNm}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
+    @NotBlank(message = "{validation.null.centerNm}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
     @Size(max = 20, message = "{validation.size.centerNm}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
     private String centerNm;
     /**
      * 생활치료센터위치
      */
-    @NotNull(message = "{validation.null.centerLocation}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
+    @NotBlank(message = "{validation.null.centerLocation}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
     @Size(max = 500, message = "{validation.size.centerLocation}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
     private String centerLocation;
     /**
      * 생활치료센터 병원코드
      */
-    @NotNull(message = "{validation.null.hospitalCd}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
+    @NotBlank(message = "{validation.null.hospitalCd}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
     private String hospitalCd;
 }

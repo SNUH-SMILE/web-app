@@ -104,9 +104,8 @@ public class TreatmentCenterController {
      * @return 생활치료센터 저장 정보
      */
     @RequestMapping(value = "/save", method = RequestMethod.PUT)
-    public ResponseVO<TreatmentCenterSaveCompletedVO> insertTreatmentCenter(
-              @Validated(VoValidationGroups.add.class) @RequestBody TreatmentCenterSaveVO vo
-            , @RequestAttribute TokenDetailInfo tokenDetailInfo, BindingResult bindingResult) {
+    public ResponseVO<TreatmentCenterSaveCompletedVO> insertTreatmentCenter(@Validated(VoValidationGroups.add.class) @RequestBody TreatmentCenterSaveVO vo
+            , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
@@ -146,7 +145,7 @@ public class TreatmentCenterController {
      */
     @RequestMapping(value = "/save", method = RequestMethod.PATCH)
     public ResponseVO<TreatmentCenterSaveCompletedVO> updateTreatmentCenter(@Validated(VoValidationGroups.modify.class) @RequestBody TreatmentCenterSaveVO vo
-            , @RequestAttribute TokenDetailInfo tokenDetailInfo, BindingResult bindingResult) {
+            , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
@@ -179,7 +178,7 @@ public class TreatmentCenterController {
      */
     @RequestMapping(value = "/save", method = RequestMethod.DELETE)
     public ResponseVO<List<TreatmentCenterVO>> deleteTreatmentCenter(@Validated(VoValidationGroups.delete.class) @RequestBody TreatmentCenterSaveVO vo
-            , @RequestAttribute TokenDetailInfo tokenDetailInfo, BindingResult bindingResult) {
+            , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
