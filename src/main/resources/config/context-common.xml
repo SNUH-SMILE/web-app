@@ -85,11 +85,6 @@
                         <value>GET</value>
                     </list>
                 </entry>
-                <entry key="/api/notBlank">
-                    <list>
-                        <value>GET</value>
-                    </list>
-                </entry>
                 <entry key="/api/identity">
                     <list>
                         <value>POST</value>
