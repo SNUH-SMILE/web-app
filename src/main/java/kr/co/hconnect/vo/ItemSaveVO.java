@@ -7,10 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @Getter
 @Setter
@@ -28,7 +25,7 @@ public class ItemSaveVO extends BaseDefaultVO {
     /**
      * 측정항목 ID
      */
-    @NotBlank(message = "{validation.null.itemId}", groups = { VoValidationGroups.modify.class, VoValidationGroups.delete.class })
+    // @NotBlank(message = "{validation.null.itemId}", groups = { VoValidationGroups.modify.class, VoValidationGroups.delete.class })
     private String itemId;
 
     /**
@@ -49,14 +46,16 @@ public class ItemSaveVO extends BaseDefaultVO {
      * 참고치 From
      */
     @NotNull(message = "{validation.null.itemRefValue}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
-    @Max(value = 32767, message = "{validation.size.itemRefValue}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
+    @Max(value = 32767, message = "{validation.size.itemRefMaxValue}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
+    @Min(value = -32767, message = "{validation.size.itemRefMinValue}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
     private int refFrom;
 
     /**
      * 참고치 To
      */
     @NotNull(message = "{validation.null.itemRefValue}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
-    @Max(value = 32767, message = "{validation.size.itemRefValue}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
+    @Max(value = 32767, message = "{validation.size.itemRefMaxValue}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
+    @Min(value = -32767, message = "{validation.size.itemRefMinValue}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
     private int refTo;
 
     /**
