@@ -1,18 +1,16 @@
 package kr.co.hconnect.controller;
 
+import egovframework.rte.fdl.cmmn.exception.FdlException;
 import kr.co.hconnect.common.ApiResponseCode;
+import kr.co.hconnect.exception.DuplicateDetailCdException;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
+import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.service.ComCdService;
-import kr.co.hconnect.vo.ComCdDetailSearchVO;
-import kr.co.hconnect.vo.ComCdDetailVO;
-import kr.co.hconnect.vo.ResponseVO;
+import kr.co.hconnect.vo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -38,8 +36,25 @@ public class ComCdController {
     }
 
     /**
+     * 공통코드 리스트 조회
+     *
+     * @param vo 공통코드 조회 조건 VO
+     * @return ResponseVO&lt;List&lt;ComCdVO&gt;&gt;
+     */
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
+    public ResponseVO<List<ComCdVO>> selectComCdList(@RequestBody ComCdSearchVO vo) {
+        ResponseVO<List<ComCdVO>> responseVO = new ResponseVO<>();
+
+        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+        responseVO.setResult(comCdService.selectComCdList(vo));
+
+        return responseVO;
+    }
+
+    /**
      * 공통코드상세 리스트 조회
      * @param vo 공통코드상세 조회조건 VO
+     * @return ResponseVO&lt;List&lt;ComCdDetailVO&gt;&gt;
      */
     @RequestMapping(value = "/detail/list", method = RequestMethod.POST)
     public ResponseVO<List<ComCdDetailVO>> selectComCdDetailList(@Valid @RequestBody ComCdDetailSearchVO vo, BindingResult bindingResult) {
@@ -51,6 +66,77 @@ public class ComCdController {
 
         responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
         responseVO.setResult(comCdService.selectComCdDetailList(vo));
+
+        return responseVO;
+    }
+
+    /**
+     * 공통코드 저장/수정
+     * 
+     * @param vo 공통코드 저장 정보
+     * @return 공통코드 저장 완료 정보
+     */
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    public ResponseVO<List<ComCdVO>> saveComCd(@Valid @RequestBody ComCdSaveVO vo, BindingResult bindingResult
+            , @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+
+        for (ComCdVO comCdVO : vo.getComCdVOList()) {
+            comCdVO.setRegId(tokenDetailInfo.getId());
+            comCdVO.setUpdId(tokenDetailInfo.getId());
+        }
+
+        ResponseVO<List<ComCdVO>> responseVO = new ResponseVO<>();
+
+        try {
+            comCdService.saveComCd(vo.getComCdVOList());
+
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("공통코드 저장 완료");
+            responseVO.setResult(comCdService.selectComCdList(vo.getComCdSearchVO()));
+        } catch (FdlException e) {
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        } catch (NullPointerException e) {
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
+
+        return responseVO;
+    }
+
+    /**
+     * 공통코드상세 저장/수정
+     *
+     * @param vo 공통코드상세 저장 정보
+     * @return 공통코드상세 저장 완료 정보
+     */
+    @RequestMapping(value = "/detail/save", method = RequestMethod.POST)
+    public ResponseVO<List<ComCdDetailVO>> saveComCdDetail(@Valid @RequestBody ComCdDetailSaveVO vo, BindingResult bindingResult
+            , @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+
+        for (ComCdDetailVO comCdDetailVO : vo.getComCdDetailVOList()) {
+            comCdDetailVO.setRegId(tokenDetailInfo.getId());
+            comCdDetailVO.setUpdId(tokenDetailInfo.getId());
+        }
+
+        ResponseVO<List<ComCdDetailVO>> responseVO = new ResponseVO<>();
+
+        try {
+            comCdService.saveComCdDetail(vo.getComCdDetailVOList());
+
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("공통코드상세 저장 완료");
+            responseVO.setResult(comCdService.selectComCdDetailList(vo.getComCdDetailSearchVO()));
+        } catch (DuplicateDetailCdException e) {
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
 
         return responseVO;
     }

@@ -2,8 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.hconnect.sqlmapper">
 
-    <!-- 공통코드상세 리스트 조회 - kr.co.hconnect.sqlmapper.selectComCdDetailList -->
-    <select id="selectComCdDetailList" parameterType="kr.co.hconnect.vo.ComCdDetailSearchVO"
+    <!-- 공통코드상세 조회 - kr.co.hconnect.sqlmapper.selectComCdDetail -->
+    <select id="selectComCdDetail"
+            parameterType="kr.co.hconnect.vo.ComCdDetailSearchVO"
             resultType="kr.co.hconnect.vo.ComCdDetailVO">
         SELECT A.COM_CD                       -- 공통코드
              , A.DETAIL_CD                    -- 세부코드
@@ -27,13 +28,102 @@
                LEFT JOIN USER     UR ON A.REG_ID = UR.USER_ID
                LEFT JOIN USER     UU ON A.UPD_ID = UU.USER_ID
          WHERE A.COM_CD = #{comCd}
-           AND A.USE_YN = #{useYn}
+           AND A.DETAIL_CD = #{detailCd}
+
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(useYn)">
+            AND A.USE_YN = #{useYn}
+        </if>
+    </select>
+
+    <!-- 공통코드상세 리스트 조회 - kr.co.hconnect.sqlmapper.selectComCdDetailList -->
+    <select id="selectComCdDetailList"
+            parameterType="kr.co.hconnect.vo.ComCdDetailSearchVO"
+            resultType="kr.co.hconnect.vo.ComCdDetailVO">
+        SELECT A.COM_CD                       -- 공통코드
+             , A.DETAIL_CD                    -- 세부코드
+             , A.DETAIL_CD_NM                 -- 세부코드명
+             , A.SORT_SEQ                     -- 정렬순서
+             , A.USE_YN                       -- 사용여부
+             , A.PROPERTY1                    -- 속성1
+             , A.PROPERTY2                    -- 속성2
+             , A.PROPERTY3                    -- 속성3
+             , A.PROPERTY4                    -- 속성4
+             , A.PROPERTY5                    -- 속성5
+             , A.REMARK                       -- 리마크
+             , A.REG_ID                       -- 등록자ID
+             , UR.USER_NM          AS REG_NM  -- 등록자명
+             , A.REG_DT                       -- 등록일시
+             , A.UPD_ID                       -- 수정자ID
+             , UU.USER_NM          AS UPD_NM  -- 수정자명
+             , A.UPD_DT                       -- 수정일시
+          FROM COM_CD_DETAIL A
+               INNER JOIN COM_CD  B  ON A.COM_CD = B.COM_CD
+               LEFT JOIN USER     UR ON A.REG_ID = UR.USER_ID
+               LEFT JOIN USER     UU ON A.UPD_ID = UU.USER_ID
+         WHERE A.COM_CD = #{comCd}
 
          <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(detailCd)">
            AND A.DETAIL_CD = #{detailCd}
          </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(useYn)">
+           AND A.USE_YN = #{useYn}
+        </if>
 
          ORDER BY A.SORT_SEQ
     </select>
+
+    <!-- 공통코드상세 생성 - kr.co.hconnect.sqlmapper.insertComCdDetail -->
+    <insert id="insertComCdDetail" parameterType="kr.co.hconnect.vo.ComCdDetailVO">
+        INSERT
+          INTO COM_CD_DETAIL
+             ( COM_CD
+             , DETAIL_CD
+             , DETAIL_CD_NM
+             , SORT_SEQ
+             , USE_YN
+             , PROPERTY1
+             , PROPERTY2
+             , PROPERTY3
+             , PROPERTY4
+             , PROPERTY5
+             , REMARK
+             , REG_ID
+             , UPD_ID
+             )
+        VALUES
+             ( #{comCd}
+             , #{detailCd}
+             , #{detailCdNm}
+             , (SELECT IFNULL(MAX(X.SORT_SEQ), 0) + 1
+                  FROM COM_CD_DETAIL X
+                 WHERE X.COM_CD = #{comCd})
+             , #{useYn}
+             , #{property1}
+             , #{property2}
+             , #{property3}
+             , #{property4}
+             , #{property5}
+             , #{remark}
+             , #{regId}
+             , #{updId}
+             )
+    </insert>
+
+    <!-- 공통코드상세 업데이트 - kr.co.hconnect.sqlmapper.updateComCdDetail -->
+    <update id="updateComCdDetail" parameterType="kr.co.hconnect.vo.ComCdDetailVO">
+        UPDATE COM_CD_DETAIL
+           SET DETAIL_CD_NM = #{detailCdNm}
+             , USE_YN       = #{useYn}
+             , PROPERTY1    = #{property1}
+             , PROPERTY2    = #{property2}
+             , PROPERTY3    = #{property3}
+             , PROPERTY4    = #{property4}
+             , PROPERTY5    = #{property5}
+             , REMARK       = #{remark}
+             , UPD_ID       = #{updId}
+             , UPD_DT       = NOW()
+         WHERE COM_CD    = #{comCd}
+           AND DETAIL_CD = #{detailCd}
+    </update>
 
 </mapper>

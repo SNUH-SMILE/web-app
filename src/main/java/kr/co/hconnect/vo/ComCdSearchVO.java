@@ -5,31 +5,30 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
- * 공통코드상세 조회조건 VO
+ * 공통코드 조회조건 VO
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-public class ComCdDetailSearchVO implements Serializable {
+public class ComCdSearchVO implements Serializable {
 
-    private static final long serialVersionUID = -4311384103878410635L;
+    private static final long serialVersionUID = 803454040887352971L;
 
     /**
      * 공통코드
      */
-    @NotNull(message = "{validation.null.comCd}")
     private String comCd;
     /**
-     * 세부코드
+     * 공통코드명
      */
-    private String detailCd;
+    private String comCdNm;
     /**
      * 사용여부
      */
     private String useYn;
+
 }
