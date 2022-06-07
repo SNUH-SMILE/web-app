@@ -13,6 +13,7 @@ import java.util.List;
  * extends EgovAbstractMapper
  */
 @Repository
+@Deprecated
 public class ComCdManagerDao extends EgovAbstractMapper {
 
 

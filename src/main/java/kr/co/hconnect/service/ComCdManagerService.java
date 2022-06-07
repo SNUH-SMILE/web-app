@@ -23,6 +23,7 @@ import java.util.List;
  */
 @Service
 @Transactional(rollbackFor = Exception.class, readOnly = true)
+@Deprecated
 public class ComCdManagerService extends EgovAbstractServiceImpl {
 
 	/**
