@@ -30,17 +30,17 @@ public class UserVO extends BaseDefaultVO {
 	 */
 	private String userNm;
 	/**
-	 * 센터ID
+	 * 메인 센터ID
 	 */
-	private String centerId;
+	private String mainCenterId;
+	/**
+	 * 메인 센터명
+	 */
+	private String mainCenterNm;
 	/**
 	 * 리마크
 	 */
 	private String remark;
-	/**
-	 * 센터명
-	 */
-	private String centerNm;
 	/**
 	 * 로그인 유지 여부 
 	 */

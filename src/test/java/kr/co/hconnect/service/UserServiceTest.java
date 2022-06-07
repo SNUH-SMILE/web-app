@@ -1,16 +1,10 @@
 package kr.co.hconnect.service;
 
-import kr.co.hconnect.vo.UserVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/config/context-*.xml")
@@ -21,12 +15,12 @@ public class UserServiceTest {
 
     @Test
     public void insertUser() {
-        UserVO userVO = new UserVO();
-        userVO.setPassword("1111");
-        userVO.setUserNm("개발자");
-        userVO.setCenterId("C999");
-
-        userService.insertUser(userVO);
+//        UserVO userVO = new UserVO();
+//        userVO.setPassword("1111");
+//        userVO.setUserNm("개발자");
+//        userVO.setCenterId("C999");
+//
+//        userService.insertUser(userVO);
     }
 
     /**
@@ -34,17 +28,17 @@ public class UserServiceTest {
      */
     @Test
     public void insertUserList() {
-        List<UserVO> userVOs = new ArrayList<>();
-        for (int index = 1; index <= 10; index++) {
-            UserVO userVO = new UserVO();
-            userVO.setPassword(String.valueOf(index));
-            userVO.setUserNm("의료진" + index);
-            userVO.setCenterId("C999");
-            userVO.setRemark("리마크" + index);
-            userVOs.add(userVO);
-        }
-
-        userService.insertUser(userVOs);
+//        List<UserVO> userVOs = new ArrayList<>();
+//        for (int index = 1; index <= 10; index++) {
+//            UserVO userVO = new UserVO();
+//            userVO.setPassword(String.valueOf(index));
+//            userVO.setUserNm("의료진" + index);
+//            userVO.setCenterId("C999");
+//            userVO.setRemark("리마크" + index);
+//            userVOs.add(userVO);
+//        }
+//
+//        userService.insertUser(userVOs);
 
 /*
         //# @Transactional(rollbackFor = Exception.class) 선언한 경우

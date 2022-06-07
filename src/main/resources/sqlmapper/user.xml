@@ -2,37 +2,63 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.hconnect.sqlmapper">
 
-    <!-- 사용자 조회 -->
-    <select id="selectUserInfo" parameterType="kr.co.hconnect.vo.UserVO" resultType="kr.co.hconnect.vo.UserVO">
-	<![CDATA[
-        SELECT USER_ID			AS USER_ID		-- 사용자ID
-             , PASSWORD         AS PASSWORD     -- 비밀번호
-             , USER_NM          AS USER_NM      -- 사용자명
-             , CENTER_ID        AS CENTER_ID    -- 센터ID
-             , REMARK           AS REMARK       -- 리마크
-             , REMEMBER_YN      AS REMEMBER_YN  -- 로그인 유지 여부
-             , REG_ID           AS REG_ID       -- 등록자ID
-             , REG_DT           AS REG_DT       -- 등록일시
-             , UPD_ID           AS UPD_ID       -- 수정자ID
-             , UPD_DT           AS UPD_DT       -- 수정일시
-          FROM USER
-         WHERE USER_ID = #{userId}
-        ]]>
+    <!-- 사용자 조회 - kr.co.hconnect.sqlmapper.selectUserInfo -->
+    <select id="selectUserInfo" parameterType="String" resultType="kr.co.hconnect.vo.UserVO">
+        SELECT A.USER_ID          AS USER_ID          -- 사용자ID
+             , A.PASSWORD         AS PASSWORD         -- 비밀번호
+             , A.USER_NM          AS USER_NM          -- 사용자명
+             , C.CENTER_ID        AS MAIN_CENTER_ID   -- 대표 센터ID
+             , C.CENTER_NM        AS MAIN_CENTER_NM   -- 대표 센터명
+             , A.REMARK           AS REMARK           -- 리마크
+             , A.REMEMBER_YN      AS REMEMBER_YN      -- 로그인 유지 여부
+             , A.REG_ID           AS REG_ID           -- 등록자ID
+             , A.REG_DT           AS REG_DT           -- 등록일시
+             , A.UPD_ID           AS UPD_ID           -- 수정자ID
+             , A.UPD_DT           AS UPD_DT           -- 수정일시
+          FROM USER A
+               LEFT JOIN USER_TREATMENT_CENTER B  ON A.USER_ID = B.USER_ID
+                                                 AND B.MAIN_YN = 'Y'
+               LEFT JOIN TREATMENT_CENTER      C  ON B.CENTER_ID = C.CENTER_ID
+                                                 AND C.USE_YN    = 'Y'
+        WHERE A.USER_ID = #{userId}
 	</select>
 
-    <!-- 사용자 목록 조회 -->
-    <select id="selectUserInfoList" parameterType="String" resultType="kr.co.hconnect.vo.UserVO">
-	<![CDATA[
-        SELECT A.USER_ID		  AS USER_ID	  -- 사용자ID
-             , A.PASSWORD         AS PASSWORD     -- 비밀번호
-             , A.USER_NM          AS USER_NM      -- 사용자명
-             , A.CENTER_ID        AS CENTER_ID    -- 센터ID
-             , A.REMARK           AS REMARK       -- 리마크
-             , B.CENTER_NM        AS CENTER_NM    -- 센터명
-          FROM user as A
-               INNER JOIN treatment_center AS B ON B.CENTER_ID = A.CENTER_ID
-         ORDER BY A.USER_ID
-        ]]>
+    <!-- 사용자 목록 조회 - kr.co.hconnect.sqlmapper.selectUserList -->
+    <select id="selectUserList" parameterType="kr.co.hconnect.vo.UserSearchVO" resultType="kr.co.hconnect.vo.UserVO">
+        SELECT A.USER_ID          AS USER_ID          -- 사용자ID
+             , A.PASSWORD         AS PASSWORD         -- 비밀번호
+             , A.USER_NM          AS USER_NM          -- 사용자명
+             , C.CENTER_ID        AS MAIN_CENTER_ID   -- 대표 센터ID
+             , C.CENTER_NM        AS MAIN_CENTER_NM   -- 대표 센터명
+             , A.REMARK           AS REMARK           -- 리마크
+             , A.REMEMBER_YN      AS REMEMBER_YN      -- 로그인 유지 여부
+             , A.REG_ID           AS REG_ID           -- 등록자ID
+             , A.REG_DT           AS REG_DT           -- 등록일시
+             , A.UPD_ID           AS UPD_ID           -- 수정자ID
+             , A.UPD_DT           AS UPD_DT           -- 수정일시
+          FROM USER A
+               LEFT JOIN USER_TREATMENT_CENTER B  ON A.USER_ID = B.USER_ID
+                                                 AND B.MAIN_YN = 'Y'
+               LEFT JOIN TREATMENT_CENTER      C  ON B.CENTER_ID = C.CENTER_ID
+                                                 AND C.USE_YN    = 'Y'
+
+        <where>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(userId)">
+                AND A.USER_ID = #{userId}
+            </if>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(userNm)">
+                AND A.USER_NM LIKE CONCAT('%', #{userNm}, '%')
+            </if>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(centerId)">
+                AND EXISTS(SELECT NULL
+                             FROM USER_TREATMENT_CENTER X
+                            WHERE X.USER_ID = A.USER_ID
+                              AND X.CENTER_ID = #{centerId})
+            </if>
+        </where>
+
+        ORDER BY A.USER_NM
+
 	</select>
 
     <!-- 사용자 입력 -->
@@ -73,7 +99,7 @@
         ]]>
 	</update>
 
-	<!-- 로그인 정보 업데이트 -->
+	<!-- 로그인 정보 업데이트 - kr.co.hconnect.sqlmapper.updateUserLoginInfo -->
 	<update id="updateUserLoginInfo" parameterType="kr.co.hconnect.vo.UserVO">
 	<![CDATA[
 		UPDATE USER
@@ -82,10 +108,5 @@
 	]]>
 	</update>
 
-    <!-- 사용자 삭제 -->
-    <delete id="deleteUser" parameterType="String">
-	<![CDATA[
-        DELETE FROM user WHERE USER_ID = #{userId}
-    ]]>
-	</delete>
+
 </mapper>

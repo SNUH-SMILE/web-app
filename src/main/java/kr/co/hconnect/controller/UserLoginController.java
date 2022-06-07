@@ -191,10 +191,15 @@ public class UserLoginController {
 
 		if (tokenDetailInfo.getTokenStatus() == TokenStatus.OK && tokenDetailInfo.getTokenType() == TokenType.WEB) {
 			// 로그아웃 정보 업데이트
-			userService.updateUserLogoutInfo(tokenDetailInfo);
+			try {
+				userService.updateUserLogoutInfo(tokenDetailInfo);
 
-			baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
-			baseResponse.setMessage("로그아웃 성공");
+				baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
+				baseResponse.setMessage("로그아웃 성공");
+			} catch (NotFoundUserInfoException e) {
+				baseResponse.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+				baseResponse.setMessage(e.getMessage());
+			}
 		} else {
 			baseResponse.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
 			baseResponse.setMessage("로그아웃 실패");
