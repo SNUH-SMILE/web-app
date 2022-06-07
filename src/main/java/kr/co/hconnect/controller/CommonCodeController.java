@@ -20,6 +20,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping(value = "/common")
+@Deprecated
 public class CommonCodeController {
 
     /**
