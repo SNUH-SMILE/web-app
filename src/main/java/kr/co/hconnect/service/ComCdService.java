@@ -5,10 +5,7 @@ import egovframework.rte.fdl.cmmn.exception.FdlException;
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
 import kr.co.hconnect.exception.DuplicateDetailCdException;
 import kr.co.hconnect.repository.ComCdDao;
-import kr.co.hconnect.vo.ComCdDetailSearchVO;
-import kr.co.hconnect.vo.ComCdDetailVO;
-import kr.co.hconnect.vo.ComCdSearchVO;
-import kr.co.hconnect.vo.ComCdVO;
+import kr.co.hconnect.vo.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +14,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -79,7 +77,10 @@ public class ComCdService extends EgovAbstractServiceImpl {
 
     /**
      * 공통코드 저장
+     *
      * @param comCdVOList 공통코드 저장 정보
+     * @throws FdlException 공통코드 채번 오류 시 발생
+     * @throws NullPointerException 업데이트 대상 공통코드 정보가 없을 경우 발생
      */
     @Transactional(rollbackFor = Exception.class)
     public void saveComCd(List<ComCdVO> comCdVOList) throws FdlException, NullPointerException {
@@ -92,6 +93,8 @@ public class ComCdService extends EgovAbstractServiceImpl {
                 ComCdSearchVO comCdSearchVO = new ComCdSearchVO();
                 comCdSearchVO.setComCd(comCdVO.getComCd());
                 if (StringUtils.isEmpty(comCdVO.getComCd()) || comCdDao.selectComCd(comCdSearchVO) == null) {
+                    LOGGER.error(String.format("saveComCd::%s", comCdVO));
+
                     if (StringUtils.isNotEmpty(comCdVO.getComCdNm())) {
                         throw new NullPointerException(messageSource.getMessage("message.notfound.comCdInfo.comCdNm"
                                 , new Object[] { comCdVO.getComCdNm() }, Locale.getDefault()));
@@ -108,7 +111,9 @@ public class ComCdService extends EgovAbstractServiceImpl {
 
     /**
      * 공통코드상세 저장
+     *
      * @param comCdDetailVOList 공통코드상세 저장 정보
+     * @throws DuplicateDetailCdException 공통코드상세 세부코드 중복 시 발생
      */
     @Transactional(rollbackFor = Exception.class)
     public void saveComCdDetail(List<ComCdDetailVO> comCdDetailVOList) throws DuplicateDetailCdException {
@@ -119,6 +124,8 @@ public class ComCdService extends EgovAbstractServiceImpl {
                 comCdDetailSearchVO.setComCd(comCdDetailVO.getComCd());
                 comCdDetailSearchVO.setDetailCd(comCdDetailVO.getDetailCd());
                 if (comCdDao.selectComCdDetail(comCdDetailSearchVO) != null) {
+                    LOGGER.error(String.format("saveComCdDetail::%s", comCdDetailVO));
+
                     throw new DuplicateDetailCdException(messageSource.getMessage("message.duplicate.detailCd"
                             , new Object[] { comCdDetailVO.getDetailCd() }, Locale.getDefault()));
                 }
@@ -128,5 +135,49 @@ public class ComCdService extends EgovAbstractServiceImpl {
                 comCdDao.updateComCdDetail(comCdDetailVO);
             }
         }
+    }
+
+    /**
+     * 공통코드상세 순서 업데이트
+     *
+     * @param comCdDetailSortChangeVOList 공통코드상세 순서 변경 정보
+     * @return List&lt;ComCdDetailVO&gt; 순서 변경된 공통코드상세 정보
+     * @throws NullPointerException 변경 대상이 존재하지 않을 경우 발생
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public List<ComCdDetailVO> updateComCdDetailSort(List<ComCdDetailSortChangeVO> comCdDetailSortChangeVOList)
+            throws NullPointerException {
+        // 순서 변경 대상 존재여부 확인
+        if (comCdDetailSortChangeVOList == null || comCdDetailSortChangeVOList.size() == 0) {
+            LOGGER.error("updateComCdDetailSort::NotFound update sort data");
+
+            throw new NullPointerException(messageSource.getMessage("message.notfound.comCdDetailInfo.sortList"
+                    , null, Locale.getDefault()));
+        }
+
+        List<ComCdDetailVO> comCdDetailVOList = new ArrayList<>();
+
+        for (ComCdDetailSortChangeVO vo : comCdDetailSortChangeVOList) {
+            ComCdDetailSearchVO comCdDetailSearchVO = new ComCdDetailSearchVO();
+            comCdDetailSearchVO.setComCd(vo.getComCd());
+            comCdDetailSearchVO.setDetailCd(vo.getDetailCd());
+
+            ComCdDetailVO comCdDetailVO = comCdDao.selectComCdDetail(comCdDetailSearchVO);
+            
+            // 변경 대상 존재여부 확인
+            if (comCdDetailVO == null) {
+                LOGGER.error(String.format("updateComCdDetailSort::%s", vo));
+
+                throw new NullPointerException(messageSource.getMessage("message.notfound.comCdDetailInfo"
+                        , null, Locale.getDefault()));
+            }
+
+            if (!comCdDetailVOList.contains(comCdDetailVO)) {
+                comCdDao.updateComCdDetailSort(vo);
+                comCdDetailVOList.add(comCdDetailVO);
+            }
+        }
+
+        return comCdDetailVOList;
     }
 }

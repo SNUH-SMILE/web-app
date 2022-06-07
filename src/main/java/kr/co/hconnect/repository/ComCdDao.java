@@ -1,10 +1,7 @@
 package kr.co.hconnect.repository;
 
 import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
-import kr.co.hconnect.vo.ComCdDetailSearchVO;
-import kr.co.hconnect.vo.ComCdDetailVO;
-import kr.co.hconnect.vo.ComCdSearchVO;
-import kr.co.hconnect.vo.ComCdVO;
+import kr.co.hconnect.vo.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -93,6 +90,16 @@ public class ComCdDao extends EgovAbstractMapper {
      */
     public int updateComCdDetail(ComCdDetailVO vo) {
         return update("kr.co.hconnect.sqlmapper.updateComCdDetail", vo);
+    }
+
+    /**
+     * 공통코드상세 순서 업데이트
+     *
+     * @param vo 공통코드상세 순서 변경 정보
+     * @return 적용결과 count
+     */
+    public int updateComCdDetailSort(ComCdDetailSortChangeVO vo) {
+        return update("kr.co.hconnect.sqlmapper.updateComCdDetailSort", vo);
     }
 
 }

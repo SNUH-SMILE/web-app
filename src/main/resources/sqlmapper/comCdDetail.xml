@@ -126,4 +126,14 @@
            AND DETAIL_CD = #{detailCd}
     </update>
 
+    <!-- 공통코드상세 순서 업데이트 - kr.co.hconnect.sqlmapper.updateComCdDetailSort -->
+    <update id="updateComCdDetailSort" parameterType="kr.co.hconnect.vo.ComCdDetailSaveVO">
+        UPDATE COM_CD_DETAIL
+           SET SORT_SEQ = #{sortSeq}
+             , UPD_ID   = #{updId}
+             , UPD_DT   = NOW()
+         WHERE COM_CD    = #{comCd}
+           AND DETAIL_CD = #{detailCd}
+    </update>
+
 </mapper>

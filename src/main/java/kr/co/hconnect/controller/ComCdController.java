@@ -140,4 +140,39 @@ public class ComCdController {
 
         return responseVO;
     }
+
+    /**
+     * 공통코드상세 순서 업데이트
+     *
+     * @param comCdDetailSortChangeVOList 공통코드상세 순서 변경 정보
+     * @return 공통코드상세 순서 변경 완료 정보
+     */
+    @RequestMapping(value = "/detail/sort", method = RequestMethod.PATCH)
+    public ResponseVO<List<ComCdDetailVO>> updateComCdDetailSort(
+              @Valid @RequestBody List<ComCdDetailSortChangeVO> comCdDetailSortChangeVOList
+            , BindingResult bindingResult
+            , @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+
+        for (ComCdDetailSortChangeVO vo : comCdDetailSortChangeVOList) {
+            vo.setUpdId(tokenDetailInfo.getId());
+        }
+
+        ResponseVO<List<ComCdDetailVO>> responseVO = new ResponseVO<>();
+
+        try {
+            List<ComCdDetailVO> comCdDetailVOList = comCdService.updateComCdDetailSort(comCdDetailSortChangeVOList);
+
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("공통코드상세 정렬순서 변경 완료");
+            responseVO.setResult(comCdDetailVOList);
+        } catch (NullPointerException e) {
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
+
+        return responseVO;
+    }
 }
