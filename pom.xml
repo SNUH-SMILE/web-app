@@ -42,6 +42,12 @@
             <groupId>egovframework.rte</groupId>
             <artifactId>egovframework.rte.psl.dataaccess</artifactId>
             <version>${egovframework.rte.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax</groupId>
+                    <artifactId>javaee-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>egovframework.rte</groupId>
@@ -79,7 +85,13 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>6.1.0.Final</version>
+            <version>6.1.7.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.el</artifactId>
+            <version>3.0.3</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- Logging -->
@@ -192,13 +204,6 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
-        </dependency>
-
-        <!--CorsFilter-->
-        <dependency>
-            <groupId>org.opendaylight.controller.thirdparty</groupId>
-            <artifactId>org.apache.catalina.filters.CorsFilter</artifactId>
-            <version>7.0.42</version>
         </dependency>
 
     </dependencies>
