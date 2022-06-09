@@ -1,15 +1,17 @@
 package kr.co.hconnect.controller;
 
+import egovframework.rte.fdl.cmmn.exception.FdlException;
 import kr.co.hconnect.common.ApiResponseCode;
+import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.exception.NotFoundUserInfoException;
-import kr.co.hconnect.service.TreatmentCenterService;
+import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.service.UserService;
-import kr.co.hconnect.vo.ResponseVO;
-import kr.co.hconnect.vo.UserSearchVO;
-import kr.co.hconnect.vo.UserVO;
+import kr.co.hconnect.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -23,20 +25,14 @@ public class UserController {
      * 사용자 Service
      */
     private final UserService userService;
-    /**
-     * 생활치료센터 Service
-     */
-    private final TreatmentCenterService treatmentCenterService;
 
     /**
      * 생성자
      * @param userService 사용자 Service
-     * @param treatmentCenterService 생활치료센터 Service
      */
     @Autowired
-    public UserController(UserService userService, TreatmentCenterService treatmentCenterService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.treatmentCenterService = treatmentCenterService;
     }
 
     /**
@@ -73,6 +69,50 @@ public class UserController {
         responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
         responseVO.setMessage("사용자 리스트 검색 완료");
         responseVO.setResult(userService.selectUserList(userSearchVO));
+
+        return responseVO;
+    }
+
+    /**
+     * 사용자 저장
+     * @param userSaveVO 사용자 저장정보
+     * @return ResponseVO&lt;UserSaveCompletedVO&gt; 사용자 저장 완료 정보
+     */
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    public ResponseVO<UserSaveCompletedVO> saveUser(@Valid @RequestBody UserSaveVO userSaveVO
+            , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+
+        // 등록자,수정자 정보 바인딩
+        userSaveVO.getUserVO().setRegId(tokenDetailInfo.getId());
+        userSaveVO.getUserVO().setUpdId(tokenDetailInfo.getId());
+        for (UserTreatmentCenterVO vo : userSaveVO.getUserVO().getUserTreatmentCenterVOList()) {
+            vo.setRegId(tokenDetailInfo.getId());
+        }
+
+        ResponseVO<UserSaveCompletedVO> responseVO = new ResponseVO<>();
+
+        // 사용자 저장
+        try {
+            UserVO userVO = userService.saveUser(userSaveVO);
+
+            // 사용자 저장 완료정보 구성
+            UserSaveCompletedVO userSaveCompletedVO = new UserSaveCompletedVO();
+            userSaveCompletedVO.setUserVO(userVO);
+            userSaveCompletedVO.setUserVOList(userService.selectUserList(userSaveVO.getUserSearchVO()));
+
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("사용자 저장 완료");
+            responseVO.setResult(userSaveCompletedVO);
+        } catch (FdlException e) {
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        } catch (NotFoundUserInfoException e) {
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
 
         return responseVO;
     }

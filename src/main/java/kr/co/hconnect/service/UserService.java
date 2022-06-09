@@ -1,15 +1,15 @@
 package kr.co.hconnect.service;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import egovframework.rte.fdl.cmmn.exception.FdlException;
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
 import kr.co.hconnect.common.CryptoUtils;
 import kr.co.hconnect.exception.NotFoundUserInfoException;
 import kr.co.hconnect.exception.NotMatchPatientPasswordException;
 import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.repository.UserDao;
-import kr.co.hconnect.vo.UserLoginInfoVO;
-import kr.co.hconnect.vo.UserSearchVO;
-import kr.co.hconnect.vo.UserVO;
+import kr.co.hconnect.vo.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +114,50 @@ public class UserService extends EgovAbstractServiceImpl {
         }
 
         return userVOList;
+    }
+
+    /**
+     * 사용자 저장
+     * @param userSaveVO 사용자 저장 정보
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public UserVO saveUser(UserSaveVO userSaveVO) throws FdlException, NotFoundUserInfoException {
+        UserVO userVO = userSaveVO.getUserVO();
+
+        String userId = "";
+        String password = userVO.getPassword();
+
+        // 비밀번호 암호화
+        userVO.setPassword(CryptoUtils.encrypt(password));
+
+        // 1.사용자 정보 저장
+        if (StringUtils.isEmpty(userVO.getUserId())) {
+            // 신규 사용자 생성
+            userId = userIdGnrService.getNextStringId();
+            userVO.setUserId(userId);
+
+            userDao.insertUser(userVO);
+        } else {
+            // 기존 사용자 수정
+            userId = userVO.getUserId();
+
+            // 사용자 존재여부 확인
+            if (userDao.selectUserInfo(userId) == null) {
+                throw new NotFoundUserInfoException(messageSource.getMessage("message.notfound.userInfo"
+                        ,null, Locale.getDefault()));
+            }
+
+            userDao.updateUser(userVO);
+        }
+
+        // 2.사용자별 센터 정보 생성
+        userDao.deleteUserTreatmentCenter(userId);
+        for (UserTreatmentCenterVO vo : userSaveVO.getUserVO().getUserTreatmentCenterVOList()) {
+            vo.setUserId(userId);
+            userDao.insertUserTreatmentCenter(vo);
+        }
+
+        return selectUserInfo(userId);
     }
 
 

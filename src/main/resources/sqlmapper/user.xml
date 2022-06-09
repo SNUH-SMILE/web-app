@@ -23,6 +23,19 @@
         WHERE A.USER_ID = #{userId}
 	</select>
 
+    <select id="selectUserTreatmentCenterInfo" parameterType="String" resultType="kr.co.hconnect.vo.UserTreatmentCenterVO">
+        SELECT A.USER_ID
+             , A.CENTER_ID
+             , B.CENTER_NM
+             , A.MAIN_YN
+             , A.REG_ID
+             , A.REG_DT
+          FROM USER_TREATMENT_CENTER A
+               INNER JOIN TREATMENT_CENTER B  ON A.CENTER_ID = B.CENTER_ID
+                                             AND B.USE_YN = 'Y'
+         WHERE A.USER_ID = #{userId}
+    </select>
+
     <!-- 사용자 목록 조회 - kr.co.hconnect.sqlmapper.selectUserList -->
     <select id="selectUserList" parameterType="kr.co.hconnect.vo.UserSearchVO" resultType="kr.co.hconnect.vo.UserVO">
         SELECT A.USER_ID          AS USER_ID          -- 사용자ID
@@ -61,43 +74,81 @@
 
 	</select>
 
-    <!-- 사용자 입력 -->
+    <!-- 사용자 생성 - kr.co.hconnect.sqlmapper.insertUser -->
     <insert id="insertUser" parameterType="kr.co.hconnect.vo.UserVO">
-	<![CDATA[
-        INSERT INTO
-            user (
-                   USER_ID          -- 사용자Id
-                 , PASSWORD         -- 사용자Pw
-                 , USER_NM          -- 사용자명
-                 , CENTER_ID        -- 센터Id
-                 , REMARK           -- 리마크
-                 , REG_ID           -- 생성자
-                 , UPD_ID           -- 수정자
-        )
-        VALUES (
-                 #{userId}
-               , #{password}
-               , #{userNm}
-               , #{centerId}
-               , #{remark}
-               , #{regId}
-               , #{regId}
-               )
-        ]]>
+        INSERT
+          INTO USER
+             ( USER_ID
+             , PASSWORD
+             , USER_NM
+             , REMARK
+             , UPD_ID
+             , REG_ID
+             )
+        VALUES
+             ( #{userId}
+             , #{password}
+             , #{userNm}
+             , #{remark}
+             , #{regId}
+             , #{regId}
+             )
 	</insert>
 
-    <!-- 사용자 수정 -->
+    <!-- 사용자 수정 - kr.co.hconnect.sqlmapper.updateUser -->
     <update id="updateUser" parameterType="kr.co.hconnect.vo.UserVO">
-	<![CDATA[
-        UPDATE user
-           SET PASSWORD                 = #{password}   -- 비밀번호
-             , USER_NM                  = #{userNm}     -- 사용자명
-             , CENTER_ID                = #{centerId}   -- 센터Id
-             , REMARK                   = #{remark}     -- 리마크
-             , UPD_ID                   = #{updId}      -- 수정자
-         WHERE USER_ID                  = #{userId}
-        ]]>
+        UPDATE USER
+           SET PASSWORD  = #{password}   -- 비밀번호
+             , USER_NM   = #{userNm}     -- 사용자명
+             , REMARK    = #{remark}     -- 리마크
+             , UPD_ID    = #{updId}      -- 수정자
+             , UPD_DT    = NOW()
+         WHERE USER_ID = #{userId}
 	</update>
+
+    <!-- 사용자별 센터 리스트 조회 - kr.co.hconnect.sqlmapper.selectUserTreatmentCenterList -->
+    <select id="selectUserTreatmentCenterList" parameterType="String" resultType="kr.co.hconnect.vo.UserTreatmentCenterVO">
+        SELECT #{userId}     AS USER_ID   -- 사용자ID
+             , B.CENTER_ID                -- 센터ID
+             , B.CENTER_NM                -- 센터명
+             , A.MAIN_YN                  -- 메인여부
+             , A.REG_ID
+             , C.USER_NM     AS REG_NM
+          FROM USER_TREATMENT_CENTER A
+               INNER JOIN TREATMENT_CENTER B  ON A.CENTER_ID = B.CENTER_ID
+                                             AND B.USE_YN = 'Y'
+               LEFT JOIN USER  C ON A.REG_ID = C.USER_ID
+         WHERE A.USER_ID = #{userId}
+         ORDER
+            BY A.MAIN_YN DESC
+             , B.CENTER_NM
+    </select>
+
+    <!-- 사용자별 센터 생성 - kr.co.hconnect.sqlmapper.insertUserTreatmentCenter -->
+    <insert id="insertUserTreatmentCenter" parameterType="kr.co.hconnect.vo.UserTreatmentCenterVO">
+        INSERT
+          INTO USER_TREATMENT_CENTER
+             ( USER_ID
+             , CENTER_ID
+             , MAIN_YN
+             , REG_ID
+             , REG_DT
+             )
+        VALUES
+             ( #{userId}
+             , #{centerId}
+             , #{mainYn}
+             , #{regId}
+             , NOW()
+             )
+    </insert>
+
+    <!-- 사용자별 센터 삭제 - kr.co.hconnect.sqlmapper.deleteUserTreatmentCenter -->
+    <delete id="deleteUserTreatmentCenter" parameterType="String">
+        DELETE
+          FROM USER_TREATMENT_CENTER
+         WHERE USER_ID = #{userId}
+    </delete>
 
 	<!-- 로그인 정보 업데이트 - kr.co.hconnect.sqlmapper.updateUserLoginInfo -->
 	<update id="updateUserLoginInfo" parameterType="kr.co.hconnect.vo.UserVO">
