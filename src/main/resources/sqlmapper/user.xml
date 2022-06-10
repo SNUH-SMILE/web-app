@@ -7,6 +7,7 @@
         SELECT A.USER_ID          AS USER_ID          -- 사용자ID
              , A.PASSWORD         AS PASSWORD         -- 비밀번호
              , A.USER_NM          AS USER_NM          -- 사용자명
+             , A.DEL_YN           as DEL_YN           -- 삭제여부
              , C.CENTER_ID        AS MAIN_CENTER_ID   -- 대표 센터ID
              , C.CENTER_NM        AS MAIN_CENTER_NM   -- 대표 센터명
              , A.REMARK           AS REMARK           -- 리마크
@@ -41,6 +42,7 @@
         SELECT A.USER_ID          AS USER_ID          -- 사용자ID
              , A.PASSWORD         AS PASSWORD         -- 비밀번호
              , A.USER_NM          AS USER_NM          -- 사용자명
+             , A.DEL_YN           AS DEL_YN           -- 삭제여부
              , C.CENTER_ID        AS MAIN_CENTER_ID   -- 대표 센터ID
              , C.CENTER_NM        AS MAIN_CENTER_NM   -- 대표 센터명
              , A.REMARK           AS REMARK           -- 리마크
@@ -54,21 +56,20 @@
                                                  AND B.MAIN_YN = 'Y'
                LEFT JOIN TREATMENT_CENTER      C  ON B.CENTER_ID = C.CENTER_ID
                                                  AND C.USE_YN    = 'Y'
+         WHERE A.DEL_YN = 'N'
 
-        <where>
-            <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(userId)">
-                AND A.USER_ID = #{userId}
-            </if>
-            <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(userNm)">
-                AND A.USER_NM LIKE CONCAT('%', #{userNm}, '%')
-            </if>
-            <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(centerId)">
-                AND EXISTS(SELECT NULL
-                             FROM USER_TREATMENT_CENTER X
-                            WHERE X.USER_ID = A.USER_ID
-                              AND X.CENTER_ID = #{centerId})
-            </if>
-        </where>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(userId)">
+            AND A.USER_ID = #{userId}
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(userNm)">
+            AND A.USER_NM LIKE CONCAT('%', #{userNm}, '%')
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(centerId)">
+            AND EXISTS(SELECT NULL
+                         FROM USER_TREATMENT_CENTER X
+                        WHERE X.USER_ID = A.USER_ID
+                          AND X.CENTER_ID = #{centerId})
+        </if>
 
         ORDER BY A.USER_NM
 
@@ -105,6 +106,15 @@
              , UPD_DT    = NOW()
          WHERE USER_ID = #{userId}
 	</update>
+
+    <!-- 사용자 삭제 - kr.co.hconnect.sqlmapper.deleteUser -->
+    <update id="deleteUser" parameterType="kr.co.hconnect.vo.UserVO">
+        UPDATE USER
+           SET DEL_YN = 'Y'
+             , UPD_ID = #{updId}
+             , UPD_DT = NOW()
+         WHERE USER_ID = #{userId}
+    </update>
 
     <!-- 사용자별 센터 리스트 조회 - kr.co.hconnect.sqlmapper.selectUserTreatmentCenterList -->
     <select id="selectUserTreatmentCenterList" parameterType="String" resultType="kr.co.hconnect.vo.UserTreatmentCenterVO">

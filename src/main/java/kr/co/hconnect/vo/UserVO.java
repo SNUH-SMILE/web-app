@@ -1,12 +1,14 @@
 package kr.co.hconnect.vo;
 
 import kr.co.hconnect.common.BaseDefaultVO;
+import kr.co.hconnect.common.VoValidationGroups;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -24,19 +26,24 @@ public class UserVO extends BaseDefaultVO {
 	/**
 	 * 사용자ID
 	 */
+	@NotBlank(message = "{validation.null.userId}", groups = VoValidationGroups.delete.class)
 	private String userId;
 	/**
 	 * 비밀번호
 	 */
-	@NotBlank(message = "{validation.null.password}")
-	@Size(max = 20, message = "{validation.size.password}")
+	@NotBlank(message = "{validation.null.password}", groups = VoValidationGroups.add.class)
+	@Size(max = 20, message = "{validation.size.password}", groups = VoValidationGroups.add.class)
 	private String password;
 	/**
 	 * 사용자명
 	 */
-	@NotBlank(message = "{validation.null.userNm}")
-	@Size(max = 50, message = "{validation.size.userNm}")
+	@NotBlank(message = "{validation.null.userNm}", groups = VoValidationGroups.add.class)
+	@Size(max = 50, message = "{validation.size.userNm}", groups = VoValidationGroups.add.class)
 	private String userNm;
+	/**
+	 * 삭제여부
+	 */
+	private String delYn;
 	/**
 	 * 메인 센터ID
 	 */
@@ -48,7 +55,7 @@ public class UserVO extends BaseDefaultVO {
 	/**
 	 * 리마크
 	 */
-	@Size(max = 100, message = "{validation.size.userRemark}")
+	@Size(max = 100, message = "{validation.size.userRemark}", groups = VoValidationGroups.add.class)
 	private String remark;
 	/**
 	 * 로그인 유지 여부 
@@ -57,6 +64,8 @@ public class UserVO extends BaseDefaultVO {
 	/**
 	 * 사용자별 센터 정보
 	 */
+	@NotNull(message = "{validation.null.centerList}", groups = VoValidationGroups.add.class)
+	@Size(min = 1, message = "{validation.null.centerList}", groups = VoValidationGroups.add.class)
 	private List<UserTreatmentCenterVO> userTreatmentCenterVOList;
 	
 }

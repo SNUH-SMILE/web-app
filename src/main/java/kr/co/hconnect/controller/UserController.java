@@ -2,6 +2,7 @@ package kr.co.hconnect.controller;
 
 import egovframework.rte.fdl.cmmn.exception.FdlException;
 import kr.co.hconnect.common.ApiResponseCode;
+import kr.co.hconnect.common.VoValidationGroups;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.exception.NotFoundUserInfoException;
 import kr.co.hconnect.jwt.TokenDetailInfo;
@@ -9,9 +10,9 @@ import kr.co.hconnect.service.UserService;
 import kr.co.hconnect.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -79,7 +80,7 @@ public class UserController {
      * @return ResponseVO&lt;UserSaveCompletedVO&gt; 사용자 저장 완료 정보
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public ResponseVO<UserSaveCompletedVO> saveUser(@Valid @RequestBody UserSaveVO userSaveVO
+    public ResponseVO<UserSaveCompletedVO> saveUser(@Validated(VoValidationGroups.add.class) @RequestBody UserSaveVO userSaveVO
             , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
@@ -109,6 +110,37 @@ public class UserController {
         } catch (FdlException e) {
             responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
             responseVO.setMessage(e.getMessage());
+        } catch (NotFoundUserInfoException e) {
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
+
+        return responseVO;
+    }
+
+    /**
+     * 사용자 삭제
+     * 
+     * @param userSaveVO 사용자 삭제 정보
+     * @return 사용자 삭제 완료 정보
+     */
+    @RequestMapping(value = "/save", method = RequestMethod.DELETE)
+    public ResponseVO<List<UserVO>> deleteUser(@Validated(VoValidationGroups.delete.class) @RequestBody UserSaveVO userSaveVO
+            , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+
+        userSaveVO.getUserVO().setUpdId(tokenDetailInfo.getId());
+
+        ResponseVO<List<UserVO>> responseVO = new ResponseVO<>();
+
+        try {
+            userService.deleteUser(userSaveVO.getUserVO());
+
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("사용자 삭제 성공");
+            responseVO.setResult(userService.selectUserList(userSaveVO.getUserSearchVO()));
         } catch (NotFoundUserInfoException e) {
             responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
             responseVO.setMessage(e.getMessage());

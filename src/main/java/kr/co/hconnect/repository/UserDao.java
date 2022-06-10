@@ -71,6 +71,16 @@ public class UserDao extends EgovAbstractMapper {
     }
 
     /**
+     * 사용자 삭제
+     *
+     * @param vo 사용자 삭제 정보
+     * @return 적용결과 count
+     */
+    public int deleteUser(UserVO vo) {
+        return update("kr.co.hconnect.sqlmapper.deleteUser", vo);
+    }
+
+    /**
      * 사용자별 센터 리스트 조회
      * @param userId 사용자ID
      * @return List&lt;UserTreatmentCenterVO&gt; 사용자별 센터 리스트

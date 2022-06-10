@@ -160,6 +160,24 @@ public class UserService extends EgovAbstractServiceImpl {
         return selectUserInfo(userId);
     }
 
+    /**
+     * 사용자 삭제
+     *
+     * @param vo 사용자 삭제 정보
+     * @throws NotFoundUserInfoException 사용자가 존재하지 않을 경우 발생
+     */
+    public void deleteUser(UserVO vo) throws NotFoundUserInfoException {
+        // 사용자 존재여부 확인
+        UserVO activeUser = userDao.selectUserInfo(vo.getUserId());
+        if (activeUser == null || !activeUser.getDelYn().equals("N")) {
+            throw new NotFoundUserInfoException(messageSource.getMessage("message.notfound.userInfo"
+                    ,null, Locale.getDefault()));
+        }
+
+        // 사용자 삭제
+        userDao.deleteUser(vo);
+    }
+
 
 
     /**

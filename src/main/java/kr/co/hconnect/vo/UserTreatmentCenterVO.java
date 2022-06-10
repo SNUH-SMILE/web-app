@@ -1,6 +1,7 @@
 package kr.co.hconnect.vo;
 
 import kr.co.hconnect.common.BaseDefaultVO;
+import kr.co.hconnect.common.VoValidationGroups;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,7 +28,7 @@ public class UserTreatmentCenterVO extends BaseDefaultVO {
     /**
      * 센터ID
      */
-    @NotBlank(message = "{validation.null.centerId}")
+    @NotBlank(message = "{validation.null.centerId}", groups = VoValidationGroups.add.class)
     private String centerId;
     /**
      * 센터명
@@ -36,6 +37,6 @@ public class UserTreatmentCenterVO extends BaseDefaultVO {
     /**
      * 메인여부
      */
-    @Pattern(regexp = "^[YN]$", message = "{validation.patternMismatch.mainYn}")
+    @Pattern(regexp = "^[YN]$", message = "{validation.patternMismatch.mainYn}", groups = VoValidationGroups.add.class)
     private String mainYn;    
 }
