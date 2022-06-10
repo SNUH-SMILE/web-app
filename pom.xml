@@ -211,7 +211,7 @@
     <distributionManagement>
         <repository>
             <id>SMILE-DEV</id>
-            <url>http://210.116.119.130:8080/manager/text</url>
+            <url>http://192.168.42.193:8080/manager/text</url>
         </repository>
     </distributionManagement>
     <build>
@@ -229,7 +229,7 @@
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.2</version>
                 <configuration>
-                    <url>http://210.116.119.130:8080/manager/text</url>
+                    <url>http://192.168.42.193:8080/manager/text</url>
                     <server>SMILE-DEV</server>
                     <path>/</path>
                     <update>true</update>
