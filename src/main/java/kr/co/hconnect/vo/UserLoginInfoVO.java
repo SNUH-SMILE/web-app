@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -24,13 +24,13 @@ public class UserLoginInfoVO implements Serializable {
     /**
      * 아이디
      */
-    @NotNull(message = "{validation.null.loginId}")
+    @NotBlank(message = "{validation.null.loginId}")
     private String loginId;
 
     /**
      * 비밀번호
      */
-    @NotNull(message = "{validation.null.password}")
+    @NotBlank(message = "{validation.null.password}")
     @Size(max = 20, message = "{validation.size.password}")
     private String password;
 
