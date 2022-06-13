@@ -7,10 +7,12 @@ import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
 import kr.co.hconnect.repository.AdmissionDao;
 import kr.co.hconnect.repository.PatientDao;
+import kr.co.hconnect.repository.ResultDao;
 import kr.co.hconnect.vo.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
@@ -28,12 +30,17 @@ import java.util.Locale;
 public class AdmissionService extends EgovAbstractServiceImpl {
 
 	/**
-	 * 입소내역 dao
+	 * 입소내역 Dao
 	 */
 	private final AdmissionDao admissionDao;
+
+	/**
+	 * 측정결과 Dao
+	 */
+	private final ResultDao resultDao;
 	
 	/**
-	 * 환자 dao
+	 * 환자 Dao
 	 */
 	private final PatientDao patientDao;
 	
@@ -55,17 +62,19 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 	/**
 	 * 생성자
 	 * @param admissionDao 격리/입소내역 Dao
+	 * @param resultDao 측정결과 Dao
 	 * @param patientDao 환자정보 관리 Dao
 	 * @param patientIdGnrService 환자 ID 채번 서비스
 	 * @param admissionIdGnrService 격리/입소 ID 채번 서비스
 	 * @param messageSource MessageSource
 	 */
 	@Autowired
-	public AdmissionService(AdmissionDao admissionDao, PatientDao patientDao
-        	, @Qualifier("patientIdGnrService") EgovIdGnrService patientIdGnrService
-        	, @Qualifier("admissionIdGnrService") EgovIdGnrService admissionIdGnrService
+	public AdmissionService(AdmissionDao admissionDao, ResultDao resultDao, PatientDao patientDao
+			, @Qualifier("patientIdGnrService") EgovIdGnrService patientIdGnrService
+			, @Qualifier("admissionIdGnrService") EgovIdGnrService admissionIdGnrService
 			, MessageSource messageSource) {
 		this.admissionDao = admissionDao;
+		this.resultDao = resultDao;
 		this.patientDao = patientDao;
 		this.patientIdGnrService = patientIdGnrService;
 		this.admissionIdGnrService = admissionIdGnrService;
@@ -108,6 +117,15 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 
 		// 생활치료센터 입소자 리스트
 		admissionListResponseByCenterVO.setAdmissionByCenterVOList(admissionDao.selectAdmissionListByCenter(vo));
+
+		// 최근 측정결과 조회
+		for (AdmissionByCenterVO admissionByCenterVO : admissionListResponseByCenterVO.getAdmissionByCenterVOList()) {
+			VitalResultVO vitalResultVO = resultDao.selectLastVitalResult(admissionByCenterVO.getAdmissionId());
+
+			if (vitalResultVO != null) {
+				BeanUtils.copyProperties(vitalResultVO, admissionByCenterVO);
+			}
+		}
 
 		// 페이징 정보 바인딩
 		vo.setTotalRecordCount(admissionDao.selectFoundRowsByAdmission());

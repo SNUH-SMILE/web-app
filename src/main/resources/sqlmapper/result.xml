@@ -2,6 +2,108 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.hconnect.sqlmapper">
 
+    <!-- 최근 Vital 측정결과 조회 - kr.co.hconnect.sqlmapper.selectLastVitalResult -->
+    <select id="selectLastVitalResult" parameterType="String" resultType="kr.co.hconnect.vo.VitalResultVO">
+    <![CDATA[
+      SELECT A.ADMISSION_ID
+            -- 혈압
+            , RSBP.RESULT      AS SBP_RESULT
+            , RDBP.RESULT      AS DBP_RESULT
+            , ''               AS SBP_RISK_GB
+            , ''               AS DBP_RISK_GB
+            -- 심박수
+            , RPR.RESULT       AS PR_RESULT
+            , CASE WHEN RPR.RESULT < IPR.REF_FROM
+                        THEN 'L'
+                   WHEN RPR.RESULT > IPR.REF_TO
+                        THEN 'H'
+                   ELSE      ''
+              END                AS PR_RISK_GB
+            -- 체온
+            , RBT.RESULT       AS BT_RESULT
+            , CASE WHEN RBT.RESULT < IBT.REF_FROM
+                        THEN 'L'
+                   WHEN RBT.RESULT > IBT.REF_TO
+                        THEN 'H'
+                   ELSE      ''
+              END                AS BT_RISK_GB
+            -- 걸음수
+            , RST1.RESULT      AS ST1_RESULT
+            , RST2.RESULT      AS ST2_RESULT
+            , ''               AS ST1_RISK_GB
+            , ''               AS ST2_RISK_GB
+            -- 호흡(데이터 입력 가능 여부 미정)
+            , ''               AS RR_RESULT
+            , ''               AS RR_RISK_GB
+            -- 산소포화도
+            , RSP.RESULT       AS SP_RESULT
+            , CASE WHEN RSP.RESULT < ISP.REF_FROM
+                        THEN 'L'
+                   WHEN RSP.RESULT > ISP.REF_TO
+                        THEN 'H'
+                   ELSE      ''
+              END                AS SP_RISK_GB
+         FROM ADMISSION A
+              /* 혈압 */
+              INNER JOIN ITEM            IBP     ON IBP.ITEM_ID = 'I0005'
+              LEFT JOIN RESULT_DETAIL    RSBP    ON RSBP.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                         FROM RESULT X
+                                                                        WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                          AND X.ITEM_ID = IBP.ITEM_ID
+                                                                        ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                        LIMIT 1)
+                                                AND RSBP.RESULT_TYPE = '03'
+              LEFT JOIN RESULT_DETAIL    RDBP    ON RDBP.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                         FROM RESULT X
+                                                                        WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                          AND X.ITEM_ID = IBP.ITEM_ID
+                                                                        ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                        LIMIT 1)
+                                                AND RDBP.RESULT_TYPE = '02'
+             /* 심박수 */
+             INNER JOIN ITEM             IPR     ON IPR.ITEM_ID = 'I0002'
+             LEFT JOIN RESULT_DETAIL     RPR     ON RPR.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                        FROM RESULT X
+                                                                       WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                         AND X.ITEM_ID = IPR.ITEM_ID
+                                                                       ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                       LIMIT 1)
+             /* 체온 */
+             INNER JOIN ITEM             IBT     ON IBT.ITEM_ID = 'I0001'
+             LEFT JOIN RESULT_DETAIL     RBT     ON RBT.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                        FROM RESULT X
+                                                                       WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                         AND X.ITEM_ID = IBT.ITEM_ID
+                                                                       ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                       LIMIT 1)
+             /* 걸음수 */
+             INNER JOIN ITEM             IST     ON IST.ITEM_ID = 'I0004'
+             LEFT JOIN RESULT_DETAIL     RST1    ON RST1.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                         FROM RESULT X
+                                                                        WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                          AND X.ITEM_ID = IST.ITEM_ID
+                                                                        ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                        LIMIT 1)
+                                                AND RST1.RESULT_TYPE = '04'
+             LEFT JOIN RESULT_DETAIL     RST2    ON RST2.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                         FROM RESULT X
+                                                                        WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                          AND X.ITEM_ID = IST.ITEM_ID
+                                                                        ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                        LIMIT 1)
+                                                AND RST2.RESULT_TYPE = '05'
+             /* 산소포화도 */
+             LEFT JOIN ITEM              ISP   ON ISP.ITEM_ID = 'I0003'
+             LEFT JOIN RESULT_DETAIL     RSP   ON RSP.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                      FROM RESULT X
+                                                                     WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                       AND X.ITEM_ID = ISP.ITEM_ID
+                                                                     ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                     LIMIT 1)
+    ]]>
+     WHERE A.ADMISSION_ID = #{admissionId}
+    </select>
+
     <!-- 측정결과 저장 -->
     <insert id="insertResult" parameterType="kr.co.hconnect.domain.Result"
             useGeneratedKeys="true"

@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
@@ -16,9 +15,9 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @ToString
-public class AdmissionByCenterVO implements Serializable {
-	
-	private static final long serialVersionUID = -655528968177770972L;
+public class AdmissionByCenterVO extends VitalResultVO {
+
+	private static final long serialVersionUID = -2285527524642217902L;
 
 	/**
 	 * 입소내역ID
@@ -66,8 +65,11 @@ public class AdmissionByCenterVO implements Serializable {
 	private int qantnDay;
 	/**
 	 * 입소/격리 상태
-	 * 	입소: 재원중,퇴소
-	 * 	격리: 격리중,격리해제
+	 * 	입소
+	 * 		1: 재원중, 2: 퇴소
+	 * 	격리
+	 * 		1: 격리중, 2: 격리해제
 	 */
 	private String qantnStatus;
+
 }

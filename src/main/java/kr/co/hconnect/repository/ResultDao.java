@@ -4,6 +4,7 @@ import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
 import kr.co.hconnect.domain.Result;
 import kr.co.hconnect.domain.ResultDetail;
 import kr.co.hconnect.domain.SaveSleepTimeResult;
+import kr.co.hconnect.vo.VitalResultVO;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -12,6 +13,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class ResultDao extends EgovAbstractMapper {
 
+    /**
+     * 최근 Vital 측정결과 조회
+     * @param admissionId 격리/입소내역 ID
+     * @return 최근 Vital 측정결과 정보
+     */
+    public VitalResultVO selectLastVitalResult(String admissionId) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectLastVitalResult", admissionId);
+    }
+    
     /**
      * 측정결과 저장
      *
