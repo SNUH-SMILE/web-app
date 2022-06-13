@@ -62,8 +62,9 @@
 			   INNER JOIN COM_CD_DETAIL 	ROOM   ON ROOM.COM_CD    = 'CD005'
 			                                      AND ROOM.DETAIL_CD = A.ROOM
 										          AND ROOM.PROPERTY1 = TC.HOSPITAL_CD
-         WHERE A.QANTN_DIV = '2'            -- 생활치료센터 입소자 구분
-		   AND A.CENTER_ID = #{centerId}	-- 센터ID
+         WHERE A.CENTER_ID = #{centerId}	-- 센터ID
+		   AND A.QANTN_DIV = '2'            -- 생활치료센터 입소자 구분
+		   AND A.DEL_YN = 'N'
 	]]>
 
 		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientId)">
