@@ -9,6 +9,7 @@ import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.service.UserService;
 import kr.co.hconnect.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -26,14 +27,29 @@ public class UserController {
      * 사용자 Service
      */
     private final UserService userService;
+    /**
+     * MessageSource
+     */
+    private final MessageSource messageSource;
 
     /**
      * 생성자
      * @param userService 사용자 Service
+     * @param messageSource MessageSource
      */
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, MessageSource messageSource) {
         this.userService = userService;
+        this.messageSource = messageSource;
+    }
+
+    /**
+     * 사용자 정보 조회-token 값 이용
+     * @return ResponseVO&lt;UserVO&gt; 사용자 정보
+     */
+    @RequestMapping(value = "/info/token", method = RequestMethod.GET)
+    public ResponseVO<UserVO> selectUserInfoByToken(@RequestAttribute TokenDetailInfo tokenDetailInfo) {
+        return selectUserInfo(tokenDetailInfo.getId());
     }
 
     /**
