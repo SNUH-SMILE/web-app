@@ -1,14 +1,17 @@
 package kr.co.hconnect.repository;
 
-import java.util.List;
-
+import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
+import kr.co.hconnect.vo.AdmissionByCenterVO;
+import kr.co.hconnect.vo.AdmissionInfoVO;
+import kr.co.hconnect.vo.AdmissionListSearchByCenterVO;
+import kr.co.hconnect.vo.AdmissionVO;
 import org.springframework.stereotype.Repository;
 
-import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
-import kr.co.hconnect.vo.AdmissionInfoVO;
-import kr.co.hconnect.vo.AdmissionListVO;
-import kr.co.hconnect.vo.AdmissionVO;
+import java.util.List;
 
+/**
+ * 격리/입소내역 Dao
+ */
 @Repository
 public class AdmissionDao extends EgovAbstractMapper {
 
@@ -23,11 +26,21 @@ public class AdmissionDao extends EgovAbstractMapper {
 	}
 
 	/**
-	 * 입소내역 리스트 조회
-	 * @return List<AdmissionListVO>
+	 * 페이지네이션 쿼리 전체 로우 카운트 조회
+	 * @return Total Record Count
 	 */
-	public List<AdmissionListVO> selectAdmissionList() {
-		return selectList("kr.co.hconnect.sqlmapper.selectAdmissionList");
+	public int selectFoundRowsByAdmission() {
+		return selectOne("kr.co.hconnect.sqlmapper.selectFoundRowsByAdmission");
+	}
+
+	/**
+	 * 생활치료센터 입소자 리스트 조회
+	 *
+	 * @param vo 입소자 리스트 조회조건
+	 * @return List<AdmissionListVO> 입소자 리스트
+	 */
+	public List<AdmissionByCenterVO> selectAdmissionListByCenter(AdmissionListSearchByCenterVO vo) {
+		return selectList("kr.co.hconnect.sqlmapper.selectAdmissionListByCenter", vo);
 	}
 	
 	/**

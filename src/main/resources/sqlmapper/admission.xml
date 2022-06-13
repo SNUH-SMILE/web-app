@@ -2,6 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.hconnect.sqlmapper">
 
+	<!-- Pagination Total RowCount 조회 -->
+	<select id="selectFoundRowsByAdmission" resultType="Integer">
+        SELECT FOUND_ROWS()
+    </select>
+
 	<!-- 로그인ID 기준 격리/입소내역(내원중) 리스트 조회 -->
 	<select id="selectActiveAdmissionListByLoginId" parameterType="String" resultType="kr.co.hconnect.vo.AdmissionVO">
 	<![CDATA[
@@ -28,30 +33,61 @@
 	]]>
 	</select>
 
-	<!-- 입소자내역 리스트 조회 -->
-	<select id="selectAdmissionList" resultType="kr.co.hconnect.vo.AdmissionListVO">
+	<!-- 생활치료센터 입소자 리스트 조회 - kr.co.hconnect.sqlmapper.selectAdmissionListByCenter -->
+	<select id="selectAdmissionListByCenter"
+			parameterType="kr.co.hconnect.vo.AdmissionListSearchByCenterVO"
+			resultType="kr.co.hconnect.vo.AdmissionByCenterVO">
 	<![CDATA[
 		-- 입소자내역 리스트 조회
 		-- selectAdmissionList
-		SELECT A.ADMISSION_ID 					              -- 입소내역ID
-			 , A.CENTER_ID                                    -- 생활치료센터ID
-			 , C.HOSPITAL_CD                                  -- 병원코드
-			 , NULL                    AS HOSPITAL_PATIENT_ID -- 병원환자ID
-			 , B.PATIENT_ID                                   -- 환자ID
-			 , B.PATIENT_NM            AS NAME                -- 이름
-			 , B.BIRTH_DATE                                   -- 생년월일
-			 , B.CELL_PHONE            AS CONTACT             -- 연락처
-			 , CASE B.SEX WHEN 'M' THEN '남'
-						  WHEN 'F' THEN '여'
-						  ELSE ''
-			   END                     AS DISP_SEX	          -- 성별
+		SELECT SQL_CALC_FOUND_ROWS
+		       A.ADMISSION_ID 					              -- 입소내역ID
+			 , A.CENTER_ID                                    -- 센터ID
+			 , TC.CENTER_NM                                   -- 센터명
+			 , P.PATIENT_ID                                   -- 환자ID
+			 , P.PATIENT_NM                                   -- 환자명
+			 , A.ADMISSION_DATE                               -- 시작일
+			 , A.ROOM                                         -- 호실
+			 , ROOM.DETAIL_CD_NM            AS ROOM_NM        -- 호실명
+			 , A.QANTN_DIV                                    -- 격리/입소 구분(CD004)
+			 , TIMESTAMPDIFF(DAY, A.ADMISSION_DATE, NOW())
+			                                AS QANTN_DAY      -- 격리일수
+			 , CASE WHEN A.DSCHGE_DATE IS NULL
+                         THEN '1'
+                    ELSE      '2'
+               END                          AS QANTN_STATUS   -- 입소/격리 상태
 		  FROM ADMISSION A
-			   INNER JOIN PATIENT 			B  ON A.PATIENT_ID = B.PATIENT_ID
-			   INNER JOIN TREATMENT_CENTER 	C  ON A.CENTER_ID = C.CENTER_ID
-			   INNER JOIN COM_CD_DETAIL 	D  ON D.COM_CD = 'CD002'
-										      AND D.DETAIL_CD = C.HOSPITAL_CD
-		WHERE A.DSCHGE_DATE IS NULL
+			   INNER JOIN PATIENT 			P      ON A.PATIENT_ID = P.PATIENT_ID
+			   INNER JOIN TREATMENT_CENTER 	TC     ON A.CENTER_ID  = TC.CENTER_ID
+			   INNER JOIN COM_CD_DETAIL 	ROOM   ON ROOM.COM_CD    = 'CD005'
+			                                      AND ROOM.DETAIL_CD = A.ROOM
+										          AND ROOM.PROPERTY1 = TC.HOSPITAL_CD
+         WHERE A.QANTN_DIV = '2'            -- 생활치료센터 입소자 구분
+		   AND A.CENTER_ID = #{centerId}	-- 센터ID
 	]]>
+
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientId)">
+		   AND B.PATIENT_ID = #{patientId}
+		</if>
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientNm)">
+		   AND B.PATIENT_NM LIKE CONCAT('%', #{patientNm},'%')
+		</if>
+
+		ORDER
+		   BY
+		<choose>
+			<when test="@org.apache.commons.lang3.StringUtils@isNotEmpty(orderBy)">
+				${orderBy} ${orderDir}
+			</when>
+			<otherwise>
+				A.ADMISSION_DATE DESC
+			</otherwise>
+		</choose>
+
+		LIMIT #{recordCountPerPage}
+	    OFFSET #{offsetCount}
+
+
 	</select>
 	
 	<!-- 입소내역 정보 조회 -->

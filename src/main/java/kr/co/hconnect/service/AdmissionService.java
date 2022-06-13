@@ -7,10 +7,7 @@ import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
 import kr.co.hconnect.repository.AdmissionDao;
 import kr.co.hconnect.repository.PatientDao;
-import kr.co.hconnect.vo.AdmissionInfoVO;
-import kr.co.hconnect.vo.AdmissionListVO;
-import kr.co.hconnect.vo.AdmissionVO;
-import kr.co.hconnect.vo.PatientVO;
+import kr.co.hconnect.vo.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +30,7 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 	/**
 	 * 입소내역 dao
 	 */
-	private final AdmissionDao dao;
+	private final AdmissionDao admissionDao;
 	
 	/**
 	 * 환자 dao
@@ -41,12 +38,12 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 	private final PatientDao patientDao;
 	
 	/**
-	 * 환자ID 채번 서비스
+	 * 환자 ID 채번 서비스
 	 */
 	private final EgovIdGnrService patientIdGnrService;         
 	
 	/**
-	 * 환자ID 채번 서비스 
+	 * 격리/입소 ID 채번 서비스
 	 */
     private final EgovIdGnrService admissionIdGnrService;
 
@@ -55,19 +52,26 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 	// SLF4J (Simple Logging Facade for Java), log4j2
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdmissionService.class);
 
-	
+	/**
+	 * 생성자
+	 * @param admissionDao 격리/입소내역 Dao
+	 * @param patientDao 환자정보 관리 Dao
+	 * @param patientIdGnrService 환자 ID 채번 서비스
+	 * @param admissionIdGnrService 격리/입소 ID 채번 서비스
+	 * @param messageSource MessageSource
+	 */
 	@Autowired
-	public AdmissionService(AdmissionDao dao
-        , PatientDao patientDao
-        , @Qualifier("patientIdGnrService") EgovIdGnrService patientIdGnrService
-        , @Qualifier("admissionIdGnrService") EgovIdGnrService admissionIdGnrService, MessageSource messageSource) {
-		this.dao = dao;
+	public AdmissionService(AdmissionDao admissionDao, PatientDao patientDao
+        	, @Qualifier("patientIdGnrService") EgovIdGnrService patientIdGnrService
+        	, @Qualifier("admissionIdGnrService") EgovIdGnrService admissionIdGnrService
+			, MessageSource messageSource) {
+		this.admissionDao = admissionDao;
 		this.patientDao = patientDao;
 		this.patientIdGnrService = patientIdGnrService;
 		this.admissionIdGnrService = admissionIdGnrService;
         this.messageSource = messageSource;
 
-        LOGGER.info("Dao {}", dao);
+        LOGGER.info("admissionDao {}", admissionDao);
 	}
 
 	/**
@@ -78,7 +82,7 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 	 * @throws NotFoundAdmissionInfoException 현재일 기준 내원중인 격리/입소내역이 존재하지 않거나, 한건 이상일 경우 발생
 	 */
 	public AdmissionVO selectActiveAdmissionByLoginId(String loginId) throws NotFoundAdmissionInfoException {
-		List<AdmissionVO> admissionVOS = dao.selectActiveAdmissionListByLoginId(loginId);
+		List<AdmissionVO> admissionVOS = admissionDao.selectActiveAdmissionListByLoginId(loginId);
 
 		if (admissionVOS == null || admissionVOS.size() == 0) {
 			throw new NotFoundAdmissionInfoException(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()
@@ -94,12 +98,29 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 	}
 
 	/**
-	 * 입소내역리스트 조회
-	 * @return List<AdmissionListVO>-입소내역리스트
+	 * 생활치료센터 입소자 리스트 조회
+	 *
+	 * @param vo 입소자 리스트 조회조건
+	 * @return List<AdmissionListVO> 입소자 리스트
 	 */
-	public List<AdmissionListVO> selectAdmissionList() {
-		return dao.selectAdmissionList();
+	public AdmissionListResponseByCenterVO selectAdmissionListByCenter(AdmissionListSearchByCenterVO vo) {
+		AdmissionListResponseByCenterVO admissionListResponseByCenterVO = new AdmissionListResponseByCenterVO();
+
+		// 생활치료센터 입소자 리스트
+		admissionListResponseByCenterVO.setAdmissionByCenterVOList(admissionDao.selectAdmissionListByCenter(vo));
+
+		// 페이징 정보 바인딩
+		vo.setTotalRecordCount(admissionDao.selectFoundRowsByAdmission());
+		admissionListResponseByCenterVO.setPaginationInfoVO(vo);
+
+
+		return admissionListResponseByCenterVO;
 	}
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// 변경 작업 대상
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
 	 * 입소내역 정보 조회
@@ -107,7 +128,7 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 	 * @return AdmissionInfoVO-입소내역 정보
 	 */
 	public AdmissionInfoVO selectAdmissionInfo(String admissionId) {
-		return dao.selectAdmissionInfo(admissionId);
+		return admissionDao.selectAdmissionInfo(admissionId);
 	}
 	
 	/**
@@ -148,13 +169,13 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 			admissionVO.setPatientId(patientId);
 			
 			// 입소내역 생성
-			dao.insertAdmission(admissionVO);
+			admissionDao.insertAdmission(admissionVO);
 			
 		} else {
 			admissionId = admissionVO.getAdmissionId(); 
 					
 			// 입소내역 수정
-			dao.updateAdmission(admissionVO);
+			admissionDao.updateAdmission(admissionVO);
 		}
         
 		
@@ -169,6 +190,6 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 	@Transactional(rollbackFor = Exception.class)
 	public int updateAdmissionDischarge(AdmissionVO vo) {		
 		
-		return dao.updateAdmissionDischarge(vo);
+		return admissionDao.updateAdmissionDischarge(vo);
 	}
 }
