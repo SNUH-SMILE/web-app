@@ -62,11 +62,27 @@
                LEFT JOIN USER     UU ON A.UPD_ID = UU.USER_ID
          WHERE A.COM_CD = #{comCd}
 
-         <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(detailCd)">
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(detailCd)">
            AND A.DETAIL_CD = #{detailCd}
-         </if>
+        </if>
         <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(useYn)">
            AND A.USE_YN = #{useYn}
+        </if>
+
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(property1)">
+            AND A.PROPERTY1 = #{property1}
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(property2)">
+            AND A.PROPERTY2 = #{property2}
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(property3)">
+            AND A.PROPERTY3 = #{property3}
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(property4)">
+            AND A.PROPERTY4 = #{property4}
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(property5)">
+            AND A.PROPERTY5 = #{property5}
         </if>
 
          ORDER BY A.SORT_SEQ
