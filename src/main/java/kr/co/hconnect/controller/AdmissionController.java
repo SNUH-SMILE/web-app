@@ -126,14 +126,6 @@ public class AdmissionController {
 			, TokenDetailInfo tokenDetailInfo, boolean isNew) {
 		ResponseVO<AdmissionSaveResponseByCenterVO> responseVO = new ResponseVO<>();
 
-		// 시작일, 종료예정일 확인
-		if (vo.getAdmissionDate().compareTo(vo.getDschgeSchdldDate()) >= 0) {
-			responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
-			responseVO.setMessage("종료 예정일은 시작일 이후이어야 합니다." + System.lineSeparator() + "확인 후 다시 진행하세요.");
-
-			return responseVO;
-		}
-
 		vo.setRegId(tokenDetailInfo.getId());
 		vo.setUpdId(tokenDetailInfo.getId());
 

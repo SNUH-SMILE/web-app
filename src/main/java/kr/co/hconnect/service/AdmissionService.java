@@ -163,12 +163,18 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 	 * @throws DuplicateActiveAdmissionException 신규 입소자 등록 시 이미 존재하는 격리/입소 정보가 있을 경우 발생
 	 * @throws DuplicatePatientInfoException 환자 정보 변경 시 중복된 환자로 변경 시 발생
 	 * @throws NotFoundAdmissionInfoException 입소 정보 수정 시 기존 입소정보가 존재하지 않을 경우 발생
-	 * @throws InvalidAdmissionInfoException 기존 입소정보에 문제가 있을 경우 발생(삭제, 퇴소, 격리/입소구분이 입소가 아닌경우)
+	 * @throws InvalidAdmissionInfoException 기존 입소정보에 문제가 있을 경우 발생(종료예정일이 시작일 이후가 아닌 경우, 삭제된 입소자, 퇴소된 입소자, 격리/입소구분이 입소가 아닌경우)
 	 */
 	@Transactional(rollbackFor = Exception.class)
 	public String saveAdmissionByCenter(AdmissionSaveByCenterVO vo, Boolean isNew)
 			throws FdlException, DuplicateActiveAdmissionException, DuplicatePatientInfoException
 			,NotFoundPatientInfoException, NotFoundAdmissionInfoException, InvalidAdmissionInfoException {
+		// 시작일, 종료예정일 확인
+		if (vo.getAdmissionDate().compareTo(vo.getDschgeSchdldDate()) >= 0) {
+			throw new InvalidAdmissionInfoException(messageSource.getMessage("message.admission.past.dschgeSchdldDate"
+					, null, Locale.getDefault()));
+		}
+
 		String admissionId;
 
 		if (isNew) {
