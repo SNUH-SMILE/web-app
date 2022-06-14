@@ -89,7 +89,7 @@
 			   INNER JOIN TREATMENT_CENTER 	TC     ON A.CENTER_ID  = TC.CENTER_ID
 			   LEFT JOIN COM_CD_DETAIL 	    ROOM   ON ROOM.COM_CD    = 'CD005'
 			                                      AND ROOM.DETAIL_CD = A.ROOM
-										          AND ROOM.PROPERTY1 = TC.HOSPITAL_CD
+										          AND ROOM.PROPERTY1 = TC.CENTER_ID
          WHERE A.CENTER_ID = #{centerId}	-- 센터ID
 		   AND A.QANTN_DIV = '2'            -- 생활치료센터 입소자 구분
 		   AND A.DEL_YN = 'N'
