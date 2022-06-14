@@ -5,7 +5,9 @@ import egovframework.rte.fdl.cmmn.exception.FdlException;
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
 import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.common.QantnDiv;
-import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
+import kr.co.hconnect.domain.IdentityInfo;
+import kr.co.hconnect.domain.Patient;
+import kr.co.hconnect.exception.*;
 import kr.co.hconnect.repository.AdmissionDao;
 import kr.co.hconnect.repository.PatientDao;
 import kr.co.hconnect.repository.ResultDao;
@@ -108,8 +110,8 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 
 	/**
 	 * 입소내역 정보 조회
-	 * @param admissionId-입소내역ID
-	 * @return AdmissionInfoVO-입소내역 정보
+	 * @param admissionId 입소내역ID
+	 * @return AdmissionInfoVO 입소내역 정보
 	 */
 	public AdmissionInfoVO selectAdmissionInfo(String admissionId) throws NotFoundAdmissionInfoException {
 		AdmissionInfoVO admissionInfoVO = admissionDao.selectAdmissionInfo(admissionId);
@@ -153,25 +155,65 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 
 	/**
 	 * 생활치료센터 입소자 등록/수정
+	 *
 	 * @param vo 입소자 저장 정보
+	 * @param isNew true: 신규, false: 수정
+	 * @return 저장된 입소내역ID
+	 * @throws FdlException 환자ID, 격리/입소내역ID 채번 오류 시 발생
+	 * @throws DuplicateActiveAdmissionException 신규 입소자 등록 시 이미 존재하는 격리/입소 정보가 있을 경우 발생
+	 * @throws DuplicatePatientInfoException 환자 정보 변경 시 중복된 환자로 변경 시 발생
+	 * @throws NotFoundAdmissionInfoException 입소 정보 수정 시 기존 입소정보가 존재하지 않을 경우 발생
+	 * @throws InvalidAdmissionInfoException 기존 입소정보에 문제가 있을 경우 발생(삭제, 퇴소, 격리/입소구분이 입소가 아닌경우)
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public String saveAdmissionByCenter(AdmissionSaveByCenterVO vo, Boolean isNew) throws FdlException {
-		String admissionId = "";
+	public String saveAdmissionByCenter(AdmissionSaveByCenterVO vo, Boolean isNew)
+			throws FdlException, DuplicateActiveAdmissionException, DuplicatePatientInfoException
+			,NotFoundPatientInfoException, NotFoundAdmissionInfoException, InvalidAdmissionInfoException {
+		String admissionId;
 
 		if (isNew) {
-			// 신규 환자 등록
-			String patientId = patientIdGnrService.getNextStringId();
+			String patientId;
 
-			PatientVO patientVO = new PatientVO();
-			patientVO.setPatientId(patientId);
-			patientVO.setPatientNm(vo.getPatientNm());
-			patientVO.setBirthDate(vo.getBirthDate());
-			patientVO.setCellPhone(vo.getCellPhone());
-			patientVO.setSex(vo.getSex());
-			patientVO.setRegId(vo.getRegId());
+			// 기존 환자 존재여부 확인
+			IdentityInfo identityInfo = new IdentityInfo();
+			identityInfo.setPatientNm(vo.getPatientNm());
+			identityInfo.setBirthDate(vo.getBirthDate());
+			identityInfo.setSex(vo.getSex());
+			identityInfo.setCellPhone(vo.getCellPhone());
 
-			patientDao.insertPatient(patientVO);
+			Patient patientByIdentityInfo = patientDao.selectPatientByIdentityInfo(identityInfo);
+
+			// 퇴소처리 안된 격리/입소내역 존재여부 확인
+			if (patientByIdentityInfo != null) {
+				List<AdmissionVO> admissionVOList = admissionDao.selectActiveAdmissionListByPatientId(patientByIdentityInfo.getPatientId());
+
+				if (admissionVOList.size() > 0) {
+					AdmissionVO activeAdmissionVO = admissionVOList.get(0);
+					String activeInfo = activeAdmissionVO.getQantnDiv().equals(QantnDiv.CENTER.getDbValue())
+							? activeAdmissionVO.getCenterNm() + "입소"
+							: "격리";
+
+					// {0}중인 내역이 존재합니다
+					throw new DuplicateActiveAdmissionException(messageSource.getMessage("message.admission.duplicate.active"
+							, new Object[] { activeInfo }, Locale.getDefault()));
+				}
+
+				patientId = patientByIdentityInfo.getPatientId();
+
+			} else {
+				// 신규 환자정보 구성
+				patientId = patientIdGnrService.getNextStringId();
+
+				PatientVO patientVO = new PatientVO();
+				patientVO.setPatientId(patientId);
+				patientVO.setPatientNm(vo.getPatientNm());
+				patientVO.setBirthDate(vo.getBirthDate());
+				patientVO.setCellPhone(vo.getCellPhone());
+				patientVO.setSex(vo.getSex());
+				patientVO.setRegId(vo.getRegId());
+
+				patientDao.insertPatient(patientVO);
+			}
 
 			// 입소내역 생성
 			admissionId = admissionIdGnrService.getNextStringId();
@@ -191,6 +233,12 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 			admissionDao.insertAdmission(admissionVO);
 
 		} else {
+			// 기존 환자 정보 확인
+			PatientVO dbPatientVO = patientDao.selectPatientByPatientId(vo.getPatientId());
+			if (dbPatientVO == null) {
+				throw new NotFoundPatientInfoException(messageSource.getMessage("message.notfound.patientInfo", null, Locale.getDefault()));
+			}
+
 			// 환자정보 수정
 			PatientVO patientVO = new PatientVO();
 			patientVO.setPatientId(vo.getPatientId());
@@ -200,10 +248,43 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 			patientVO.setSex(vo.getSex());
 			patientVO.setRegId(vo.getRegId());
 
-			patientDao.updatePatient(patientVO);
+			// 변경 데이터 확인
+			if (!patientVO.isIdentityEquals(dbPatientVO)) {
+				// 변경 정보 환자 중복여부 확인
+				IdentityInfo identityInfo = new IdentityInfo();
+				identityInfo.setPatientNm(vo.getPatientNm());
+				identityInfo.setBirthDate(vo.getBirthDate());
+				identityInfo.setSex(vo.getSex());
+				identityInfo.setCellPhone(vo.getCellPhone());
+
+				Patient patientByIdentityInfo = patientDao.selectPatientByIdentityInfo(identityInfo);
+
+				if (patientByIdentityInfo != null) {
+					throw new DuplicatePatientInfoException(messageSource.getMessage("message.duplicate.patientInfo", null, Locale.getDefault()));
+				}
+
+				patientDao.updatePatient(patientVO);
+			}
 
 			// 입소내역 수정
 			admissionId = vo.getAdmissionId();
+
+			// 기존 입소내역 확인
+			AdmissionInfoVO dbAdmissionVO = admissionDao.selectAdmissionInfo(admissionId);
+			if (dbAdmissionVO == null) {
+				throw new NotFoundAdmissionInfoException(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()
+						, messageSource.getMessage("message.notfound.admissionInfo"
+						, null, Locale.getDefault()));
+			} else if (!dbAdmissionVO.getQantnDiv().equals(QantnDiv.CENTER.getDbValue())) {
+				throw new InvalidAdmissionInfoException(messageSource.getMessage("message.admission.mismatch.qantnDiv.center"
+						, null, Locale.getDefault()));
+			} else if (dbAdmissionVO.getDelYn().equals("Y")) {
+				throw new InvalidAdmissionInfoException(messageSource.getMessage("message.admission.delete"
+						, null, Locale.getDefault()));
+			} else if (dbAdmissionVO.getDschgeDate() != null) {
+				throw new InvalidAdmissionInfoException(messageSource.getMessage("message.admission.discharge"
+						, null, Locale.getDefault()));
+			}
 
 			AdmissionVO admissionVO = new AdmissionVO();
 			admissionVO.setAdmissionId(admissionId);

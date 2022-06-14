@@ -2,6 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.hconnect.sqlmapper">
 
+	<!-- 환자정보 조회 - 환자ID 기준 - kr.co.hconnect.sqlmapper.selectPatientByPatientId -->
+	<select id="selectPatientByPatientId" parameterType="String" resultType="kr.co.hconnect.vo.PatientVO">
+		SELECT PATIENT_ID           -- 환자ID
+             , LOGIN_ID             -- 로그인ID
+             , PASSWORD             -- 비밀번호
+             , PATIENT_NM           -- 성명
+             , BIRTH_DATE           -- 생년월일
+             , SEX                  -- 성별
+             , CELL_PHONE           -- 휴대폰
+		     , GUARDIAN_CELL_PHONE  -- 보호자연락처
+             , ZIP_CODE             -- 우편번호
+             , ADDRESS1             -- 주소
+             , ADDRESS2             -- 상세주소
+          FROM PATIENT
+         WHERE PATIENT_ID = #{patientId}
+	</select>
+	
     <!-- 환자정보 조회-로그인ID 기준 -->
 	<select id="selectPatientByLoginId" parameterType="String" resultType="kr.co.hconnect.domain.Patient">
 	<![CDATA[

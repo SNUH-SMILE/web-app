@@ -15,6 +15,16 @@ import java.util.List;
 public class PatientDao extends EgovAbstractMapper {
 
 	/**
+	 * 환자정보 조회 - 환자ID 기준
+	 *
+	 * @param patientId 환자ID
+	 * @return PatientVO 환자정보
+	 */
+	public PatientVO selectPatientByPatientId(String patientId) {
+		return selectOne("kr.co.hconnect.sqlmapper.selectPatientByPatientId", patientId);
+	}
+
+	/**
 	 * 환자정보 조회-로그인ID 기준
 	 * @param loginId 로그인ID
 	 * @return Patient
