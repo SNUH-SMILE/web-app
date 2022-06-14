@@ -32,4 +32,24 @@ public class ComCdDetailSearchVO implements Serializable {
      * 사용여부
      */
     private String useYn;
+    /**
+     * 속성1
+     */
+    private String property1;
+    /**
+     * 속성2
+     */
+    private String property2;
+    /**
+     * 속성3
+     */
+    private String property3;
+    /**
+     * 속성4
+     */
+    private String property4;
+    /**
+     * 속성5
+     */
+    private String property5;
 }
