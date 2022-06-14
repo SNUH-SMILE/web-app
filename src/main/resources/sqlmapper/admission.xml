@@ -68,10 +68,10 @@
 	]]>
 
 		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientId)">
-		   AND B.PATIENT_ID = #{patientId}
+		   AND P.PATIENT_ID = #{patientId}
 		</if>
 		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientNm)">
-		   AND B.PATIENT_NM LIKE CONCAT('%', #{patientNm},'%')
+		   AND P.PATIENT_NM LIKE CONCAT('%', #{patientNm},'%')
 		</if>
 
 		ORDER
@@ -88,33 +88,29 @@
 		LIMIT #{recordCountPerPage}
 	    OFFSET #{offsetCount}
 
-
 	</select>
 	
-	<!-- 입소내역 정보 조회 -->
+	<!-- 입소내역 정보 조회 - kr.co.hconnect.sqlmapper.selectAdmissionInfo -->
 	<select id="selectAdmissionInfo" parameterType="String" resultType="kr.co.hconnect.vo.AdmissionInfoVO">
 	<![CDATA[
 		-- 입소내역 정보 조회
 		-- selectAdmissionInfo
 		SELECT A.ADMISSION_ID                          -- 입소내역ID
-		     , A.PATIENT_ID                            -- 환자ID
-		     , A.HOSPITAL_PATIENT_ID                   -- 병원환자ID
+		     , P.PATIENT_ID                            -- 환자ID
+		     , P.PATIENT_NM                            -- 환자명
+		     , P.BIRTH_DATE                            -- 생년월일
+		     , P.SEX                                   -- 성별
+		     , P.CELL_PHONE                            -- 휴대폰
+		     , A.PERSON_CHARGE                         -- 담당자
+		     , A.ADMISSION_DATE                        -- 시작일
+		     , A.DSCHGE_SCHDLD_DATE                    -- 종료예정일
+		     , A.DSCHGE_DATE                           -- 종료일
 		     , A.CENTER_ID                             -- 센터ID
-		     , C.CENTER_NM                             -- 센터명
-		     , B.NAME                                  -- 이름
-		     , B.BIRTH_DATE                            -- 생년월일
-		     , B.CONTACT                               -- 연락처
-		     , B.SEX                                   -- 성별
-		     , A.ADMIT_DATE                            -- 입소일자
-		     , A.DISCHARGE_DATE                        -- 퇴소일자
-		     , A.LOCATION                              -- 위치
-		     , D.DETAIL_CD_NM           AS LOCATION_NM -- 위치명
-		     , A.REMARK                                -- 리마크     
+		     , A.ROOM                                  -- 호실(위치)
+		     , A.QANTN_DIV                             -- 격리/입소 구분
+		     , A.DEL_YN                                -- 삭제 여부
 		  FROM ADMISSION A
-		       INNER JOIN PATIENT            B  ON A.PATIENT_ID = B.PATIENT_ID
-		       INNER JOIN TREATMENT_CENTER   C  ON A.CENTER_ID  = C.CENTER_ID 
-		       LEFT OUTER JOIN COM_CD_DETAIL D  ON D.COM_CD = 'ROOM'
-		                                       AND D.DETAIL_CD = A.LOCATION 
+		       INNER JOIN PATIENT    P  ON A.PATIENT_ID = P.PATIENT_ID
 		 WHERE A.ADMISSION_ID = #{admissionId}
 	]]>
 	</select>
@@ -124,41 +120,30 @@
 	<![CDATA[
 		-- 입소내역 생성
 		-- insertAdmission
-		INSERT 
+		INSERT
 		  INTO ADMISSION
 		     ( ADMISSION_ID
 		     , PATIENT_ID
+		     , ADMISSION_DATE
+		     , DSCHGE_SCHDLD_DATE
+		     , QANTN_DIV
+		     , PERSON_CHARGE
 		     , CENTER_ID
-		     , ADMIT_DATE
-		     , DISCHARGE_DATE
-		     , LOCATION
-		     , HOSPITAL_CD
-		     , HOSPITAL_PATIENT_ID
-		     , REMARK
+		     , ROOM
 		     , REG_ID
-		     , REG_DT
 		     , UPD_ID
-		     , UPD_DT
 		     )
 		VALUES
 		     ( #{admissionId}
 		     , #{patientId}
+		     , #{admissionDate}
+		     , #{dschgeSchdldDate}
+		     , #{qantnDiv}
+		     , #{personCharge}
 		     , #{centerId}
-		     , #{admitDate}
-		     , #{dischargeDate}
-		     , #{location}
-		     , CASE WHEN IFNULL(#{centerId}, '') = ''
-		                 THEN NULL
-		            ELSE      (SELECT HOSPITAL_CD 
-		                         FROM TREATMENT_CENTER
-		                        WHERE CENTER_ID = #{centerId})
-		       END
-		     , #{hospitalPatientId}
-		     , #{remark}
+		     , #{room}
 		     , #{regId}
-		     , current_timestamp()
-		     , #{updId}
-		     , current_timestamp()
+		     , #{regId}
 		     )
 	]]>	
 	</insert>
@@ -169,20 +154,13 @@
 		-- 입소내역 수정
 		-- updateAdmission
 		UPDATE ADMISSION 
-		   SET PATIENT_ID          = #{patientId}
-		     , CENTER_ID           = #{centerId}
-		     , ADMIT_DATE          = #{admitDate}
-		     , LOCATION            = #{location}
-		     , HOSPITAL_CD         = CASE WHEN IFNULL(#{centerId}, '') = ''
-							                   THEN NULL
-							              ELSE      (SELECT HOSPITAL_CD 
-							                           FROM TREATMENT_CENTER
-							                          WHERE CENTER_ID = #{centerId})
-							         END
-		     , HOSPITAL_PATIENT_ID = #{hospitalPatientId}
-		     , REMARK              = #{remark}
-		     , UPD_ID              = #{updId}
-		     , UPD_DT              = current_timestamp()
+		   SET ADMISSION_DATE     = #{admissionDate}
+		     , DSCHGE_SCHDLD_DATE = #{dschgeSchdldDate}
+		     , PERSON_CHARGE      = #{personCharge}
+		     , CENTER_ID          = #{centerId}
+		     , ROOM               = #{room}
+		     , UPD_ID             = #{updId}
+		     , UPD_DT             = NOW()
 		 WHERE ADMISSION_ID = #{admissionId}
 	]]>			
 	</update>

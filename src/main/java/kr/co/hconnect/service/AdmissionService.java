@@ -4,12 +4,12 @@ import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.rte.fdl.cmmn.exception.FdlException;
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
 import kr.co.hconnect.common.ApiResponseCode;
+import kr.co.hconnect.common.QantnDiv;
 import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
 import kr.co.hconnect.repository.AdmissionDao;
 import kr.co.hconnect.repository.PatientDao;
 import kr.co.hconnect.repository.ResultDao;
 import kr.co.hconnect.vo.*;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -107,6 +107,23 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 	}
 
 	/**
+	 * 입소내역 정보 조회
+	 * @param admissionId-입소내역ID
+	 * @return AdmissionInfoVO-입소내역 정보
+	 */
+	public AdmissionInfoVO selectAdmissionInfo(String admissionId) throws NotFoundAdmissionInfoException {
+		AdmissionInfoVO admissionInfoVO = admissionDao.selectAdmissionInfo(admissionId);
+
+		if (admissionInfoVO == null) {
+			throw new NotFoundAdmissionInfoException(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()
+					, messageSource.getMessage("message.notfound.admissionInfo"
+					, null, Locale.getDefault()));
+		}
+
+		return admissionInfoVO;
+	}
+
+	/**
 	 * 생활치료센터 입소자 리스트 조회
 	 *
 	 * @param vo 입소자 리스트 조회조건
@@ -118,6 +135,10 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 		// 생활치료센터 입소자 리스트
 		admissionListResponseByCenterVO.setAdmissionByCenterVOList(admissionDao.selectAdmissionListByCenter(vo));
 
+		// 페이징 정보 바인딩
+		vo.setTotalRecordCount(admissionDao.selectFoundRowsByAdmission());
+		admissionListResponseByCenterVO.setPaginationInfoVO(vo);
+
 		// 최근 측정결과 조회
 		for (AdmissionByCenterVO admissionByCenterVO : admissionListResponseByCenterVO.getAdmissionByCenterVOList()) {
 			VitalResultVO vitalResultVO = resultDao.selectLastVitalResult(admissionByCenterVO.getAdmissionId());
@@ -127,79 +148,83 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 			}
 		}
 
-		// 페이징 정보 바인딩
-		vo.setTotalRecordCount(admissionDao.selectFoundRowsByAdmission());
-		admissionListResponseByCenterVO.setPaginationInfoVO(vo);
-
-
 		return admissionListResponseByCenterVO;
 	}
 
+	/**
+	 * 생활치료센터 입소자 등록/수정
+	 * @param vo 입소자 저장 정보
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public String saveAdmissionByCenter(AdmissionSaveByCenterVO vo, Boolean isNew) throws FdlException {
+		String admissionId = "";
+
+		if (isNew) {
+			// 신규 환자 등록
+			String patientId = patientIdGnrService.getNextStringId();
+
+			PatientVO patientVO = new PatientVO();
+			patientVO.setPatientId(patientId);
+			patientVO.setPatientNm(vo.getPatientNm());
+			patientVO.setBirthDate(vo.getBirthDate());
+			patientVO.setCellPhone(vo.getCellPhone());
+			patientVO.setSex(vo.getSex());
+			patientVO.setRegId(vo.getRegId());
+
+			patientDao.insertPatient(patientVO);
+
+			// 입소내역 생성
+			admissionId = admissionIdGnrService.getNextStringId();
+
+			AdmissionVO admissionVO = new AdmissionVO();
+			admissionVO.setAdmissionId(admissionId);
+			admissionVO.setPatientId(patientId);
+			admissionVO.setAdmissionDate(vo.getAdmissionDate());
+			admissionVO.setDschgeSchdldDate(vo.getDschgeSchdldDate());
+			admissionVO.setQantnDiv(QantnDiv.CENTER.getDbValue());
+			admissionVO.setPersonCharge(vo.getPersonCharge());
+			admissionVO.setCenterId(vo.getCenterId());
+			admissionVO.setRoom(vo.getRoom());
+			admissionVO.setRegId(vo.getRegId());
+			admissionVO.setUpdId(vo.getUpdId());
+
+			admissionDao.insertAdmission(admissionVO);
+
+		} else {
+			// 환자정보 수정
+			PatientVO patientVO = new PatientVO();
+			patientVO.setPatientId(vo.getPatientId());
+			patientVO.setPatientNm(vo.getPatientNm());
+			patientVO.setBirthDate(vo.getBirthDate());
+			patientVO.setCellPhone(vo.getCellPhone());
+			patientVO.setSex(vo.getSex());
+			patientVO.setRegId(vo.getRegId());
+
+			patientDao.updatePatient(patientVO);
+
+			// 입소내역 수정
+			admissionId = vo.getAdmissionId();
+
+			AdmissionVO admissionVO = new AdmissionVO();
+			admissionVO.setAdmissionId(admissionId);
+			admissionVO.setAdmissionDate(vo.getAdmissionDate());
+			admissionVO.setDschgeSchdldDate(vo.getDschgeSchdldDate());
+			admissionVO.setPersonCharge(vo.getPersonCharge());
+			admissionVO.setCenterId(vo.getCenterId());
+			admissionVO.setRoom(vo.getRoom());
+			admissionVO.setRegId(vo.getRegId());
+			admissionVO.setUpdId(vo.getUpdId());
+
+			admissionDao.updateAdmission(admissionVO);
+		}
+
+		return admissionId;
+	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 변경 작업 대상
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	/**
-	 * 입소내역 정보 조회
-	 * @param admissionId-입소내역ID
-	 * @return AdmissionInfoVO-입소내역 정보
-	 */
-	public AdmissionInfoVO selectAdmissionInfo(String admissionId) {
-		return admissionDao.selectAdmissionInfo(admissionId);
-	}
-	
-	/**
-	 * 입소내역 저장 
-	 * @param patientVO PatientVO-환자VO
-	 * @param admissionVO AdmissionVO-입소내역VO
-	 * @return 입소내역ID
-	 */
-	@Transactional(rollbackFor = Exception.class)
-	public String saveAdmission(PatientVO patientVO, AdmissionVO admissionVO) 
-			throws FdlException {
-
-		String patientId = "";	// 환자 ID
-		String admissionId = "";	// 입소내역 ID
-		
-		// 01. 환자정보 저장
-		// 신규 환자 정보 생성
-		if (StringUtils.isEmpty(patientVO.getPatientId())) {
-			// 환자 ID 채변
-			patientId = patientIdGnrService.getNextStringId();
-			patientVO.setPatientId(patientId);
-	        
-	        // 환자 생성
-	        patientDao.insertPatient(patientVO);
-			
-		} else {
-			patientId = patientVO.getPatientId(); 
-			
-			// 환자 정보 업데이트
-			patientDao.updatePatient(patientVO);
-		}
-		
-		// 02. 입소내역 저장
-		if (StringUtils.isEmpty(admissionVO.getAdmissionId())) {
-			// 입소내역 ID 채번
-			admissionId = admissionIdGnrService.getNextStringId();
-			admissionVO.setAdmissionId(admissionId);
-			admissionVO.setPatientId(patientId);
-			
-			// 입소내역 생성
-			admissionDao.insertAdmission(admissionVO);
-			
-		} else {
-			admissionId = admissionVO.getAdmissionId(); 
-					
-			// 입소내역 수정
-			admissionDao.updateAdmission(admissionVO);
-		}
-        
-		
-		return admissionId;
-	}
-	
 	/**
 	 * 퇴실처리
 	 * @param vo AdmissionVO-입소내역VO
