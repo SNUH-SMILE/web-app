@@ -64,7 +64,7 @@ public class AdmissionController {
 	 * @param vo 생활치료센터 입소자 리스트 조회조건
 	 * @return ResponseVO&lt;AdmissionListResponseByCenterVO&gt; 생활치료센터 입소자 리스트 조회 결과
 	 */
-	@RequestMapping(value = "/list/center", method = RequestMethod.POST)
+	@RequestMapping(value = "/center/list", method = RequestMethod.POST)
 	public ResponseVO<AdmissionListResponseByCenterVO> selectAdmissionListByCenter(
 			@Valid @RequestBody AdmissionListSearchByCenterVO vo, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
@@ -85,7 +85,7 @@ public class AdmissionController {
 	 * @param vo 입소자 등록 정보
 	 * @return ResponseVO&lt;AdmissionSaveResponseByCenterVO&gt; 입소자 등록 완료 정보
 	 */
-	@RequestMapping(value = "/save", method = RequestMethod.PUT)
+	@RequestMapping(value = "/center/save", method = RequestMethod.PUT)
 	public ResponseVO<AdmissionSaveResponseByCenterVO> insertAdmissionByCenter(
 			@Validated(VoValidationGroups.add.class) @RequestBody AdmissionSaveByCenterVO vo
 			, BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
@@ -102,7 +102,7 @@ public class AdmissionController {
 	 * @param vo 입소자 수정 정보
 	 * @return ResponseVO&lt;AdmissionSaveResponseByCenterVO&gt; 입소자 수정 완료 정보
 	 */
-	@RequestMapping(value = "/save", method = RequestMethod.PATCH)
+	@RequestMapping(value = "/center/save", method = RequestMethod.PATCH)
 	public ResponseVO<AdmissionSaveResponseByCenterVO> updateAdmissionByCenter(
 			@Validated(VoValidationGroups.modify.class) @RequestBody AdmissionSaveByCenterVO vo
 			, BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
