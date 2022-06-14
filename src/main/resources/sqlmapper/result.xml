@@ -9,8 +9,14 @@
             -- 혈압
             , RSBP.RESULT      AS SBP_RESULT
             , RDBP.RESULT      AS DBP_RESULT
-            , ''               AS SBP_RISK_GB
-            , ''               AS DBP_RISK_GB
+            , CASE WHEN RSBP.RESULT > IBP.REF_FROM
+                        THEN 'H'
+                   ELSE      ''
+              END              AS SBP_RISK_GB
+            , CASE WHEN RDBP.RESULT < IBP.REF_TO
+                        THEN 'L'
+                   ELSE      ''
+              END              AS DBP_RISK_GB
             -- 심박수
             , RPR.RESULT       AS PR_RESULT
             , CASE WHEN RPR.RESULT < IPR.REF_FROM
