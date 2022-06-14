@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.hconnect.sqlmapper">
 
-	<!-- Pagination Total RowCount 조회 -->
+	<!-- Pagination Total RowCount 조회 - kr.co.hconnect.sqlmapper.selectFoundRowsByAdmission -->
 	<select id="selectFoundRowsByAdmission" resultType="Integer">
         SELECT FOUND_ROWS()
     </select>
@@ -143,7 +143,7 @@
 	]]>
 	</select>
 
-    <!-- 입소내역 생성 -->
+    <!-- 입소내역 생성 - kr.co.hconnect.sqlmapper.insertAdmission -->
 	<insert id="insertAdmission" parameterType="kr.co.hconnect.vo.AdmissionVO">
 	<![CDATA[
 		-- 입소내역 생성
@@ -176,7 +176,7 @@
 	]]>	
 	</insert>
 	
-    <!-- 입소내역 수정 -->
+    <!-- 입소내역 수정 - kr.co.hconnect.sqlmapper.updateAdmission -->
 	<update id="updateAdmission" parameterType="kr.co.hconnect.vo.AdmissionVO">
 	<![CDATA[
 		-- 입소내역 수정
@@ -190,18 +190,18 @@
 		     , UPD_ID             = #{updId}
 		     , UPD_DT             = NOW()
 		 WHERE ADMISSION_ID = #{admissionId}
-	]]>			
+	]]>
 	</update>
 	
-	<!-- 퇴소처리 -->
+	<!-- 퇴소처리 - kr.co.hconnect.sqlmapper.updateAdmissionDischarge -->
 	<update id="updateAdmissionDischarge" parameterType="kr.co.hconnect.vo.AdmissionVO">
 	<![CDATA[
 		-- 퇴소처리
 		-- updateAdmissionDischarge
 		UPDATE ADMISSION 
-		   SET DISCHARGE_DATE = #{dischargeDate} 
-		   	 , UPD_ID         = #{updId}
-		     , UPD_DT         = current_timestamp()
+		   SET DSCHGE_DATE = #{dschgeDate}
+		   	 , UPD_ID      = #{updId}
+		     , UPD_DT      = NOW()
 		 WHERE ADMISSION_ID = #{admissionId}
 	]]>
 	</update>

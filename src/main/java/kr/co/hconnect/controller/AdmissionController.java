@@ -2,6 +2,7 @@ package kr.co.hconnect.controller;
 
 import egovframework.rte.fdl.cmmn.exception.FdlException;
 import kr.co.hconnect.common.ApiResponseCode;
+import kr.co.hconnect.common.QantnDiv;
 import kr.co.hconnect.common.VoValidationGroups;
 import kr.co.hconnect.exception.*;
 import kr.co.hconnect.jwt.TokenDetailInfo;
@@ -158,6 +159,46 @@ public class AdmissionController {
 		} catch (NotFoundPatientInfoException e) {
 			responseVO.setCode(ApiResponseCode.NOT_FOUND_PATIENT_INFO.getCode());
 			responseVO.setMessage(e.getMessage());
+		} catch (NotFoundAdmissionInfoException e) {
+			responseVO.setCode(e.getErrorCode());
+			responseVO.setMessage(e.getMessage());
+		} catch (InvalidAdmissionInfoException e) {
+			responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+			responseVO.setMessage(e.getMessage());
+		}
+
+		return responseVO;
+	}
+
+	/**
+	 * 생활치료센터 입소자 퇴소 처리
+	 * @param vo 퇴소 처리 정보 VO
+	 * @return ResponseVO&lt;AdmissionListResponseByCenterVO&gt; 생활치료센터 입소자 리스트 조회 결과
+	 */
+	@RequestMapping(value = "/center/discharge", method = RequestMethod.PATCH)
+	public ResponseVO<AdmissionListResponseByCenterVO> updateAdmissionDischargeByCenter(
+			@Valid @RequestBody AdmissionDischargeByCenterVO vo, BindingResult bindingResult
+			, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+		if (bindingResult.hasErrors()) {
+			throw new InvalidRequestArgumentException(bindingResult);
+		}
+
+		ResponseVO<AdmissionListResponseByCenterVO> responseVO = new ResponseVO<>();
+
+		// 퇴소 정보 구성
+		AdmissionVO admissionVO = new AdmissionVO();
+		admissionVO.setAdmissionId(vo.getAdmissionId());
+		admissionVO.setDschgeDate(vo.getDschgeDate());
+		admissionVO.setQantnDiv(QantnDiv.CENTER.getDbValue());
+		admissionVO.setUpdId(tokenDetailInfo.getId());
+
+		try {
+			// 입소자 퇴소 처리
+			admissionService.updateAdmissionDischarge(admissionVO);
+
+			responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+			responseVO.setMessage("퇴소 처리 완료");
+			responseVO.setResult(admissionService.selectAdmissionListByCenter(vo.getAdmissionListSearchByCenterVO()));
 		} catch (NotFoundAdmissionInfoException e) {
 			responseVO.setCode(e.getErrorCode());
 			responseVO.setMessage(e.getMessage());

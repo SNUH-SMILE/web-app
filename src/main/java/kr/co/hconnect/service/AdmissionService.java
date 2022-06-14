@@ -302,18 +302,43 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 		return admissionId;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// 변경 작업 대상
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 	/**
-	 * 퇴실처리
-	 * @param vo AdmissionVO-입소내역VO
-	 * @return affectedRow
+	 * 퇴소 처리
+	 *
+	 * @param vo AdmissionDischargeVO 퇴소 처리 정보 VO
+	 * @throws NotFoundAdmissionInfoException 입소 정보 수정 시 기존 입소정보가 존재하지 않을 경우 발생
+	 * @throws InvalidAdmissionInfoException 기존 입소정보에 문제가 있을 경우 발생(삭제, 퇴소, 격리/입소구분이 다른 경우)
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public int updateAdmissionDischarge(AdmissionVO vo) {		
-		
-		return admissionDao.updateAdmissionDischarge(vo);
+	public void updateAdmissionDischarge(AdmissionVO vo)
+			throws NotFoundAdmissionInfoException, InvalidAdmissionInfoException {
+		// 기존 입소내역 확인
+		AdmissionInfoVO dbAdmissionVO = admissionDao.selectAdmissionInfo(vo.getAdmissionId());
+
+		if (dbAdmissionVO == null) {
+			// 격리/입소내역 확인
+			throw new NotFoundAdmissionInfoException(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()
+					, messageSource.getMessage("message.notfound.admissionInfo"
+					, null, Locale.getDefault()));
+		} else if (dbAdmissionVO.getAdmissionDate().compareTo(vo.getDschgeDate()) >= 0) {
+			// 종료일이 시작일 이후 여부 확인
+			throw new InvalidAdmissionInfoException(messageSource.getMessage("message.admission.past.dschgeDate"
+					, null, Locale.getDefault()));
+		} else if (!dbAdmissionVO.getQantnDiv().equals(vo.getQantnDiv())) {
+			// 지정한 격리/입소 내역과 동일한지 확인
+			throw new InvalidAdmissionInfoException(messageSource.getMessage("message.admission.mismatch.qantnDiv"
+					, null, Locale.getDefault()));
+		} else if (dbAdmissionVO.getDelYn().equals("Y")) {
+			// 삭제 여부 확인
+			throw new InvalidAdmissionInfoException(messageSource.getMessage("message.admission.delete"
+					, null, Locale.getDefault()));
+		} else if (dbAdmissionVO.getDschgeDate() != null) {
+			// 퇴소 여부 확인
+			throw new InvalidAdmissionInfoException(messageSource.getMessage("message.admission.discharge"
+					, null, Locale.getDefault()));
+		}
+
+		// 퇴소 처리
+		admissionDao.updateAdmissionDischarge(vo);
 	}
 }
