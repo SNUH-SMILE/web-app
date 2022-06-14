@@ -9,7 +9,7 @@ public enum QantnDiv {
      */
     NONE("0"),
     /**
-     * 자각겨리
+     * 자각격리
      */
     ISOLATION("1"),
     /**

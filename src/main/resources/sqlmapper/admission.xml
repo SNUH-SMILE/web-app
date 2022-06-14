@@ -18,6 +18,7 @@
 		     , A.QANTN_DIV                -- 격리/입소구분 - CD004
 		     , A.PERSON_CHARGE            -- 담당자
 		     , A.CENTER_ID                -- 센터ID
+		     , TC.CENTER_NM               -- 센터명
 		     , A.ROOM                     -- 호실
 		     , A.DEL_YN                   -- 삭제여부
 		     , A.REG_ID                   -- 등록자ID
@@ -26,10 +27,37 @@
 		     , A.UPD_DT                   -- 수정일시
 		  FROM ADMISSION A
 		       INNER JOIN PATIENT B  ON A.PATIENT_ID = B.PATIENT_ID
-		 WHERE A.ADMISSION_DATE <= NOW()
-		   AND A.DSCHGE_DATE IS NULL
+		       LEFT JOIN  TREATMENT_CENTER TC  ON A.CENTER_ID = TC.CENTER_ID
+		 WHERE A.DSCHGE_DATE IS NULL
 		   AND A.DEL_YN = 'N'
 		   AND B.LOGIN_ID = #{loginId}
+	]]>
+	</select>
+
+	<!-- 환자ID 기준 격리/입소내역(내원중) 리스트 조회 - kr.co.hconnect.sqlmapper.selectActiveAdmissionListByPatientId -->
+	<select id="selectActiveAdmissionListByPatientId" parameterType="String" resultType="kr.co.hconnect.vo.AdmissionVO">
+	<![CDATA[
+		SELECT A.ADMISSION_ID             -- 격리/입소내역ID
+		     , A.PATIENT_ID               -- 환자ID
+		     , A.ADMISSION_DATE           -- 시작일
+		     , A.DSCHGE_SCHDLD_DATE       -- 종료예정일
+		     , A.DSCHGE_DATE              -- 종료일
+		     , A.QANTN_DIV                -- 격리/입소구분 - CD004
+		     , A.PERSON_CHARGE            -- 담당자
+		     , A.CENTER_ID                -- 센터ID
+		     , TC.CENTER_NM               -- 센터명
+		     , A.ROOM                     -- 호실
+		     , A.DEL_YN                   -- 삭제여부
+		     , A.REG_ID                   -- 등록자ID
+		     , A.REG_DT                   -- 등록일시
+		     , A.UPD_ID                   -- 수정자ID
+		     , A.UPD_DT                   -- 수정일시
+		  FROM ADMISSION A
+		       INNER JOIN PATIENT          B   ON A.PATIENT_ID = B.PATIENT_ID
+		       LEFT JOIN  TREATMENT_CENTER TC  ON A.CENTER_ID = TC.CENTER_ID
+		 WHERE A.DSCHGE_DATE IS NULL
+		   AND A.DEL_YN = 'N'
+		   AND B.PATIENT_ID = #{patientId}
 	]]>
 	</select>
 

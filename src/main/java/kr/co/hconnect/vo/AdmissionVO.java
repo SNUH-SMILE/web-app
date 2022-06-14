@@ -1,13 +1,12 @@
 package kr.co.hconnect.vo;
 
-import java.time.LocalDate;
-import java.util.Date;
-
 import kr.co.hconnect.common.BaseDefaultVO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.time.LocalDate;
 
 /**
  * 격리/입소내역
@@ -52,6 +51,10 @@ public class AdmissionVO extends BaseDefaultVO {
 	 * 센터ID
 	 */
 	private String centerId;
+	/**
+	 * 센터명
+	 */
+	private String centerNm;
 	/**
 	 * 호실
 	 */

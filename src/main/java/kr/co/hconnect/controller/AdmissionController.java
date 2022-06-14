@@ -3,7 +3,7 @@ package kr.co.hconnect.controller;
 import egovframework.rte.fdl.cmmn.exception.FdlException;
 import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.common.VoValidationGroups;
-import kr.co.hconnect.exception.InvalidRequestArgumentException;
+import kr.co.hconnect.exception.*;
 import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.service.AdmissionService;
 import kr.co.hconnect.vo.*;
@@ -128,7 +128,7 @@ public class AdmissionController {
 		// 시작일, 종료예정일 확인
 		if (vo.getAdmissionDate().compareTo(vo.getDschgeSchdldDate()) > 0) {
 			responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
-			responseVO.setMessage("종료 예정일이 시작일 이전입니다.\r\n확인 후 다시 진행하세요.");
+			responseVO.setMessage("종료 예정일이 시작일 이전입니다." + System.lineSeparator() + "확인 후 다시 진행하세요.");
 
 			return responseVO;
 		}
@@ -147,6 +147,21 @@ public class AdmissionController {
 			responseVO.setMessage(String.format("생활치료센터 입소자 %s 완료", isNew ? "등록" : "수정"));
 			responseVO.setResult(responseByCenterVO);
 		} catch (FdlException e) {
+			responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+			responseVO.setMessage(e.getMessage());
+		} catch (DuplicateActiveAdmissionException e) {
+			responseVO.setCode(ApiResponseCode.DUPLICATE_ACTIVE_ADMISSION_INFO.getCode());
+			responseVO.setMessage(e.getMessage());
+		} catch (DuplicatePatientInfoException e) {
+			responseVO.setCode(ApiResponseCode.DUPLICATE_PATIENT_INFO.getCode());
+			responseVO.setMessage(e.getMessage());
+		} catch (NotFoundPatientInfoException e) {
+			responseVO.setCode(ApiResponseCode.NOT_FOUND_PATIENT_INFO.getCode());
+			responseVO.setMessage(e.getMessage());
+		} catch (NotFoundAdmissionInfoException e) {
+			responseVO.setCode(e.getErrorCode());
+			responseVO.setMessage(e.getMessage());
+		} catch (InvalidAdmissionInfoException e) {
 			responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
 			responseVO.setMessage(e.getMessage());
 		}

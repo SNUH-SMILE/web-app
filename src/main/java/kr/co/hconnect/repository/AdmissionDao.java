@@ -18,11 +18,20 @@ public class AdmissionDao extends EgovAbstractMapper {
 	/**
 	 * 로그인ID 기준 격리/입소내역(내원중) 리스트 조회
 	 *
-	 * @param loginId 환자ID
-	 * @return List&ltAdmissionVO&gt 격리/입소내역 리스트
+	 * @param loginId 로그인ID
+	 * @return List&lt;AdmissionVO&gt; 격리/입소내역 리스트
 	 */
 	public List<AdmissionVO> selectActiveAdmissionListByLoginId(String loginId) {
 		return selectList("kr.co.hconnect.sqlmapper.selectActiveAdmissionListByLoginId", loginId);
+	}
+
+	/**
+	 * 환자ID 기준 격리/입소내역(내원중) 리스트 조회
+	 * @param patientId 환자ID
+	 * @return List&lt;AdmissionVO&gt; 격리/입소내역 리스트
+	 */
+	public List<AdmissionVO> selectActiveAdmissionListByPatientId(String patientId) {
+		return selectList("kr.co.hconnect.sqlmapper.selectActiveAdmissionListByPatientId", patientId);
 	}
 
 	/**

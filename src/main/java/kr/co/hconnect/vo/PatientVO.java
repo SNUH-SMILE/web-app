@@ -89,4 +89,17 @@ public class PatientVO extends BaseDefaultVO {
 	@NotNull(message = "{validation.null.addressDetail}")
 	@Size(max = 200, message = "{validation.size.address2}")
 	private String address2;
+
+	/**
+	 * 환자 식별 데이터 동일 여부 확인
+	 * @param vo 비교 대상 환자정보
+	 * @return boolean
+	 */
+	public boolean isIdentityEquals(PatientVO vo) {
+		return patientNm.equals(vo.getPatientNm()) &&
+				birthDate.equals(vo.getBirthDate()) &&
+				sex.equals(vo.getSex()) &&
+				cellPhone.equals(vo.getCellPhone());
+
+	}
 }
