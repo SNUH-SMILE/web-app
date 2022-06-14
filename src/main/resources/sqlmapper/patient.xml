@@ -150,43 +150,35 @@
         ]]>
     </select>
 
-    <!-- 환자정보 생성 -->
+    <!-- 환자정보 생성 - kr.co.hconnect.sqlmapper.insertPatient -->
     <insert id="insertPatient" parameterType="kr.co.hconnect.vo.PatientVO">
-	<![CDATA[
-        INSERT
-        INTO PATIENT
-        (      PATIENT_ID
-        ,      NAME
-        ,      BIRTH_DATE
-        ,      CONTACT
+		INSERT
+		  INTO PATIENT
+		     ( PATIENT_ID
+		     , PATIENT_NM
+		     , BIRTH_DATE
 		     , SEX
-		     , REG_ID
-		     , UPD_ID
+		     , CELL_PHONE
 		     )
 		VALUES
 		     ( #{patientId}
-		     , #{name}
+		     , #{patientNm}
 		     , #{birthDate}
-		     , #{contact}
 		     , #{sex}
-		     , #{regId}
-		     , #{updId}
-		     )
-	]]>
+		     , #{cellPhone})
 	</insert>
 	
-	<!-- 환자정보 수정 -->
+	<!-- 환자정보 수정 - kr.co.hconnect.sqlmapper.updatePatient -->
 	<update id="updatePatient" parameterType="kr.co.hconnect.vo.PatientVO">
 	<![CDATA[
 		-- 환자정보 수정 
 		-- updatePatient
 		UPDATE PATIENT 
-		   SET NAME       = #{name} 
+		   SET PATIENT_NM = #{patientNm}
 		     , BIRTH_DATE = #{birthDate}
-		     , CONTACT    = #{contact}
 		     , SEX        = #{sex}
-		     , UPD_ID     = #{updId}
-		     , UPD_DT     = current_timestamp()
+		     , CELL_PHONE = #{cellPhone}
+		     , UPD_DT     = NOW()
 		 WHERE PATIENT_ID = #{patientId}
 	]]> 
 	</update>
