@@ -4,12 +4,10 @@ import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.service.QnaService;
 import kr.co.hconnect.vo.QnaListResponseVO;
 import kr.co.hconnect.vo.QnaListSearchVO;
+import kr.co.hconnect.vo.QnaVO;
 import kr.co.hconnect.vo.ResponseVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/qna")
@@ -28,6 +26,23 @@ public class QnaController {
     @Autowired
     public QnaController(QnaService qnaService) {
         this.qnaService = qnaService;
+    }
+
+    /**
+     * 문의사항 내역 조회
+     *
+     * @param questionSeq 문의순번
+     * @return ResponseVO&lt;QnaVO&gt; 문의사항 조회 결과
+     */
+    @RequestMapping(value = "/info", method = RequestMethod.GET)
+    public ResponseVO<QnaVO> selectQna(@RequestParam Integer questionSeq) {
+        ResponseVO<QnaVO> responseVO = new ResponseVO<>();
+
+        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+        responseVO.setMessage("조회 성공");
+        responseVO.setResult(qnaService.selectQna(questionSeq));
+
+        return responseVO;
     }
 
     /**

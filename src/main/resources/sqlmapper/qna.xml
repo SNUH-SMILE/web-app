@@ -7,6 +7,30 @@
         SELECT FOUND_ROWS()
     </select>
 
+    <!-- 문의사항 내역 조회 - kr.co.hconnect.sqlmapper.selectQna -->
+    <select id="selectQna" parameterType="Integer" resultType="kr.co.hconnect.vo.QnaVO">
+        SELECT Q.QUESTION_SEQ                                -- 문의순번
+             , Q.CENTER_ID                                   -- 센터ID
+             , Q.PATIENT_ID                                  -- 환자ID
+             , P.PATIENT_NM                                  -- 환자명
+             , Q.QUESTION_TYPE                               -- 문의유형
+             , CD.DETAIL_CD_NM         AS QUESTION_TYPE_NM   -- 문의유형명
+             , Q.QUESTION_CONTENT                            -- 문의내용
+             , Q.REG_DT                                      -- 등록일시
+             , Q.REPLY_ID                                    -- 답변자ID
+             , U.USER_NM               AS REPLY_NM           -- 답변자명
+             , Q.REPLY_YN                                    -- 답변여부
+             , Q.REPLY_CONTENT                               -- 답변내용
+             , Q.REPLY_DT                                    -- 답변일시
+          FROM QNA Q
+               INNER JOIN PATIENT       P    ON Q.PATIENT_ID = P.PATIENT_ID
+               INNER JOIN COM_CD_DETAIL CD   ON CD.COM_CD    = 'CD009'
+                                            AND CD.DETAIL_CD = Q.QUESTION_TYPE
+               LEFT JOIN USER           U    ON Q.REPLY_ID = U.USER_ID
+         WHERE QUESTION_SEQ = #{questionSeq}
+    </select>
+
+
     <!-- 문의사항 리스트 조회 - kr.co.hconnect.sqlmapper.selectQnaList -->
     <select id="selectQnaList" parameterType="kr.co.hconnect.vo.QnaListSearchVO" resultType="kr.co.hconnect.vo.QnaVO">
         SELECT SQL_CALC_FOUND_ROWS

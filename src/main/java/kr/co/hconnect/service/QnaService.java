@@ -4,6 +4,7 @@ import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import kr.co.hconnect.repository.QnaDao;
 import kr.co.hconnect.vo.QnaListResponseVO;
 import kr.co.hconnect.vo.QnaListSearchVO;
+import kr.co.hconnect.vo.QnaVO;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,16 @@ public class QnaService extends EgovAbstractServiceImpl {
     public QnaService(QnaDao qnaDao, MessageSource messageSource) {
         this.qnaDao = qnaDao;
         this.messageSource = messageSource;
+    }
+
+    /**
+     * 문의사항 내역 조회
+     *
+     * @param questionSeq 문의순번
+     * @return QnaVO 문의사항 내역
+     */
+    public QnaVO selectQna(int questionSeq) {
+        return qnaDao.selectQna(questionSeq);
     }
 
     /**

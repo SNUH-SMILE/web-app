@@ -23,6 +23,16 @@ public class QnaDao extends EgovAbstractMapper {
     }
 
     /**
+     * 문의사항 내역 조회
+     *
+     * @param questionSeq 문의순번
+     * @return QnaVO 문의사항 내역
+     */
+    public QnaVO selectQna(int questionSeq) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectQna", questionSeq);
+    }
+
+    /**
      * 문의사항 리스트 조회
      *
      * @param vo 문의사항 리스트 조회 조건
