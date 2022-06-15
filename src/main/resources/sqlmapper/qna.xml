@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+
+    <!-- Pagination Total RowCount 조회 - kr.co.hconnect.sqlmapper.selectFoundRowsByQna -->
+    <select id="selectFoundRowsByQna" resultType="Integer">
+        SELECT FOUND_ROWS()
+    </select>
+
+    <!-- 문의사항 리스트 조회 - kr.co.hconnect.sqlmapper.selectQnaList -->
+    <select id="selectQnaList" parameterType="kr.co.hconnect.vo.QnaListSearchVO" resultType="kr.co.hconnect.vo.QnaVO">
+        SELECT SQL_CALC_FOUND_ROWS
+               Q.QUESTION_SEQ                                -- 문의순번
+             , Q.CENTER_ID                                   -- 센터ID
+             , Q.PATIENT_ID                                  -- 환자ID
+             , P.PATIENT_NM                                  -- 환자명
+             , Q.QUESTION_TYPE                               -- 문의유형
+             , CD.DETAIL_CD_NM         AS QUESTION_TYPE_NM   -- 문의유형명
+             , Q.QUESTION_CONTENT                            -- 문의내용
+             , Q.REG_DT                                      -- 등록일시
+             , Q.REPLY_ID                                    -- 답변자ID
+             , U.USER_NM               AS REPLY_NM           -- 답변자명
+             , Q.REPLY_YN                                    -- 답변여부
+             , Q.REPLY_CONTENT                               -- 답변내용
+             , Q.REPLY_DT                                    -- 답변일시
+          FROM QNA Q
+               INNER JOIN PATIENT       P    ON Q.PATIENT_ID = P.PATIENT_ID
+               INNER JOIN COM_CD_DETAIL CD   ON CD.COM_CD    = 'CD009'
+                                            AND CD.DETAIL_CD = Q.QUESTION_TYPE
+               LEFT JOIN USER           U    ON Q.REPLY_ID = U.USER_ID
+         WHERE Q.CENTER_ID = #{centerId}
+
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(replyYn)">
+           AND Q.REPLY_YN = #{replyYn}
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(searchText)">
+            <choose>
+                <when test="searchGb.equals('patientId')">
+                    AND Q.PATIENT_ID = #{searchText}
+                </when>
+                <when test="searchGb.equals('patientNm')">
+                    AND P.PATIENT_NM LIKE CONCAT('%', #{searchText}, '%')
+                </when>
+                <when test="searchGb.equals('replyContent')">
+                    AND Q.REPLY_CONTENT LIKE CONCAT('%', #{searchText}, '%')
+                </when>
+            </choose>
+        </if>
+
+        ORDER
+           BY Q.REG_DT DESC
+        LIMIT #{recordCountPerPage}
+        OFFSET #{offsetCount}
+
+    </select>
+
+</mapper>
