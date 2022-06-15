@@ -1,9 +1,12 @@
 package kr.co.hconnect.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -25,6 +28,13 @@ public class AdmissionByQuarantineVO extends VitalResultVO {
      * 환자명
      */
     private String patientNm;
+
+    /**
+     * 시작일-(격리시작일)
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate admissionDate;
+
     /**
      * 격리/입소 구분 (CD004)
      * 	0: 대상자 아님
