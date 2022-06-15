@@ -28,6 +28,7 @@ public class AdmissionSaveByQuarantineVO extends BaseDefaultVO {
     /**
      * 자가격리자 리스트 조회조건 VO
      */
+    @NotNull(message = "{validation.null.refresh.searchInfo}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
     private AdmissionListSearchByQuarantineVO admissionListSearchByQuarantineVO;
 
     /**

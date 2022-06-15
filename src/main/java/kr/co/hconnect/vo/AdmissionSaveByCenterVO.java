@@ -28,6 +28,7 @@ public class AdmissionSaveByCenterVO extends BaseDefaultVO {
     /**
      * 생활치료센터 입소내역 리스트 조회조건 VO
      */
+    @NotNull(message = "{validation.null.refresh.searchInfo}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class })
     private AdmissionListSearchByCenterVO admissionListSearchByCenterVO;
 
     /**
