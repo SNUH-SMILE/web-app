@@ -13,22 +13,22 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 /**
- * 생활치료센터 퇴소 처리 정보 VO
+ * 자가격리자 퇴소 처리 정보 VO
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-public class AdmissionDischargeByCenterVO extends BaseDefaultVO {
+public class AdmissionDischargeByQuarantineVO extends BaseDefaultVO {
 
-    private static final long serialVersionUID = -4268335974205198399L;
+    private static final long serialVersionUID = -9030171077145293591L;
 
     /**
-     * 생활치료센터 입소내역 리스트 조회조건 VO
+     * 자가격리자 리스트 조회조건 VO
      */
     @Valid
     @NotNull(message = "{validation.null.refresh.searchInfo}")
-    private AdmissionListSearchByCenterVO admissionListSearchByCenterVO;
+    private AdmissionListSearchByQuarantineVO admissionListSearchByQuarantineVO;
 
     /**
      * 격리/입소내역ID
@@ -41,5 +41,4 @@ public class AdmissionDischargeByCenterVO extends BaseDefaultVO {
     @NotNull(message = "{validation.null.dschgeDate}")
     @JsonFormat(pattern = "yyyyMMdd")
     private LocalDate dschgeDate;
-
 }
