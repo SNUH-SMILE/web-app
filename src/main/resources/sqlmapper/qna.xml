@@ -28,24 +28,28 @@
                INNER JOIN COM_CD_DETAIL CD   ON CD.COM_CD    = 'CD009'
                                             AND CD.DETAIL_CD = Q.QUESTION_TYPE
                LEFT JOIN USER           U    ON Q.REPLY_ID = U.USER_ID
-         WHERE Q.CENTER_ID = #{centerId}
 
-        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(replyYn)">
-           AND Q.REPLY_YN = #{replyYn}
-        </if>
-        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(searchText)">
-            <choose>
-                <when test="searchGb.equals('patientId')">
-                    AND Q.PATIENT_ID = #{searchText}
-                </when>
-                <when test="searchGb.equals('patientNm')">
-                    AND P.PATIENT_NM LIKE CONCAT('%', #{searchText}, '%')
-                </when>
-                <when test="searchGb.equals('replyContent')">
-                    AND Q.REPLY_CONTENT LIKE CONCAT('%', #{searchText}, '%')
-                </when>
-            </choose>
-        </if>
+        <where>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(centerId)">
+               AND Q.CENTER_ID = #{centerId}
+            </if>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(replyYn)">
+               AND Q.REPLY_YN = #{replyYn}
+            </if>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(searchText)">
+                <choose>
+                    <when test="searchGb.equals('patientId')">
+                        AND Q.PATIENT_ID = #{searchText}
+                    </when>
+                    <when test="searchGb.equals('patientNm')">
+                        AND P.PATIENT_NM LIKE CONCAT('%', #{searchText}, '%')
+                    </when>
+                    <when test="searchGb.equals('replyContent')">
+                        AND Q.REPLY_CONTENT LIKE CONCAT('%', #{searchText}, '%')
+                    </when>
+                </choose>
+            </if>
+        </where>
 
         ORDER
            BY Q.REG_DT DESC

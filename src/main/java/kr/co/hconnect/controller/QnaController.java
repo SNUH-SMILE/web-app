@@ -1,17 +1,15 @@
 package kr.co.hconnect.controller;
 
-import kr.co.hconnect.exception.InvalidRequestArgumentException;
+import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.service.QnaService;
 import kr.co.hconnect.vo.QnaListResponseVO;
 import kr.co.hconnect.vo.QnaListSearchVO;
+import kr.co.hconnect.vo.ResponseVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/qna")
@@ -39,11 +37,12 @@ public class QnaController {
      * @return QnaListResponseVO 문의사항 리스트 조회 결과
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
-    public QnaListResponseVO selectQnaList(@Valid @RequestBody QnaListSearchVO vo, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new InvalidRequestArgumentException(bindingResult);
-        }
+    public ResponseVO<QnaListResponseVO> selectQnaList(@RequestBody QnaListSearchVO vo) {
+        ResponseVO<QnaListResponseVO> responseVO = new ResponseVO<>();
+        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+        responseVO.setMessage("조회 성공");
+        responseVO.setResult(qnaService.selectQnaList(vo));
 
-        return qnaService.selectQnaList(vo);
+        return responseVO;
     }
 }

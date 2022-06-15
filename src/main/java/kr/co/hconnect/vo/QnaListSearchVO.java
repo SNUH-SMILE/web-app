@@ -5,8 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.NotBlank;
-
 /**
  * 문의사항 리스트 조회 조건 VO
  */
@@ -21,7 +19,6 @@ public class QnaListSearchVO extends PaginationInfoVO {
     /**
      * 센터ID
      */
-    @NotBlank(message = "{validation.null.centerId}")
     private String centerId;
     /**
      * 답변여부
