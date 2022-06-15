@@ -82,4 +82,24 @@
 
     </select>
 
+    <!-- 문의사항 답변 등록 - kr.co.hconnect.sqlmapper.updateQnaByReply -->
+    <update id="updateQnaByReply" parameterType="kr.co.hconnect.vo.QnaVO">
+        UPDATE QNA
+           SET REPLY_ID      = #{replyId}
+             , REPLY_YN      = 'Y'
+             , REPLY_CONTENT = #{replyContent}
+             , REPLY_DT      = NOW()
+         WHERE QUESTION_SEQ = #{questionSeq}
+    </update>
+
+    <!-- 문의사항 답변 삭제 - kr.co.hconnect.sqlmapper.deleteQnaByReply -->
+    <update id="deleteQnaByReply" parameterType="integer">
+        UPDATE QNA
+        SET REPLY_ID      = NULL
+          , REPLY_YN      = 'N'
+          , REPLY_CONTENT = NULL
+          , REPLY_DT      = NULL
+        WHERE QUESTION_SEQ = #{questionSeq}
+    </update>
+
 </mapper>

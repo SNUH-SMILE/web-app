@@ -42,4 +42,22 @@ public class QnaDao extends EgovAbstractMapper {
         return selectList("kr.co.hconnect.sqlmapper.selectQnaList", vo);
     }
 
+    /**
+     * 문의사항 답변 등록
+     * @param vo 답변정보
+     * @return affectedRow
+     */
+    public int updateQnaByReply(QnaVO vo) {
+        return update("kr.co.hconnect.sqlmapper.updateQnaByReply", vo);
+    }
+
+    /**
+     * 문의사항 답변 삭제
+     * @param questionSeq 문의순번
+     * @return affectedRow
+     */
+    public int deleteQnaByReply(Integer questionSeq) {
+        return update("kr.co.hconnect.sqlmapper.deleteQnaByReply", questionSeq);
+    }
+
 }

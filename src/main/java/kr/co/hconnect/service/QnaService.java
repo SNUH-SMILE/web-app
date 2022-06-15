@@ -4,8 +4,8 @@ import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import kr.co.hconnect.repository.QnaDao;
 import kr.co.hconnect.vo.QnaListResponseVO;
 import kr.co.hconnect.vo.QnaListSearchVO;
+import kr.co.hconnect.vo.QnaSaveByReplyVO;
 import kr.co.hconnect.vo.QnaVO;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,20 +20,14 @@ public class QnaService extends EgovAbstractServiceImpl {
      * 문의사항 Dao
      */
     private final QnaDao qnaDao;
-    /**
-     * MessageSource
-     */
-    private final MessageSource messageSource;
 
     /**
      * 생성자
      *
      * @param qnaDao 문의사항 Dao
-     * @param messageSource MessageSource
      */
-    public QnaService(QnaDao qnaDao, MessageSource messageSource) {
+    public QnaService(QnaDao qnaDao) {
         this.qnaDao = qnaDao;
-        this.messageSource = messageSource;
     }
 
     /**
@@ -62,6 +56,33 @@ public class QnaService extends EgovAbstractServiceImpl {
         qnaListResponseVO.setPaginationInfoVO(vo);
 
         return qnaListResponseVO;
+    }
+
+    /**
+     * 문의사항 답변 등록
+     *
+     * @param vo 답변 정보
+     * @return affectedRow
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public int updateQnaByReply(QnaSaveByReplyVO vo) {
+        QnaVO qnaVO = new QnaVO();
+        qnaVO.setQuestionSeq(vo.getQuestionSeq());
+        qnaVO.setReplyContent(vo.getReplyContent());
+        qnaVO.setReplyId(vo.getReplyId());
+
+        return qnaDao.updateQnaByReply(qnaVO);
+    }
+
+    /**
+     * 문의사항 답변 삭제
+     *
+     * @param questionSeq 문의순번
+     * @return affectedRow
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public int deleteQnaByReply(Integer questionSeq) {
+        return qnaDao.deleteQnaByReply(questionSeq);
     }
 
 }
