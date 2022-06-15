@@ -28,7 +28,7 @@ public class QnaListSearchVO extends PaginationInfoVO {
      * 조회 조건 구분
      *  patientId:환자ID
      *  patientNm:환자명
-     *  replyContent:문의내역
+     *  questionContent:문의내역
      */
     private String searchGb;
     /**

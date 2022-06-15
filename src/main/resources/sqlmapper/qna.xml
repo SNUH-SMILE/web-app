@@ -68,8 +68,8 @@
                     <when test="searchGb.equals('patientNm')">
                         AND P.PATIENT_NM LIKE CONCAT('%', #{searchText}, '%')
                     </when>
-                    <when test="searchGb.equals('replyContent')">
-                        AND Q.REPLY_CONTENT LIKE CONCAT('%', #{searchText}, '%')
+                    <when test="searchGb.equals('questionContent')">
+                        AND Q.QUESTION_CONTENT LIKE CONCAT('%', #{searchText}, '%')
                     </when>
                 </choose>
             </if>
