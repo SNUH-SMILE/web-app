@@ -228,6 +228,9 @@ public class CommonRequestResponseLoggingFilter extends OncePerRequestFilter {
                 msg.append(NEW_LINE)
                     .append("Response [ ");
 
+                msg.append(NEW_LINE)
+                        .append(String.format("  statusCode=%d", response.getStatus()));
+
                 int length = Math.min(buf.length, getMaxPayloadLength());
                 String payload;
 
