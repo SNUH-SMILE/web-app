@@ -11,7 +11,7 @@ public enum QantnDiv {
     /**
      * 자각격리
      */
-    ISOLATION("1"),
+    QUARANTINE("1"),
     /**
      * 생활치료센터 입소자
      */
