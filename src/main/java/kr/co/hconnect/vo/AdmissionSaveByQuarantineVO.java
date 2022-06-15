@@ -15,20 +15,20 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 /**
- * 생활치료센터 입소자 등록/수정 내역 VO
+ * 자가격리자 등록/수정 내역 VO
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-public class AdmissionSaveByCenterVO extends BaseDefaultVO {
+public class AdmissionSaveByQuarantineVO extends BaseDefaultVO {
 
-    private static final long serialVersionUID = -7305148387511846045L;
+    private static final long serialVersionUID = -4213226563205944483L;
 
     /**
-     * 생활치료센터 입소내역 리스트 조회조건 VO
+     * 자가격리자 리스트 조회조건 VO
      */
-    private AdmissionListSearchByCenterVO admissionListSearchByCenterVO;
+    private AdmissionListSearchByQuarantineVO admissionListSearchByQuarantineVO;
 
     /**
      * 격리/입소내역ID
@@ -83,14 +83,4 @@ public class AdmissionSaveByCenterVO extends BaseDefaultVO {
      */
     @NotBlank(message = "{validation.null.personCharge}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class})
     private String personCharge;
-    /**
-     * 센터ID
-     */
-    @NotBlank(message = "{validation.null.centerId}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class})
-    private String centerId;
-    /**
-     * 호실
-     */
-    @NotBlank(message = "{validation.null.room}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class})
-    private String room;
 }

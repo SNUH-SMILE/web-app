@@ -10,6 +10,7 @@ import kr.co.hconnect.service.AdmissionService;
 import kr.co.hconnect.vo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -61,7 +62,7 @@ public class AdmissionController {
 
 	/**
 	 * 생활치료센터 입소자 리스트 조회
-	 * 
+	 *
 	 * @param vo 생활치료센터 입소자 리스트 조회조건
 	 * @return ResponseVO&lt;AdmissionListResponseByCenterVO&gt; 생활치료센터 입소자 리스트 조회 결과
 	 */
@@ -94,7 +95,32 @@ public class AdmissionController {
 			throw new InvalidRequestArgumentException(bindingResult);
 		}
 
-		return saveAdmissionByCenter(vo, tokenDetailInfo, true);
+		AdmissionVO admissionVO = new AdmissionVO();
+		BeanUtils.copyProperties(vo, admissionVO);
+		admissionVO.setQantnDiv(QantnDiv.CENTER.getDbValue());
+		admissionVO.setRegId(tokenDetailInfo.getId());
+		admissionVO.setUpdId(tokenDetailInfo.getId());
+
+		PatientIdentityVO patientIdentityVO = new PatientIdentityVO();
+		BeanUtils.copyProperties(vo, patientIdentityVO);
+
+		// 생활치료센터 입소처리
+		ResponseVO<String> saveAdmission = saveAdmission(admissionVO, patientIdentityVO, true);
+
+		// 반환정보 구성
+		ResponseVO<AdmissionSaveResponseByCenterVO> responseVO = new ResponseVO<>();
+
+		responseVO.setCode(saveAdmission.getCode());
+		responseVO.setMessage(saveAdmission.getMessage());
+		if (saveAdmission.getCode().equals(ApiResponseCode.SUCCESS.getCode())) {
+			AdmissionSaveResponseByCenterVO responseByCenterVO = new AdmissionSaveResponseByCenterVO();
+			responseByCenterVO.setAdmissionId(saveAdmission.getResult());
+			responseByCenterVO.setAdmissionListResponseByCenterVO(admissionService.selectAdmissionListByCenter(vo.getAdmissionListSearchByCenterVO()));
+
+			responseVO.setResult(responseByCenterVO);
+		}
+
+		return responseVO;
 	}
 
 	/**
@@ -111,34 +137,51 @@ public class AdmissionController {
 			throw new InvalidRequestArgumentException(bindingResult);
 		}
 
-		return saveAdmissionByCenter(vo, tokenDetailInfo, false);
+		AdmissionVO admissionVO = new AdmissionVO();
+		BeanUtils.copyProperties(vo, admissionVO);
+		admissionVO.setQantnDiv(QantnDiv.CENTER.getDbValue());
+		admissionVO.setRegId(tokenDetailInfo.getId());
+		admissionVO.setUpdId(tokenDetailInfo.getId());
+
+		PatientIdentityVO patientIdentityVO = new PatientIdentityVO();
+		BeanUtils.copyProperties(vo, patientIdentityVO);
+
+		// 생활치료센터 입소자 정보 수정
+		ResponseVO<String> saveAdmission = saveAdmission(admissionVO, patientIdentityVO, false);
+
+		// 반화데이터 구성
+		ResponseVO<AdmissionSaveResponseByCenterVO> responseVO = new ResponseVO<>();
+
+		responseVO.setCode(saveAdmission.getCode());
+		responseVO.setMessage(saveAdmission.getMessage());
+		if (saveAdmission.getCode().equals(ApiResponseCode.SUCCESS.getCode())) {
+			AdmissionSaveResponseByCenterVO responseByCenterVO = new AdmissionSaveResponseByCenterVO();
+			responseByCenterVO.setAdmissionId(saveAdmission.getResult());
+			responseByCenterVO.setAdmissionListResponseByCenterVO(admissionService.selectAdmissionListByCenter(vo.getAdmissionListSearchByCenterVO()));
+
+			responseVO.setResult(responseByCenterVO);
+		}
+
+		return responseVO;
 	}
 
 	/**
 	 * 생활치료센터 입소자 등록/수정
 	 *
-	 * @param vo 입소자 등록/수정 정보
-	 * @param tokenDetailInfo 토큰상세 정보
+	 * @param admissionVO 격리/입소내역 저장 정보
+	 * @param patientIdentityVO 환자 저장 정보
 	 * @param isNew true: 등록, false: 수정
-	 * @return ResponseVO&lt;AdmissionSaveResponseByCenterVO&gt; 입소자 등록/수정 완료 정보
+	 * @return ResponseVO&lt;String&gt; 격리/입소자 저장 정보(result: admissionId)
 	 */
-	private ResponseVO<AdmissionSaveResponseByCenterVO> saveAdmissionByCenter(AdmissionSaveByCenterVO vo
-			, TokenDetailInfo tokenDetailInfo, boolean isNew) {
-		ResponseVO<AdmissionSaveResponseByCenterVO> responseVO = new ResponseVO<>();
-
-		vo.setRegId(tokenDetailInfo.getId());
-		vo.setUpdId(tokenDetailInfo.getId());
+	private ResponseVO<String> saveAdmission(AdmissionVO admissionVO, PatientIdentityVO patientIdentityVO, boolean isNew) {
+		ResponseVO<String> responseVO = new ResponseVO<>();
 
 		try {
-			String admissionId = admissionService.saveAdmissionByCenter(vo, isNew);
-
-			AdmissionSaveResponseByCenterVO responseByCenterVO = new AdmissionSaveResponseByCenterVO();
-			responseByCenterVO.setAdmissionId(admissionId);
-			responseByCenterVO.setAdmissionListResponseByCenterVO(admissionService.selectAdmissionListByCenter(vo.getAdmissionListSearchByCenterVO()));
+			String admissionId = admissionService.saveAdmission(admissionVO, patientIdentityVO, isNew);
 
 			responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
-			responseVO.setMessage(String.format("생활치료센터 입소자 %s 완료", isNew ? "등록" : "수정"));
-			responseVO.setResult(responseByCenterVO);
+			responseVO.setMessage(String.format("%s 완료", isNew ? "등록" : "수정"));
+			responseVO.setResult(admissionId);
 		} catch (FdlException e) {
 			responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
 			responseVO.setMessage(e.getMessage());
@@ -197,6 +240,109 @@ public class AdmissionController {
 		} catch (InvalidAdmissionInfoException e) {
 			responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
 			responseVO.setMessage(e.getMessage());
+		}
+
+		return responseVO;
+	}
+
+
+	/**
+	 * 자가격리자 리스트 조회
+	 *
+	 * @param vo 자가겨리자 리스트 조회조건
+	 * @return ResponseVO&lt;AdmissionListResponseByQuarantineVO&gt; 자가격리자 리스트 조회 결과
+	 */
+	@RequestMapping(value = "/quarantine/list", method = RequestMethod.POST)
+	public ResponseVO<AdmissionListResponseByQuarantineVO> selectAdmissionListByQuarantine(
+			@RequestBody AdmissionListSearchByQuarantineVO vo) {
+		ResponseVO<AdmissionListResponseByQuarantineVO> responseVO = new ResponseVO<>();
+
+		responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+		responseVO.setMessage("조회 성공");
+		responseVO.setResult(admissionService.selectAdmissionListByQuarantine(vo));
+
+		return responseVO;
+	}
+
+	/**
+	 * 자가격리자 등록
+	 *
+	 * @param vo 자가격리자 등록 정보
+	 * @return ResponseVO&lt;AdmissionSaveResponseByQuarantineVO&gt; 자가격리자 등록 완료 정보
+	 */
+	@RequestMapping(value = "/quarantine/save", method = RequestMethod.PUT)
+	public ResponseVO<AdmissionSaveResponseByQuarantineVO> insertAdmissionByQuarantine(
+			@Validated(VoValidationGroups.add.class) @RequestBody AdmissionSaveByQuarantineVO vo
+			, BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+		if (bindingResult.hasErrors()) {
+			throw new InvalidRequestArgumentException(bindingResult);
+		}
+
+		AdmissionVO admissionVO = new AdmissionVO();
+		BeanUtils.copyProperties(vo, admissionVO);
+		admissionVO.setQantnDiv(QantnDiv.QUARANTINE.getDbValue());
+		admissionVO.setRegId(tokenDetailInfo.getId());
+		admissionVO.setUpdId(tokenDetailInfo.getId());
+
+		PatientIdentityVO patientIdentityVO = new PatientIdentityVO();
+		BeanUtils.copyProperties(vo, patientIdentityVO);
+
+		// 자가격리자 등록 처리
+		ResponseVO<String> saveAdmission = saveAdmission(admissionVO, patientIdentityVO, true);
+
+		// 반환정보 구성
+		ResponseVO<AdmissionSaveResponseByQuarantineVO> responseVO = new ResponseVO<>();
+
+		responseVO.setCode(saveAdmission.getCode());
+		responseVO.setMessage(saveAdmission.getMessage());
+		if (saveAdmission.getCode().equals(ApiResponseCode.SUCCESS.getCode())) {
+			AdmissionSaveResponseByQuarantineVO responseByQuarantineVO = new AdmissionSaveResponseByQuarantineVO();
+			responseByQuarantineVO.setAdmissionId(saveAdmission.getResult());
+			responseByQuarantineVO.setAdmissionListResponseByQuarantineVO(admissionService.selectAdmissionListByQuarantine(vo.getAdmissionListSearchByQuarantineVO()));
+
+			responseVO.setResult(responseByQuarantineVO);
+		}
+
+		return responseVO;
+	}
+
+	/**
+	 * 자가격리자 수정
+	 *
+	 * @param vo 자가격리자 수정 정보
+	 * @return ResponseVO&lt;AdmissionSaveResponseByQuarantineVO&gt; 자가격리자 수정 완료 정보
+	 */
+	@RequestMapping(value = "/quarantine/save", method = RequestMethod.PATCH)
+	public ResponseVO<AdmissionSaveResponseByQuarantineVO> updateAdmissionByQuarantine(
+			@Validated(VoValidationGroups.add.class) @RequestBody AdmissionSaveByQuarantineVO vo
+			, BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+		if (bindingResult.hasErrors()) {
+			throw new InvalidRequestArgumentException(bindingResult);
+		}
+
+		AdmissionVO admissionVO = new AdmissionVO();
+		BeanUtils.copyProperties(vo, admissionVO);
+		admissionVO.setQantnDiv(QantnDiv.QUARANTINE.getDbValue());
+		admissionVO.setRegId(tokenDetailInfo.getId());
+		admissionVO.setUpdId(tokenDetailInfo.getId());
+
+		PatientIdentityVO patientIdentityVO = new PatientIdentityVO();
+		BeanUtils.copyProperties(vo, patientIdentityVO);
+
+		// 자가격리자 수정 처리
+		ResponseVO<String> saveAdmission = saveAdmission(admissionVO, patientIdentityVO, false);
+
+		// 반환정보 구성
+		ResponseVO<AdmissionSaveResponseByQuarantineVO> responseVO = new ResponseVO<>();
+
+		responseVO.setCode(saveAdmission.getCode());
+		responseVO.setMessage(saveAdmission.getMessage());
+		if (saveAdmission.getCode().equals(ApiResponseCode.SUCCESS.getCode())) {
+			AdmissionSaveResponseByQuarantineVO responseByQuarantineVO = new AdmissionSaveResponseByQuarantineVO();
+			responseByQuarantineVO.setAdmissionId(saveAdmission.getResult());
+			responseByQuarantineVO.setAdmissionListResponseByQuarantineVO(admissionService.selectAdmissionListByQuarantine(vo.getAdmissionListSearchByQuarantineVO()));
+
+			responseVO.setResult(responseByQuarantineVO);
 		}
 
 		return responseVO;

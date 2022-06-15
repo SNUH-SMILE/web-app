@@ -1,10 +1,7 @@
 package kr.co.hconnect.repository;
 
 import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
-import kr.co.hconnect.vo.AdmissionByCenterVO;
-import kr.co.hconnect.vo.AdmissionInfoVO;
-import kr.co.hconnect.vo.AdmissionListSearchByCenterVO;
-import kr.co.hconnect.vo.AdmissionVO;
+import kr.co.hconnect.vo.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -46,12 +43,12 @@ public class AdmissionDao extends EgovAbstractMapper {
 	 * 생활치료센터 입소자 리스트 조회
 	 *
 	 * @param vo 입소자 리스트 조회조건
-	 * @return List<AdmissionListVO> 입소자 리스트
+	 * @return List<AdmissionByCenterVO> 입소자 리스트
 	 */
 	public List<AdmissionByCenterVO> selectAdmissionListByCenter(AdmissionListSearchByCenterVO vo) {
 		return selectList("kr.co.hconnect.sqlmapper.selectAdmissionListByCenter", vo);
 	}
-	
+
 	/**
 	 * 입소내역 정보 조회
 	 * @param admissionId 격리/입소내역ID
@@ -86,6 +83,17 @@ public class AdmissionDao extends EgovAbstractMapper {
 	 */
 	public int updateAdmissionDischarge(AdmissionVO vo) {
 		return update("kr.co.hconnect.sqlmapper.updateAdmissionDischarge", vo);
+	}
+
+
+	/**
+	 * 자가격리자 리스트 조회
+	 *
+	 * @param vo 자가격리자 리스트 조회조건
+	 * @return List<AdmissionByQuarantineVO> 자가격리자 리스트
+	 */
+	public List<AdmissionByQuarantineVO> selectAdmissionListByQuarantine(AdmissionListSearchByQuarantineVO vo) {
+		return selectList("kr.co.hconnect.sqlmapper.selectAdmissionListByQuarantine", vo);
 	}
 	
 }

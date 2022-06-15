@@ -65,9 +65,7 @@
 	<select id="selectAdmissionListByCenter"
 			parameterType="kr.co.hconnect.vo.AdmissionListSearchByCenterVO"
 			resultType="kr.co.hconnect.vo.AdmissionByCenterVO">
-	<![CDATA[
-		-- 입소자내역 리스트 조회
-		-- selectAdmissionList
+		<![CDATA[
 		SELECT SQL_CALC_FOUND_ROWS
 		       A.ADMISSION_ID 					              -- 입소내역ID
 			 , A.CENTER_ID                                    -- 센터ID
@@ -96,14 +94,14 @@
 	]]>
 
 		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientId)">
-		   AND P.PATIENT_ID = #{patientId}
+			AND P.PATIENT_ID = #{patientId}
 		</if>
 		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientNm)">
-		   AND P.PATIENT_NM LIKE CONCAT('%', #{patientNm},'%')
+			AND P.PATIENT_NM LIKE CONCAT('%', #{patientNm},'%')
 		</if>
 
 		ORDER
-		   BY
+		BY
 		<choose>
 			<when test="@org.apache.commons.lang3.StringUtils@isNotEmpty(orderBy)">
 				${orderBy} ${orderDir}
@@ -114,10 +112,10 @@
 		</choose>
 
 		LIMIT #{recordCountPerPage}
-	    OFFSET #{offsetCount}
+		OFFSET #{offsetCount}
 
 	</select>
-	
+
 	<!-- 입소내역 정보 조회 - kr.co.hconnect.sqlmapper.selectAdmissionInfo -->
 	<select id="selectAdmissionInfo" parameterType="String" resultType="kr.co.hconnect.vo.AdmissionInfoVO">
 	<![CDATA[
@@ -205,5 +203,51 @@
 		 WHERE ADMISSION_ID = #{admissionId}
 	]]>
 	</update>
+
+
+	<!-- 자각격리자 리스트 조회 - kr.co.hconnect.sqlmapper.selectAdmissionListByQuarantine -->
+	<select id="selectAdmissionListByQuarantine"
+			parameterType="kr.co.hconnect.vo.AdmissionListSearchByQuarantineVO"
+			resultType="kr.co.hconnect.vo.AdmissionByQuarantineVO">
+		<![CDATA[
+		SELECT SQL_CALC_FOUND_ROWS
+		       A.ADMISSION_ID 					              -- 입소내역ID
+			 , P.PATIENT_ID                                   -- 환자ID
+			 , P.PATIENT_NM                                   -- 환자명
+			 , A.QANTN_DIV                                    -- 격리/입소 구분(CD004)
+			 , TIMESTAMPDIFF(DAY, A.ADMISSION_DATE, NOW())
+			                                AS QANTN_DAY      -- 격리일수
+			 , CASE WHEN A.DSCHGE_DATE IS NULL
+                         THEN '1'
+                    ELSE      '2'
+               END                          AS QANTN_STATUS   -- 입소/격리 상태
+		  FROM ADMISSION A
+			   INNER JOIN PATIENT 			P      ON A.PATIENT_ID = P.PATIENT_ID
+         WHERE A.QANTN_DIV = '1'            -- 자가격리자 구분
+		   AND A.DEL_YN = 'N'
+	]]>
+
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientId)">
+			AND P.PATIENT_ID = #{patientId}
+		</if>
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientNm)">
+			AND P.PATIENT_NM LIKE CONCAT('%', #{patientNm},'%')
+		</if>
+
+		ORDER
+		BY
+		<choose>
+			<when test="@org.apache.commons.lang3.StringUtils@isNotEmpty(orderBy)">
+				${orderBy} ${orderDir}
+			</when>
+			<otherwise>
+				A.ADMISSION_DATE DESC
+			</otherwise>
+		</choose>
+
+		LIMIT #{recordCountPerPage}
+		OFFSET #{offsetCount}
+
+	</select>
 
 </mapper>
