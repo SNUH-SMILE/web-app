@@ -93,10 +93,15 @@ public class UserService extends EgovAbstractServiceImpl {
         // 사용자 정보 조회
     	UserVO userVO = selectUserInfo(userLoginInfoVO.getLoginId());
 
-         if (!userVO.getPassword().equals(userLoginInfoVO.getPassword())) {
-             throw new NotMatchPatientPasswordException(messageSource.getMessage("message.mismatch.password"
-                     , null, Locale.getDefault()));
-         }
+        if (!userVO.getDelYn().equals("N")) {
+            // 삭제된 사용자 확인
+            throw new NotFoundUserInfoException(messageSource.getMessage("message.notfound.userInfo"
+                    ,null, Locale.getDefault()));
+        } else if (!userVO.getPassword().equals(userLoginInfoVO.getPassword())) {
+            // 비밀번호 확인
+            throw new NotMatchPatientPasswordException(messageSource.getMessage("message.mismatch.password"
+                    , null, Locale.getDefault()));
+        }
 
          return userVO;
     }
@@ -124,7 +129,7 @@ public class UserService extends EgovAbstractServiceImpl {
     public UserVO saveUser(UserSaveVO userSaveVO) throws FdlException, NotFoundUserInfoException {
         UserVO userVO = userSaveVO.getUserVO();
 
-        String userId = "";
+        String userId;
         String password = userVO.getPassword();
 
         // 비밀번호 암호화
