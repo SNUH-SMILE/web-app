@@ -39,7 +39,7 @@ public class PatientDashboardController {
 	 * @param vo 환자 현황 대시보드 환자정보 조회조건
 	 * @return ResponseVO&lt;PatientStatusDashboardVO&gt; 환자 대시보드 현황 결과
 	 */
-	@RequestMapping(value = "/center", method = RequestMethod.POST)
+	@RequestMapping(value = "/status/list", method = RequestMethod.POST)
 	public ResponseVO<PatientStatusDashboardVO> selectCenterPatientStatusDashboard(@RequestBody PatientStatusDashboardDetailSearchVO vo) {
 		ResponseVO<PatientStatusDashboardVO> patientStatusDashboardVOResponseVO = new ResponseVO<>();
 		patientStatusDashboardVOResponseVO.setCode(ApiResponseCode.SUCCESS.getCode());
