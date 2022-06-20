@@ -2,11 +2,17 @@ package kr.co.hconnect.service;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import kr.co.hconnect.repository.PatientDashboardDao;
+import kr.co.hconnect.repository.ResultDao;
 import kr.co.hconnect.vo.PatientStatusDashboardDetailSearchVO;
+import kr.co.hconnect.vo.PatientStatusDashboardDetailVO;
 import kr.co.hconnect.vo.PatientStatusDashboardVO;
+import kr.co.hconnect.vo.VitalResultVO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 환자 대시보드 서비스
@@ -19,10 +25,22 @@ public class PatientDashboardService extends EgovAbstractServiceImpl {
 	 * 환자 대쉬보드 Dao
 	 */
 	private final PatientDashboardDao patientDashboardDao;
-	
+
+	/**
+	 * 측정결과 Dao
+	 */
+	private final ResultDao resultDao;
+
+	/**
+	 * 생성자
+	 *
+	 * @param patientDashboardDao 환자 대쉬보드 Dao
+	 * @param resultDao 측정결과 Dao
+	 */
 	@Autowired
-	public PatientDashboardService(PatientDashboardDao patientDashboardDao) {
+	public PatientDashboardService(PatientDashboardDao patientDashboardDao, ResultDao resultDao) {
 		this.patientDashboardDao = patientDashboardDao;
+		this.resultDao = resultDao;
 	}
 
 	/**
@@ -32,10 +50,19 @@ public class PatientDashboardService extends EgovAbstractServiceImpl {
 	 * @return List&lt;PatientStatusDashboardDetailVO&gt; 환자 현황 대시보드 환자정보 리스트
 	 */
 	public PatientStatusDashboardVO selectPatientStatusDashboardDetailList(PatientStatusDashboardDetailSearchVO vo) {
-
 		PatientStatusDashboardVO patientStatusDashboardVO = new PatientStatusDashboardVO();
 		patientStatusDashboardVO.setHeader(patientDashboardDao.selectPatientStatusDashboardHeader(vo));
-		patientStatusDashboardVO.setPatientList(patientDashboardDao.selectPatientStatusDashboardDetailList(vo));
+
+		List<PatientStatusDashboardDetailVO> list = patientDashboardDao.selectPatientStatusDashboardDetailList(vo);
+		for (PatientStatusDashboardDetailVO detailVO : list) {
+			VitalResultVO vitalResultVO = resultDao.selectLastVitalResult(detailVO.getAdmissionId());
+
+			if (vitalResultVO != null) {
+				BeanUtils.copyProperties(vitalResultVO, detailVO);
+			}
+		}
+
+		patientStatusDashboardVO.setPatientList(list);
 
 		return patientStatusDashboardVO;
 	}
