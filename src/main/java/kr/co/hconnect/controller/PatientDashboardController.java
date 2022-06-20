@@ -48,24 +48,4 @@ public class PatientDashboardController {
 
 		return patientStatusDashboardVOResponseVO;
 	}
-	
-//	/**
-//	 * 환자 대쉬보드 리스트 조회
-//	 * @param centerId - 센터ID
-//	 * @return List<PatientDashboardVO> - 환자 대쉬보드 리스트
-//	 */
-//	@RequestMapping(value = "/list.ajax")
-//	@ResponseBody
-//	public List<PatientDashboardVO> selectPatientDashboardList(
-//              @RequestParam(value = "centerId", required = false) String centerId
-//            , @SessionAttribute SessionVO sessionVO) {
-//
-//		// 전달된 센터가 없을 경우 로그인 사용자 센터 지정 처리
-//		if (StringUtils.isEmpty(centerId)) {
-//			// TODO::사용자 센터 정보 변경
-//			centerId = sessionVO.getCenterId();
-//		}
-//
-//		return patientDashboardService.selectPatientDashboardList(centerId);
-//	}
 }

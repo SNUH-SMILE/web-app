@@ -19,6 +19,10 @@ public class VitalResultVO implements Serializable {
     private static final long serialVersionUID = -387470501101880523L;
 
     /**
+     * 격리/입소내역ID
+     */
+    private String admissionId;
+    /**
      * 혈압_SBP
      */
     private String sbpResult;

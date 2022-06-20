@@ -7,6 +7,8 @@ import kr.co.hconnect.domain.SaveSleepTimeResult;
 import kr.co.hconnect.vo.VitalResultVO;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * 측정결과 Dao
  */
@@ -20,6 +22,15 @@ public class ResultDao extends EgovAbstractMapper {
      */
     public VitalResultVO selectLastVitalResult(String admissionId) {
         return selectOne("kr.co.hconnect.sqlmapper.selectLastVitalResult", admissionId);
+    }
+
+    /**
+     * 최근 Vital 측정결과 조회
+     * @param list 격리/입소내역 ID List
+     * @return List&lt;VitalResultVO&gt; 최근 Vital 측정결과 정보 리스트
+     */
+    public List<VitalResultVO> selectLastVitalResultByAdmissionIdList(List<String> list) {
+        return selectList("kr.co.hconnect.sqlmapper.selectLastVitalResultByAdmissionIdList", list);
     }
     
     /**
