@@ -6,105 +6,112 @@
     <![CDATA[
         SELECT A.ADMISSION_ID
              -- 혈압
-             , RSBP.RESULT      AS SBP_RESULT
-             , RDBP.RESULT      AS DBP_RESULT
-             , CASE WHEN RSBP.RESULT > IBP.REF_FROM
+             , RDSBP.RESULT                                 AS SBP_RESULT
+             , RDDBP.RESULT                                 AS DBP_RESULT
+             , CASE WHEN RDSBP.RESULT > IBP.REF_FROM
                          THEN 'H'
                      ELSE      ''
-               END              AS SBP_RISK_GB
-             , CASE WHEN RDBP.RESULT < IBP.REF_TO
+               END                                          AS SBP_RISK_GB
+             , CASE WHEN RDDBP.RESULT < IBP.REF_TO
                          THEN 'L'
                     ELSE      ''
-               END              AS DBP_RISK_GB
+               END                                          AS DBP_RISK_GB
+             , TIMESTAMP(RBP.RESULT_DATE, RBP.RESULT_TIME)  AS BP_RESULT_DT
+             , IBP.UNIT                                     AS BP_UNIT
              -- 심박수
-             , RPR.RESULT       AS PR_RESULT
-             , CASE WHEN RPR.RESULT < IPR.REF_FROM
+             , RDPR.RESULT                                  AS PR_RESULT
+             , CASE WHEN RDPR.RESULT < IPR.REF_FROM
                          THEN 'L'
-                    WHEN RPR.RESULT > IPR.REF_TO
+                    WHEN RDPR.RESULT > IPR.REF_TO
                          THEN 'H'
                     ELSE      ''
-               END              AS PR_RISK_GB
+               END                                          AS PR_RISK_GB
+             , TIMESTAMP(RPR.RESULT_DATE, RPR.RESULT_TIME)  AS PR_RESULT_DT
+             , IPR.UNIT                                     AS PR_UNIT
              -- 체온
-             , RBT.RESULT       AS BT_RESULT
-             , CASE WHEN RBT.RESULT < IBT.REF_FROM
+             , RDBT.RESULT                                  AS BT_RESULT
+             , CASE WHEN RDBT.RESULT < IBT.REF_FROM
                          THEN 'L'
-                    WHEN RBT.RESULT > IBT.REF_TO
+                    WHEN RDBT.RESULT > IBT.REF_TO
                          THEN 'H'
                     ELSE      ''
-               END              AS BT_RISK_GB
+               END                                          AS BT_RISK_GB
+             , TIMESTAMP(RBT.RESULT_DATE, RBT.RESULT_TIME)  AS BT_RESULT_DT
+             , IBT.UNIT                                     AS BT_UNIT
              -- 걸음수
-             , RST1.RESULT      AS ST1_RESULT
-             , RST2.RESULT      AS ST2_RESULT
-             , ''               AS ST1_RISK_GB
-             , ''               AS ST2_RISK_GB
+             , RDST1.RESULT                                 AS ST1_RESULT
+             , RDST2.RESULT                                 AS ST2_RESULT
+             , ''                                           AS ST1_RISK_GB
+             , ''                                           AS ST2_RISK_GB
+             , TIMESTAMP(RST.RESULT_DATE, RST.RESULT_TIME)  AS ST_RESULT_DT
+             , IST.UNIT                                     AS ST_UNIT
              -- 호흡(데이터 입력 가능 여부 미정)
-             , ''               AS RR_RESULT
-             , ''               AS RR_RISK_GB
+             , ''                                           AS RR_RESULT
+             , ''                                           AS RR_RISK_GB
+             , ''                                           AS RR_RESULT_DT
+             , ''                                           AS RR_UNIT
              -- 산소포화도
-             , RSP.RESULT       AS SP_RESULT
-             , CASE WHEN RSP.RESULT < ISP.REF_FROM
+             , RDSP.RESULT                                  AS SP_RESULT
+             , CASE WHEN RDSP.RESULT < ISP.REF_FROM
                          THEN 'L'
-                    WHEN RSP.RESULT > ISP.REF_TO
+                    WHEN RDSP.RESULT > ISP.REF_TO
                          THEN 'H'
                     ELSE      ''
-               END              AS SP_RISK_GB
+               END                                          AS SP_RISK_GB
+             , TIMESTAMP(RSP.RESULT_DATE, RSP.RESULT_TIME)  AS SP_RESULT_DT
+             , ISP.UNIT                                     AS SP_UNIT
           FROM ADMISSION A
                /* 혈압 */
                INNER JOIN ITEM            IBP     ON IBP.ITEM_ID = 'I0005'
-               LEFT JOIN RESULT_DETAIL    RSBP    ON RSBP.RESULT_SEQ = (SELECT X.RESULT_SEQ
-                                                                          FROM RESULT X
-                                                                         WHERE X.ADMISSION_ID = A.ADMISSION_ID
-                                                                           AND X.ITEM_ID = IBP.ITEM_ID
-                                                                         ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
-                                                                         LIMIT 1)
-                                                 AND RSBP.RESULT_TYPE = '03'
-               LEFT JOIN RESULT_DETAIL    RDBP    ON RDBP.RESULT_SEQ = (SELECT X.RESULT_SEQ
-                                                                          FROM RESULT X
-                                                                          WHERE X.ADMISSION_ID = A.ADMISSION_ID
-                                                                            AND X.ITEM_ID = IBP.ITEM_ID
-                                                                          ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
-                                                                          LIMIT 1)
-                                                 AND RDBP.RESULT_TYPE = '02'
+               LEFT JOIN RESULT           RBP     ON RBP.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                         FROM RESULT X
+                                                                        WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                          AND X.ITEM_ID = IBP.ITEM_ID
+                                                                        ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                        LIMIT 1)
+               LEFT JOIN RESULT_DETAIL    RDSBP   ON RDSBP.RESULT_SEQ = RBP.RESULT_SEQ
+                                                 AND RDSBP.RESULT_TYPE = '03'
+               LEFT JOIN RESULT_DETAIL    RDDBP   ON RDDBP.RESULT_SEQ = RBP.RESULT_SEQ
+                                                 AND RDDBP.RESULT_TYPE = '02'
                /* 심박수 */
                INNER JOIN ITEM             IPR     ON IPR.ITEM_ID = 'I0002'
-               LEFT JOIN RESULT_DETAIL     RPR     ON RPR.RESULT_SEQ = (SELECT X.RESULT_SEQ
+               LEFT JOIN RESULT            RPR     ON RPR.RESULT_SEQ = (SELECT X.RESULT_SEQ
                                                                           FROM RESULT X
                                                                          WHERE X.ADMISSION_ID = A.ADMISSION_ID
                                                                            AND X.ITEM_ID = IPR.ITEM_ID
                                                                          ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
                                                                          LIMIT 1)
+               LEFT JOIN RESULT_DETAIL     RDPR    ON RDPR.RESULT_SEQ = RPR.RESULT_SEQ
                /* 체온 */
                INNER JOIN ITEM             IBT     ON IBT.ITEM_ID = 'I0001'
-               LEFT JOIN RESULT_DETAIL     RBT     ON RBT.RESULT_SEQ = (SELECT X.RESULT_SEQ
+               LEFT JOIN RESULT            RBT     ON RBT.RESULT_SEQ = (SELECT X.RESULT_SEQ
                                                                           FROM RESULT X
                                                                          WHERE X.ADMISSION_ID = A.ADMISSION_ID
                                                                            AND X.ITEM_ID = IBT.ITEM_ID
                                                                          ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
                                                                          LIMIT 1)
+               LEFT JOIN RESULT_DETAIL     RDBT    ON RDBT.RESULT_SEQ = RBT.RESULT_SEQ
                /* 걸음수 */
                INNER JOIN ITEM             IST     ON IST.ITEM_ID = 'I0004'
-               LEFT JOIN RESULT_DETAIL     RST1    ON RST1.RESULT_SEQ = (SELECT X.RESULT_SEQ
-                                                                           FROM RESULT X
-                                                                          WHERE X.ADMISSION_ID = A.ADMISSION_ID
-                                                                            AND X.ITEM_ID = IST.ITEM_ID
-                                                                          ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
-                                                                          LIMIT 1)
-                                                  AND RST1.RESULT_TYPE = '04'
-               LEFT JOIN RESULT_DETAIL     RST2    ON RST2.RESULT_SEQ = (SELECT X.RESULT_SEQ
-                                                                           FROM RESULT X
-                                                                          WHERE X.ADMISSION_ID = A.ADMISSION_ID
-                                                                            AND X.ITEM_ID = IST.ITEM_ID
-                                                                          ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
-                                                                          LIMIT 1)
-                                                  AND RST2.RESULT_TYPE = '05'
+               LEFT JOIN RESULT            RST     ON RST.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                          FROM RESULT X
+                                                                         WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                           AND X.ITEM_ID = IST.ITEM_ID
+                                                                         ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                         LIMIT 1)
+               LEFT JOIN RESULT_DETAIL     RDST1   ON RDST1.RESULT_SEQ = RST.RESULT_SEQ
+                                                  AND RDST1.RESULT_TYPE = '04'
+               LEFT JOIN RESULT_DETAIL     RDST2   ON RDST2.RESULT_SEQ = RST.RESULT_SEQ
+                                                  AND RDST2.RESULT_TYPE = '05'
                /* 산소포화도 */
                LEFT JOIN ITEM              ISP   ON ISP.ITEM_ID = 'I0003'
-               LEFT JOIN RESULT_DETAIL     RSP   ON RSP.RESULT_SEQ = (SELECT X.RESULT_SEQ
-                                                                        FROM RESULT X
-                                                                       WHERE X.ADMISSION_ID = A.ADMISSION_ID
-                                                                         AND X.ITEM_ID = ISP.ITEM_ID
-                                                                       ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
-                                                                       LIMIT 1)
+               LEFT JOIN RESULT            RSP   ON RSP.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                      FROM RESULT X
+                                                                      WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                        AND X.ITEM_ID = ISP.ITEM_ID
+                                                                      ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                      LIMIT 1)
+               LEFT JOIN RESULT_DETAIL     RDSP  ON RDSP.RESULT_SEQ = RSP.RESULT_SEQ
     ]]>
     </sql>
 

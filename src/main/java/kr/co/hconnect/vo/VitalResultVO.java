@@ -1,11 +1,13 @@
 package kr.co.hconnect.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * Vital 측정결과
@@ -40,6 +42,15 @@ public class VitalResultVO implements Serializable {
      * H: 기준치 이상, L: 기준치 이하
      */
     private String dbpRiskGb;
+    /**
+     * 혈압 측정일시
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Timestamp bpResultDt;
+    /**
+     * 혈압 단위
+     */
+    private String bpUnit;
 
     /**
      * 심박수
@@ -50,6 +61,15 @@ public class VitalResultVO implements Serializable {
      * H: 기준치 이상, L: 기준치 이하
      */
     private String prRiskGb;
+    /**
+     * 심박수 측정일시
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Timestamp prResultDt;
+    /**
+     * 심박수 단위
+     */
+    private String prUnit;
 
     /**
      * 체온
@@ -60,6 +80,15 @@ public class VitalResultVO implements Serializable {
      * H: 기준치 이상, L: 기준치 이하
      */
     private String btRiskGb;
+    /**
+     * 체온 측정일시
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Timestamp btResultDt;
+    /**
+     * 체온 단위
+     */
+    private String btUnit;
 
     /**
      * 걸음수
@@ -79,6 +108,15 @@ public class VitalResultVO implements Serializable {
      * H: 기준치 이상, L: 기준치 이하
      */
     private String st2RiskGb;
+    /**
+     * 걸음수 측정일시
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Timestamp stResultDt;
+    /**
+     * 걸음수 단위
+     */
+    private String stUnit;
 
     /**
      * 호흡
@@ -89,6 +127,15 @@ public class VitalResultVO implements Serializable {
      * H: 기준치 이상, L: 기준치 이하
      */
     private String rrRiskGb;
+    /**
+     * 호흡 측정일시
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Timestamp rrResultDt;
+    /**
+     * 호흡 단위
+     */
+    private String rrUnit;
 
     /**
      * 산소포화도
@@ -99,4 +146,13 @@ public class VitalResultVO implements Serializable {
      * H: 기준치 이상, L: 기준치 이하
      */
     private String spRiskGb;
+    /**
+     * 산소포화도 측정일시
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Timestamp spResultDt;
+    /**
+     * 산소포화도 단위
+     */
+    private String spUnit;
 }
