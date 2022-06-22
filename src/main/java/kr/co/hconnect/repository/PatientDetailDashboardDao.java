@@ -2,6 +2,7 @@ package kr.co.hconnect.repository;
 
 import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
 import kr.co.hconnect.vo.PatientDetailDashboardHeaderVO;
+import kr.co.hconnect.vo.PatientDetailDashboardRecentResultVO;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -17,7 +18,27 @@ public class PatientDetailDashboardDao extends EgovAbstractMapper {
      * @return PatientDetailDashboardHeaderVO 환자 상세 대시보드 상단 정보
      */
     public PatientDetailDashboardHeaderVO selectPatientDetailDashboardHeader(String admissionId) {
-        return selectOne("kr.co.hconnect.sqlmapper.selectPatientDetailDashboardHeader", admissionId);
+        PatientDetailDashboardHeaderVO headerVO = selectOne("kr.co.hconnect.sqlmapper.selectPatientDetailDashboardHeader", admissionId);
+
+        if (headerVO != null) {
+            // 최근 측정결과 조회
+            PatientDetailDashboardRecentResultVO recentResultVO = selectOne("kr.co.hconnect.sqlmapper.selectPatientDetailDashboardRecentResult", admissionId);
+            if (recentResultVO != null) {
+                headerVO.setRecentResultInfo(recentResultVO);
+            }
+        }
+
+        return headerVO;
+    }
+
+    /**
+     * 환자 마지막 신체계측, 수면, 예측결과 조회
+     *
+     * @param admissionId 격리/입소내역ID
+     * @return PatientDetailDashboardRecentResultVO 환자 마지막 신체계측, 수면, 예측결과 내역
+     */
+    public PatientDetailDashboardRecentResultVO selectPatientDetailDashboardRecentResult(String admissionId) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectPatientDetailDashboardRecentResult", admissionId);
     }
 
 

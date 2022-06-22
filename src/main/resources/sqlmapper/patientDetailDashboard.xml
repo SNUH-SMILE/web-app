@@ -6,42 +6,42 @@
     <select id="selectPatientDetailDashboardHeader"
             parameterType="String"
             resultType="kr.co.hconnect.vo.PatientDetailDashboardHeaderVO">
-        SELECT A.ADMISSION_ID                       -- 격리/입소내역ID
-             , P.PATIENT_ID                         -- 환자ID
-             , P.PATIENT_NM                         -- 환자명
+        SELECT A.ADMISSION_ID                                         -- 격리/입소내역ID
+             , P.PATIENT_ID                                           -- 환자ID
+             , P.PATIENT_NM                                           -- 환자명
              , TRUNCATE((TO_DAYS(NOW()) - TO_DAYS(P.BIRTH_DATE)) / 365, 0)
-                                    AS AGE          -- 나이-만
-             , P.BIRTH_DATE                         -- 생년월일
-             , P.SEX                                -- 성별
+                                    AS AGE                            -- 나이-만
+             , P.BIRTH_DATE                                           -- 생년월일
+             , P.SEX                                                  -- 성별
              , CASE WHEN IFNULL(CCDS.PROPERTY2, '') = ''
                          THEN P.SEX
                     ELSE      CCDS.PROPERTY2
-               END                  AS SEX_NM       -- 성별명칭
-             , P.CELL_PHONE                         -- 연락처
-             , A.QANTN_DIV                          -- 격리/입소 구분
+               END                  AS SEX_NM                         -- 성별명칭
+             , P.CELL_PHONE                                           -- 연락처
+             , A.QANTN_DIV                                            -- 격리/입소 구분
              , CASE WHEN A.QANTN_DIV = '2'
                          THEN A.CENTER_ID
                     ELSE      ''
-               END                  AS CENTER_ID    -- 센터ID
+               END                  AS CENTER_ID                      -- 센터ID
              , CASE WHEN A.QANTN_DIV = '2'
                          THEN TC.CENTER_NM
                     ELSE      ''
-               END                  AS CENTER_NM    -- 센터명
+               END                  AS CENTER_NM                      -- 센터명
              , CASE WHEN A.QANTN_DIV = '2'
                          THEN A.ROOM
                     ELSE      ''
-               END                  AS ROOM         -- 호실(위치)
+               END                  AS ROOM                           -- 호실(위치)
              , CASE WHEN A.QANTN_DIV = '2'
                          THEN CCDR.DETAIL_CD_NM
                     ELSE      ''
-               END                  AS ROOM_NM      -- 호실(위치) 명
-             , A.ADMISSION_DATE                     -- 시작일
-             , A.DSCHGE_SCHDLD_DATE                 -- 종료예정일
-             , A.DSCHGE_DATE                        -- 종료일
+               END                  AS ROOM_NM                        -- 호실(위치) 명
+             , A.ADMISSION_DATE                                       -- 시작일
+             , A.DSCHGE_SCHDLD_DATE                                   -- 종료예정일
+             , A.DSCHGE_DATE                                          -- 종료일
              , CASE WHEN A.DSCHGE_DATE IS NULL
                          THEN 'N'
                     ELSE      'Y'
-               END                  AS DSCHGE_YN    -- 퇴소/해제 여부
+               END                  AS DSCHGE_YN                      -- 퇴소/해제 여부
           FROM ADMISSION A
                INNER JOIN PATIENT          P     ON A.PATIENT_ID   = P.PATIENT_ID
                LEFT JOIN TREATMENT_CENTER  TC    ON A.CENTER_ID = TC.CENTER_ID
@@ -52,7 +52,151 @@
                                                 AND CCDR.PROPERTY1 = A.CENTER_ID
          WHERE A.ADMISSION_ID = #{admissionId}
            AND A.DEL_YN = 'N'
+    </select>
 
+    <!-- 환자 마지막 신체계측, 수면, 예측결과 조회 - kr.co.hconnect.sqlmapper.selectPatientDetailDashboardRecentResult -->
+    <select id="selectPatientDetailDashboardRecentResult"
+            parameterType="String"
+            resultType="kr.co.hconnect.vo.PatientDetailDashboardRecentResultVO">
+    <![CDATA[
+        WITH TOTAL_SLEEP AS (
+            SELECT #{admissionId} AS ADMISSION_ID
+                 , TRUNCATE(SUM(TIMESTAMPDIFF(MINUTE
+                                           , TIMESTAMP(X.RESULT_START_DATE, X.RESULT_START_TIME)
+                                           , TIMESTAMP(X.RESULT_END_DATE, X.RESULT_END_TIME))
+                                ) / 60
+                        , 0) AS SLEEP_RESULT
+             FROM RESULT_SLEEP X
+            WHERE X.ADMISSION_ID = #{admissionId}
+              AND (   (X.RESULT_START_DATE = DATE (DATE_ADD(NOW(), INTERVAL -1 DAY)) AND X.RESULT_START_TIME >= TIME ('220000'))
+                   OR (X.RESULT_START_DATE = DATE (NOW()) AND X.RESULT_START_TIME <= TIME ('080000')))
+              AND X.SLEEP_TYPE IN ('0', '1') -- 깊은잠, 얕은잠
+        )
+        SELECT A.ADMISSION_ID
+             -- 혈압
+             , RDSBP.RESULT                                 AS SBP_RESULT
+             , RDDBP.RESULT                                 AS DBP_RESULT
+             , CASE WHEN RDSBP.RESULT > IBP.REF_FROM
+                         THEN 'H'
+                    ELSE      ''
+               END                                          AS SBP_RISK_GB
+             , CASE WHEN RDDBP.RESULT < IBP.REF_TO
+                         THEN 'L'
+                    ELSE      ''
+               END                                          AS DBP_RISK_GB
+             , TIMESTAMP(RBP.RESULT_DATE, RBP.RESULT_TIME)  AS BP_RESULT_DT
+             , IBP.UNIT                                     AS BP_UNIT
+             -- 심박수
+             , RDPR.RESULT                                  AS PR_RESULT
+             , CASE WHEN RDPR.RESULT < IPR.REF_FROM
+                         THEN 'L'
+                    WHEN RDPR.RESULT > IPR.REF_TO
+                         THEN 'H'
+                    ELSE      ''
+               END                                          AS PR_RISK_GB
+             , TIMESTAMP(RPR.RESULT_DATE, RPR.RESULT_TIME)  AS PR_RESULT_DT
+             , IPR.UNIT                                     AS PR_UNIT
+             -- 체온
+             , RDBT.RESULT                                  AS BT_RESULT
+             , CASE WHEN RDBT.RESULT < IBT.REF_FROM
+                         THEN 'L'
+                    WHEN RDBT.RESULT > IBT.REF_TO
+                         THEN 'H'
+                    ELSE      ''
+               END                                          AS BT_RISK_GB
+             , TIMESTAMP(RBT.RESULT_DATE, RBT.RESULT_TIME)  AS BT_RESULT_DT
+             , IBT.UNIT                                     AS BT_UNIT
+             -- 걸음수
+             , RDST1.RESULT                                 AS ST1_RESULT
+             , RDST2.RESULT                                 AS ST2_RESULT
+             , ''                                           AS ST1_RISK_GB
+             , ''                                           AS ST2_RISK_GB
+             , TIMESTAMP(RST.RESULT_DATE, RST.RESULT_TIME)  AS ST_RESULT_DT
+             , IST.UNIT                                     AS ST_UNIT
+             -- 호흡(데이터 입력 가능 여부 미정)
+             , ''                                           AS RR_RESULT
+             , ''                                           AS RR_RISK_GB
+             , ''                                           AS RR_RESULT_DT
+             , ''                                           AS RR_UNIT
+             -- 산소포화도
+             , RDSP.RESULT                                  AS SP_RESULT
+             , CASE WHEN RDSP.RESULT < ISP.REF_FROM
+                         THEN 'L'
+                    WHEN RDSP.RESULT > ISP.REF_TO
+                         THEN 'H'
+                    ELSE      ''
+               END                                          AS SP_RISK_GB
+             , TIMESTAMP(RSP.RESULT_DATE, RSP.RESULT_TIME)  AS SP_RESULT_DT
+             , ISP.UNIT                                     AS SP_UNIT
+
+             , SLEEP.SLEEP_RESULT                           AS SLEEP_RESULT                    -- 총 수면시간
+             , CASE WHEN SLEEP_RESULT IS NULL
+                         THEN NULL
+                    ELSE      DATE (NOW())
+               END                                          AS SLEEP_DT                        -- 수면 측정일
+             , '시간'                                        AS SLEEP_UNIT                      -- 수면 단위
+             , NULL                                         AS RESPIRATORY_RISK_RESULT         -- 호흡기계 위험도
+             , NULL                                         AS RESPIRATORY_RISK_RESULT_DT      -- 호흡기계 위험도 측정일시
+             , NULL                                         AS RESPIRATORY_RISK_UNIT           -- 호흡기계 위험도 단위
+             , NULL                                         AS MENTAL_RISK_RESULT              -- 정신건강 위험도
+             , NULL                                         AS MENTAL_RISK_RESULT_DT           -- 정신건강 위험도 측정일시
+             , NULL                                         AS MENTAL_RISK_UNIT                -- 정신건강 위험도 단위
+          FROM ADMISSION A
+               /* 혈압 */
+               INNER JOIN ITEM            IBP     ON IBP.ITEM_ID = 'I0005'
+               LEFT JOIN RESULT           RBP     ON RBP.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                         FROM RESULT X
+                                                                        WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                          AND X.ITEM_ID = IBP.ITEM_ID
+                                                                        ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                        LIMIT 1)
+               LEFT JOIN RESULT_DETAIL    RDSBP   ON RDSBP.RESULT_SEQ = RBP.RESULT_SEQ
+                                                 AND RDSBP.RESULT_TYPE = '03'
+               LEFT JOIN RESULT_DETAIL    RDDBP   ON RDDBP.RESULT_SEQ = RBP.RESULT_SEQ
+                                                 AND RDDBP.RESULT_TYPE = '02'
+               /* 심박수 */
+               INNER JOIN ITEM            IPR     ON IPR.ITEM_ID = 'I0002'
+               LEFT JOIN RESULT           RPR     ON RPR.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                         FROM RESULT X
+                                                                        WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                          AND X.ITEM_ID = IPR.ITEM_ID
+                                                                        ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                        LIMIT 1)
+               LEFT JOIN RESULT_DETAIL    RDPR    ON RDPR.RESULT_SEQ = RPR.RESULT_SEQ
+               /* 체온 */
+               INNER JOIN ITEM            IBT     ON IBT.ITEM_ID = 'I0001'
+               LEFT JOIN RESULT           RBT     ON RBT.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                         FROM RESULT X
+                                                                        WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                          AND X.ITEM_ID = IBT.ITEM_ID
+                                                                        ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                        LIMIT 1)
+               LEFT JOIN RESULT_DETAIL     RDBT    ON RDBT.RESULT_SEQ = RBT.RESULT_SEQ
+               /* 걸음수 */
+               INNER JOIN ITEM             IST     ON IST.ITEM_ID = 'I0004'
+               LEFT JOIN RESULT            RST     ON RST.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                          FROM RESULT X
+                                                                         WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                           AND X.ITEM_ID = IST.ITEM_ID
+                                                                         ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                         LIMIT 1)
+               LEFT JOIN RESULT_DETAIL     RDST1   ON RDST1.RESULT_SEQ = RST.RESULT_SEQ
+                                                  AND RDST1.RESULT_TYPE = '04'
+               LEFT JOIN RESULT_DETAIL     RDST2   ON RDST2.RESULT_SEQ = RST.RESULT_SEQ
+                                                  AND RDST2.RESULT_TYPE = '05'
+               /* 산소포화도 */
+               LEFT JOIN ITEM              ISP     ON ISP.ITEM_ID = 'I0003'
+               LEFT JOIN RESULT            RSP     ON RSP.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                         FROM RESULT X
+                                                                        WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                          AND X.ITEM_ID = ISP.ITEM_ID
+                                                                        ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                        LIMIT 1)
+               LEFT JOIN RESULT_DETAIL     RDSP    ON RDSP.RESULT_SEQ = RSP.RESULT_SEQ
+               /* 총 수면시간 */
+               LEFT JOIN TOTAL_SLEEP       SLEEP   ON SLEEP.ADMISSION_ID = A.ADMISSION_ID
+         WHERE A.ADMISSION_ID = #{admissionId}
+    ]]>
     </select>
 
 <!--	&lt;!&ndash; 환자 상세 대쉬보드 입소 상세 정보 조회 &ndash;&gt;-->

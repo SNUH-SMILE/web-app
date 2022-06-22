@@ -54,9 +54,6 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 					, null, Locale.getDefault()));
 		}
 
-		// 02. 상단 최근 측정결과 조회
-
-
 		PatientDetailDashboardVO vo = new PatientDetailDashboardVO();
 		vo.setAdmissionId(admissionId);
 		vo.setHeaderVO(patientDetailDashboardHeaderVO);		// 상단 헤더 정보 바인딩
