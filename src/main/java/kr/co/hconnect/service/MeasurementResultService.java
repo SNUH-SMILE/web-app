@@ -5,6 +5,7 @@ import kr.co.hconnect.common.ItemId;
 import kr.co.hconnect.common.ResultType;
 import kr.co.hconnect.domain.*;
 import kr.co.hconnect.repository.MeasurementResultDao;
+import kr.co.hconnect.repository.NoticeDao;
 import kr.co.hconnect.vo.AdmissionVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,16 +28,22 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
      * 메인 Dao
      */
     private final MeasurementResultDao dao;
+    /**
+     * 알림 Dao
+     */
+    private final NoticeDao noticeDao;
 
     /**
      * 생성자
      *
      * @param dao MeasurementResultDao
+     * @param noticeDao 알림 Dao
      */
     @Autowired
-    public MeasurementResultService(AdmissionService admissionService, MeasurementResultDao dao) {
+    public MeasurementResultService(AdmissionService admissionService, MeasurementResultDao dao, NoticeDao noticeDao) {
         this.admissionService = admissionService;
         this.dao = dao;
+        this.noticeDao = noticeDao;
     }
 
     /**
@@ -44,8 +51,8 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
      * @param admissionId 입소자 Id
      * @return 읽지않은 공지사항 갯수
      */
-    public int unReadNotice(String admissionId) {
-        return dao.selectUnreadNotice(admissionId);
+    public int selectNoticeUnReadCountByAdmissionId(String admissionId) {
+        return noticeDao.selectNoticeUnReadCountByAdmissionId(admissionId);
     }
 
     /**

@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 환자 상세 대시보드 전체 조회 내역
@@ -26,5 +27,9 @@ public class PatientDetailDashboardVO implements Serializable {
      * 환자 상세 대시보드 상단 헤더 정보
      */
     private PatientDetailDashboardHeaderVO headerVO;
+    /**
+     * 알림 내역 리스트
+     */
+    private List<NoticeVO> noticeVOList;
 
 }

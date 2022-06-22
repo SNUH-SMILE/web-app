@@ -10,16 +10,6 @@ import java.util.List;
 public class MeasurementResultDao extends EgovAbstractMapper {
 
     /**
-     * 신규 알림 여부조회
-     *
-     * @param admissionId 입소자 Id
-     * @return 읽지않은 공지사항 갯수
-     */
-    public int selectUnreadNotice(String admissionId) {
-        return selectList("kr.co.hconnect.sqlmapper.selectNotice", admissionId).size();
-    }
-
-    /**
      * 측정일자별 상세체온 목록 조회
      *
      * @param searchResultInfo 검색조건

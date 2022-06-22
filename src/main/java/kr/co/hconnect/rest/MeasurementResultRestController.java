@@ -115,7 +115,7 @@ public class MeasurementResultRestController {
             throw new InvalidRequestArgumentException(bindingResult);
         }
 
-        int result = measurementResultService.unReadNotice(getAdmissionId(loginId.getLoginId()));
+        int result = measurementResultService.selectNoticeUnReadCountByAdmissionId(getAdmissionId(loginId.getLoginId()));
         ExistResult existResult = new ExistResult();
         existResult.setCode(ApiResponseCode.SUCCESS.getCode());
         // 알림 있을때

@@ -3,13 +3,17 @@ package kr.co.hconnect.service;
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
+import kr.co.hconnect.repository.NoticeDao;
 import kr.co.hconnect.repository.PatientDetailDashboardDao;
+import kr.co.hconnect.vo.NoticeListSearchVO;
+import kr.co.hconnect.vo.NoticeVO;
 import kr.co.hconnect.vo.PatientDetailDashboardHeaderVO;
 import kr.co.hconnect.vo.PatientDetailDashboardVO;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -24,6 +28,10 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 	 */
 	private final PatientDetailDashboardDao patientDetailDashboardDao;
 	/**
+	 * 알림 Dao
+	 */
+	private final NoticeDao noticeDao;	
+	/**
 	 * MessageSource
 	 */
 	private final MessageSource messageSource;
@@ -31,10 +39,12 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 	/**
 	 * 생성자
 	 * @param patientDetailDashboardDao 환자 상세 대쉬보드 DAO
+	 * @param noticeDao 알림 Dao
 	 * @param messageSource MessageSource
 	 */
-	public PatientDetailDashboardService(PatientDetailDashboardDao patientDetailDashboardDao, MessageSource messageSource) {
+	public PatientDetailDashboardService(PatientDetailDashboardDao patientDetailDashboardDao, NoticeDao noticeDao, MessageSource messageSource) {
 		this.patientDetailDashboardDao = patientDetailDashboardDao;
+		this.noticeDao = noticeDao;
 		this.messageSource = messageSource;
 	}
 
@@ -54,9 +64,15 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 					, null, Locale.getDefault()));
 		}
 
+		// 02. 알림 내역 조회
+		NoticeListSearchVO noticeListSearchVO = new NoticeListSearchVO();
+		noticeListSearchVO.setAdmissionId(admissionId);
+		List<NoticeVO> noticeVOList = noticeDao.selectNoticeListByAdmissionId(noticeListSearchVO);		
+		
 		PatientDetailDashboardVO vo = new PatientDetailDashboardVO();
 		vo.setAdmissionId(admissionId);
 		vo.setHeaderVO(patientDetailDashboardHeaderVO);		// 상단 헤더 정보 바인딩
+		vo.setNoticeVOList(noticeVOList);					// 알림내역
 
 		return vo;
 	}
