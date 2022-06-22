@@ -2,297 +2,350 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.hconnect.sqlmapper">
 
-	<!-- 환자 상세 대쉬보드 입소 상세 정보 조회 -->
-	<select id="selectPatientDetailDashboardPatientInfo" parameterType="String" resultType="kr.co.hconnect.vo.PatientDetailDashboardPatientInfoVO">
-	<![CDATA[
-	    -- 환자 상세 대쉬보드 입소 상세 정보 조회
-	    -- selectPatientDetailDashboardPatientInfo
-	    /* TODO::V/S ITEM_CD 확정 후 쿼리 수정 필요 */
-        WITH TAB AS (
-            SELECT X.ITEM_ID
-                , MAX(X.RESULT_SEQ) AS RESULT_SEQ
-            FROM RESULT X
-            WHERE X.ADMISSION_ID = #{admissionId}
-            GROUP BY ITEM_ID)
-        SELECT A.ADMISSION_ID                                              AS ADMISSION_ID
-             , A.ADMISSION_DATE                                            AS ADMIT_DATE
-             , TC.CENTER_NM                                                AS CENTER_NM
-             , B.PATIENT_NM                                                AS NAME
-             , ROOM.DETAIL_CD_NM                                           AS LOCATION_NM
-             , B.PATIENT_ID                                                AS PATIENT_ID
-             , B.BIRTH_DATE                                                AS BIRTH_DATE
-             , B.CELL_PHONE                                                AS CONTACT
-             , SEX.DETAIL_CD_NM                                            AS SEX_NM
-             , TRUNCATE((TO_DAYS(NOW()) - TO_DAYS(B.BIRTH_DATE)) / 365, 0) AS AGE
+    <!-- 환자 상세 대시보드 상단 정보 조회 - kr.co.hconnect.sqlmapper.selectPatientDetailDashboardHeader -->
+    <select id="selectPatientDetailDashboardHeader"
+            parameterType="String"
+            resultType="kr.co.hconnect.vo.PatientDetailDashboardHeaderVO">
+        SELECT A.ADMISSION_ID                       -- 격리/입소내역ID
+             , P.PATIENT_ID                         -- 환자ID
+             , P.PATIENT_NM                         -- 환자명
+             , TRUNCATE((TO_DAYS(NOW()) - TO_DAYS(P.BIRTH_DATE)) / 365, 0)
+                                    AS AGE          -- 나이-만
+             , P.BIRTH_DATE                         -- 생년월일
+             , P.SEX                                -- 성별
+             , CASE WHEN IFNULL(CCDS.PROPERTY2, '') = ''
+                         THEN P.SEX
+                    ELSE      CCDS.PROPERTY2
+               END                  AS SEX_NM       -- 성별명칭
+             , P.CELL_PHONE                         -- 연락처
+             , A.QANTN_DIV                          -- 격리/입소 구분
+             , CASE WHEN A.QANTN_DIV = '2'
+                         THEN A.CENTER_ID
+                    ELSE      ''
+               END                  AS CENTER_ID    -- 센터ID
+             , CASE WHEN A.QANTN_DIV = '2'
+                         THEN TC.CENTER_NM
+                    ELSE      ''
+               END                  AS CENTER_NM    -- 센터명
+             , CASE WHEN A.QANTN_DIV = '2'
+                         THEN A.ROOM
+                    ELSE      ''
+               END                  AS ROOM         -- 호실(위치)
+             , CASE WHEN A.QANTN_DIV = '2'
+                         THEN CCDR.DETAIL_CD_NM
+                    ELSE      ''
+               END                  AS ROOM_NM      -- 호실(위치) 명
+             , A.ADMISSION_DATE                     -- 시작일
+             , A.DSCHGE_SCHDLD_DATE                 -- 종료예정일
+             , A.DSCHGE_DATE                        -- 종료일
+             , CASE WHEN A.DSCHGE_DATE IS NULL
+                         THEN 'N'
+                    ELSE      'Y'
+               END                  AS DSCHGE_YN    -- 퇴소/해제 여부
+          FROM ADMISSION A
+               INNER JOIN PATIENT          P     ON A.PATIENT_ID   = P.PATIENT_ID
+               LEFT JOIN TREATMENT_CENTER  TC    ON A.CENTER_ID = TC.CENTER_ID
+               INNER JOIN COM_CD_DETAIL    CCDS  ON CCDS.COM_CD    = 'CD003'
+                                                AND CCDS.DETAIL_CD = P.SEX
+               LEFT JOIN COM_CD_DETAIL     CCDR  ON CCDR.COM_CD    = 'CD005'
+                                                AND CCDR.DETAIL_CD = A.ROOM
+                                                AND CCDR.PROPERTY1 = A.CENTER_ID
+         WHERE A.ADMISSION_ID = #{admissionId}
+           AND A.DEL_YN = 'N'
 
-            /* 혈압 */
-             , IBP.ITEM_NM                                                 AS BP_NM
-             , IBP.UNIT                                                    AS BP_UNIT
-             , CONCAT(RDSBP.RESULT, '/', RDDBP.RESULT)                     AS BP
-             , 'N'                                                         AS BP_RISK_YN
-             , RBP.RESULT_DATE                                             AS BP_RESULT_DT
-            /* 맥박 */
-             , IPR.ITEM_NM                                                 AS PR_NM
-             , IPR.UNIT                                                    AS PR_UNIT
-             , RDPR.RESULT                                                 AS PR
-             , 'N'                                                         AS PR_RISK_YN
-             , RPR.RESULT_DATE                                             AS PR_RESULT_DT
-            /* 체온 */
-             , IBT.ITEM_NM                                                 AS BT_NM
-             , IBT.UNIT                                                    AS BT_UNIT
-             , RDBT.RESULT                                                 AS BT
-             , 'N'                                                         AS BT_RISK_YN
-             , RBT.RESULT_DATE                                             AS BT_RESULT_DT
-            /*     , CASE WHEN CONCAT('', (RBT.RESULT * 1)) = RBT.RESULT
-                             THEN
-                                  CASE WHEN RBT.RESULT > IBT.REF_FROM
-                                            THEN 'H'
-                                       WHEN RBT.RESULT < IBT.REF_TO
-                                            THEN 'L'
-                                       ELSE      ''
-                                  END
-                        ELSE      ''
-                   END                 AS BT_RIST_GB */
-            /* 호흡 */
-             , IRR.ITEM_NM                                                 AS RR_NM
-             , IRR.UNIT                                                    AS RR_UNIT
-             , RDRR1.RESULT                                                AS RR
-             , RDRR2.RESULT                                                AS RR2
-             , 'N'                                                         AS RR_RISK_YN
-             , RRR.RESULT_DATE                                             AS RR_RESULT_DT
-            /* 산소포화도 */
-             , ISP.ITEM_NM                                                 AS SPO2_NM
-             , ISP.UNIT                                                    AS SPO2_UNIT
-             , RDSP.RESULT                                                 AS SPO2
-             , 'N'                                                         AS SPO2_RISK_YN
-             , RSP.RESULT_DATE                                             AS SPO2_RESULT_DT
-        FROM ADMISSION A
-                 INNER JOIN PATIENT B ON A.PATIENT_ID = B.PATIENT_ID
-                 INNER JOIN TREATMENT_CENTER TC on A.CENTER_ID = tc.CENTER_ID
-                 LEFT JOIN COM_CD_DETAIL SEX ON SEX.COM_CD = 'CD003' AND B.SEX = SEX.DETAIL_CD
-                 LEFT JOIN COM_CD_DETAIL ROOM ON ROOM.COM_CD = 'CD005' AND A.ROOM = ROOM.DETAIL_CD
-            /* 혈압 */
-                 INNER JOIN ITEM IBP ON IBP.ITEM_ID = 'I0005'
-                 LEFT JOIN RESULT RBP ON RBP.RESULT_SEQ = (SELECT X.RESULT_SEQ FROM TAB X WHERE X.ITEM_ID = IBP.ITEM_ID)
-                 LEFT JOIN RESULT_DETAIL RDSBP ON RDSBP.RESULT_SEQ = RBP.RESULT_SEQ
-            AND RDSBP.RESULT_TYPE = '03'
-                 LEFT JOIN RESULT_DETAIL RDDBP ON RDDBP.RESULT_SEQ = RBP.RESULT_SEQ
-            AND RDDBP.RESULT_TYPE = '02'
-            /* 심박수-맥박 */
-                 INNER JOIN ITEM IPR ON IPR.ITEM_ID = 'I0002'
-                 LEFT JOIN RESULT RPR ON RPR.RESULT_SEQ = (SELECT X.RESULT_SEQ FROM TAB X WHERE X.ITEM_ID = IPR.ITEM_ID)
-                 LEFT JOIN RESULT_DETAIL RDPR ON RDPR.RESULT_SEQ = RPR.RESULT_SEQ
-            /* 체온 */
-                 INNER JOIN ITEM IBT ON IBT.ITEM_ID = 'I0001'
-                 LEFT JOIN RESULT RBT ON RBT.RESULT_SEQ = (SELECT X.RESULT_SEQ FROM TAB X WHERE X.ITEM_ID = IBT.ITEM_ID)
-                 LEFT JOIN RESULT_DETAIL RDBT ON RDBT.RESULT_SEQ = RBT.RESULT_SEQ
-            /* 걸음수-호흡 */
-                 INNER JOIN ITEM IRR ON IRR.ITEM_ID = 'I0004'
-                 LEFT JOIN RESULT RRR ON RRR.RESULT_SEQ = (SELECT X.RESULT_SEQ FROM TAB X WHERE X.ITEM_ID = IRR.ITEM_ID)
-                 LEFT JOIN RESULT_DETAIL RDRR1 ON RDRR1.RESULT_SEQ = RRR.RESULT_SEQ
-            AND RDRR1.RESULT_TYPE = '04'
-                 LEFT JOIN RESULT_DETAIL RDRR2 ON RDRR2.RESULT_SEQ = RRR.RESULT_SEQ
-            AND RDRR2.RESULT_TYPE = '05'
-            /* 산소포화도 */
-                 LEFT JOIN ITEM ISP ON ISP.ITEM_ID = 'I0003'
-                 LEFT JOIN RESULT RSP ON RSP.RESULT_SEQ = (SELECT X.RESULT_SEQ FROM TAB X WHERE X.ITEM_ID = ISP.ITEM_ID)
-                 LEFT JOIN RESULT_DETAIL RDSP ON RDSP.RESULT_SEQ = RSP.RESULT_SEQ
-        WHERE A.ADMISSION_ID = #{admissionId}
+    </select>
 
-	]]>
-	</select>
-
-	<!-- 환자 상세 대쉬보드 측정결과 데이터 조회 -->
-	<select id="selectPatientDetailDashboardResultList"
-			parameterType="kr.co.hconnect.vo.PatientDetailDashboardResultSearchVO"
-			resultType="kr.co.hconnect.vo.PatientDetailDashboardResultVO">
-    <![CDATA[
-        WITH TAB_RESULT AS (
-            SELECT R.RESULT_SEQ
-                 , TIMESTAMP(R.RESULT_DATE, R.RESULT_TIME) AS RESULT_DT
-                 , R.ITEM_ID
-                 /* 혈압 */
-                 , IBP.ITEM_NM                             AS BP_ITEM
-                 , RSBP.RESULT                             AS SBP
-                 , RDBP.RESULT                             AS DBP
-                 , CASE WHEN !(RSBP.RESULT > IBP.REF_FROM OR RDBP.RESULT < IBP.REF_TO)
-                             THEN 'Y'
-                        ELSE 'N' END
-                                                           AS BP_RISK_YN
-                 /* 심박수-맥박 */
-                 , IPR.ITEM_NM                             AS PR_TIEM
-                 , RPR.RESULT                              AS PR
-                 , CASE WHEN !(RPR.RESULT BETWEEN IPR.REF_FROM AND IPR.REF_TO)
-                             THEN 'Y'
-                        ELSE 'N' END                       AS PR_RISK_YN
-                 /* 체온 */
-                 , IBT.ITEM_NM                             AS BT_ITEM
-                 , RBT.RESULT                              AS BT
-                 , CASE WHEN !(RBT.RESULT BETWEEN IBT.REF_FROM AND IBT.REF_TO)
-                             THEN 'Y'
-                        ELSE 'N' END                       AS BT_RISK_YN
-                 /* 걸읍수-호흡 */
-                 , IRR.ITEM_NM                             AS RR_ITEM
-                 , RRR1.RESULT                             AS RR1
-                 , RRR2.RESULT                             AS RR2
-                 , CASE WHEN !(RRR1.RESULT BETWEEN IRR.REF_FROM AND IRR.REF_TO)
-                             THEN 'Y'
-                        ELSE 'N' END                       AS RR_RISK_YN
-                 /* 산소포화도 */
-                 , ISP.ITEM_NM                             AS SPO2_ITEM
-                 , RSP.RESULT                              AS SPO2
-                 , CASE WHEN !(RSP.RESULT BETWEEN ISP.REF_FROM AND ISP.REF_TO)
-                             THEN 'Y'
-                        ELSE 'N' END                       AS SPO2_RISK_YN
-              FROM RESULT R
-                   /* 혈압 */
-                   INNER JOIN ITEM         IBP   ON IBP.ITEM_ID = 'I0005'
-                   LEFT JOIN RESULT_DETAIL RSBP  ON R.RESULT_SEQ = RSBP.RESULT_SEQ
-                                                AND R.ITEM_ID = IBP.ITEM_ID
-                                                AND RSBP.RESULT_TYPE = '03'
-                   LEFT JOIN RESULT_DETAIL RDBP  ON R.RESULT_SEQ = RDBP.RESULT_SEQ
-                                                AND R.ITEM_ID = IBP.ITEM_ID
-                                                AND RDBP.RESULT_TYPE = '02'
-                   /* 심박수-맥박 */
-                   INNER JOIN ITEM         IPR   ON IPR.ITEM_ID = 'I0002'
-                   LEFT JOIN RESULT_DETAIL RPR   ON R.RESULT_SEQ = RPR.RESULT_SEQ
-                                                AND R.ITEM_ID = IPR.ITEM_ID
-                   /* 체온 */
-                   INNER JOIN ITEM         IBT   ON IBT.ITEM_ID = 'I0001'
-                   LEFT JOIN RESULT_DETAIL RBT   ON R.RESULT_SEQ = RBT.RESULT_SEQ
-                                                AND R.ITEM_ID = IBT.ITEM_ID
-                   /* 걸음수-호흡 */
-                   INNER JOIN ITEM         IRR   ON IRR.ITEM_ID = 'I0004'
-                   LEFT JOIN RESULT_DETAIL RRR1  ON R.RESULT_SEQ = RRR1.RESULT_SEQ
-                                                AND R.ITEM_ID = IRR.ITEM_ID
-                                                AND RRR1.RESULT_TYPE = '04'
-                   LEFT JOIN RESULT_DETAIL RRR2  ON R.RESULT_SEQ = RRR2.RESULT_SEQ
-                                                AND R.ITEM_ID = IRR.ITEM_ID
-                                                AND RRR2.RESULT_TYPE = '05'
-                   /* 산소포화도 */
-                   LEFT JOIN ITEM          ISP   ON ISP.ITEM_ID = 'I0003'
-                   LEFT JOIN RESULT_DETAIL RSP   ON R.RESULT_SEQ = RSP.RESULT_SEQ
-                                                AND R.ITEM_ID = ISP.ITEM_ID
-             WHERE R.ADMISSION_ID = #{admissionId}
-               AND R.RESULT_DATE BETWEEN #{resultFromDt} AND #{resultToDt})
-        SELECT A.RESULT_DT
-             , MAX(CASE WHEN A.ITEM_ID = 'I0005'
-                             THEN CONCAT(A.SBP, '/', A.DBP)
-                        ELSE NULL END) AS BP
-             , MAX(CASE WHEN A.ITEM_ID = 'I0005'
-                             THEN A.SBP
-                        ELSE NULL END) AS SBP
-             , MAX(CASE WHEN A.ITEM_ID = 'I0005'
-                             THEN A.DBP
-                        ELSE NULL END) AS DBP
-             , MAX(CASE WHEN A.ITEM_ID = 'I0005'
-                             THEN A.BP_RISK_YN
-                        ELSE 'N' END) AS BP_RISK_YN
-             , MAX(CASE WHEN A.ITEM_ID = 'I0002'
-                             THEN A.PR
-                        ELSE NULL END) AS PR
-             , MAX(CASE WHEN A.ITEM_ID = 'I0002'
-                             THEN A.PR_RISK_YN
-                        ELSE 'N' END) AS PR_RISK_YN
-             , MAX(CASE WHEN A.ITEM_ID = 'I0001'
-                             THEN A.BT
-                        ELSE NULL END) AS BT
-             , MAX(CASE WHEN A.ITEM_ID = 'I0001'
-                             THEN A.BT_RISK_YN
-                        ELSE 'N' END) AS BT_RISK_YN
-             , MAX(CASE WHEN A.ITEM_ID = 'I0004'
-                             THEN A.RR1
-                        ELSE NULL END) AS RR
-             , MAX(CASE WHEN A.ITEM_ID = 'I0004'
-                             THEN A.RR_RISK_YN
-                        ELSE 'N' END) AS RR_RISK_YN
-             , MAX(CASE WHEN A.ITEM_ID = 'I0003'
-                             THEN A.SPO2
-                        ELSE NULL END) AS SPO2
-             , MAX(CASE WHEN A.ITEM_ID = 'I0003'
-                             THEN A.SPO2_RISK_YN
-                        ELSE 'N' END) AS SPO2_RISK_YN
-         FROM TAB_RESULT A
-        GROUP BY A.RESULT_DT
-        ORDER BY A.RESULT_DT DESC
-    ]]>
-
+<!--	&lt;!&ndash; 환자 상세 대쉬보드 입소 상세 정보 조회 &ndash;&gt;-->
+<!--	<select id="selectPatientDetailDashboardPatientInfo" parameterType="String" resultType="kr.co.hconnect.vo.PatientDetailDashboardPatientInfoVO">-->
 <!--	<![CDATA[-->
-<!--	    &#45;&#45; 환자 상세 대쉬보드 측정결과 데이터 조회-->
-<!--	    &#45;&#45; selectPatientDetailDashboardResultList	    -->
-<!--		/* TODO::V/S ITEM_CD 확정 후 쿼리 수정 필요, SBP,DBP 항목 확인 */-->
-<!--		WITH TAB AS-->
-<!--		(-->
-<!--		SELECT A.RESULT_DT -->
-<!--		     , MAX(CASE WHEN A.ITEM_ID = 'I0025' THEN RESULT ELSE NULL END) AS BP -->
-<!--		     , MAX(CASE WHEN A.ITEM_ID = 'I0026' THEN RESULT ELSE NULL END) AS PR-->
-<!--		     , MAX(CASE WHEN A.ITEM_ID = 'I0027' THEN RESULT ELSE NULL END) AS BT-->
-<!--		     , MAX(CASE WHEN A.ITEM_ID = 'I0028' THEN RESULT ELSE NULL END) AS RR-->
-<!--		     , MAX(CASE WHEN A.ITEM_ID = 'I0029' THEN RESULT ELSE NULL END) AS SPO2-->
-<!--		  FROM RESULT A -->
-<!--		 WHERE A.ADMISSION_ID = #{admissionId}-->
-<!--		    AND A.RESULT_DT BETWEEN DATE_FORMAT(#{resultFromDt}, '%Y-%m-%d') AND DATE_FORMAT(#{resultToDt}, '%Y-%m-%d')-->
-<!--		   AND A.ITEM_ID IN ('I0025','I0026','I0027','I0028','I0029')  -->
-<!--		 GROUP-->
-<!--		    BY A.RESULT_DT  -->
-<!--		 ORDER -->
-<!--		    BY A.RESULT_DT DESC-->
-<!--		)-->
-<!--		SELECT RESULT_DT                         &#45;&#45; 측정일시-->
-<!--			 , BP        &#45;&#45; 혈압-->
-<!--			 , CASE-->
-<!--				   WHEN INSTR(BP, '/') BETWEEN 1 AND LENGTH(BP)-->
-<!--					   THEN SUBSTRING_INDEX(BP, '/', 1)-->
-<!--			END AS SBP   &#45;&#45; SBP-->
-<!--			 , CASE-->
-<!--				   WHEN SUBSTRING_INDEX(BP, '/', 1) > 130-->
-<!--					   THEN 'Y'-->
-<!--				   ELSE 'N'-->
-<!--			END AS BP_RISK_YN-->
-<!--			 , CASE-->
-<!--				   WHEN INSTR(BP, '/') BETWEEN 1 AND LENGTH(BP)-->
-<!--					   THEN SUBSTRING_INDEX(BP, '/', -1)-->
-<!--				   ELSE NULL-->
-<!--			END AS DBP   &#45;&#45; DBP-->
-<!--			 , PR        &#45;&#45; 맥박-->
-<!--			 , CASE-->
-<!--				   WHEN PR >= 135-->
-<!--					   THEN 'Y'-->
-<!--				   ELSE 'N'-->
-<!--			END AS PR_RISK_YN-->
-<!--			 , BT        &#45;&#45; 체온-->
-<!--			 , CASE-->
-<!--				   WHEN BT >= 37.5-->
-<!--					   THEN 'Y'-->
-<!--				   ELSE 'N'-->
-<!--			END AS BT_RISK_YN-->
-<!--			 , RR        &#45;&#45; 호흡-->
-<!--			 , CASE-->
-<!--				   WHEN RR >= 30-->
-<!--					   THEN 'Y'-->
-<!--				   ELSE 'N'-->
-<!--			END AS RR_RISK_YN-->
-<!--			 , SPO2      &#45;&#45; 산소포화도-->
-<!--			 , CASE-->
-<!--				   WHEN SPO2 <= 90-->
-<!--					   THEN 'Y'-->
-<!--				   ELSE 'N'-->
-<!--			END AS SPO2_RISK_YN-->
-<!--		  FROM TAB-->
+<!--	    &#45;&#45; 환자 상세 대쉬보드 입소 상세 정보 조회-->
+<!--	    &#45;&#45; selectPatientDetailDashboardPatientInfo-->
+<!--	    /* TODO::V/S ITEM_CD 확정 후 쿼리 수정 필요 */-->
+<!--        WITH TAB AS (-->
+<!--            SELECT X.ITEM_ID-->
+<!--                , MAX(X.RESULT_SEQ) AS RESULT_SEQ-->
+<!--            FROM RESULT X-->
+<!--            WHERE X.ADMISSION_ID = #{admissionId}-->
+<!--            GROUP BY ITEM_ID)-->
+<!--        SELECT A.ADMISSION_ID                                              AS ADMISSION_ID-->
+<!--             , A.ADMISSION_DATE                                            AS ADMIT_DATE-->
+<!--             , TC.CENTER_NM                                                AS CENTER_NM-->
+<!--             , B.PATIENT_NM                                                AS NAME-->
+<!--             , ROOM.DETAIL_CD_NM                                           AS LOCATION_NM-->
+<!--             , B.PATIENT_ID                                                AS PATIENT_ID-->
+<!--             , B.BIRTH_DATE                                                AS BIRTH_DATE-->
+<!--             , B.CELL_PHONE                                                AS CONTACT-->
+<!--             , SEX.DETAIL_CD_NM                                            AS SEX_NM-->
+<!--             , TRUNCATE((TO_DAYS(NOW()) - TO_DAYS(B.BIRTH_DATE)) / 365, 0) AS AGE-->
+
+<!--            /* 혈압 */-->
+<!--             , IBP.ITEM_NM                                                 AS BP_NM-->
+<!--             , IBP.UNIT                                                    AS BP_UNIT-->
+<!--             , CONCAT(RDSBP.RESULT, '/', RDDBP.RESULT)                     AS BP-->
+<!--             , 'N'                                                         AS BP_RISK_YN-->
+<!--             , RBP.RESULT_DATE                                             AS BP_RESULT_DT-->
+<!--            /* 맥박 */-->
+<!--             , IPR.ITEM_NM                                                 AS PR_NM-->
+<!--             , IPR.UNIT                                                    AS PR_UNIT-->
+<!--             , RDPR.RESULT                                                 AS PR-->
+<!--             , 'N'                                                         AS PR_RISK_YN-->
+<!--             , RPR.RESULT_DATE                                             AS PR_RESULT_DT-->
+<!--            /* 체온 */-->
+<!--             , IBT.ITEM_NM                                                 AS BT_NM-->
+<!--             , IBT.UNIT                                                    AS BT_UNIT-->
+<!--             , RDBT.RESULT                                                 AS BT-->
+<!--             , 'N'                                                         AS BT_RISK_YN-->
+<!--             , RBT.RESULT_DATE                                             AS BT_RESULT_DT-->
+<!--            /*     , CASE WHEN CONCAT('', (RBT.RESULT * 1)) = RBT.RESULT-->
+<!--                             THEN-->
+<!--                                  CASE WHEN RBT.RESULT > IBT.REF_FROM-->
+<!--                                            THEN 'H'-->
+<!--                                       WHEN RBT.RESULT < IBT.REF_TO-->
+<!--                                            THEN 'L'-->
+<!--                                       ELSE      ''-->
+<!--                                  END-->
+<!--                        ELSE      ''-->
+<!--                   END                 AS BT_RIST_GB */-->
+<!--            /* 호흡 */-->
+<!--             , IRR.ITEM_NM                                                 AS RR_NM-->
+<!--             , IRR.UNIT                                                    AS RR_UNIT-->
+<!--             , RDRR1.RESULT                                                AS RR-->
+<!--             , RDRR2.RESULT                                                AS RR2-->
+<!--             , 'N'                                                         AS RR_RISK_YN-->
+<!--             , RRR.RESULT_DATE                                             AS RR_RESULT_DT-->
+<!--            /* 산소포화도 */-->
+<!--             , ISP.ITEM_NM                                                 AS SPO2_NM-->
+<!--             , ISP.UNIT                                                    AS SPO2_UNIT-->
+<!--             , RDSP.RESULT                                                 AS SPO2-->
+<!--             , 'N'                                                         AS SPO2_RISK_YN-->
+<!--             , RSP.RESULT_DATE                                             AS SPO2_RESULT_DT-->
+<!--        FROM ADMISSION A-->
+<!--                 INNER JOIN PATIENT B ON A.PATIENT_ID = B.PATIENT_ID-->
+<!--                 INNER JOIN TREATMENT_CENTER TC on A.CENTER_ID = tc.CENTER_ID-->
+<!--                 LEFT JOIN COM_CD_DETAIL SEX ON SEX.COM_CD = 'CD003' AND B.SEX = SEX.DETAIL_CD-->
+<!--                 LEFT JOIN COM_CD_DETAIL ROOM ON ROOM.COM_CD = 'CD005' AND A.ROOM = ROOM.DETAIL_CD-->
+<!--            /* 혈압 */-->
+<!--                 INNER JOIN ITEM IBP ON IBP.ITEM_ID = 'I0005'-->
+<!--                 LEFT JOIN RESULT RBP ON RBP.RESULT_SEQ = (SELECT X.RESULT_SEQ FROM TAB X WHERE X.ITEM_ID = IBP.ITEM_ID)-->
+<!--                 LEFT JOIN RESULT_DETAIL RDSBP ON RDSBP.RESULT_SEQ = RBP.RESULT_SEQ-->
+<!--            AND RDSBP.RESULT_TYPE = '03'-->
+<!--                 LEFT JOIN RESULT_DETAIL RDDBP ON RDDBP.RESULT_SEQ = RBP.RESULT_SEQ-->
+<!--            AND RDDBP.RESULT_TYPE = '02'-->
+<!--            /* 심박수-맥박 */-->
+<!--                 INNER JOIN ITEM IPR ON IPR.ITEM_ID = 'I0002'-->
+<!--                 LEFT JOIN RESULT RPR ON RPR.RESULT_SEQ = (SELECT X.RESULT_SEQ FROM TAB X WHERE X.ITEM_ID = IPR.ITEM_ID)-->
+<!--                 LEFT JOIN RESULT_DETAIL RDPR ON RDPR.RESULT_SEQ = RPR.RESULT_SEQ-->
+<!--            /* 체온 */-->
+<!--                 INNER JOIN ITEM IBT ON IBT.ITEM_ID = 'I0001'-->
+<!--                 LEFT JOIN RESULT RBT ON RBT.RESULT_SEQ = (SELECT X.RESULT_SEQ FROM TAB X WHERE X.ITEM_ID = IBT.ITEM_ID)-->
+<!--                 LEFT JOIN RESULT_DETAIL RDBT ON RDBT.RESULT_SEQ = RBT.RESULT_SEQ-->
+<!--            /* 걸음수-호흡 */-->
+<!--                 INNER JOIN ITEM IRR ON IRR.ITEM_ID = 'I0004'-->
+<!--                 LEFT JOIN RESULT RRR ON RRR.RESULT_SEQ = (SELECT X.RESULT_SEQ FROM TAB X WHERE X.ITEM_ID = IRR.ITEM_ID)-->
+<!--                 LEFT JOIN RESULT_DETAIL RDRR1 ON RDRR1.RESULT_SEQ = RRR.RESULT_SEQ-->
+<!--            AND RDRR1.RESULT_TYPE = '04'-->
+<!--                 LEFT JOIN RESULT_DETAIL RDRR2 ON RDRR2.RESULT_SEQ = RRR.RESULT_SEQ-->
+<!--            AND RDRR2.RESULT_TYPE = '05'-->
+<!--            /* 산소포화도 */-->
+<!--                 LEFT JOIN ITEM ISP ON ISP.ITEM_ID = 'I0003'-->
+<!--                 LEFT JOIN RESULT RSP ON RSP.RESULT_SEQ = (SELECT X.RESULT_SEQ FROM TAB X WHERE X.ITEM_ID = ISP.ITEM_ID)-->
+<!--                 LEFT JOIN RESULT_DETAIL RDSP ON RDSP.RESULT_SEQ = RSP.RESULT_SEQ-->
+<!--        WHERE A.ADMISSION_ID = #{admissionId}-->
 
 <!--	]]>-->
-	</select>
+<!--	</select>-->
 
-	<!-- SELECT 측정 ITEM 정보 By ItemId-->
-	<select id="selectItemByItemId" parameterType="String" resultType="kr.co.hconnect.vo.ItemVO">
-	<![CDATA[
-		-- TODO 측정ITEM 선택방법 변경될 수 있음
-		SELECT ITEM_ID -- 측정 ITEM ID
-		     , ITEM_NM -- 측정 ITEM 명
-			 , UNIT    -- 측정 UNIT
-		FROM ITEM
-		    WHERE ITEM_ID  =   #{centerId}
-	]]>
-	</select>
+<!--	&lt;!&ndash; 환자 상세 대쉬보드 측정결과 데이터 조회 &ndash;&gt;-->
+<!--	<select id="selectPatientDetailDashboardResultList"-->
+<!--			parameterType="kr.co.hconnect.vo.PatientDetailDashboardResultSearchVO"-->
+<!--			resultType="kr.co.hconnect.vo.PatientDetailDashboardResultVO">-->
+<!--    <![CDATA[-->
+<!--        WITH TAB_RESULT AS (-->
+<!--            SELECT R.RESULT_SEQ-->
+<!--                 , TIMESTAMP(R.RESULT_DATE, R.RESULT_TIME) AS RESULT_DT-->
+<!--                 , R.ITEM_ID-->
+<!--                 /* 혈압 */-->
+<!--                 , IBP.ITEM_NM                             AS BP_ITEM-->
+<!--                 , RSBP.RESULT                             AS SBP-->
+<!--                 , RDBP.RESULT                             AS DBP-->
+<!--                 , CASE WHEN !(RSBP.RESULT > IBP.REF_FROM OR RDBP.RESULT < IBP.REF_TO)-->
+<!--                             THEN 'Y'-->
+<!--                        ELSE 'N' END-->
+<!--                                                           AS BP_RISK_YN-->
+<!--                 /* 심박수-맥박 */-->
+<!--                 , IPR.ITEM_NM                             AS PR_TIEM-->
+<!--                 , RPR.RESULT                              AS PR-->
+<!--                 , CASE WHEN !(RPR.RESULT BETWEEN IPR.REF_FROM AND IPR.REF_TO)-->
+<!--                             THEN 'Y'-->
+<!--                        ELSE 'N' END                       AS PR_RISK_YN-->
+<!--                 /* 체온 */-->
+<!--                 , IBT.ITEM_NM                             AS BT_ITEM-->
+<!--                 , RBT.RESULT                              AS BT-->
+<!--                 , CASE WHEN !(RBT.RESULT BETWEEN IBT.REF_FROM AND IBT.REF_TO)-->
+<!--                             THEN 'Y'-->
+<!--                        ELSE 'N' END                       AS BT_RISK_YN-->
+<!--                 /* 걸읍수-호흡 */-->
+<!--                 , IRR.ITEM_NM                             AS RR_ITEM-->
+<!--                 , RRR1.RESULT                             AS RR1-->
+<!--                 , RRR2.RESULT                             AS RR2-->
+<!--                 , CASE WHEN !(RRR1.RESULT BETWEEN IRR.REF_FROM AND IRR.REF_TO)-->
+<!--                             THEN 'Y'-->
+<!--                        ELSE 'N' END                       AS RR_RISK_YN-->
+<!--                 /* 산소포화도 */-->
+<!--                 , ISP.ITEM_NM                             AS SPO2_ITEM-->
+<!--                 , RSP.RESULT                              AS SPO2-->
+<!--                 , CASE WHEN !(RSP.RESULT BETWEEN ISP.REF_FROM AND ISP.REF_TO)-->
+<!--                             THEN 'Y'-->
+<!--                        ELSE 'N' END                       AS SPO2_RISK_YN-->
+<!--              FROM RESULT R-->
+<!--                   /* 혈압 */-->
+<!--                   INNER JOIN ITEM         IBP   ON IBP.ITEM_ID = 'I0005'-->
+<!--                   LEFT JOIN RESULT_DETAIL RSBP  ON R.RESULT_SEQ = RSBP.RESULT_SEQ-->
+<!--                                                AND R.ITEM_ID = IBP.ITEM_ID-->
+<!--                                                AND RSBP.RESULT_TYPE = '03'-->
+<!--                   LEFT JOIN RESULT_DETAIL RDBP  ON R.RESULT_SEQ = RDBP.RESULT_SEQ-->
+<!--                                                AND R.ITEM_ID = IBP.ITEM_ID-->
+<!--                                                AND RDBP.RESULT_TYPE = '02'-->
+<!--                   /* 심박수-맥박 */-->
+<!--                   INNER JOIN ITEM         IPR   ON IPR.ITEM_ID = 'I0002'-->
+<!--                   LEFT JOIN RESULT_DETAIL RPR   ON R.RESULT_SEQ = RPR.RESULT_SEQ-->
+<!--                                                AND R.ITEM_ID = IPR.ITEM_ID-->
+<!--                   /* 체온 */-->
+<!--                   INNER JOIN ITEM         IBT   ON IBT.ITEM_ID = 'I0001'-->
+<!--                   LEFT JOIN RESULT_DETAIL RBT   ON R.RESULT_SEQ = RBT.RESULT_SEQ-->
+<!--                                                AND R.ITEM_ID = IBT.ITEM_ID-->
+<!--                   /* 걸음수-호흡 */-->
+<!--                   INNER JOIN ITEM         IRR   ON IRR.ITEM_ID = 'I0004'-->
+<!--                   LEFT JOIN RESULT_DETAIL RRR1  ON R.RESULT_SEQ = RRR1.RESULT_SEQ-->
+<!--                                                AND R.ITEM_ID = IRR.ITEM_ID-->
+<!--                                                AND RRR1.RESULT_TYPE = '04'-->
+<!--                   LEFT JOIN RESULT_DETAIL RRR2  ON R.RESULT_SEQ = RRR2.RESULT_SEQ-->
+<!--                                                AND R.ITEM_ID = IRR.ITEM_ID-->
+<!--                                                AND RRR2.RESULT_TYPE = '05'-->
+<!--                   /* 산소포화도 */-->
+<!--                   LEFT JOIN ITEM          ISP   ON ISP.ITEM_ID = 'I0003'-->
+<!--                   LEFT JOIN RESULT_DETAIL RSP   ON R.RESULT_SEQ = RSP.RESULT_SEQ-->
+<!--                                                AND R.ITEM_ID = ISP.ITEM_ID-->
+<!--             WHERE R.ADMISSION_ID = #{admissionId}-->
+<!--               AND R.RESULT_DATE BETWEEN #{resultFromDt} AND #{resultToDt})-->
+<!--        SELECT A.RESULT_DT-->
+<!--             , MAX(CASE WHEN A.ITEM_ID = 'I0005'-->
+<!--                             THEN CONCAT(A.SBP, '/', A.DBP)-->
+<!--                        ELSE NULL END) AS BP-->
+<!--             , MAX(CASE WHEN A.ITEM_ID = 'I0005'-->
+<!--                             THEN A.SBP-->
+<!--                        ELSE NULL END) AS SBP-->
+<!--             , MAX(CASE WHEN A.ITEM_ID = 'I0005'-->
+<!--                             THEN A.DBP-->
+<!--                        ELSE NULL END) AS DBP-->
+<!--             , MAX(CASE WHEN A.ITEM_ID = 'I0005'-->
+<!--                             THEN A.BP_RISK_YN-->
+<!--                        ELSE 'N' END) AS BP_RISK_YN-->
+<!--             , MAX(CASE WHEN A.ITEM_ID = 'I0002'-->
+<!--                             THEN A.PR-->
+<!--                        ELSE NULL END) AS PR-->
+<!--             , MAX(CASE WHEN A.ITEM_ID = 'I0002'-->
+<!--                             THEN A.PR_RISK_YN-->
+<!--                        ELSE 'N' END) AS PR_RISK_YN-->
+<!--             , MAX(CASE WHEN A.ITEM_ID = 'I0001'-->
+<!--                             THEN A.BT-->
+<!--                        ELSE NULL END) AS BT-->
+<!--             , MAX(CASE WHEN A.ITEM_ID = 'I0001'-->
+<!--                             THEN A.BT_RISK_YN-->
+<!--                        ELSE 'N' END) AS BT_RISK_YN-->
+<!--             , MAX(CASE WHEN A.ITEM_ID = 'I0004'-->
+<!--                             THEN A.RR1-->
+<!--                        ELSE NULL END) AS RR-->
+<!--             , MAX(CASE WHEN A.ITEM_ID = 'I0004'-->
+<!--                             THEN A.RR_RISK_YN-->
+<!--                        ELSE 'N' END) AS RR_RISK_YN-->
+<!--             , MAX(CASE WHEN A.ITEM_ID = 'I0003'-->
+<!--                             THEN A.SPO2-->
+<!--                        ELSE NULL END) AS SPO2-->
+<!--             , MAX(CASE WHEN A.ITEM_ID = 'I0003'-->
+<!--                             THEN A.SPO2_RISK_YN-->
+<!--                        ELSE 'N' END) AS SPO2_RISK_YN-->
+<!--         FROM TAB_RESULT A-->
+<!--        GROUP BY A.RESULT_DT-->
+<!--        ORDER BY A.RESULT_DT DESC-->
+<!--    ]]>-->
+
+<!--&lt;!&ndash;	<![CDATA[&ndash;&gt;-->
+<!--&lt;!&ndash;	    &#45;&#45; 환자 상세 대쉬보드 측정결과 데이터 조회&ndash;&gt;-->
+<!--&lt;!&ndash;	    &#45;&#45; selectPatientDetailDashboardResultList	    &ndash;&gt;-->
+<!--&lt;!&ndash;		/* TODO::V/S ITEM_CD 확정 후 쿼리 수정 필요, SBP,DBP 항목 확인 */&ndash;&gt;-->
+<!--&lt;!&ndash;		WITH TAB AS&ndash;&gt;-->
+<!--&lt;!&ndash;		(&ndash;&gt;-->
+<!--&lt;!&ndash;		SELECT A.RESULT_DT &ndash;&gt;-->
+<!--&lt;!&ndash;		     , MAX(CASE WHEN A.ITEM_ID = 'I0025' THEN RESULT ELSE NULL END) AS BP &ndash;&gt;-->
+<!--&lt;!&ndash;		     , MAX(CASE WHEN A.ITEM_ID = 'I0026' THEN RESULT ELSE NULL END) AS PR&ndash;&gt;-->
+<!--&lt;!&ndash;		     , MAX(CASE WHEN A.ITEM_ID = 'I0027' THEN RESULT ELSE NULL END) AS BT&ndash;&gt;-->
+<!--&lt;!&ndash;		     , MAX(CASE WHEN A.ITEM_ID = 'I0028' THEN RESULT ELSE NULL END) AS RR&ndash;&gt;-->
+<!--&lt;!&ndash;		     , MAX(CASE WHEN A.ITEM_ID = 'I0029' THEN RESULT ELSE NULL END) AS SPO2&ndash;&gt;-->
+<!--&lt;!&ndash;		  FROM RESULT A &ndash;&gt;-->
+<!--&lt;!&ndash;		 WHERE A.ADMISSION_ID = #{admissionId}&ndash;&gt;-->
+<!--&lt;!&ndash;		    AND A.RESULT_DT BETWEEN DATE_FORMAT(#{resultFromDt}, '%Y-%m-%d') AND DATE_FORMAT(#{resultToDt}, '%Y-%m-%d')&ndash;&gt;-->
+<!--&lt;!&ndash;		   AND A.ITEM_ID IN ('I0025','I0026','I0027','I0028','I0029')  &ndash;&gt;-->
+<!--&lt;!&ndash;		 GROUP&ndash;&gt;-->
+<!--&lt;!&ndash;		    BY A.RESULT_DT  &ndash;&gt;-->
+<!--&lt;!&ndash;		 ORDER &ndash;&gt;-->
+<!--&lt;!&ndash;		    BY A.RESULT_DT DESC&ndash;&gt;-->
+<!--&lt;!&ndash;		)&ndash;&gt;-->
+<!--&lt;!&ndash;		SELECT RESULT_DT                         &#45;&#45; 측정일시&ndash;&gt;-->
+<!--&lt;!&ndash;			 , BP        &#45;&#45; 혈압&ndash;&gt;-->
+<!--&lt;!&ndash;			 , CASE&ndash;&gt;-->
+<!--&lt;!&ndash;				   WHEN INSTR(BP, '/') BETWEEN 1 AND LENGTH(BP)&ndash;&gt;-->
+<!--&lt;!&ndash;					   THEN SUBSTRING_INDEX(BP, '/', 1)&ndash;&gt;-->
+<!--&lt;!&ndash;			END AS SBP   &#45;&#45; SBP&ndash;&gt;-->
+<!--&lt;!&ndash;			 , CASE&ndash;&gt;-->
+<!--&lt;!&ndash;				   WHEN SUBSTRING_INDEX(BP, '/', 1) > 130&ndash;&gt;-->
+<!--&lt;!&ndash;					   THEN 'Y'&ndash;&gt;-->
+<!--&lt;!&ndash;				   ELSE 'N'&ndash;&gt;-->
+<!--&lt;!&ndash;			END AS BP_RISK_YN&ndash;&gt;-->
+<!--&lt;!&ndash;			 , CASE&ndash;&gt;-->
+<!--&lt;!&ndash;				   WHEN INSTR(BP, '/') BETWEEN 1 AND LENGTH(BP)&ndash;&gt;-->
+<!--&lt;!&ndash;					   THEN SUBSTRING_INDEX(BP, '/', -1)&ndash;&gt;-->
+<!--&lt;!&ndash;				   ELSE NULL&ndash;&gt;-->
+<!--&lt;!&ndash;			END AS DBP   &#45;&#45; DBP&ndash;&gt;-->
+<!--&lt;!&ndash;			 , PR        &#45;&#45; 맥박&ndash;&gt;-->
+<!--&lt;!&ndash;			 , CASE&ndash;&gt;-->
+<!--&lt;!&ndash;				   WHEN PR >= 135&ndash;&gt;-->
+<!--&lt;!&ndash;					   THEN 'Y'&ndash;&gt;-->
+<!--&lt;!&ndash;				   ELSE 'N'&ndash;&gt;-->
+<!--&lt;!&ndash;			END AS PR_RISK_YN&ndash;&gt;-->
+<!--&lt;!&ndash;			 , BT        &#45;&#45; 체온&ndash;&gt;-->
+<!--&lt;!&ndash;			 , CASE&ndash;&gt;-->
+<!--&lt;!&ndash;				   WHEN BT >= 37.5&ndash;&gt;-->
+<!--&lt;!&ndash;					   THEN 'Y'&ndash;&gt;-->
+<!--&lt;!&ndash;				   ELSE 'N'&ndash;&gt;-->
+<!--&lt;!&ndash;			END AS BT_RISK_YN&ndash;&gt;-->
+<!--&lt;!&ndash;			 , RR        &#45;&#45; 호흡&ndash;&gt;-->
+<!--&lt;!&ndash;			 , CASE&ndash;&gt;-->
+<!--&lt;!&ndash;				   WHEN RR >= 30&ndash;&gt;-->
+<!--&lt;!&ndash;					   THEN 'Y'&ndash;&gt;-->
+<!--&lt;!&ndash;				   ELSE 'N'&ndash;&gt;-->
+<!--&lt;!&ndash;			END AS RR_RISK_YN&ndash;&gt;-->
+<!--&lt;!&ndash;			 , SPO2      &#45;&#45; 산소포화도&ndash;&gt;-->
+<!--&lt;!&ndash;			 , CASE&ndash;&gt;-->
+<!--&lt;!&ndash;				   WHEN SPO2 <= 90&ndash;&gt;-->
+<!--&lt;!&ndash;					   THEN 'Y'&ndash;&gt;-->
+<!--&lt;!&ndash;				   ELSE 'N'&ndash;&gt;-->
+<!--&lt;!&ndash;			END AS SPO2_RISK_YN&ndash;&gt;-->
+<!--&lt;!&ndash;		  FROM TAB&ndash;&gt;-->
+
+<!--&lt;!&ndash;	]]>&ndash;&gt;-->
+<!--	</select>-->
+
+<!--	&lt;!&ndash; SELECT 측정 ITEM 정보 By ItemId&ndash;&gt;-->
+<!--	<select id="selectItemByItemId" parameterType="String" resultType="kr.co.hconnect.vo.ItemVO">-->
+<!--	<![CDATA[-->
+<!--		&#45;&#45; TODO 측정ITEM 선택방법 변경될 수 있음-->
+<!--		SELECT ITEM_ID &#45;&#45; 측정 ITEM ID-->
+<!--		     , ITEM_NM &#45;&#45; 측정 ITEM 명-->
+<!--			 , UNIT    &#45;&#45; 측정 UNIT-->
+<!--		FROM ITEM-->
+<!--		    WHERE ITEM_ID  =   #{centerId}-->
+<!--	]]>-->
+<!--	</select>-->
 
 </mapper>
