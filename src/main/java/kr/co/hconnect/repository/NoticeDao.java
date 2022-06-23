@@ -25,10 +25,22 @@ public class NoticeDao extends EgovAbstractMapper {
 
     /**
      * 알림 리스트 조회 - 격리/입소내역ID 기준
+     *
      * @param vo 알림 리스트 조회 조건
      * @return List&lt;NoticeVO&gt; 알림 리스트
      */
     public List<NoticeVO> selectNoticeListByAdmissionId(NoticeListSearchVO vo) {
         return selectList("kr.co.hconnect.sqlmapper.selectNoticeListByAdmissionId", vo);
     }
+
+    /**
+     * 신규 알림 내역 생성
+     *
+     * @param vo 신규 알림 저장 정보
+     * @return affectedRow
+     */
+    public int insertNotice(NoticeVO vo) {
+        return insert("kr.co.hconnect.sqlmapper.insertNotice", vo);
+    }
+
 }

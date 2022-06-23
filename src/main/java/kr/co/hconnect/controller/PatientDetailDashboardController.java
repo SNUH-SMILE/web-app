@@ -1,16 +1,19 @@
 package kr.co.hconnect.controller;
 
 import kr.co.hconnect.common.ApiResponseCode;
+import kr.co.hconnect.exception.InvalidRequestArgumentException;
+import kr.co.hconnect.jwt.TokenDetailInfo;
+import kr.co.hconnect.service.NoticeService;
 import kr.co.hconnect.service.PatientDetailDashboardService;
-import kr.co.hconnect.vo.PatientDetailDashboardVO;
-import kr.co.hconnect.vo.ResponseVO;
+import kr.co.hconnect.vo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * 환자 상세 대쉬보드 Controller
@@ -28,18 +31,28 @@ public class PatientDetailDashboardController {
 	 * 환자 상세 대쉬보드 서비스
 	 */
 	public final PatientDetailDashboardService patientDetailDashboardService;
+	/**
+	 * 알림 서비스
+	 */
+	public final NoticeService noticeService;
 
 	/**
 	 * 생성자
-	 * @param patientDetailDashboardService - 환자상세 대시보드 서비스
+	 *
+	 * @param patientDetailDashboardService 환자상세 대시보드 서비스
+	 * @param noticeService 알림 서비스
 	 */
 	@Autowired
-	public PatientDetailDashboardController(PatientDetailDashboardService patientDetailDashboardService) {
+	public PatientDetailDashboardController(PatientDetailDashboardService patientDetailDashboardService, NoticeService noticeService) {
 		this.patientDetailDashboardService = patientDetailDashboardService;
+		this.noticeService = noticeService;
 	}
 
 	/**
 	 * 환자 상세 대시보드 정보 조회
+	 *
+	 * @param admissionId 격리/입소내역ID
+	 * @return ResponseVO&lt;PatientDetailDashboardVO&gt; 환자 상세 대시보드 전체 내역
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseVO<PatientDetailDashboardVO> selectPatientDetailDashboard(@RequestParam String admissionId) {
@@ -55,6 +68,40 @@ public class PatientDetailDashboardController {
 			responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
 			responseVO.setMessage("조회 실패");
 		}
+
+		return responseVO;
+	}
+
+	/**
+	 * 신규 알림 내역 저장
+	 *
+	 * @param vo 알림 저장 정보
+	 * @return ResponseVO&lt;List&lt;NoticeVO&gt;&gt; 알림 저장 완료 정보
+	 */
+	@RequestMapping(value = "/notice", method = RequestMethod.PUT)
+	public ResponseVO<List<NoticeVO>> insertNotice(@Valid @RequestBody NoticeSaveVO vo, BindingResult bindingResult
+			, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+		if (bindingResult.hasErrors()) {
+			throw new InvalidRequestArgumentException(bindingResult);
+		}
+
+		// 알림 저장 정보 바인딩
+		NoticeVO noticeVO = new NoticeVO();
+		noticeVO.setAdmissionId(vo.getAdmissionId());
+		noticeVO.setNotice(vo.getNotice());
+		noticeVO.setRegId(tokenDetailInfo.getId());
+
+		// 알림 내역 저장
+		noticeService.insertNotice(noticeVO);
+
+		// 알림 리스트 조회
+		NoticeListSearchVO noticeListSearchVO = new NoticeListSearchVO();
+		noticeListSearchVO.setAdmissionId(vo.getAdmissionId());
+
+		ResponseVO<List<NoticeVO>> responseVO = new ResponseVO<>();
+		responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+		responseVO.setMessage("저장 성공");
+		responseVO.setResult(noticeService.selectNoticeList(noticeListSearchVO));
 
 		return responseVO;
 	}

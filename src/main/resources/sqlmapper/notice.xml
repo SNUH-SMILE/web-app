@@ -38,4 +38,22 @@
 
     </select>
 
+    <!-- 신규 알림 내역 생성 - kr.co.hconnect.sqlmapper.insertNotice -->
+    <insert id="insertNotice" parameterType="kr.co.hconnect.vo.NoticeVO"
+            useGeneratedKeys="true"
+            keyColumn="NOTICE_SEQ"
+            keyProperty="noticeSeq">
+        INSERT
+          INTO NOTICE
+             ( ADMISSION_ID
+             , NOTICE
+             , REG_ID
+             )
+        VALUES
+             ( #{admissionId}
+             , #{notice}
+             , #{regId}
+             )
+    </insert>
+
 </mapper>
