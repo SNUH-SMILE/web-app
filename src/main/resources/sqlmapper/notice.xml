@@ -34,7 +34,7 @@
             AND A.READ_YN = #{readYn}
         </if>
 
-        ORDER BY A.NOTICE_SEQ DESC
+        ORDER BY A.NOTICE_SEQ
 
     </select>
 
