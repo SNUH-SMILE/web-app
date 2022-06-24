@@ -3,6 +3,7 @@ package kr.co.hconnect.repository;
 import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
 import kr.co.hconnect.vo.PatientDetailDashboardHeaderVO;
 import kr.co.hconnect.vo.PatientDetailDashboardRecentResultVO;
+import kr.co.hconnect.vo.PatientHealthSignalVO;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -26,6 +27,11 @@ public class PatientDetailDashboardDao extends EgovAbstractMapper {
             if (recentResultVO != null) {
                 headerVO.setRecentResultInfo(recentResultVO);
             }
+
+            // TODO::AI 예측 결과 도입 후 작업필요
+            // 환자 healthSignal 조회
+            PatientHealthSignalVO healthSignalVO = new PatientHealthSignalVO();
+            headerVO.setHealthSignalVO(healthSignalVO);
         }
 
         return headerVO;

@@ -21,6 +21,10 @@ public class PatientDetailDashboardHeaderVO implements Serializable {
     private static final long serialVersionUID = -2739206614492681679L;
 
     /**
+     * 환자 상태 알림
+     */
+    private PatientHealthSignalVO healthSignalVO;
+    /**
      * 환자 마지막 신체계측, 수면, 예측결과 VO
      */
     private PatientDetailDashboardRecentResultVO recentResultInfo;
