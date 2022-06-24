@@ -60,17 +60,24 @@
             resultType="kr.co.hconnect.vo.PatientDetailDashboardRecentResultVO">
     <![CDATA[
         WITH TOTAL_SLEEP AS (
+            /* 조회일 기준 전날 오후 09시 ~ 당일 오전 06시까지 수면 시간 계산 */
             SELECT #{admissionId} AS ADMISSION_ID
-                 , TRUNCATE(SUM(TIMESTAMPDIFF(MINUTE
-                                           , TIMESTAMP(X.RESULT_START_DATE, X.RESULT_START_TIME)
-                                           , TIMESTAMP(X.RESULT_END_DATE, X.RESULT_END_TIME))
-                                ) / 60
-                        , 0) AS SLEEP_RESULT
+                , TRUNCATE(SUM(
+                                CASE WHEN X.RESULT_START_DATE = X.RESULT_END_DATE
+                                          THEN
+                                               CASE WHEN X.RESULT_START_DATE = DATE (DATE_ADD(NOW(), INTERVAL -1 DAY))
+                                                         THEN TIMESTAMPDIFF(MINUTE, TIMESTAMP(X.RESULT_START_DATE, GREATEST(X.RESULT_START_TIME, TIME('060000'))), TIMESTAMP(X.RESULT_END_DATE, X.RESULT_END_TIME))
+                                                    ELSE      TIMESTAMPDIFF(MINUTE, TIMESTAMP(X.RESULT_START_DATE, X.RESULT_START_TIME), TIMESTAMP(X.RESULT_END_DATE, LEAST(X.RESULT_END_TIME, TIME('210000'))))
+                                               END
+                                     ELSE TIMESTAMPDIFF(MINUTE, TIMESTAMP(X.RESULT_START_DATE, GREATEST(X.RESULT_START_TIME, TIME('060000'))), TIMESTAMP(X.RESULT_END_DATE, LEAST(X.RESULT_END_TIME, TIME('210000'))))
+                                END
+                           ) / 60
+                  , 0)  AS SLEEP_RESULT
              FROM RESULT_SLEEP X
             WHERE X.ADMISSION_ID = #{admissionId}
-              AND (   (X.RESULT_START_DATE = DATE (DATE_ADD(NOW(), INTERVAL -1 DAY)) AND X.RESULT_START_TIME >= TIME ('220000'))
-                   OR (X.RESULT_START_DATE = DATE (NOW()) AND X.RESULT_START_TIME <= TIME ('080000')))
               AND X.SLEEP_TYPE IN ('0', '1') -- 깊은잠, 얕은잠
+              AND (   X.RESULT_END_DATE = DATE (DATE_ADD(NOW(), INTERVAL -1 DAY)) AND X.RESULT_END_TIME > TIME ('210000')
+                   OR X.RESULT_END_DATE = DATE (NOW()) AND X.RESULT_END_TIME < TIME ('060000'))
         )
         SELECT A.ADMISSION_ID
              -- 혈압
