@@ -206,6 +206,50 @@
     ]]>
     </select>
 
+    <!-- 환자 차트 표현용 데이터 조회 - kr.co.hconnect.sqlmapper.selectPatientVitalDataVO -->
+    <select id="selectPatientVitalChartData"
+            parameterType="kr.co.hconnect.vo.PatientVitalChartDataSearchVO"
+            resultType="kr.co.hconnect.vo.PatientVitalChartDataVO">
+    <![CDATA[
+        WITH RECURSIVE TAB AS (
+             SELECT TIMESTAMP(DATE(#{searchDt}), TIME('000000')) AS START_DT
+                  , TIMESTAMP(DATE(#{searchDt}), TIME('001459')) AS END_DT
+              UNION ALL
+             SELECT DATE_ADD(START_DT, INTERVAL 15 MINUTE )
+                  , DATE_ADD(END_DT, INTERVAL 15 MINUTE )
+               FROM TAB
+              WHERE END_DT < TIMESTAMP (DATE (NOW()), TIME (#{time}))
+        )
+        SELECT X.START_DT                                                                         AS RESULT_DT          -- 측정일시
+             , MAX(IF(X.ITEM_ID = 'I0001' AND X.LV = 1, X.RESULT, NULL))                          AS BT                 -- 체온
+             , MAX(IF(X.ITEM_ID = 'I0002' AND X.LV = 1, X.RESULT, NULL))                          AS PR                 -- 심박수
+             , MAX(IF(X.ITEM_ID = 'I0003' AND X.LV = 1, X.RESULT, NULL))                          AS SPO2               -- 산소포솨도
+             , NULL                                                                               AS RR                 -- 호흡수(현재 측정 데이터 없음)
+             , MAX(IF(X.ITEM_ID = 'I0005' AND X.RESULT_TYPE = '03' AND X.LV = 1, X.RESULT, NULL)) AS SBP                -- 혈압-SBP
+             , MAX(IF(X.ITEM_ID = 'I0005' AND X.RESULT_TYPE = '02' AND X.LV = 1, X.RESULT, NULL)) AS DBP                -- 혈압-DBP
+          FROM (SELECT T.START_DT
+                     /* 15분간의 기준 중 최근 측정 내역 조회를 위한 조건 */
+                     , RANK() OVER(PARTITION BY T.START_DT, R.ITEM_ID ORDER BY R.RESULT_TIME DESC) AS LV
+                     , I.ITEM_ID
+                     , I.ITEM_NM
+                     , R.RESULT_DATE
+                     , R.RESULT_TIME
+                     , RD.RESULT
+                     , RD.RESULT_TYPE
+                  FROM TAB T
+                       LEFT JOIN  RESULT        R    ON R.ADMISSION_ID = #{admissionId}
+                                                    AND R.ITEM_ID IN ('I0001','I0002','I0003','I0005')
+                                                    AND R.RESULT_DATE BETWEEN DATE (T.START_DT) AND DATE (T.START_DT)
+                                                    AND R.RESULT_TIME BETWEEN TIME (T.START_DT) AND TIME (T.END_DT)
+                       LEFT JOIN ITEM          I    ON R.ITEM_ID = I.ITEM_ID
+                       LEFT JOIN RESULT_DETAIL RD   ON R.RESULT_SEQ = RD.RESULT_SEQ
+               ) X
+        GROUP BY X.START_DT
+        ORDER BY X.START_DT
+        ;
+    ]]>
+    </select>
+
 <!--	&lt;!&ndash; 환자 상세 대쉬보드 입소 상세 정보 조회 &ndash;&gt;-->
 <!--	<select id="selectPatientDetailDashboardPatientInfo" parameterType="String" resultType="kr.co.hconnect.vo.PatientDetailDashboardPatientInfoVO">-->
 <!--	<![CDATA[-->

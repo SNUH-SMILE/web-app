@@ -2,10 +2,13 @@ package kr.co.hconnect.controller;
 
 import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
+import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
 import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.service.NoticeService;
 import kr.co.hconnect.service.PatientDetailDashboardService;
 import kr.co.hconnect.vo.*;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -102,6 +106,42 @@ public class PatientDetailDashboardController {
 		responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
 		responseVO.setMessage("저장 성공");
 		responseVO.setResult(noticeService.selectNoticeList(noticeListSearchVO));
+
+		return responseVO;
+	}
+
+	/**
+	 * 환자 차트용 데이터 조회-일별조회
+	 * @param vo 환자 차트용 Vital 조회조건 VO
+	 * @return ResponseVO&lt;PatientResultChartDataVO&gt; 환자 Vital 측정결과 차트 표현 데이터
+	 */
+	@RequestMapping(value = "/chart", method = RequestMethod.POST)
+	public ResponseVO<PatientResultChartDataVO> selectPatientResultChartData(@Valid @RequestBody PatientVitalChartDataSearchVO vo
+			, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			throw new InvalidRequestArgumentException(bindingResult);
+		}
+
+		// 조회일자가 현재일자일 경우 현재 시간까지 데이터 조회 처리
+		Date now = new Date();
+		if (DateUtils.isSameDay(now, vo.getSearchDt())) {
+			vo.setTime(DateFormatUtils.format(now, "HHmmss"));
+		} else {
+			vo.setTime("235959");
+		}
+
+		ResponseVO<PatientResultChartDataVO> responseVO = new ResponseVO<>();
+
+		try {
+			PatientResultChartDataVO patientResultChartDataVO = patientDetailDashboardService.selectPatientResultChartData(vo);
+
+			responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+			responseVO.setMessage("조회 성공");
+			responseVO.setResult(patientResultChartDataVO);
+		} catch (NotFoundAdmissionInfoException e) {
+			responseVO.setCode(e.getErrorCode());
+			responseVO.setMessage(e.getMessage());
+		}
 
 		return responseVO;
 	}

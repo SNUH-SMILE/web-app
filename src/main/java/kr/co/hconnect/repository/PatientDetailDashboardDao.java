@@ -3,8 +3,11 @@ package kr.co.hconnect.repository;
 import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
 import kr.co.hconnect.vo.PatientDetailDashboardHeaderVO;
 import kr.co.hconnect.vo.PatientDetailDashboardRecentResultVO;
-import kr.co.hconnect.vo.PatientHealthSignalVO;
+import kr.co.hconnect.vo.PatientVitalChartDataSearchVO;
+import kr.co.hconnect.vo.PatientVitalChartDataVO;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * 환자 상세 대쉬보드 Dao
@@ -19,22 +22,7 @@ public class PatientDetailDashboardDao extends EgovAbstractMapper {
      * @return PatientDetailDashboardHeaderVO 환자 상세 대시보드 상단 정보
      */
     public PatientDetailDashboardHeaderVO selectPatientDetailDashboardHeader(String admissionId) {
-        PatientDetailDashboardHeaderVO headerVO = selectOne("kr.co.hconnect.sqlmapper.selectPatientDetailDashboardHeader", admissionId);
-
-        if (headerVO != null) {
-            // 최근 측정결과 조회
-            PatientDetailDashboardRecentResultVO recentResultVO = selectOne("kr.co.hconnect.sqlmapper.selectPatientDetailDashboardRecentResult", admissionId);
-            if (recentResultVO != null) {
-                headerVO.setRecentResultInfo(recentResultVO);
-            }
-
-            // TODO::AI 예측 결과 도입 후 작업필요
-            // 환자 healthSignal 조회
-            PatientHealthSignalVO healthSignalVO = new PatientHealthSignalVO();
-            headerVO.setHealthSignalVO(healthSignalVO);
-        }
-
-        return headerVO;
+        return selectOne("kr.co.hconnect.sqlmapper.selectPatientDetailDashboardHeader", admissionId);
     }
 
     /**
@@ -47,6 +35,14 @@ public class PatientDetailDashboardDao extends EgovAbstractMapper {
         return selectOne("kr.co.hconnect.sqlmapper.selectPatientDetailDashboardRecentResult", admissionId);
     }
 
+    /**
+     *
+     * @param vo 환자 차트용 Vital 조회조건 VO
+     * @return List&lt;PatientVitalChartDataVO&gt; 환자 Vital 조회결과 리스트
+     */
+    public List<PatientVitalChartDataVO> selectPatientVitalChartData(PatientVitalChartDataSearchVO vo) {
+        return selectList("kr.co.hconnect.sqlmapper.selectPatientVitalChartData", vo);
+    }
 
 
 //	/**
