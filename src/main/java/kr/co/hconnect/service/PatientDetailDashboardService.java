@@ -129,6 +129,7 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 		PatientHealthSignalVO healthSignalVO = new PatientHealthSignalVO();
 		healthSignalVO.setSignal1Yn("N");
 		healthSignalVO.setSignal2Yn("N");
+		patientDetailDashboardHeaderVO.setHealthSignalVO(healthSignalVO);
 
 		// 03. 측정 결과 조회 (선택한 일자 기준, 당일일 경우 현재시간까지 데이터 조회)
 		List<PatientVitalChartDataVO> tempList = patientDetailDashboardDao.selectPatientVitalChartData(vo);
@@ -280,7 +281,6 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 
 		PatientResultChartDataVO patientResultChartDataVO = new PatientResultChartDataVO();
 		patientResultChartDataVO.setHeaderVO(patientDetailDashboardHeaderVO);
-		patientResultChartDataVO.setHealthSignalVO(healthSignalVO);
 		patientResultChartDataVO.setBtResultList(btList);
 		patientResultChartDataVO.setPrResultList(prList);
 		patientResultChartDataVO.setSpo2ResultList(spo2List);

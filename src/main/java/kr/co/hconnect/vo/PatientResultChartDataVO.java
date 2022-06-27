@@ -20,10 +20,6 @@ public class PatientResultChartDataVO implements Serializable {
     private static final long serialVersionUID = -5893365910578493728L;
 
     /**
-     * 환자 상태 알림
-     */
-    private PatientHealthSignalVO healthSignalVO;
-    /**
      * 환자 상세 대시보드 상단 헤더 정보
      */
     private PatientDetailDashboardHeaderVO headerVO;
