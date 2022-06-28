@@ -7,6 +7,8 @@ import kr.co.hconnect.repository.NoticeDao;
 import kr.co.hconnect.repository.PatientDetailDashboardDao;
 import kr.co.hconnect.vo.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,25 +55,29 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 	public PatientDetailDashboardVO selectPatientDetailDashboard(String admissionId)
 			throws NotFoundAdmissionInfoException {
 		// 01. 상단 헤더 정보 조회
-		PatientDetailDashboardHeaderVO patientDetailDashboardHeaderVO = patientDetailDashboardDao.selectPatientDetailDashboardHeader(admissionId);
-		if (patientDetailDashboardHeaderVO == null) {
+		PatientDetailDashboardHeaderBaseVO patientDetailDashboardHeaderBaseVO = patientDetailDashboardDao.selectPatientDetailDashboardHeaderBase(admissionId);
+		if (patientDetailDashboardHeaderBaseVO == null) {
 			// 내원정보 존재여부 확인
 			throw new NotFoundAdmissionInfoException(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()
 					, messageSource.getMessage("message.notfound.admissionInfo"
 					, null, Locale.getDefault()));
 		}
 
-		// 02. 마지막 신체계측, 수면, 예측 결과 조회
+		// 02. 환자 healthSignal 조회
+		// TODO::AI 예측 결과 도입 후 작업필요
+		PatientHealthSignalVO healthSignalVO = new PatientHealthSignalVO();
+		patientDetailDashboardHeaderBaseVO.setHealthSignalVO(healthSignalVO);
+
+		PatientDetailDashboardHeaderVO patientDetailDashboardHeaderVO = new PatientDetailDashboardHeaderVO();
+		BeanUtils.copyProperties(patientDetailDashboardHeaderBaseVO, patientDetailDashboardHeaderVO);
+
+
+		// 03. 마지막 신체계측, 수면, 예측 결과 조회
 		// 최근 측정결과 조회
 		PatientDetailDashboardRecentResultVO recentResultVO = patientDetailDashboardDao.selectPatientDetailDashboardRecentResult(admissionId);
 		if (recentResultVO != null) {
 			patientDetailDashboardHeaderVO.setRecentResultInfo(recentResultVO);
 		}
-
-		// 03. 환자 healthSignal 조회
-		// TODO::AI 예측 결과 도입 후 작업필요
-		PatientHealthSignalVO healthSignalVO = new PatientHealthSignalVO();
-		patientDetailDashboardHeaderVO.setHealthSignalVO(healthSignalVO);
 
 		// 04. 알림 내역 조회
 		NoticeListSearchVO noticeListSearchVO = new NoticeListSearchVO();
@@ -87,51 +93,44 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 	}
 
 	/**
-	 * 환자 상세 대시보드 상단 정보 조회
+	 * 환자 Vital 측정결과 차트 헤더 데이터 조회
 	 *
 	 * @param admissionId 격리/입소내역ID
-	 * @return PatientDetailDashboardHeaderVO 환자 상세 대시보드 상단 정보
-	 * @throws NotFoundAdmissionInfoException 내원정보가 없는 경우 발생
+	 * @return PatientResultChartHeaderVO 환자 Vital 측정결과 헤더 정보
+	 * @throws NotFoundAdmissionInfoException 격리/입소내역이 없을 경우 발생
 	 */
-	public PatientDetailDashboardHeaderVO selectPatientDetailDashboardHeader(String admissionId)
+	public PatientResultChartHeaderVO selectPatientResultChartHeader(String admissionId)
 			throws NotFoundAdmissionInfoException {
-		PatientDetailDashboardHeaderVO vo = patientDetailDashboardDao.selectPatientDetailDashboardHeader(admissionId);
+		PatientDetailDashboardHeaderBaseVO patientDetailDashboardHeaderBaseVO = patientDetailDashboardDao.selectPatientDetailDashboardHeaderBase(admissionId);
 
-		if (vo == null) {
+		if (patientDetailDashboardHeaderBaseVO == null) {
 			// 내원정보 존재여부 확인
 			throw new NotFoundAdmissionInfoException(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()
 					, messageSource.getMessage("message.notfound.admissionInfo"
 					, null, Locale.getDefault()));
 		}
 
-		return vo;
+		// 환자 healthSignal 조회
+		// TODO::AI 예측 결과 도입 후 작업필요
+		PatientHealthSignalVO healthSignalVO = new PatientHealthSignalVO();
+		patientDetailDashboardHeaderBaseVO.setHealthSignalVO(healthSignalVO);
+
+		PatientResultChartHeaderVO patientResultChartHeaderVO = new PatientResultChartHeaderVO();
+		BeanUtils.copyProperties(patientDetailDashboardHeaderBaseVO, patientResultChartHeaderVO);
+
+		return patientResultChartHeaderVO;
 	}
 
 	/**
-	 * 환자 Vital 측정결과 차트 표현 데이터 VO
+	 * 환자 Vital 측정결과 차트 표현 데이터 조회
+	 *
 	 * @param vo 환자 차트용 Vital 조회조건 VO
 	 * @return PatientResultChartDataVO 환자 Vital 측정결과 차트 표현 데이터
 	 * @throws NotFoundAdmissionInfoException 격리/입소된 내역이 없을 경우 발생
 	 */
 	public PatientResultChartDataVO selectPatientResultChartData(PatientVitalChartDataSearchVO vo)
 			throws NotFoundAdmissionInfoException {
-		// 01. 상단 헤더 정보 조회
-		PatientDetailDashboardHeaderVO patientDetailDashboardHeaderVO = patientDetailDashboardDao.selectPatientDetailDashboardHeader(vo.getAdmissionId());
-		if (patientDetailDashboardHeaderVO == null) {
-			// 내원정보 존재여부 확인
-			throw new NotFoundAdmissionInfoException(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()
-					, messageSource.getMessage("message.notfound.admissionInfo"
-					, null, Locale.getDefault()));
-		}
-
-		// 02. 환자 상태 알림 조회
-		// TODO::AI 예측 결과 도입 후 작업필요
-		PatientHealthSignalVO healthSignalVO = new PatientHealthSignalVO();
-		healthSignalVO.setSignal1Yn("N");
-		healthSignalVO.setSignal2Yn("N");
-		patientDetailDashboardHeaderVO.setHealthSignalVO(healthSignalVO);
-
-		// 03. 측정 결과 조회 (선택한 일자 기준, 당일일 경우 현재시간까지 데이터 조회)
+		// 측정 결과 조회 (선택한 일자 기준, 당일일 경우 현재시간까지 데이터 조회)
 		List<PatientVitalChartDataVO> tempList = patientDetailDashboardDao.selectPatientVitalChartData(vo);
 //		측정결과가 없는 내역 제외
 //		List<PatientVitalChartDataVO> tempList = list.stream()
@@ -284,7 +283,10 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 		}
 
 		PatientResultChartDataVO patientResultChartDataVO = new PatientResultChartDataVO();
-		patientResultChartDataVO.setHeaderVO(patientDetailDashboardHeaderVO);
+		patientResultChartDataVO.setAdmissionId(vo.getAdmissionId());
+		patientResultChartDataVO.setSearchDt(vo.getSearchDt());
+		patientResultChartDataVO.setMin(DateUtils.addMinutes(vo.getSearchDt(), -5));
+		patientResultChartDataVO.setMax(DateUtils.addDays(vo.getSearchDt(), 1));
 		patientResultChartDataVO.setBtResultList(btList);
 		patientResultChartDataVO.setPrResultList(prList);
 		patientResultChartDataVO.setSpo2ResultList(spo2List);

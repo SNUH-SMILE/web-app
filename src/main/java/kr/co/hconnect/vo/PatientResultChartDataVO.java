@@ -1,11 +1,13 @@
 package kr.co.hconnect.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,10 +22,22 @@ public class PatientResultChartDataVO implements Serializable {
     private static final long serialVersionUID = -5893365910578493728L;
 
     /**
-     * 환자 상세 대시보드 상단 헤더 정보
+     * 격리/입소내역ID
      */
-    private PatientDetailDashboardHeaderVO headerVO;
-
+    private String admissionId;
+    /**
+     * 측정결과 조회일
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date searchDt;
+    /**
+     * 측정결과 min Data - Chart 속성으로 사용
+     */
+    private Date min;
+    /**
+     * 측정결과 max Data - Chart 속성으로 사용
+     */
+    private Date max;
     /**
      * 체온 리스트
      */

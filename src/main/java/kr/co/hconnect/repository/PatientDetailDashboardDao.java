@@ -1,7 +1,7 @@
 package kr.co.hconnect.repository;
 
 import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
-import kr.co.hconnect.vo.PatientDetailDashboardHeaderVO;
+import kr.co.hconnect.vo.PatientDetailDashboardHeaderBaseVO;
 import kr.co.hconnect.vo.PatientDetailDashboardRecentResultVO;
 import kr.co.hconnect.vo.PatientVitalChartDataSearchVO;
 import kr.co.hconnect.vo.PatientVitalChartDataVO;
@@ -21,8 +21,8 @@ public class PatientDetailDashboardDao extends EgovAbstractMapper {
      * @param admissionId 격리/입소내역ID
      * @return PatientDetailDashboardHeaderVO 환자 상세 대시보드 상단 정보
      */
-    public PatientDetailDashboardHeaderVO selectPatientDetailDashboardHeader(String admissionId) {
-        return selectOne("kr.co.hconnect.sqlmapper.selectPatientDetailDashboardHeader", admissionId);
+    public PatientDetailDashboardHeaderBaseVO selectPatientDetailDashboardHeaderBase(String admissionId) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectPatientDetailDashboardHeaderBase", admissionId);
     }
 
     /**

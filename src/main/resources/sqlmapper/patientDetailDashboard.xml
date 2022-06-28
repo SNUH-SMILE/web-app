@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.hconnect.sqlmapper">
 
-    <!-- 환자 상세 대시보드 상단 정보 조회 - kr.co.hconnect.sqlmapper.selectPatientDetailDashboardHeader -->
-    <select id="selectPatientDetailDashboardHeader"
+    <!-- 환자 상세 대시보드 상단 정보 조회 - kr.co.hconnect.sqlmapper.selectPatientDetailDashboardHeaderBase -->
+    <select id="selectPatientDetailDashboardHeaderBase"
             parameterType="String"
-            resultType="kr.co.hconnect.vo.PatientDetailDashboardHeaderVO">
+            resultType="kr.co.hconnect.vo.PatientDetailDashboardHeaderBaseVO">
         SELECT A.ADMISSION_ID                                         -- 격리/입소내역ID
              , P.PATIENT_ID                                           -- 환자ID
              , P.PATIENT_NM                                           -- 환자명

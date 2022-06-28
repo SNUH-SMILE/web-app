@@ -108,7 +108,25 @@ public class PatientDetailDashboardController {
 	}
 
 	/**
-	 * 환자 차트용 데이터 조회-일별조회
+	 * 환자 Vital 측정결과 차트용 헤더 정보 조회
+	 *
+	 * @param admissionId 격리/입소내역ID
+	 * @return ResponseVO&lt;PatientResultChartHeaderVO&gt; 환자 Vital 측정결과 헤더 정보
+	 */
+	@RequestMapping(value = "/chart/header", method = RequestMethod.GET)
+	public ResponseVO<PatientResultChartHeaderVO> selectPatientResultChartHeader(@RequestParam String admissionId) {
+		PatientResultChartHeaderVO patientResultChartHeaderVO = patientDetailDashboardService.selectPatientResultChartHeader(admissionId);
+
+		ResponseVO<PatientResultChartHeaderVO> responseVO = new ResponseVO<>();
+		responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+		responseVO.setMessage("조회 성공");
+		responseVO.setResult(patientResultChartHeaderVO);
+
+		return responseVO;
+	}
+
+	/**
+	 * 환자 Vital 측정결과 차트용 데이터 조회-일별조회
 	 * @param vo 환자 차트용 Vital 조회조건 VO
 	 * @return ResponseVO&lt;PatientResultChartDataVO&gt; 환자 Vital 측정결과 차트 표현 데이터
 	 */
