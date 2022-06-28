@@ -155,96 +155,100 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 		// 누락된 데이터 가공처리
 		//  1.데이터 시점 기준 이후 데이터 바인딩
 		//  2.이후 데이터가 없을 경우 이전 데이터 바인딩
+		Date now = new Date();
 		for (PatientVitalChartDataVO chartDataVO : tempList) {
-			if (StringUtils.isEmpty(chartDataVO.getBt())) {
-				// 측정 결과가 없는 경우 측정일시 기준 이후 데이터 조히
-				Optional<String> bt = tempList.stream()
-						.filter(x -> x.getResultDt().after(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getBt()))
-						.findFirst()
-						.map(PatientVitalChartDataVO::getBt);
-
-				bt.ifPresent(chartDataVO::setBt);
-
-				// 이후 데이터가 업는 경우 이전 데이터 바인딩 처리
+			// 현시각 이전 데이터만 누락 데이터 가공처리
+			if (chartDataVO.getResultDt().before(now)) {
 				if (StringUtils.isEmpty(chartDataVO.getBt())) {
-					bt = tempList.stream()
-							.filter(x -> x.getResultDt().before(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getBt()))
-							.max(Comparator.comparing(PatientVitalChartDataVO::getResultDt))
+					// 측정 결과가 없는 경우 측정일시 기준 이후 데이터 조히
+					Optional<String> bt = tempList.stream()
+							.filter(x -> x.getResultDt().after(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getBt()))
+							.findFirst()
 							.map(PatientVitalChartDataVO::getBt);
 
 					bt.ifPresent(chartDataVO::setBt);
+
+					// 이후 데이터가 업는 경우 이전 데이터 바인딩 처리
+					if (StringUtils.isEmpty(chartDataVO.getBt())) {
+						bt = tempList.stream()
+								.filter(x -> x.getResultDt().before(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getBt()))
+								.max(Comparator.comparing(PatientVitalChartDataVO::getResultDt))
+								.map(PatientVitalChartDataVO::getBt);
+
+						bt.ifPresent(chartDataVO::setBt);
+					}
 				}
-			}
-
-			if (StringUtils.isEmpty(chartDataVO.getPr())) {
-				Optional<String> pr = tempList.stream()
-						.filter(x -> x.getResultDt().after(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getPr()))
-						.findFirst()
-						.map(PatientVitalChartDataVO::getPr);
-
-				pr.ifPresent(chartDataVO::setPr);
 
 				if (StringUtils.isEmpty(chartDataVO.getPr())) {
-					pr = tempList.stream()
-							.filter(x -> x.getResultDt().before(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getPr()))
-							.max(Comparator.comparing(PatientVitalChartDataVO::getResultDt))
+					Optional<String> pr = tempList.stream()
+							.filter(x -> x.getResultDt().after(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getPr()))
+							.findFirst()
 							.map(PatientVitalChartDataVO::getPr);
 
 					pr.ifPresent(chartDataVO::setPr);
+
+					if (StringUtils.isEmpty(chartDataVO.getPr())) {
+						pr = tempList.stream()
+								.filter(x -> x.getResultDt().before(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getPr()))
+								.max(Comparator.comparing(PatientVitalChartDataVO::getResultDt))
+								.map(PatientVitalChartDataVO::getPr);
+
+						pr.ifPresent(chartDataVO::setPr);
+					}
 				}
-			}
-
-			if (StringUtils.isEmpty(chartDataVO.getSpo2())) {
-				Optional<String> spo2 = tempList.stream()
-						.filter(x -> x.getResultDt().after(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getSpo2()))
-						.findFirst()
-						.map(PatientVitalChartDataVO::getSpo2);
-
-				spo2.ifPresent(chartDataVO::setSpo2);
 
 				if (StringUtils.isEmpty(chartDataVO.getSpo2())) {
-					spo2 = tempList.stream()
-							.filter(x -> x.getResultDt().before(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getSpo2()))
-							.max(Comparator.comparing(PatientVitalChartDataVO::getResultDt))
+					Optional<String> spo2 = tempList.stream()
+							.filter(x -> x.getResultDt().after(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getSpo2()))
+							.findFirst()
 							.map(PatientVitalChartDataVO::getSpo2);
 
 					spo2.ifPresent(chartDataVO::setSpo2);
+
+					if (StringUtils.isEmpty(chartDataVO.getSpo2())) {
+						spo2 = tempList.stream()
+								.filter(x -> x.getResultDt().before(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getSpo2()))
+								.max(Comparator.comparing(PatientVitalChartDataVO::getResultDt))
+								.map(PatientVitalChartDataVO::getSpo2);
+
+						spo2.ifPresent(chartDataVO::setSpo2);
+					}
 				}
-			}
-
-			if (StringUtils.isEmpty(chartDataVO.getSbp())) {
-				Optional<String> sbp = tempList.stream()
-						.filter(x -> x.getResultDt().after(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getSbp()))
-						.findFirst()
-						.map(PatientVitalChartDataVO::getSbp);
-
-				sbp.ifPresent(chartDataVO::setSbp);
 
 				if (StringUtils.isEmpty(chartDataVO.getSbp())) {
-					sbp = tempList.stream()
-							.filter(x -> x.getResultDt().before(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getSbp()))
-							.max(Comparator.comparing(PatientVitalChartDataVO::getResultDt))
+					Optional<String> sbp = tempList.stream()
+							.filter(x -> x.getResultDt().after(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getSbp()))
+							.findFirst()
 							.map(PatientVitalChartDataVO::getSbp);
 
 					sbp.ifPresent(chartDataVO::setSbp);
+
+					if (StringUtils.isEmpty(chartDataVO.getSbp())) {
+						sbp = tempList.stream()
+								.filter(x -> x.getResultDt().before(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getSbp()))
+								.max(Comparator.comparing(PatientVitalChartDataVO::getResultDt))
+								.map(PatientVitalChartDataVO::getSbp);
+
+						sbp.ifPresent(chartDataVO::setSbp);
+					}
 				}
-			}
-
-			if (StringUtils.isEmpty(chartDataVO.getDbp())) {
-				Optional<String> dbp = tempList.stream()
-						.filter(x -> x.getResultDt().after(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getDbp()))
-						.findFirst()
-						.map(PatientVitalChartDataVO::getDbp);
-
-				dbp.ifPresent(chartDataVO::setDbp);
 
 				if (StringUtils.isEmpty(chartDataVO.getDbp())) {
-					dbp = tempList.stream()
-							.filter(x -> x.getResultDt().before(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getDbp()))
-							.max(Comparator.comparing(PatientVitalChartDataVO::getResultDt))
+					Optional<String> dbp = tempList.stream()
+							.filter(x -> x.getResultDt().after(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getDbp()))
+							.findFirst()
 							.map(PatientVitalChartDataVO::getDbp);
 
 					dbp.ifPresent(chartDataVO::setDbp);
+
+					if (StringUtils.isEmpty(chartDataVO.getDbp())) {
+						dbp = tempList.stream()
+								.filter(x -> x.getResultDt().before(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getDbp()))
+								.max(Comparator.comparing(PatientVitalChartDataVO::getResultDt))
+								.map(PatientVitalChartDataVO::getDbp);
+
+						dbp.ifPresent(chartDataVO::setDbp);
+					}
 				}
 			}
 

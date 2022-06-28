@@ -7,8 +7,6 @@ import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.service.NoticeService;
 import kr.co.hconnect.service.PatientDetailDashboardService;
 import kr.co.hconnect.vo.*;
-import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -120,14 +117,6 @@ public class PatientDetailDashboardController {
 			, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			throw new InvalidRequestArgumentException(bindingResult);
-		}
-
-		// 조회일자가 현재일자일 경우 현재 시간까지 데이터 조회 처리
-		Date now = new Date();
-		if (DateUtils.isSameDay(now, vo.getSearchDt())) {
-			vo.setTime(DateFormatUtils.format(now, "HHmmss"));
-		} else {
-			vo.setTime("235959");
 		}
 
 		ResponseVO<PatientResultChartDataVO> responseVO = new ResponseVO<>();

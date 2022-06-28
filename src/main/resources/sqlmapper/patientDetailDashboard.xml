@@ -218,7 +218,7 @@
              SELECT DATE_ADD(START_DT, INTERVAL 15 MINUTE )
                   , DATE_ADD(END_DT, INTERVAL 15 MINUTE )
                FROM TAB
-              WHERE END_DT < TIMESTAMP (DATE (NOW()), TIME (#{time}))
+              WHERE END_DT < TIMESTAMP (DATE(#{searchDt}), TIME (IF(IFNULL(#{time}, '') = '', '235959', #{time})))
         )
         SELECT X.START_DT                                                                         AS RESULT_DT          -- 측정일시
              , MAX(IF(X.ITEM_ID = 'I0001' AND X.LV = 1, X.RESULT, NULL))                          AS BT                 -- 체온
@@ -231,8 +231,6 @@
                      /* 15분간의 기준 중 최근 측정 내역 조회를 위한 조건 */
                      , RANK() OVER(PARTITION BY T.START_DT, R.ITEM_ID ORDER BY R.RESULT_TIME DESC) AS LV
                      , I.ITEM_ID
-                     , I.ITEM_NM
-                     , R.RESULT_DATE
                      , R.RESULT_TIME
                      , RD.RESULT
                      , RD.RESULT_TYPE
