@@ -8,6 +8,7 @@ import kr.co.hconnect.domain.LoginSuccessInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
@@ -87,6 +88,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if (!(this.passUrls.containsKey(requestURI) && this.passUrls.get(requestURI).contains(requestMethod))
                 && !requestMethod.equals("OPTIONS")) {
             if (tokenStatus != TokenStatus.OK) {
+                response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
 
