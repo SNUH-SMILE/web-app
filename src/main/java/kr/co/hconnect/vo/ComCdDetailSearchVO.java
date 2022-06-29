@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**
@@ -22,7 +22,7 @@ public class ComCdDetailSearchVO implements Serializable {
     /**
      * 공통코드
      */
-    @NotNull(message = "{validation.null.comCd}")
+    @NotBlank(message = "{validation.null.comCd}")
     private String comCd;
     /**
      * 세부코드
