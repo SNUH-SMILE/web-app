@@ -50,7 +50,7 @@
 		   AND B.DETAIL_CD_NM LIKE CONCAT('%', #{hospitalNm}, '%')
 		</if>
 
-	   ORDER BY A.CENTER_NM
+	   ORDER BY A.CENTER_ID
 	</select>
 
 
