@@ -33,31 +33,31 @@
              , CASE WHEN row_number() over () % 2 = 0
                         THEN 'Y'
                     ELSE     'N'
-            END                              AS SIGNAL1_YN
+               END                              AS SIGNAL1_YN
              , CASE WHEN row_number() over () % 2 = 1
                         THEN 'Y'
                     ELSE     'N'
-            END                              AS SIGNAL2_YN
-        FROM ADMISSION A
-                 INNER JOIN PATIENT      P    ON A.PATIENT_ID = P.PATIENT_ID
-                 LEFT JOIN COM_CD_DETAIL CDR  ON CDR.COM_CD    = 'CD005'
-            AND CDR.DETAIL_CD = A.ROOM
-            AND CDR.PROPERTY1 = A.CENTER_ID
-                 LEFT JOIN COM_CD_DETAIL CDS  ON CDS.COM_CD    = 'CD003'
-            AND CDS.DETAIL_CD = P.SEX
-        WHERE A.DSCHGE_DATE IS NULL
-          AND A.QANTN_DIV = #{qantnDiv}
+               END                              AS SIGNAL2_YN
+          FROM ADMISSION A
+               INNER JOIN PATIENT      P    ON A.PATIENT_ID = P.PATIENT_ID
+               LEFT JOIN COM_CD_DETAIL CDR  ON CDR.COM_CD    = 'CD005'
+                                           AND CDR.DETAIL_CD = A.ROOM
+                                           AND CDR.PROPERTY1 = A.CENTER_ID
+               LEFT JOIN COM_CD_DETAIL CDS  ON CDS.COM_CD    = 'CD003'
+                                           AND CDS.DETAIL_CD = P.SEX
+         WHERE A.DSCHGE_DATE IS NULL
+           AND A.QANTN_DIV = #{qantnDiv}
 
         <choose>
-            <when test='qantnDiv.equals("1")'>
-                ORDER
-                BY P.PATIENT_NM
+            <when test="qantnDiv.equals('1'.toString())">
+         ORDER
+            BY P.PATIENT_NM
             </when>
-            <when test='qantnDiv.equals("2")'>
-                AND A.CENTER_ID = #{centerId}
-                ORDER
-                BY A.ROOM
-                , P.PATIENT_NM
+            <when test="qantnDiv.equals('2'.toString())">
+           AND A.CENTER_ID = #{centerId}
+         ORDER
+            BY A.ROOM
+             , P.PATIENT_NM
             </when>
         </choose>
 
