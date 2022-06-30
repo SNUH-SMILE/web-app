@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 /**
@@ -23,6 +25,8 @@ public class PatientStatusDashboardDetailSearchVO implements Serializable {
      * 	1: 자가격리
      * 	2: 생활치료센터
      */
+    @NotBlank(message = "{validation.null.qantnDiv}")
+    @Pattern(regexp = "^[12]$", message = "{validation.patternMismatch.qantnDiv}")
     private String qantnDiv;
     /**
      * 센터ID
