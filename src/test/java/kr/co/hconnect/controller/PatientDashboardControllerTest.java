@@ -17,8 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Locale;
-
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -110,28 +108,6 @@ public class PatientDashboardControllerTest {
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.code", is(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode())))
                 .andExpect(jsonPath("$.message", containsString("validation.null.qantnDiv")))
-                .andDo(print());
-    }
-
-    /**
-     * 생활치료센터 대시보드 현황 조회 - 센터ID 입력여부 확인
-     */
-    @Test
-    public void selectPatientStatusDashboard_thenCheckCenterId() throws Exception {
-        String data =
-                "{\n" +
-                        "    \"qantnDiv\":\"2\",\n" +
-                        "    \"centerId\":\"\"\n" +
-                        "}";
-
-        mvc.perform(post("/api/patientDashboard/status/list")
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .content(data))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code", is(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode())))
-                .andExpect(jsonPath("$.message"
-                        , containsString(messageSource.getMessage("validation.null.centerId"
-                                                                , null, Locale.getDefault()))))
                 .andDo(print());
     }
 
