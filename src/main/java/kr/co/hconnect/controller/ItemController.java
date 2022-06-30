@@ -67,14 +67,13 @@ public class ItemController {
         return responseVO;
     }
 
-
     /**
-    *측정항목 상세 조회
+    * 측정항목 상세 조회
     * @param vo 측정항목VO
     * @return 측정항목
     */
     @RequestMapping(value = "/info", method = RequestMethod.POST)
-    public ResponseVO<ItemVO> insertItem(@RequestBody ItemVO vo) {
+    public ResponseVO<ItemVO> selectItem(@RequestBody ItemVO vo) {
 
         ResponseVO<ItemVO> responseVO = new ResponseVO<>();
 
@@ -90,6 +89,7 @@ public class ItemController {
 
         return responseVO;
     }
+
      /**
      * 측정항목 생성
      * @param vo 측정항목VO
