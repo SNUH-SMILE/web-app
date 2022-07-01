@@ -31,7 +31,7 @@ public class TreatmentCenterDao extends EgovAbstractMapper {
     }
 
     /**
-     *생활치료센터 저장
+     * 생활치료센터 저장
      * @param vo 생활치료센터 저장 정보
      */
     public void insertTreatmentCenter(TreatmentCenterVO vo) {
@@ -39,7 +39,7 @@ public class TreatmentCenterDao extends EgovAbstractMapper {
     }
 
     /**
-     *생활치료센터 수정
+     * 생활치료센터 수정
      * @param vo 생활치료센터 수정 정보
      */
     public void updateTreatmentCenter(TreatmentCenterVO vo) {
@@ -47,7 +47,16 @@ public class TreatmentCenterDao extends EgovAbstractMapper {
     }
 
     /**
-     *생활치료센터 삭제
+     * 생활치료센터 입소중인 인원 조회
+     * @param centerId 생활치료센터ID
+     * @return 생활치료센터 입소중인 인원
+     */
+    public int selectAdmissionCountByCenter(String centerId) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectAdmissionCountByCenter", centerId);
+    }
+
+    /**
+     * 생활치료센터 삭제
      * @param vo 생활치료센터 삭제 정보
      */
     public void deleteTreatmentCenter(TreatmentCenterVO vo) {

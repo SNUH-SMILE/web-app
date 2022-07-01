@@ -90,6 +90,16 @@
 		]]>
 	</update>
 
+	<!-- 생활치료센터 입소중인 인원 조회 - kr.co.hconnect.sqlmapper.selectAdmissionCountByCenter -->
+	<select id="selectAdmissionCountByCenter" parameterType="String" resultType="Integer">
+		SELECT COUNT(*)
+          FROM admission
+         WHERE QANTN_DIV = '2'
+           AND CENTER_ID = #{centerId}
+           AND DSCHGE_DATE IS NULL
+		   AND DEL_YN = 'N'
+	</select>
+
 	<!-- 센터 정보 삭제 - kr.co.hconnect.sqlmapper.deleteTreatmentCenter -->
 	<delete id="deleteTreatmentCenter" parameterType="kr.co.hconnect.vo.TreatmentCenterVO">
 	<![CDATA[

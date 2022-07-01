@@ -4,6 +4,7 @@ package kr.co.hconnect.controller;
 import egovframework.rte.fdl.cmmn.exception.FdlException;
 import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.common.VoValidationGroups;
+import kr.co.hconnect.exception.ActiveAdmissionExistsException;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.service.TreatmentCenterService;
@@ -129,6 +130,7 @@ public class TreatmentCenterController {
             treatmentCenterSaveCompletedVO.setList(treatmentCenterService.selectTreatmentCenterList(vo.getSearchInfo()));
 
             responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("저장 완료");
             responseVO.setResult(treatmentCenterSaveCompletedVO);
         } catch (FdlException e) {
             responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
@@ -166,6 +168,7 @@ public class TreatmentCenterController {
         treatmentCenterSaveCompletedVO.setList(treatmentCenterService.selectTreatmentCenterList(vo.getSearchInfo()));
 
         responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+        responseVO.setMessage("수정 완료");
         responseVO.setResult(treatmentCenterSaveCompletedVO);
 
         return responseVO;
@@ -190,12 +193,18 @@ public class TreatmentCenterController {
         BeanUtils.copyProperties(vo, treatmentCenterVO);
         treatmentCenterVO.setUpdId(tokenDetailInfo.getId());
 
-        // 삭제
-        treatmentCenterService.deleteTreatmentCenter(treatmentCenterVO);
+        // 생활치료센터 삭제
+        try {
+            treatmentCenterService.deleteTreatmentCenter(treatmentCenterVO);
 
-        // 반환정보 구성
-        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
-        responseVO.setResult(treatmentCenterService.selectTreatmentCenterList(vo.getSearchInfo()));
+            // 반환정보 구성
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("삭제 완료");
+            responseVO.setResult(treatmentCenterService.selectTreatmentCenterList(vo.getSearchInfo()));
+        } catch (ActiveAdmissionExistsException e) {
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
 
         return responseVO;
     }
