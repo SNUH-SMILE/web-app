@@ -19,9 +19,9 @@
 
     <repositories>
         <repository>
-            <id>hconnect-nexus</id>
-            <name>HealthConnect Nexus Repository</name>
-            <url>http://20.194.0.76:8081/repository/hconnectdx/</url>
+            <id>eGovFramework</id>
+            <name>eGovFramework Repository</name>
+            <url>https://maven.egovframe.go.kr/maven/</url>
         </repository>
     </repositories>
 
