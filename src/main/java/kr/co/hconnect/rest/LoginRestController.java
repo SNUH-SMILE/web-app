@@ -57,7 +57,7 @@ public class LoginRestController {
      * @param identityInfo 본인인증 확인 정보
      * @return IdentityResult
      */
-    @RequestMapping(value = "/identity", method = RequestMethod.POST)
+    @RequestMapping(value = "/patient/identity", method = RequestMethod.POST)
     public IdentityResult checkIdentity(@Valid @RequestBody IdentityInfo identityInfo, BindingResult result) {
         if (result.hasErrors()) {
             throw new InvalidRequestArgumentException(result);
@@ -112,7 +112,7 @@ public class LoginRestController {
      * @param loginInfo 로그인 정보
      * @return BaseResponse
      */
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/patient/login", method = RequestMethod.POST)
     public LoginSuccessInfo login(@Valid @RequestBody LoginInfo loginInfo, BindingResult result) {
         if (result.hasErrors()) {
             throw new InvalidRequestArgumentException(result);
