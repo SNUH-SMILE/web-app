@@ -60,7 +60,7 @@ public class PatientRestController {
      * @param loginId 로그인ID VO
      * @return Patient 회원정보
      */
-    @RequestMapping(value = "/getPatient", method = RequestMethod.POST)
+    @RequestMapping(value = "/patient/patient", method = RequestMethod.POST)
     public Patient selectPatient(@Valid @RequestBody LoginId loginId, BindingResult result) {
         if (result.hasErrors()) {
             throw new InvalidRequestArgumentException(result);
@@ -89,7 +89,7 @@ public class PatientRestController {
      * @param patient 환자 저장 정보
      * @return BaseResponse
      */
-    @RequestMapping(value = "/patient", method = RequestMethod.POST)
+    @RequestMapping(value = "/patient/join", method = RequestMethod.POST)
     public BaseResponse createPatient(@Validated(PatientValidationGroups.add.class) @RequestBody Patient patient, BindingResult result) {
         if (result.hasErrors()) {
             throw new InvalidRequestArgumentException(result);
@@ -127,7 +127,7 @@ public class PatientRestController {
      * @param patient 환자 저장 정보
      * @return BaseResponse
      */
-    @RequestMapping(value = "/patient", method = RequestMethod.PUT)
+    @RequestMapping(value = "/patient/setPatient", method = RequestMethod.POST)
     public BaseResponse updatePatient(@Validated(PatientValidationGroups.modify.class) @RequestBody Patient patient, BindingResult result) {
         if (result.hasErrors()) {
             throw new InvalidRequestArgumentException(result);
@@ -149,6 +149,9 @@ public class PatientRestController {
             baseResponse.setMessage(e.getMessage());
         } catch (DuplicatePatientLoginIdException e) {
             baseResponse.setCode(ApiResponseCode.DUPLICATE_PATIENT_LOGIN_ID.getCode());
+            baseResponse.setMessage(e.getMessage());
+        } catch (DuplicatePatientInfoException e) {
+            baseResponse.setCode(ApiResponseCode.DUPLICATE_PATIENT_CELL_PHONE.getCode());
             baseResponse.setMessage(e.getMessage());
         }
 
@@ -185,7 +188,7 @@ public class PatientRestController {
      * @param loginInfo 로그인 구성정보
      * @return BaseResponse
      */
-    @RequestMapping(value = "/patient/password", method = RequestMethod.PUT)
+    @RequestMapping(value = "/patient/password", method = RequestMethod.POST)
     public BaseResponse changePassword(@Valid @RequestBody LoginInfo loginInfo
             , BindingResult result) {
         if (result.hasErrors()) {
@@ -212,7 +215,7 @@ public class PatientRestController {
      * @param searchLoginIdInfo 아이디 검색 조건 정보
      * @return FindLoginIdResult
      */
-    @RequestMapping(value = "/patients/findById", method = RequestMethod.POST)
+    @RequestMapping(value = "/patient/findById", method = RequestMethod.POST)
     public FindLoginIdResult selectPatientLoginId(@Valid @RequestBody SearchLoginIdInfo searchLoginIdInfo
             , BindingResult result) {
         if (result.hasErrors()) {
@@ -247,7 +250,7 @@ public class PatientRestController {
      * @param searchExistLoginInfo 개인정보 확인 검색 조건
      * @return ExistResult
      */
-    @RequestMapping(value = "/patients/find", method = RequestMethod.POST)
+    @RequestMapping(value = "/patient/findPassword", method = RequestMethod.POST)
     public ExistResult checkExistLoginInfo(@Valid @RequestBody SearchExistLoginInfo searchExistLoginInfo
             , BindingResult result) {
         if (result.hasErrors()) {

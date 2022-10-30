@@ -144,6 +144,13 @@ public class PatientService extends EgovAbstractServiceImpl {
             if (patientByLoginId == null) {
                 throw new NotFoundPatientInfoException(messageSource.getMessage("message.notfound.loginId"
                     , null, Locale.getDefault()));
+            } else if (!patient.getCellPhone().equals(patientByLoginId.getCellPhone())) {
+                // 연락처 변경 시 변경연락처 존배여부 확인
+                if (patientDao.selectPatientByCellPhone(patientByLoginId.getCellPhone()) != null) {
+                    // 전달받은 주민번호 기준 로그인ID 생성여부 확인
+                    throw new DuplicatePatientInfoException(messageSource.getMessage("message.duplicate.cellPhone"
+                        , null, Locale.getDefault()));
+                }
             }
 
             patient.setPatientId(patientByLoginId.getPatientId());

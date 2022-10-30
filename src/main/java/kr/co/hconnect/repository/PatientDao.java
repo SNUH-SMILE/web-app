@@ -33,14 +33,23 @@ public class PatientDao extends EgovAbstractMapper {
 		return selectOne("kr.co.hconnect.sqlmapper.selectPatientByLoginId", loginId);
 	}
 
-	/**
-	 * 환자정보 조회-본인인증 확인 정보 기준
-	 * @param identityInfo 본인인증 확인 정보 (성명, 생년월일, 성별, 휴대폰)
-	 * @return Patient
-	 */
-	public Patient selectPatientByIdentityInfo(IdentityInfo identityInfo) {
-		return selectOne("kr.co.hconnect.sqlmapper.selectPatientByIdentityInfo", identityInfo);
-	}
+    /**
+     * 환자정보 조회-본인인증 확인 정보 기준
+     * @param identityInfo 본인인증 확인 정보 (성명, 생년월일, 성별, 휴대폰)
+     * @return Patient
+     */
+    public Patient selectPatientByIdentityInfo(IdentityInfo identityInfo) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectPatientByIdentityInfo", identityInfo);
+    }
+
+    /**
+     * 환자정보 조회-환자 휴대폰번호
+     * @param cellPhone 휴대폰 번호
+     * @return Patient
+     */
+    public Patient selectPatientByCellPhone(String cellPhone) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectPatientByCellPhone", cellPhone);
+    }
 
 	/**
 	 * 환자정보 조회-아이디 검색 조건 정보 기준

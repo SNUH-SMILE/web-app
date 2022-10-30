@@ -33,6 +33,10 @@ public enum ApiResponseCode {
      * 사용자 정보가 존재하지 않는 경우
      */
     NOT_FOUND_USER_INFO("15"),
+    /**
+     * 동일한 휴대폰 번호가 존재하는 경우
+     */
+    DUPLICATE_PATIENT_CELL_PHONE("16"),
 
     /**
      * 내원중인 격리/입소내역이 존재하지 않는 경우

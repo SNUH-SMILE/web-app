@@ -60,6 +60,24 @@
 	]]>
 	</select>
 
+    <select id="selectPatientByCellPhone" parameterType="String" resultType="kr.co.hconnect.domain.Patient">
+	<![CDATA[
+        SELECT PATIENT_ID		    -- 환자ID
+             , LOGIN_ID             -- 로그인ID
+             , PASSWORD             -- 비밀번호
+             , PATIENT_NM           -- 성명
+             , BIRTH_DATE           -- 생년월일
+             , SEX                  -- 성별
+             , CELL_PHONE           -- 휴대폰
+             , GUARDIAN_CELL_PHONE  -- 보호자연락처
+             , ZIP_CODE             -- 우편번호
+             , ADDRESS1             -- 주소
+             , ADDRESS2             -- 상세주소
+        FROM PATIENT
+        WHERE CELL_PHONE = #{cellPhone}
+        ]]>
+	</select>
+
 	<!-- 환자정보 조회-아이디 검색 조건 정보 기준 -->
 	<select id="selectPatientBySearchLoginIdInfo" parameterType="kr.co.hconnect.domain.SearchLoginIdInfo" resultType="kr.co.hconnect.domain.Patient">
 	<![CDATA[
@@ -77,6 +95,8 @@
 		  FROM PATIENT
 		 WHERE PATIENT_NM = #{patientNm}
            AND CELL_PHONE = #{cellPhone}
+           AND BIRTH_DATE = #{birthDate}
+           AND SEX        = #{sex}
 	]]>
 	</select>
 

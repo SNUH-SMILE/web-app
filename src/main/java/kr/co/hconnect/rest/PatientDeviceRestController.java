@@ -57,7 +57,7 @@ public class PatientDeviceRestController {
      * @param savePatientDeviceInfo 환자별 장비 저장 정보
      * @return BaseResponse
      */
-    @RequestMapping(value = "/device", method = RequestMethod.POST)
+    @RequestMapping(value = "/patient/device", method = RequestMethod.POST)
     public PatientDeviceSavedInfo insertPatientDevice(@Valid @RequestBody SavePatientDeviceInfo savePatientDeviceInfo
         , BindingResult result) {
         if (result.hasErrors()) {
