@@ -113,7 +113,7 @@
 				${orderBy} ${orderDir}
 			</when>
 			<otherwise>
-				A.ADMISSION_DATE DESC,A.ADMISSION_DATE DESC
+                A.DSCHGE_DATE is null desc,A.ADMISSION_DATE DESC
 			</otherwise>
 		</choose>
 
