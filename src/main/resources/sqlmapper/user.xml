@@ -16,6 +16,7 @@
              , A.REG_DT           AS REG_DT           -- 등록일시
              , A.UPD_ID           AS UPD_ID           -- 수정자ID
              , A.UPD_DT           AS UPD_DT           -- 수정일시
+             , A.LVL              AS LVL              -- 권한
           FROM USER A
                LEFT JOIN USER_TREATMENT_CENTER B  ON A.USER_ID = B.USER_ID
                                                  AND B.MAIN_YN = 'Y'
@@ -51,7 +52,8 @@
              , A.REG_DT           AS REG_DT           -- 등록일시
              , A.UPD_ID           AS UPD_ID           -- 수정자ID
              , A.UPD_DT           AS UPD_DT           -- 수정일시
-          FROM USER A
+             , A.LVL              AS LVL              -- 권한
+        FROM USER A
                LEFT JOIN USER_TREATMENT_CENTER B  ON A.USER_ID = B.USER_ID
                                                  AND B.MAIN_YN = 'Y'
                LEFT JOIN TREATMENT_CENTER      C  ON B.CENTER_ID = C.CENTER_ID
