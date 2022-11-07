@@ -57,6 +57,10 @@ public class UserVO extends BaseDefaultVO {
 	 */
 	@Size(max = 100, message = "{validation.size.userRemark}", groups = VoValidationGroups.add.class)
 	private String remark;
+    /** 권한 컬럼 */
+    private String lvl;
+
+
 	/**
 	 * 로그인 유지 여부 
 	 */

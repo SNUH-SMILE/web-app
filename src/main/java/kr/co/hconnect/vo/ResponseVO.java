@@ -20,6 +20,9 @@ public class ResponseVO<T> extends BaseResponse {
     /**
      * 결과 정보
      */
+    private  String lvl;
+
+
     private T result;
 
 }
