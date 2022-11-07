@@ -39,4 +39,8 @@ public class UserLoginInfoVO implements Serializable {
      */
     @Pattern(regexp = "^[YN]$")
     private String rememberYn;
+
+    private String lvl;
+
+
 }

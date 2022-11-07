@@ -86,6 +86,7 @@ public class UserLoginController {
 
 			responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
 			responseVO.setMessage("로그인 성공");
+            responseVO.setLvl(userVO.getLvl());
 			responseVO.setResult(token);
 		} catch (NotFoundUserInfoException e) {
 			responseVO.setCode(ApiResponseCode.NOT_FOUND_USER_INFO.getCode());
