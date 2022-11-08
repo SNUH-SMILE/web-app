@@ -240,7 +240,12 @@
 		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientNm)">
 			AND P.PATIENT_NM LIKE CONCAT('%', #{patientNm},'%')
 		</if>
-
+        <if test='@org.apache.commons.lang3.StringUtils@isNotEmpty(qantnStatus) and "1".equals(qantnStatus)'>
+            AND A.DSCHGE_DATE IS NULL
+        </if>
+        <if test='@org.apache.commons.lang3.StringUtils@isNotEmpty(qantnStatus) and "2".equals(qantnStatus)'>
+            AND A.DSCHGE_DATE IS NOT NULL
+        </if>
 		ORDER
 		BY
 		<choose>
@@ -248,7 +253,7 @@
 				${orderBy} ${orderDir}
 			</when>
 			<otherwise>
-				A.ADMISSION_DATE DESC
+                A.DSCHGE_DATE is null desc, A.ADMISSION_DATE DESC
 			</otherwise>
 		</choose>
 
