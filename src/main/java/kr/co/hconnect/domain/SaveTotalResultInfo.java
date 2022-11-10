@@ -64,6 +64,13 @@ public class SaveTotalResultInfo implements Serializable {
     private List<StepCountResult> stepCountResults;
 
     /**
+     * 호흡 측정 결과
+     */
+    @JsonProperty("rrList")
+    @Valid
+    private List<RrResult> rrResults;
+
+    /**
      * 수면 측정 결과
      */
     @JsonProperty("sleepTimeList")

@@ -65,6 +65,10 @@ public class MainContentDetail extends BaseResponse {
      */
     private List<StepCountResult> todayStepCountList;
     /**
+     * 당일 호흡 목록
+     */
+    private List<RrResult> todayRrList;
+    /**
      * 당일 총수면시간
      */
     @JsonFormat(pattern = "HHmm")

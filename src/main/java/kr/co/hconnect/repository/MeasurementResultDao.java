@@ -50,6 +50,15 @@ public class MeasurementResultDao extends EgovAbstractMapper {
     }
 
     /**
+     * 측정일자별 상세호흡 목록 조회
+     * @param searchResultInfo 측정결과 검색 조건
+     * @return 측정일자별 상세호흡 목록
+     */
+    public List<RrResult> selectRrList(SearchResultInfo searchResultInfo) {
+        return selectList("kr.co.hconnect.sqlmapper.selectRrList", searchResultInfo);
+    }
+
+    /**
      * 측정일자별 상세걸음수 목록 조회
      *
      * @param searchResultInfos 측정결과 검색 조건
