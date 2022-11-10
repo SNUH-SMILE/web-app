@@ -522,7 +522,7 @@ public class MeasurementResultRestController {
      * @return BaseResponse
      */
     @RequestMapping(value = "/results/rr", method = RequestMethod.POST)
-    public BaseResponse saveRrResult(@Valid @RequestBody SaveSpO2ResultInfo resultInfo, BindingResult bindingResult) {
+    public BaseResponse saveRrResult(@Valid @RequestBody SaveRrResultInfo resultInfo, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
