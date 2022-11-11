@@ -19,7 +19,12 @@ public class IdGenerationService {
     private final EgovIdGnrService patientIdGnrService;         // 환자ID 채번 서비스
     private final EgovIdGnrService admissionIdGnrService;       // 입소내역ID 채번 서비스
     private final EgovIdGnrService itemIdGnrService;            // 측정항목ID 채번 서비스
-    private final EgovIdGnrService comCdGnrService;             // 공통코드 채번 서비스
+    private final EgovIdGnrService comCdGnrService;              // 공통코드 채번 서비스
+    private final EgovIdGnrService interviewIdGnrService;        // 문진내역Id 채번 서비스
+
+    private final EgovIdGnrService interviewDetailIdGnrService;        // 문진내역세부Id 채번 서비스
+
+
 
     /**
      * 생성자를 통해 각 채번 서비스를 DI (using @Qualifier)
@@ -29,7 +34,9 @@ public class IdGenerationService {
         , @Qualifier("patientIdGnrService") EgovIdGnrService patientIdGnrService
         , @Qualifier("admissionIdGnrService") EgovIdGnrService admissionIdGnrService
         , @Qualifier("itemIdGnrService") EgovIdGnrService itemIdGnrService
-        , @Qualifier("comCdGnrService") EgovIdGnrService comCdGnrService) {
+        , @Qualifier("comCdGnrService") EgovIdGnrService comCdGnrService
+        , @Qualifier("interviewIdGnrService") EgovIdGnrService interviewIdGnrService
+        , @Qualifier("interviewDetailIdGnrService") EgovIdGnrService interviewDetailIdGnrService) {
 
         this.centerIdGnrService = centerIdGnrService;
         this.userIdGnrService = userIdGnrService;
@@ -37,6 +44,8 @@ public class IdGenerationService {
         this.admissionIdGnrService = admissionIdGnrService;
         this.itemIdGnrService = itemIdGnrService;
         this.comCdGnrService = comCdGnrService;
+        this.interviewIdGnrService = interviewIdGnrService;
+        this.interviewDetailIdGnrService = interviewDetailIdGnrService;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -48,6 +57,8 @@ public class IdGenerationService {
         String admissionId = admissionIdGnrService.getNextStringId();
         String itemId = itemIdGnrService.getNextStringId();
         String comCd = comCdGnrService.getNextStringId();
+        Integer interviewId = interviewIdGnrService.getNextIntegerId();
+        Integer interviewDetailId = interviewDetailIdGnrService.getNextIntegerId();
 
         LOGGER.info("CenterId {}", centerId);
         LOGGER.info("UserId {}", userId);
@@ -55,6 +66,8 @@ public class IdGenerationService {
         LOGGER.info("AdmissionId {}", admissionId);
         LOGGER.info("ItemId {}", itemId);
         LOGGER.info("ComCd {}", comCd);
+        LOGGER.info("interviewId {}", interviewId);
+        LOGGER.info("interviewDetailId {}", interviewDetailId);
     }
 
 }

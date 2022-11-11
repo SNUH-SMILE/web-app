@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+
+    <insert id="insertInterview" parameterType="kr.co.hconnect.domain.Interview">
+    <![CDATA[
+        insert
+        into interview(
+            INTERVIEW_SEQ,
+            INTERVIEW_TITLE,
+            INTERVIEW_DD,
+            INTERVIEW_TIME,
+            INTERVIEW_TYPE,
+            INTERVIEW_STATUS,
+            ADMISSION_ID,
+            REG_ID
+        )VALUES (
+                    #{id},
+                            #{title},
+                            #{dd},
+                            #{time},
+                            #{type},
+                            #{state},
+                 #{admmisionId},
+                 #{regId}
+                )
+        ]]>
+    </insert>
+
+    <insert id="insertInterviewDetail" parameterType="kr.co.hconnect.domain.InterviewDetail">
+    <![CDATA[
+        INSERT INTO interview_detail
+        ( INTERVIEW_DETAIL_SEQ,
+          INTERVIEW_SEQ,
+          ANSWER_SEQ,
+          ANSWER_VALUE,
+          REG_ID
+        )
+         VALUE(
+            #{detailSeq},
+            #{seq},
+            #{answerSeq},
+            #{answerValue},
+            #{regId}
+            )
+        ]]>
+    </insert>
+
+
+</mapper>
