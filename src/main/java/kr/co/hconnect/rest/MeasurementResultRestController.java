@@ -84,6 +84,7 @@ public class MeasurementResultRestController {
             throw new InvalidRequestArgumentException(bindingResult);
         }
         MainContentDetail mainContentDetail = measurementResultService.mainService(loginId.getLoginId());
+
         int resultListsSize = 0;
         resultListsSize += mainContentDetail.getTodayBpList().size();
         resultListsSize += mainContentDetail.getTodayBtList().size();
@@ -91,14 +92,17 @@ public class MeasurementResultRestController {
         resultListsSize += mainContentDetail.getTodaySpO2List().size();
         resultListsSize += mainContentDetail.getTodaySleepTimeList().size();
         resultListsSize += mainContentDetail.getTodayStepCountList().size();
-        if(resultListsSize>0){
+        resultListsSize += mainContentDetail.getTodayRrList().size();
+
+        if (resultListsSize > 0) {
             mainContentDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             mainContentDetail.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
         }
-        else if(resultListsSize==0){
+        else {
             mainContentDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             mainContentDetail.setMessage(messageSource.getMessage("message.notfound.searchResultList", null, Locale.getDefault()));
         }
+
         return mainContentDetail;
     }
 
@@ -146,15 +150,14 @@ public class MeasurementResultRestController {
         searchResultInfo.setAdmissionId(getAdmissionId(searchResultInfo.getLoginId()));
         BtResultDetail btResultDetail = new BtResultDetail();
         btResultDetail.setBtList(measurementResultService.selectBtLIst(searchResultInfo));
-        if(btResultDetail.getBtList().size() > 0){
-            btResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
-            btResultDetail.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
 
-        }
-        else if(btResultDetail.getBtList().size() == 0){
-            btResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
+        btResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
+        if (btResultDetail.getBtList().size() > 0) {
+            btResultDetail.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
+        } else {
             btResultDetail.setMessage(messageSource.getMessage("message.notfound.searchResultList", null, Locale.getDefault()));
         }
+
         return btResultDetail;
     }
 
@@ -173,14 +176,14 @@ public class MeasurementResultRestController {
         searchResultInfo.setAdmissionId(getAdmissionId(searchResultInfo.getLoginId()));
         HrResultDetail hrResultDetail = new HrResultDetail();
         hrResultDetail.setHrList(measurementResultService.selectHrList(searchResultInfo));
-        if(hrResultDetail.getHrList().size() > 0){
-            hrResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
+
+        hrResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
+        if (hrResultDetail.getHrList().size() > 0) {
             hrResultDetail.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
-        }
-        else if(hrResultDetail.getHrList().size() == 0){
-            hrResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
+        } else {
             hrResultDetail.setMessage(messageSource.getMessage("message.notfound.searchResultList", null, Locale.getDefault()));
         }
+
         return hrResultDetail;
     }
 
@@ -200,14 +203,14 @@ public class MeasurementResultRestController {
 
         SpO2ResultDetail spO2ResultDetail = new SpO2ResultDetail();
         spO2ResultDetail.setSpO2List(measurementResultService.selectSpO2List(searchResultInfo));
-        if(spO2ResultDetail.getSpO2List().size() > 0){
-            spO2ResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
+
+        spO2ResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
+        if (spO2ResultDetail.getSpO2List().size() > 0) {
             spO2ResultDetail.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
-        }
-        else if(spO2ResultDetail.getSpO2List().size() == 0){
-            spO2ResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
+        } else {
             spO2ResultDetail.setMessage(messageSource.getMessage("message.notfound.searchResultList", null, Locale.getDefault()));
         }
+
         return spO2ResultDetail;
     }
 
@@ -228,15 +231,42 @@ public class MeasurementResultRestController {
 
         StepCountResultDetail stepCountResultDetail = new StepCountResultDetail();
         stepCountResultDetail.setStepCountList(measurementResultService.selectStepList(searchResultInfos));
-        if(stepCountResultDetail.getStepCountList().size() > 0){
-            stepCountResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
+
+        stepCountResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
+        if (stepCountResultDetail.getStepCountList().size() > 0) {
             stepCountResultDetail.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
-        }
-        else if(stepCountResultDetail.getStepCountList().size() == 0){
-            stepCountResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
+        } else {
             stepCountResultDetail.setMessage(messageSource.getMessage("message.notfound.searchResultList", null, Locale.getDefault()));
         }
+
         return stepCountResultDetail;
+    }
+
+    /**
+     * 혈압 상세목록 조회
+     *
+     * @param searchResultInfo 측정결과 검색 조건
+     * @return RrResultDetail rrResultDetail
+     */
+    @RequestMapping(value = "/results/getRr", method = RequestMethod.POST)
+    public RrResultDetail selectRrList(@Valid @RequestBody SearchResultInfo searchResultInfo, BindingResult bindingResult) {
+        //유효성 검사
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+        searchResultInfo.setAdmissionId(getAdmissionId(searchResultInfo.getLoginId()));
+
+        RrResultDetail rrResultDetail = new RrResultDetail();
+        rrResultDetail.setRrList(measurementResultService.selectRrList(searchResultInfo));
+
+        rrResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
+        if (rrResultDetail.getRrList().size() > 0) {
+            rrResultDetail.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
+        } else {
+            rrResultDetail.setMessage(messageSource.getMessage("message.notfound.searchResultList", null, Locale.getDefault()));
+        }
+
+        return rrResultDetail;
     }
 
     /**
@@ -255,14 +285,14 @@ public class MeasurementResultRestController {
 
         BpResultDetail bpResultDetail = new BpResultDetail();
         bpResultDetail.setBpList(measurementResultService.selectBpList(searchResultInfos));
+
+        bpResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
         if(bpResultDetail.getBpList().size() > 0){
-            bpResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             bpResultDetail.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
-        }
-        else if(bpResultDetail.getBpList().size() == 0){
-            bpResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
+        } else {
             bpResultDetail.setMessage(messageSource.getMessage("message.notfound.searchResultList", null, Locale.getDefault()));
         }
+
         return bpResultDetail;
     }
 
@@ -486,6 +516,34 @@ public class MeasurementResultRestController {
     }
 
     /**
+     * 수면 측정 정보 저장
+     *
+     * @param resultInfo 수면 측정 결과 정보
+     * @return BaseResponse
+     */
+    @RequestMapping(value = "/results/rr", method = RequestMethod.POST)
+    public BaseResponse saveRrResult(@Valid @RequestBody SaveRrResultInfo resultInfo, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+
+        // 측정결과 저장정보 생성
+        List<ResultSavedInformationData> resultSavedInformationDataList
+            = convertResultSavedInfo(ItemId.RESPIRATORY_RATE, resultInfo);
+
+        // 측정결과 저장
+        resultService.saveResult(resultSavedInformationDataList);
+
+        // 반환정보
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setCode(ApiResponseCode.SUCCESS.getCode());
+        baseResponse.setMessage(messageSource.getMessage("message.success.saveResult"
+            , null, Locale.getDefault()));
+
+        return baseResponse;
+    }
+
+    /**
      * 수면 정보 측정결과 저장
      *
      * @param resultInfo 수면 측정결과 저장 정보
@@ -556,6 +614,13 @@ public class MeasurementResultRestController {
             saveStepCountResultInfo.setResults(saveTotalResultInfo.getStepCountResults());
             savedInformationData.addAll(convertResultSavedInfo(ItemId.STEP_COUNT, saveStepCountResultInfo));
         }
+        // 호흡
+        if (saveTotalResultInfo.getRrResults() != null && !saveTotalResultInfo.getRrResults().isEmpty()) {
+            SaveRrResultInfo saveRrResultInfo = new SaveRrResultInfo();
+            saveRrResultInfo.setLoginId(loginId);
+            saveRrResultInfo.setResults(saveTotalResultInfo.getRrResults());
+            savedInformationData.addAll(convertResultSavedInfo(ItemId.RESPIRATORY_RATE, saveRrResultInfo));
+        }
 
         // 1. VitalSign 측정결과 전체 저장 정보
         if (!savedInformationData.isEmpty()) {
@@ -598,6 +663,7 @@ public class MeasurementResultRestController {
                 case BODY_TEMPERATURE:
                 case HEART_RATE:
                 case OXYGEN_SATURATION:
+                case RESPIRATORY_RATE:
                     ResultDetail resultDetail = new ResultDetail();
                     resultDetail.setResultType(ResultType.SINGLE_RESULT.getResultType());
                     resultDetail.setResult(oriResult.getResult());

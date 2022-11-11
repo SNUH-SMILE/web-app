@@ -124,6 +124,17 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
     }
 
     /**
+     * 측정일자별 상세호흡 목록 조회
+     *
+     * @param searchResultInfo 측정결과 검색 조건
+     * @return 측정일자별 상세호흡 목록
+     */
+    public List<RrResult> selectRrList(SearchResultInfo searchResultInfo) {
+        searchResultInfo.setItemId(ItemId.RESPIRATORY_RATE.getItemId());
+        return dao.selectRrList(searchResultInfo);
+    }
+
+    /**
      * 측정일자별 상세수면 목록 조회
      *
      * @param searchSleepResultInfo 측정결과 검색 조건
@@ -188,7 +199,9 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
         mainContentDetail.setTodayHrList(selectHrList(searchResultInfo));
         mainContentDetail.setTodaySpO2List(selectSpO2List(searchResultInfo));
         mainContentDetail.setTodayStepCountList(selectStepList(searchResultInfos));
+        mainContentDetail.setTodayRrList(selectRrList(searchResultInfo));
         mainContentDetail.setTodaySleepTimeList(selectSleepTimeList(searchSleepResultInfo));
+
         if(mainContentDetail.getTodaySleepTimeList().size()>0){
             //총 수면시간
             List<SleepTimeResult> sleepTimeResultList = mainContentDetail.getTodaySleepTimeList();

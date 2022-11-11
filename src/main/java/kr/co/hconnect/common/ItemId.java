@@ -6,13 +6,13 @@ package kr.co.hconnect.common;
 public enum ItemId {
 
     /**
-     * 혈압
-     */
-    BLOOD_PRESSURE("I0005"),
-    /**
      * 체온
      */
     BODY_TEMPERATURE("I0001"),
+    /**
+     * 혈압
+     */
+    BLOOD_PRESSURE("I0005"),
     /**
      * 심박수
      */
@@ -28,7 +28,12 @@ public enum ItemId {
     /**
      * 혈압
      */
-    RESPIRATION("I0028");
+    RESPIRATION("I0005"),
+    /**
+     * 호흡
+     */
+    RESPIRATORY_RATE("I0006")
+    ;
 
 
     private final String itemId;

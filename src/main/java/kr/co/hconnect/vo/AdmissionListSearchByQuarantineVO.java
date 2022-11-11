@@ -24,4 +24,8 @@ public class AdmissionListSearchByQuarantineVO extends PaginationInfoVO {
      * 환자명
      */
     private String patientNm;
+    /**
+     * 재원상태
+     * */
+    private String qantnStatus;
 }
