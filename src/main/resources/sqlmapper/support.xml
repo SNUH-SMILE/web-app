@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+
+    <select id="selectNoticeList" parameterType="kr.co.hconnect.vo.NoticeSupportSearchVO"  resultType="kr.co.hconnect.vo.NoticeSupportListVO">
+        select
+            f.FAQ_TITLE           as noticeTitle
+            ,f.FAQ_CONTENTS       as noticeBody
+            ,DATE_FORMAT(f.REG_DT, '%Y%m%d')    as noticeDate
+        from faq f
+        order by f.REG_DT  ;
+    </select>
+
+
+</mapper>
