@@ -76,8 +76,14 @@
         <constructor-arg name="expiryDay" value="${token.expiryDay}" type="java.lang.Integer" />
     </bean>
     <bean id="jwtFilter" class="kr.co.hconnect.jwt.JwtFilter">
-        <constructor-arg name="tokenProvider" ref="tokenProvider" />
-        <constructor-arg name="messageSource" ref="messageSource" />
+        <constructor-arg name="tokenProvider" ref="tokenProvider"/>
+        <constructor-arg name="messageSource" ref="messageSource"/>
+        <property name="passIPs">
+            <list>
+                <value type="java.lang.String">127.0.0.1</value>
+                <value type="java.lang.String">211.117.91.158</value>   <!-- 개발서버 -->
+            </list>
+        </property>
         <property name="passUrls">
             <map>
                 <entry key="/api/now">
