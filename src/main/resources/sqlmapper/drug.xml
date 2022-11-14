@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+    <insert id="insertDrug" parameterType="kr.co.hconnect.vo.DrugVO" >
+        /** repository.DrugDao.insertDrug.insertDrug */
+		INSERT
+		  INTO drug
+             ( DRUG_SEQ
+             , ADMISSION_ID
+             , NOTICE_START_DATE
+             , NOTICE_END_DATE
+             , NOTICE_DATE
+             , NOTICE_NAME
+             , DRUG_NAME
+             , DRUG_COUNT
+             , DRUG_TYPE
+             , REG_DT
+             )
+        VALUES
+             ( #{drugSeq}
+             , #{admissionId}
+             , #{noticeStartDate}
+             , #{noticeEndDate}
+             , #{noticeDate}
+             , #{noticeName}
+             , #{drugName}
+             , #{drugCount}
+             , #{drugType}
+             , NOW()
+             )
+    </insert>
+    <insert id="insertDrugAlarm" parameterType="kr.co.hconnect.vo.DrugAlarmVO" >
+        /** repository.DrugDao.insertDrug.insertDrugAlarm */
+		INSERT
+		  INTO drug_alarm
+             (   DRUG_ALARM_SEQ
+               , DRUG_SEQ
+               , NOTICE_TIME
+               , REG_DT
+             )
+        VALUES
+             (   #{drugAlarmSeq}
+               , #{drugSeq}
+               , #{noticeTime}
+               , now()
+             )
+    </insert>
+    <insert id="insertDrugDose" parameterType="kr.co.hconnect.vo.DrugDoseVO" >
+        /** repository.DrugDao.insertDrug.insertDrugDose */
+        INSERT
+            INTO drug_dose
+            (  DRUG_DOSE_SEQ
+             , ADMISSION_ID
+             , NOTICE_DD
+             , NOTICE_TIME
+             , NOTICE_NAME
+             , DRUG_COUNT
+             , DRUG_TYPE
+             , TAKE_RESULT
+             , REG_DT
+             , DRUG_SEQ
+             , DRUG_ALARM_SEQ
+            )
+        VALUES
+            ( #{drugDoseSeq}
+            , #{admissionId}
+            , #{noticeDd}
+            , #{noticeTime}
+            , #{noticeName}
+            , #{drugCount}
+            , #{drugType}
+            , #{takeResult}
+            , now()
+            , #{drugSeq}
+            , #{drugAlarmSeq}
+            )
+    </insert>
+    <select id="selectDrug" parameterType="kr.co.hconnect.vo.DrugVO"  resultType="kr.co.hconnect.vo.DrugVO">
+        SELECT
+             D.DRUG_SEQ
+            ,D.ADMISSION_ID
+            ,D.NOTICE_START_DATE
+            ,D.NOTICE_END_DATE
+            ,D.NOTICE_DATE
+            ,D.NOTICE_NAME
+            ,D.DRUG_NAME
+            ,D.DRUG_COUNT
+            ,D.DRUG_TYPE
+        FROM DRUG D
+        WHERE 1=1
+            AND D.DRUG_SEQ= #{drugSeq}
+    </select>
+    <select id="selectAlarmDrug" parameterType="kr.co.hconnect.vo.DrugAlarmVO"  resultType="kr.co.hconnect.vo.DrugVO">
+        SELECT
+        D.DRUG_SEQ
+        ,D.ADMISSION_ID
+        ,D.NOTICE_START_DATE
+        ,D.NOTICE_END_DATE
+        ,D.NOTICE_DATE
+        ,D.NOTICE_NAME
+        ,D.DRUG_NAME
+        ,D.DRUG_COUNT
+        ,D.DRUG_TYPE
+        FROM DRUG D
+             INNER JOIN DRUG_ALARM DA
+               ON D.DRUG_SEQ  = DA.DRUG_SEQ
+        WHERE DA.DRUG_ALARM_SEQ = #{drugAlarmSeq}
+    </select>
+    <select id="selectTimeList" parameterType="kr.co.hconnect.vo.DrugSearchVO"  resultType="kr.co.hconnect.vo.DrugTimeListVO">
+        select
+                  NOTICE_NAME AS noticeName
+                , DRUG_NAME   AS drugName
+                , DRUG_COUNT  AS drugCount
+                , DRUG_TYPE   AS drugType
+                , NOTICE_TIME AS takeTime
+        from drug_dose
+        where NOTICE_DD = #{requestDate}
+
+    </select>
+    <select id="selectAlarmList" parameterType="kr.co.hconnect.vo.DrugSearchVO"  resultType="kr.co.hconnect.vo.DrugNoticeListVO">
+        select
+                 da.DRUG_ALARM_SEQ  as drugAlarmSeq
+                ,da.DRUG_SEQ       as drugSeq
+                ,d.NOTICE_NAME     as noticeName
+                ,da.NOTICE_TIME    as noticeTime
+                ,IFNULL((select 1 from drug_dose dd where dd.DRUG_ALARM_SEQ = da.DRUG_ALARM_SEQ and dd.NOTICE_DD = #{requestDate}), 2) as takeResult
+         from drug_alarm da
+              inner join drug d
+                on da.DRUG_SEQ  = d.DRUG_SEQ
+        where 1=1
+        and d.ADMISSION_ID =  #{admissionId}
+        and d.NOTICE_START_DATE <![CDATA[ <= ]]> #{requestDate}
+        and d.NOTICE_END_DATE   <![CDATA[ >= ]]> #{requestDate}
+
+    </select>
+
+
+</mapper>
