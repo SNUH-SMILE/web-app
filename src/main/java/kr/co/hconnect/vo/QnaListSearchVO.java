@@ -17,7 +17,8 @@ public class QnaListSearchVO extends PaginationInfoVO {
     private static final long serialVersionUID = -6132750895716087281L;
 
     /**
-     * 센터ID
+     * 센터ID -> 환자위치 (자택격리자)
+     * 자택겨리 추가됨
      */
     private String centerId;
     /**
@@ -35,4 +36,6 @@ public class QnaListSearchVO extends PaginationInfoVO {
      * 조회 조건
      */
     private String searchText;
+
+
 }

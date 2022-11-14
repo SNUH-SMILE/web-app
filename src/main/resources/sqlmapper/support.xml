@@ -11,5 +11,37 @@
         order by f.REG_DT  ;
     </select>
 
+    <insert id="insertQna" parameterType="kr.co.hconnect.vo.QnaSaveVO" >
+        /** repository.SupportDao.insertQna */
+        INSERT
+            INTO qna (PATIENT_ID, CENTER_ID, QUESTION_TYPE, QUESTION_TITLE, QUESTION_CONTENT, REG_DT, REG_ID)
+                select
+                     a.PATIENT_ID
+                    ,a.CENTER_ID
+                    ,'01'
+                    ,#{questionTitle}
+                    ,#{questionBody}
+                    ,NOW()
+                    ,#{loginId}
+                from patient p
+                     left outer join admission a
+                       on p.PATIENT_ID  = a.PATIENT_ID
+                where 1=1
+                  and p.LOGIN_ID = #{loginId}
+                limit 1
+    </insert>
+
+    <select id="selectQuestionList" parameterType="kr.co.hconnect.vo.QnaSearchListVO"  resultType="kr.co.hconnect.vo.QnaListVO">
+        /** repository.SupportDao.selectQnaList */
+        SELECT
+             QUESTION_TITLE                     as questionTitle
+            ,DATE_FORMAT(REG_DT, '%Y%m%d')      as questionDate
+            ,QUESTION_CONTENT                   as questionBody
+            ,DATE_FORMAT(REPLY_DT, '%Y%m%d')    as anawerDate
+            ,REPLY_CONTENT                      as anawerBody
+        FROM QNA
+        WHERE 1=1
+          AND REG_ID = #{loginId};
+    </select>
 
 </mapper>
