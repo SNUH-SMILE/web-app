@@ -33,4 +33,26 @@ public class SupportService extends EgovAbstractServiceImpl{
         return  supportDao.selectNoticeList(vo);
     }
 
+    /**
+     * 복약정보 저장
+     * @param vo
+     * @return
+     * @throws FdlException
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void insertQna(QnaSaveVO vo) throws FdlException {
+          supportDao.insertQna(vo);
+    }
+
+    /**
+     * 모바일 문의사항 리스트 조회
+     *
+     * @param vo 모바일 문의사항 리스트 조회 조건
+     * @return QnaListResponseVO 문의사항 리스트 조회 결과
+     */
+    public List<QnaListVO> selectQnaList(QnaSearchListVO vo) {
+
+        return supportDao.selectQnaList(vo);
+    }
+
 }

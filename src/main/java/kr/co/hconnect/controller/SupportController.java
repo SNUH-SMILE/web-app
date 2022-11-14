@@ -65,5 +65,58 @@ public class SupportController {
         return responseVO;
     }
 
+    /**
+     * 문의내역 저장
+     *
+         * @param vo
+     * @return
+         */
+    @RequestMapping(value = "/setQuestion", method = RequestMethod.POST)
+    public ResponseBaseVO<QnaSaveVO> insertQna(@Validated(VoValidationGroups.add.class) @RequestBody QnaSaveVO vo
+        , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
 
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+        ResponseBaseVO<QnaSaveVO> responseVO = new ResponseBaseVO<>();
+
+        try{
+            supportService.insertQna(vo);
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("저장 완료");
+
+        }catch (Exception  e){
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
+        return responseVO;
+    }
+
+    /**
+     * 모바일 문의내역 조회 - 아이디별로
+     *
+     * @param vo
+     * @return
+     */
+    @RequestMapping(value = "/questionList", method = RequestMethod.POST)
+    public ReponseQuestionListVO<List<QnaListVO>> QnaSearchList(@Validated(VoValidationGroups.add.class) @RequestBody QnaSearchListVO vo
+        , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+        ReponseQuestionListVO<List<QnaListVO>> responseVO = new ReponseQuestionListVO<>();
+
+        try{
+            List<QnaListVO> dt = supportService.selectQnaList(vo);
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("조회 완료");
+            responseVO.setQuestionList(dt);
+
+        }catch (Exception  e){
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
+        return responseVO;
+    }
 }
