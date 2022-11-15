@@ -19,8 +19,9 @@ public class IdGenerationService {
     private final EgovIdGnrService patientIdGnrService;         // 환자ID 채번 서비스
     private final EgovIdGnrService admissionIdGnrService;       // 입소내역ID 채번 서비스
     private final EgovIdGnrService itemIdGnrService;            // 측정항목ID 채번 서비스
-    private final EgovIdGnrService comCdGnrService;             // 공통코드 채번 서비스
-
+    private final EgovIdGnrService comCdGnrService;              // 공통코드 채번 서비스
+    private final EgovIdGnrService interviewIdGnrService;        // 문진내역Id 채번 서비스
+    private final EgovIdGnrService interviewDetailIdGnrService;  // 문진내역세부Id 채번 서비스
     private final EgovIdGnrService drugSeqGnrService;             // 복약 채번 서비스
     private final EgovIdGnrService drugAlarmSeqGnrService;        // 복약아랆 채번 서비스
     private final EgovIdGnrService drugDoseSeqGnrService;         // 복약 여부드 채번 서비스
@@ -35,6 +36,8 @@ public class IdGenerationService {
         , @Qualifier("admissionIdGnrService") EgovIdGnrService admissionIdGnrService
         , @Qualifier("itemIdGnrService") EgovIdGnrService itemIdGnrService
         , @Qualifier("comCdGnrService") EgovIdGnrService comCdGnrService
+        , @Qualifier("interviewIdGnrService") EgovIdGnrService interviewIdGnrService
+        , @Qualifier("interviewDetailIdGnrService") EgovIdGnrService interviewDetailIdGnrService
         , @Qualifier("drugSeqGnrService") EgovIdGnrService drugSeqGnrService
         , @Qualifier("drugAlarmSeqGnrService") EgovIdGnrService drugAlarmSeqGnrService
         , @Qualifier("drugDoseSeqGnrService") EgovIdGnrService drugDoseSeqGnrService) {
@@ -45,6 +48,8 @@ public class IdGenerationService {
         this.admissionIdGnrService = admissionIdGnrService;
         this.itemIdGnrService = itemIdGnrService;
         this.comCdGnrService = comCdGnrService;
+        this.interviewIdGnrService = interviewIdGnrService;
+        this.interviewDetailIdGnrService = interviewDetailIdGnrService;
         this.drugSeqGnrService = drugSeqGnrService;
         this.drugAlarmSeqGnrService = drugAlarmSeqGnrService;
         this.drugDoseSeqGnrService = drugDoseSeqGnrService;
@@ -62,7 +67,8 @@ public class IdGenerationService {
         String drugSeq = drugSeqGnrService.getNextStringId();
         String drugAlarmSeq = drugAlarmSeqGnrService.getNextStringId();
         String drugDoseSeq = drugDoseSeqGnrService.getNextStringId();
-
+        Integer interviewId = interviewIdGnrService.getNextIntegerId();
+        Integer interviewDetailId = interviewDetailIdGnrService.getNextIntegerId();
 
         LOGGER.info("CenterId {}", centerId);
         LOGGER.info("UserId {}", userId);
@@ -70,6 +76,8 @@ public class IdGenerationService {
         LOGGER.info("AdmissionId {}", admissionId);
         LOGGER.info("ItemId {}", itemId);
         LOGGER.info("ComCd {}", comCd);
+        LOGGER.info("interviewId {}", interviewId);
+        LOGGER.info("interviewDetailId {}", interviewDetailId);
         LOGGER.info("drugSeq {}", drugSeq);
         LOGGER.info("drugAlarmSeq {}", drugAlarmSeq);
         LOGGER.info("drugDoseSeq {}", drugDoseSeq);
