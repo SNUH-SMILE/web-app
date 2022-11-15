@@ -29,11 +29,9 @@ public class SaveInformaionInfo extends BaseResponse {
 
     private String interviewType;
 
-    @NotNull(message = "{validation.null.resultDate}")
-    @JsonFormat(pattern = "yyyyMMdd")
     private String interviewDate;
 
-    private List<SaveInformationAnswerListInfo> answerlist;
+    private List<SaveInformationAnswerListInfo> answerList;
 
 
 }

@@ -41,21 +41,36 @@ public class InterviewController {
         this.messageSource = messageSource;
     }
 
-    @RequestMapping(value = "", method = RequestMethod.POST)
+    /**
+     *
+     * @param vo
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
     public ResponseVO<InterviewListResponseByCenterVO> selectInterviewListByCentor(
         @Valid @RequestBody InterviewListSearchVO vo, BindingResult bindingResult) {
-        ResponseVO<InterviewListResponseByCenterVO> responseVO = new ResponseVO<>();
+
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
+        InterviewListResponseByCenterVO interviewListResponseByCenterVO =  interviewService.selectInterview(vo);
+
+        ResponseVO<InterviewListResponseByCenterVO> responseVO = new ResponseVO<>();
+        responseVO.setResult(interviewListResponseByCenterVO);
         responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
         responseVO.setMessage("조회 성공");
 
-        /*1. vo에 담긴 값들 (id와 날짜)이 들어올것
-        * */
-
         return responseVO;
     }
+
+    /**
+     *
+     * @param saveInformaionInfo
+     * @param result
+     * @return
+     * @throws FdlException
+     */
     @RequestMapping(value ="/setInterview", method = RequestMethod.POST)
     public BaseResponse saveInterview(@Valid @RequestBody SaveInformaionInfo saveInformaionInfo, BindingResult result) throws FdlException {
         if (result.hasErrors()) {

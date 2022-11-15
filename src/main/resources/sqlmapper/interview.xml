@@ -21,7 +21,7 @@
                             #{time},
                             #{type},
                             #{state},
-                 #{admmisionId},
+                 #{admissionId},
                  #{regId}
                 )
         ]]>
@@ -46,5 +46,27 @@
         ]]>
     </insert>
 
+    <!--해당고객 문진 리스트 조회-->
+    <select id="selectInterviewList"
+            parameterType="kr.co.hconnect.domain.Interview"
+            resultType="kr.co.hconnect.vo.InterviewList">
+        SELECT
+            a.INTERVIEW_TYPE,
+            a.INTERVIEW_SEQ ,
+            a.INTERVIEW_TITLE,
+            a.INTERVIEW_TIME,
+            a.INTERVIEW_STATUS,
+            a.INTERVIEW_DD
+        FROM INTERVIEW A
+        where a.ADMISSION_ID = #{admissionId}
+            and
+            a.INTERVIEW_DD = #{requestDate}
+    </select>
 
+    <select id="selectInterviewDetailList"
+            parameterType="int"
+            resultType="kr.co.hconnect.vo.SymptomList">
+        select b.INTERVIEW_TYPE , c.SYMPTOM_TITLE
+        from interview_detail a inner join interview_risk c on a.ANSWER_SEQ  = c.INTERVIEW_SEQ inner join interview b on b.INTERVIEW_SEQ = a.INTERVIEW_SEQ  where a.INTERVIEW_SEQ = #{id};
+    </select>
 </mapper>

@@ -8,9 +8,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-public class InterviewListSearchVO extends PaginationInfoVO {
+public class InterviewListSearchVO implements Serializable {
+
+    private String loginId;
+
+    private String requestDate;
 }

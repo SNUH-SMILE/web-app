@@ -1,19 +1,21 @@
 package kr.co.hconnect.vo;
 
+import kr.co.hconnect.common.BaseDefaultVO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
-import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-public class InterviewListResponseByCenterVO implements Serializable {
+public class SymptomList implements Serializable {
 
-    private List<InterviewList> interviewList;
-    private List<SymptomList> symptomLists;
+   private String interviewType;
+
+   private String symptomTitle;
 
 }

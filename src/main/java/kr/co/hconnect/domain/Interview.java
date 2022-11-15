@@ -43,10 +43,14 @@ public class Interview extends BaseResponse {
     /**
      * 격리/입소내역 id
      */
-    private String admmisionId;
+    private String admissionId;
     /**
      * 등록자id
      */
     private String regId;
+    /**
+     * 조회 일자
+     */
+    private String requestDate;
 
 }
