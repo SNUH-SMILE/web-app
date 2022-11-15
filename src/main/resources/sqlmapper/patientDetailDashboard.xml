@@ -121,10 +121,15 @@
              , TIMESTAMP(RST.RESULT_DATE, RST.RESULT_TIME)  AS ST_RESULT_DT
              , IST.UNIT                                     AS ST_UNIT
              -- 호흡(데이터 입력 가능 여부 미정)
-             , ''                                           AS RR_RESULT
-             , ''                                           AS RR_RISK_GB
-             , ''                                           AS RR_RESULT_DT
-             , ''                                           AS RR_UNIT
+             , RDRP.RESULT                                  AS RR_RESULT
+             , CASE WHEN RDRP.RESULT < IRP.REF_FROM
+                         THEN 'L'
+                    WHEN RDSP.RESULT > IRP.REF_TO
+                         THEN 'H'
+                    ELSE      ''
+               END                                          AS RR_RISK_GB
+             , TIMESTAMP(RRP.RESULT_DATE, RRP.RESULT_TIME)  AS RR_RESULT_DT
+             , IRP.UNIT                                     AS RR_UNIT
              -- 산소포화도
              , RDSP.RESULT                                  AS SP_RESULT
              , CASE WHEN RDSP.RESULT < ISP.REF_FROM
@@ -202,6 +207,16 @@
                LEFT JOIN RESULT_DETAIL     RDSP    ON RDSP.RESULT_SEQ = RSP.RESULT_SEQ
                /* 총 수면시간 */
                LEFT JOIN TOTAL_SLEEP       SLEEP   ON SLEEP.ADMISSION_ID = A.ADMISSION_ID
+               /* 호흡수 */
+               LEFT JOIN ITEM              IRP     ON IRP.ITEM_ID = 'I0006'
+               LEFT JOIN RESULT            RRP     ON RRP.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                         FROM RESULT X
+                                                                        WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                          AND X.ITEM_ID = ISP.ITEM_ID
+                                                                        ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                        LIMIT 1)
+               LEFT JOIN RESULT_DETAIL     RDRP    ON RDRP.RESULT_SEQ = RRP.RESULT_SEQ
+
          WHERE A.ADMISSION_ID = #{admissionId}
     ]]>
     </select>
