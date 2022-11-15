@@ -51,13 +51,15 @@
         <choose>
             <when test="qantnDiv.equals('1'.toString())">
          ORDER
-            BY P.PATIENT_NM
+            BY P.SEX
+             , P.BIRTH_DATE
             </when>
             <when test="qantnDiv.equals('2'.toString())">
            AND A.CENTER_ID = #{centerId}
          ORDER
             BY A.ROOM
-             , P.PATIENT_NM
+             , P.SEX
+             ,P.BIRTH_DATE
             </when>
         </choose>
 
