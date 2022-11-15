@@ -42,10 +42,10 @@ public class InterviewController {
     }
 
     /**
-     *
-     * @param vo
+     * 문진 id별 조회
+     * @param vo 문진 id별 조회 vo InterviewListSearchVO
      * @param bindingResult
-     * @return
+     * @return responseVO<InterviewListResponseByCenterVO>
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     public ResponseVO<InterviewListResponseByCenterVO> selectInterviewListByCentor(
@@ -65,10 +65,10 @@ public class InterviewController {
     }
 
     /**
-     *
+     * 문진 정보 / 결과 등록
      * @param saveInformaionInfo
      * @param result
-     * @return
+     * @return BaseResponse
      * @throws FdlException
      */
     @RequestMapping(value ="/setInterview", method = RequestMethod.POST)
@@ -82,6 +82,6 @@ public class InterviewController {
         interviewService.insertInterview(saveInformaionInfo);
 
 
-        return null;
+        return baseResponse;
     }
 }

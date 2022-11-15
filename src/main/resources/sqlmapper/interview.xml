@@ -2,10 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.hconnect.sqlmapper">
 
+    <!-- 문진내용 등록 - kr.co.hconnect.sqlmapper.insertInterview -->
     <insert id="insertInterview" parameterType="kr.co.hconnect.domain.Interview">
     <![CDATA[
-        insert
-        into interview(
+        INSERT
+        INTO INTERVIEW
+            (
             INTERVIEW_SEQ,
             INTERVIEW_TITLE,
             INTERVIEW_DD,
@@ -14,35 +16,39 @@
             INTERVIEW_STATUS,
             ADMISSION_ID,
             REG_ID
-        )VALUES (
-                    #{id},
-                            #{title},
-                            #{dd},
-                            #{time},
-                            #{type},
-                            #{state},
-                 #{admissionId},
-                 #{regId}
-                )
+            )
+        VALUES
+            ( #{id}
+             , #{title}
+             , #{dd}
+             , #{time}
+             , #{type}
+             , #{state}
+             , #{admissionId}
+             , #{regId}
+             )
         ]]>
     </insert>
-
+    <!-- 문진 결과 등록 - kr.co.hconnect.sqlmapper.insertInterviewDetail -->
     <insert id="insertInterviewDetail" parameterType="kr.co.hconnect.domain.InterviewDetail">
     <![CDATA[
-        INSERT INTO interview_detail
-        ( INTERVIEW_DETAIL_SEQ,
-          INTERVIEW_SEQ,
-          ANSWER_SEQ,
-          ANSWER_VALUE,
-          REG_ID
-        )
-         VALUE(
-            #{detailSeq},
-            #{seq},
-            #{answerSeq},
-            #{answerValue},
-            #{regId}
-            )
+        INSERT
+            INTO INTERVIEW_DETAIL
+                (
+                  INTERVIEW_DETAIL_SEQ
+                 ,INTERVIEW_SEQ
+                 ,ANSWER_SEQ
+                 ,ANSWER_VALUE
+                 ,REG_ID
+                )
+             VALUE
+                (
+                   #{detailSeq}
+                  ,#{seq}
+                  ,#{answerSeq}
+                  ,#{answerValue}
+                  ,#{regId}
+                )
         ]]>
     </insert>
 
@@ -58,15 +64,21 @@
             a.INTERVIEW_STATUS,
             a.INTERVIEW_DD
         FROM INTERVIEW A
-        where a.ADMISSION_ID = #{admissionId}
-            and
+        WHERE a.ADMISSION_ID = #{admissionId}
+            AND
             a.INTERVIEW_DD = #{requestDate}
     </select>
 
     <select id="selectInterviewDetailList"
             parameterType="int"
             resultType="kr.co.hconnect.vo.SymptomList">
-        select b.INTERVIEW_TYPE , c.SYMPTOM_TITLE
-        from interview_detail a inner join interview_risk c on a.ANSWER_SEQ  = c.INTERVIEW_SEQ inner join interview b on b.INTERVIEW_SEQ = a.INTERVIEW_SEQ  where a.INTERVIEW_SEQ = #{id};
+        SELECT
+             b.INTERVIEW_TYPE
+            ,c.SYMPTOM_TITLE
+        FROM
+            INTERVIEW_DETAIL a
+        INNER JOIN INTERVIEW_RISK c            ON a.ANSWER_SEQ  = c.INTERVIEW_SEQ
+                INNER JOIN interview b ON b.INTERVIEW_SEQ = a.INTERVIEW_SEQ
+        WHERE a.INTERVIEW_SEQ = #{id};
     </select>
 </mapper>

@@ -8,6 +8,9 @@ import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.List;
+/**
+ * 문진 조회 결과 vo - interview
+ */
 @Getter
 @Setter
 @NoArgsConstructor

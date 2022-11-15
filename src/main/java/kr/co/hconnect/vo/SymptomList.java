@@ -7,7 +7,9 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
-
+/**
+ * 문진 조회 결과  vo - interview-detail
+ */
 @Getter
 @Setter
 @NoArgsConstructor

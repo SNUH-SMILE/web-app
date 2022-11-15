@@ -7,6 +7,10 @@ import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.List;
+
+/**
+ * 문진 조회 결과  list vo
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,6 +18,7 @@ import java.util.List;
 public class InterviewListResponseByCenterVO implements Serializable {
 
     private List<InterviewList> interviewList;
+
     private List<SymptomList> symptomLists;
 
 }

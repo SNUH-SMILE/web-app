@@ -39,7 +39,6 @@ public class InterviewService extends EgovAbstractServiceImpl {
         this.interviewDetailIdGnrService = interviewDetailIdGnrService;
     }
 
-
     public String getAdmissionId(String loginId) {
         return admissionService.selectAdmissionListByLoginId(loginId).getAdmissionId();
     }
@@ -48,23 +47,25 @@ public class InterviewService extends EgovAbstractServiceImpl {
     }
     /**
      * 문진 조회
+     *  @param vo InterviewListSearchVO 문진조회정보 VO
+     *  @return InterviewListResponseByCenterVO 문진 조회 결과
      * */
     public InterviewListResponseByCenterVO selectInterview(InterviewListSearchVO interviewListSearchVO){
 
-
         String admissionId = getAdmissionId(interviewListSearchVO.getLoginId());
+
         Interview interview = new Interview();
         interview.setRequestDate(interviewListSearchVO.getRequestDate().substring(0,8));
         interview.setAdmissionId(admissionId);
 
         AdmissionInfoVO admissionInfoVO = getAdmission(admissionId);
+        /* 날짜비교를 위한 */
         LocalDate admissionDate = admissionInfoVO.getAdmissionDate();
         LocalDate dschgeDtate = admissionInfoVO.getDschgeDate();
 
-        /* 날짜비교를 위한 */
         LocalDate now = LocalDate.now();
         LocalTime nowTime = LocalTime.now();
-/* PATIENT의 상태 참조 */
+
         InterviewListResponseByCenterVO vo = new InterviewListResponseByCenterVO();
 
         vo.setInterviewList(interviewDao.selectInterviewList(interview));
@@ -74,9 +75,8 @@ public class InterviewService extends EgovAbstractServiceImpl {
         }
         vo.setSymptomLists(symptomLists);
 
-        /*확진당일 문진*/
-        boolean a = (vo.getInterviewList().stream().filter(i -> ("00").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0;
-        if((vo.getInterviewList().stream().filter(i -> ("00").equals(i.getInterviewType())).collect(Collectors.toList()).size()) == 0 && now.compareTo(admissionDate) == 0){
+        /*확진당일문진*/
+        if((vo.getInterviewList().stream().filter(i -> ("01").equals(i.getInterviewType())).collect(Collectors.toList()).size()) == 0 && now.compareTo(admissionDate) == 0){
             InterviewList interviewList = new InterviewList();
             interviewList.setInterviewType("00");
             interviewList.setInterviewStatus("0");
@@ -84,12 +84,12 @@ public class InterviewService extends EgovAbstractServiceImpl {
             vo.getInterviewList().add(interviewList);
         }
         /*오전문진*/
-        if((vo.getInterviewList().stream().filter(i -> ("01").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && dschgeDtate == null){
+        if((vo.getInterviewList().stream().filter(i -> ("02").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && dschgeDtate == null){
             InterviewList interviewList = new InterviewList();
             interviewList.setInterviewType("00");
             // 퇴소 안한상태 && 현재시간이 오전 12시 이전
             if(dschgeDtate == null && nowTime.isBefore(LocalTime.parse("12:00"))){
-                interviewList.setInterviewStatus("0"); //작성하기
+                interviewList.setInterviewStatus("0");//작성하기
             }else{
                 interviewList.setInterviewStatus("1");//작성하기 비활성화
             }
@@ -97,20 +97,20 @@ public class InterviewService extends EgovAbstractServiceImpl {
             vo.getInterviewList().add(interviewList);
         }
         /*오후문진*/
-        if((vo.getInterviewList().stream().filter(i -> ("02").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && dschgeDtate == null){
+        if((vo.getInterviewList().stream().filter(i -> ("03").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && dschgeDtate == null){
             InterviewList interviewList = new InterviewList();
             interviewList.setInterviewType("02");
             // 퇴소 안한상태 && 현재시간이 오전 12시 이전
             if(dschgeDtate == null && nowTime.isAfter(LocalTime.parse("12:00"))){
-                interviewList.setInterviewStatus("0"); //작성하기
+                interviewList.setInterviewStatus("0");//작성하기
             }else{
-                interviewList.setInterviewStatus("2");//작성불가
+                interviewList.setInterviewStatus("1");//작성하기 비활성화
             }
             interviewList.setInterviewTitle("오후문진");
             vo.getInterviewList().add(interviewList);
         }
         /*격리해제 문진*/
-        if((vo.getInterviewList().stream().filter(i -> ("03").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && now.equals(dschgeDtate)){
+        if((vo.getInterviewList().stream().filter(i -> ("04").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && now.equals(dschgeDtate)){
             InterviewList interviewList = new InterviewList();
             interviewList.setInterviewType("03");
             interviewList.setInterviewStatus("0"); //작성하기
@@ -118,7 +118,7 @@ public class InterviewService extends EgovAbstractServiceImpl {
             vo.getInterviewList().add(interviewList);
         }
         /*격리해제 후 30일 문진*/
-        if((vo.getInterviewList().stream().filter(i -> ("04").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && now.minusDays(30).equals(dschgeDtate)){
+        if((vo.getInterviewList().stream().filter(i -> ("05").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && now.minusDays(30).equals(dschgeDtate)){
             InterviewList interviewList = new InterviewList();
             interviewList.setInterviewType("04");
             interviewList.setInterviewStatus("0"); //작성하기

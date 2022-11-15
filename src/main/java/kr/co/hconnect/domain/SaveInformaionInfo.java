@@ -24,11 +24,13 @@ import java.util.List;
 @ToString
 public class SaveInformaionInfo extends BaseResponse {
 
-
+    @NotNull(message = "{validation.null.loginId}")
     private String loginId;
 
+    @NotNull(message = "{validation.null.interviewType}")
     private String interviewType;
 
+    @NotNull(message = "{validation.null.interviewDate}")
     private String interviewDate;
 
     private List<SaveInformationAnswerListInfo> answerList;
