@@ -107,7 +107,28 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 
 		return admissionVOS.get(0);
 	}
+    /**
+     * 로그인ID 기준 종료된 것 포함 격리/입소내역(내원중) 리스트 조회
+     *
+     * @param loginId 로그인ID
+     * @return AdmissionVO 격리/입소내역 정보
+     * @throws NotFoundAdmissionInfoException 현재일 기준 내원중인 격리/입소내역이 존재하지 않거나, 한건 이상일 경우 발생
+     */
+    public AdmissionVO selectAdmissionListByLoginId(String loginId) throws NotFoundAdmissionInfoException {
+        List<AdmissionVO> admissionVOS = admissionDao.selectAdmissionListByLoginId(loginId);
 
+        if (admissionVOS == null || admissionVOS.size() == 0) {
+            throw new NotFoundAdmissionInfoException(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()
+                , messageSource.getMessage("message.notfound.admissionInfo"
+                , null, Locale.getDefault()));
+        } else if (admissionVOS.size() > 1) {
+            throw new NotFoundAdmissionInfoException(ApiResponseCode.DUPLICATE_ACTIVE_ADMISSION_INFO.getCode()
+                , messageSource.getMessage("message.duplicate.admissionInfo"
+                , null, Locale.getDefault()));
+        }
+
+        return admissionVOS.get(0);
+    }
 	/**
 	 * 입소내역 정보 조회
 	 * @param admissionId 입소내역ID
