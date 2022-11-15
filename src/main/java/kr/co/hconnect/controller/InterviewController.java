@@ -47,7 +47,7 @@ public class InterviewController {
      * @param bindingResult
      * @return responseVO<InterviewListResponseByCenterVO>
      */
-    @RequestMapping(value = "/list", method = RequestMethod.POST)
+    @RequestMapping(value = "/interviewList", method = RequestMethod.POST)
     public ResponseVO<InterviewListResponseByCenterVO> selectInterviewListByCentor(
         @Valid @RequestBody InterviewListSearchVO vo, BindingResult bindingResult) {
 
