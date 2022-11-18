@@ -49,13 +49,21 @@
              , Q.REPLY_DT                                    -- 답변일시
           FROM QNA Q
                INNER JOIN PATIENT       P    ON Q.PATIENT_ID = P.PATIENT_ID
+               INNER JOIN ADMISSION     A    ON P.PATIENT_ID = A.PATIENT_ID
                INNER JOIN COM_CD_DETAIL CD   ON CD.COM_CD    = 'CD009'
                                             AND CD.DETAIL_CD = Q.QUESTION_TYPE
                LEFT JOIN USER           U    ON Q.REPLY_ID = U.USER_ID
 
         <where>
             <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(centerId)">
-               AND Q.CENTER_ID = #{centerId}
+                <choose>
+                    <when test="centerId.equals('9999')">
+                        AND A.QANTN_DIV = '1'
+                    </when>
+                    <otherwise>
+                        AND Q.CENTER_ID = #{centerId}
+                    </otherwise>
+               </choose>
             </if>
             <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(replyYn)">
                AND Q.REPLY_YN = #{replyYn}
