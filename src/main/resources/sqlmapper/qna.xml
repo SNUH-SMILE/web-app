@@ -53,7 +53,6 @@
                INNER JOIN COM_CD_DETAIL CD   ON CD.COM_CD    = 'CD009'
                                             AND CD.DETAIL_CD = Q.QUESTION_TYPE
                LEFT JOIN USER           U    ON Q.REPLY_ID = U.USER_ID
-
         <where>
             <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(centerId)">
                 <choose>
