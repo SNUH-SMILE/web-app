@@ -153,13 +153,19 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
      */
     public int getTempTotalSleep(List<SleepTimeResult> sleepTimeResultList) {
         int tempTotalSleep = 0;
+
         for (int i = 0; i < sleepTimeResultList.size(); i++) {
+            if ("2".equals(sleepTimeResultList.get(i).getSleepType())) {
+                continue;
+            }
+
             tempTotalSleep += LocalDateTime.of(sleepTimeResultList.get(i).getSleepStartDate()
                             , sleepTimeResultList.get(i).getSleepStartTime())
                     .until(LocalDateTime.of(sleepTimeResultList.get(i).getSleepEndDate()
                                     , sleepTimeResultList.get(i).getSleepEndTime())
                             , ChronoUnit.MINUTES);
         }
+
         return tempTotalSleep;
     }
 
@@ -186,7 +192,7 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
         SearchSleepResultInfo searchSleepResultInfo = new SearchSleepResultInfo();
         searchSleepResultInfo.setAdmissionId(searchResultInfo.getAdmissionId());
         searchSleepResultInfo.setResultStartDateTime(today.toLocalDate().minusDays(1).atTime(21, 0));
-        searchSleepResultInfo.setResultEndDateTime(today.toLocalDate().atTime(9, 0));
+        searchSleepResultInfo.setResultEndDateTime(today.toLocalDate().atTime(6, 0));
 
         MainContentDetail mainContentDetail = new MainContentDetail();
         mainContentDetail.setPatientNm(admissionVO.getPatientId());
@@ -202,17 +208,18 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
         mainContentDetail.setTodayRrList(selectRrList(searchResultInfo));
         mainContentDetail.setTodaySleepTimeList(selectSleepTimeList(searchSleepResultInfo));
 
-        if(mainContentDetail.getTodaySleepTimeList().size()>0){
+        mainContentDetail.setTodayTotalSleepTime(LocalTime.of(0,0));
+        if (mainContentDetail.getTodaySleepTimeList().size() > 0) {
             //총 수면시간
             List<SleepTimeResult> sleepTimeResultList = mainContentDetail.getTodaySleepTimeList();
             int tempTodayTotalSleep = getTempTotalSleep(sleepTimeResultList);
-            LocalTime tempTotalSleepTime = LocalTime.of((tempTodayTotalSleep / 60)
+
+            if (tempTodayTotalSleep > 0) {
+                LocalTime tempTotalSleepTime = LocalTime.of((tempTodayTotalSleep / 60)
                     , (tempTodayTotalSleep % 60)
-            );
-            mainContentDetail.setTodayTotalSleepTime(tempTotalSleepTime);
-        }
-        else if(mainContentDetail.getTodaySleepTimeList().size()==0){
-            mainContentDetail.setTodayTotalSleepTime(LocalTime.of(0,0));
+                );
+                mainContentDetail.setTodayTotalSleepTime(tempTotalSleepTime);
+            }
         }
 
         return mainContentDetail;

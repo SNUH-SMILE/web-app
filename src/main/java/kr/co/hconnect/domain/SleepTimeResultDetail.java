@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -23,7 +24,8 @@ public class SleepTimeResultDetail extends BaseResponse {
     /**
      * 총수면시간
      */
-    private String totalSleepTime;
+    @JsonFormat(pattern = "HHmm")
+    private LocalTime totalSleepTime;
     /**
      * 측정시작일시
      */

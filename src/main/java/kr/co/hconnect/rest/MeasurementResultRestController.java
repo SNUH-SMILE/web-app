@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -312,27 +313,31 @@ public class MeasurementResultRestController {
         }
         searchSleepResultInfo.setAdmissionId(getAdmissionId(searchSleepResultInfo.getLoginId()));
 
-
         //SleepTimeResultDetail 세팅
         SleepTimeResultDetail sleepTimeResultDetail = new SleepTimeResultDetail();
         sleepTimeResultDetail.setResultStartDateTime(searchSleepResultInfo.getResultStartDateTime());
         sleepTimeResultDetail.setResultEndDateTime(searchSleepResultInfo.getResultEndDateTime());
 
         sleepTimeResultDetail.setSleepTimeList(measurementResultService.selectSleepTimeList(searchSleepResultInfo));
+        sleepTimeResultDetail.setTotalSleepTime(LocalTime.of(0,0));
+
         if(sleepTimeResultDetail.getSleepTimeList().size() > 0){
             sleepTimeResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             sleepTimeResultDetail.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
+
             //총 수면시간
             List<SleepTimeResult> sleepTimeResultList = sleepTimeResultDetail.getSleepTimeList();
             int tempTotalSleep = measurementResultService.getTempTotalSleep(sleepTimeResultList);
-            sleepTimeResultDetail.setTotalSleepTime(Integer.toString(tempTotalSleep / 60));
-        }
-        else if(sleepTimeResultDetail.getSleepTimeList().size() == 0){
+            if (tempTotalSleep > 0) {
+                LocalTime tempTotalSleepTime = LocalTime.of((tempTotalSleep / 60)
+                    , (tempTotalSleep % 60)
+                );
+                sleepTimeResultDetail.setTotalSleepTime(tempTotalSleepTime);
+            }
+        } else {
             sleepTimeResultDetail.setCode(ApiResponseCode.SUCCESS.getCode());
             sleepTimeResultDetail.setMessage(messageSource.getMessage("message.notfound.searchResultList", null, Locale.getDefault()));
-            sleepTimeResultDetail.setTotalSleepTime("0");
         }
-
 
         return sleepTimeResultDetail;
     }
