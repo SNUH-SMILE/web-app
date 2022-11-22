@@ -63,5 +63,9 @@ public class AdmissionVO extends BaseDefaultVO {
 	 * 삭제여부
 	 */
 	private String delYn;
+    /**
+     * 퇴소위치
+     */
+    private String quantLocation;
 	
 }

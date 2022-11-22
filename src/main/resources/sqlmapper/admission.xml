@@ -232,6 +232,7 @@
 		   SET DSCHGE_DATE = #{dschgeDate}
 		   	 , UPD_ID      = #{updId}
 		     , UPD_DT      = NOW()
+		     , QANTN_LOCATION=#{quantLocation}
 		 WHERE ADMISSION_ID = #{admissionId}
 	]]>
 	</update>

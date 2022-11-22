@@ -41,7 +41,7 @@ public class PatientDetailDashboardHeaderVO extends PatientDetailDashboardHeader
      * 성별 및 나이 표현 문구
      */
     public String getDispNameDetailInfo() {
-        return String.format("%s 만 %d세", getSexNm(), getAge());
+        return String.format("%s/%d세", getSexNm(), getAge());
     }
     
     /**

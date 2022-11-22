@@ -368,6 +368,7 @@ public class AdmissionController {
 		admissionVO.setAdmissionId(vo.getAdmissionId());
 		admissionVO.setDschgeDate(vo.getDschgeDate());
 		admissionVO.setQantnDiv(QantnDiv.QUARANTINE.getDbValue());
+        admissionVO.setQuantLocation(vo.getQuantLocation());
 		admissionVO.setUpdId(tokenDetailInfo.getId());
 
 		try {
