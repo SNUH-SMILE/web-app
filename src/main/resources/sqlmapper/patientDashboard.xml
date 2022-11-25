@@ -71,8 +71,8 @@
             resultType="kr.co.hconnect.vo.PatientStatusDashboardHeaderVO">
         SELECT NOW()                                              AS SEARCH_DATE_INFO      -- 조회시간 정보
              , CASE WHEN #{qantnDiv} = '1'
-                         THEN '자택격리자 현황판'
-                    ELSE      CONCAT(TC.CENTER_NM, ' 현황판')
+                         THEN '자택격리자 대시보드'
+                    ELSE      CONCAT(TC.CENTER_NM, ' 대시보드')
                END                                                AS DASHBOARD_TITLE       -- 대시보드 명칭
              , COUNT(A.ADMISSION_ID)                              AS TOTAL_COUNT           -- 전체 인원
              , COUNT(IF(A.ADMISSION_DATE = DATE(NOW()), 1, NULL)) AS TODAY_ADMISSION_COUNT -- 당일 입실/격리 인원

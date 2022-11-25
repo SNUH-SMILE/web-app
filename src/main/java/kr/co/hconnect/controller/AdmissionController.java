@@ -226,6 +226,7 @@ public class AdmissionController {
 		admissionVO.setDschgeDate(vo.getDschgeDate());
 		admissionVO.setQantnDiv(QantnDiv.CENTER.getDbValue());
 		admissionVO.setUpdId(tokenDetailInfo.getId());
+        admissionVO.setQuantLocation(vo.getQuantLocation());
 
 		try {
 			// 입소자 퇴소 처리
