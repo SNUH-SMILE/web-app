@@ -89,7 +89,7 @@ public class PatientDetailDashboardHeaderVO extends PatientDetailDashboardHeader
         if (getDschgeYn().equals("Y")) {
             dschgeInfo = getQantnDiv().equals("1") ? "해제" : "퇴소";
         } else {
-            dschgeInfo = getQantnDiv().equals("1") ? "격리" : "재원";
+            dschgeInfo = getQantnDiv().equals("1") ? "격리중" : "입소중";
         }
         
         return dschgeInfo;

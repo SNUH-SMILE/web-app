@@ -41,5 +41,9 @@ public class AdmissionDischargeByCenterVO extends BaseDefaultVO {
     @NotNull(message = "{validation.null.dschgeDate}")
     @JsonFormat(pattern = "yyyyMMdd")
     private LocalDate dschgeDate;
+    /**
+     * 퇴소위치
+     */
+    private String quantLocation;
 
 }
