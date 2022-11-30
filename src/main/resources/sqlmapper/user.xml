@@ -87,6 +87,7 @@
              , REMARK
              , UPD_ID
              , REG_ID
+             , LVL
              )
         VALUES
              ( #{userId}
@@ -95,6 +96,7 @@
              , #{remark}
              , #{regId}
              , #{regId}
+             , #{lvl}
              )
 	</insert>
 

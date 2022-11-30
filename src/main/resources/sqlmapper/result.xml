@@ -29,7 +29,7 @@
              , TIMESTAMP(RPR.RESULT_DATE, RPR.RESULT_TIME)  AS PR_RESULT_DT
              , IPR.UNIT                                     AS PR_UNIT
              -- 체온
-             , RDBT.RESULT                                  AS BT_RESULT
+             , LEFT(RDBT.RESULT,5)                                  AS BT_RESULT
              , CASE WHEN RDBT.RESULT < IBT.REF_FROM
                          THEN 'L'
                     WHEN RDBT.RESULT > IBT.REF_TO
