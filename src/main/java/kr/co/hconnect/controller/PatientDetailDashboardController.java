@@ -4,6 +4,7 @@ import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
 import kr.co.hconnect.jwt.TokenDetailInfo;
+import kr.co.hconnect.service.MedicalRecordService;
 import kr.co.hconnect.service.NoticeService;
 import kr.co.hconnect.service.PatientDetailDashboardService;
 import kr.co.hconnect.vo.*;
@@ -36,7 +37,10 @@ public class PatientDetailDashboardController {
 	 * 알림 서비스
 	 */
 	public final NoticeService noticeService;
-
+    /**
+     * 진료기록 서비스
+     */
+    public final MedicalRecordService medicalRecordService;
 	/**
 	 * 생성자
 	 *
@@ -44,9 +48,10 @@ public class PatientDetailDashboardController {
 	 * @param noticeService 알림 서비스
 	 */
 	@Autowired
-	public PatientDetailDashboardController(PatientDetailDashboardService patientDetailDashboardService, NoticeService noticeService) {
+	public PatientDetailDashboardController(PatientDetailDashboardService patientDetailDashboardService, NoticeService noticeService, MedicalRecordService medicalRecordService) {
 		this.patientDetailDashboardService = patientDetailDashboardService;
 		this.noticeService = noticeService;
+        this.medicalRecordService = medicalRecordService;
 	}
 
 	/**
@@ -72,6 +77,33 @@ public class PatientDetailDashboardController {
 
 		return responseVO;
 	}
+    /**
+     * 신규 진료 기록 내역 저장
+     *
+     * @param vo 진료기록 저장 정보
+     * @return ResponseVO&lt;List&lt;Record&gt;&gt; 진료기록 저장 완료 정보
+     */
+    @RequestMapping(value = "/record", method = RequestMethod.PUT)
+    public ResponseVO<List<RecordVO>> insertRecord(@Valid @RequestBody RecordSaveVO vo, BindingResult bindingResult
+        , @RequestAttribute TokenDetailInfo tokenDetailInfo
+        ) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+        RecordVO recordVO = new RecordVO();
+        recordVO.setMedicalRecord(vo.getRecord());
+        recordVO.setMedicalRecorder(tokenDetailInfo.getName());
+        recordVO.setMedicalDate(vo.getMedicalDate());
+        recordVO.setAdmissionId(vo.getAdmissionId());
+        recordVO.setRegId(tokenDetailInfo.getId());
+
+        medicalRecordService.insertNotice(recordVO);
+        ResponseVO<List<RecordVO>> responseVO = new ResponseVO<>();
+        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+        responseVO.setMessage("저장 성공");
+        responseVO.setResult(medicalRecordService.selectRecordList(vo.getAdmissionId()));
+        return responseVO;
+    }
 
 	/**
 	 * 신규 알림 내역 저장

@@ -5,6 +5,7 @@ import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
 import kr.co.hconnect.repository.NoticeDao;
 import kr.co.hconnect.repository.PatientDetailDashboardDao;
+import kr.co.hconnect.repository.RecordDao;
 import kr.co.hconnect.vo.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -29,22 +30,29 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 	/**
 	 * 알림 Dao
 	 */
-	private final NoticeDao noticeDao;	
+	private final NoticeDao noticeDao;
+    /**
+	 * 진료기록 dao
+	 */
+	private final RecordDao recordDao;
 	/**
 	 * MessageSource
 	 */
 	private final MessageSource messageSource;
 	
 	/**
-	 * 생성자
-	 * @param patientDetailDashboardDao 환자 상세 대쉬보드 DAO
-	 * @param noticeDao 알림 Dao
-	 * @param messageSource MessageSource
-	 */
-	public PatientDetailDashboardService(PatientDetailDashboardDao patientDetailDashboardDao, NoticeDao noticeDao, MessageSource messageSource) {
+     * 생성자
+     *
+     * @param patientDetailDashboardDao 환자 상세 대쉬보드 DAO
+     * @param noticeDao                 알림 Dao
+     * @param recordDao
+     * @param messageSource             MessageSource
+     */
+	public PatientDetailDashboardService(PatientDetailDashboardDao patientDetailDashboardDao, NoticeDao noticeDao, RecordDao recordDao, MessageSource messageSource) {
 		this.patientDetailDashboardDao = patientDetailDashboardDao;
 		this.noticeDao = noticeDao;
-		this.messageSource = messageSource;
+        this.recordDao = recordDao;
+        this.messageSource = messageSource;
 	}
 
 	/**
@@ -88,6 +96,11 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 		vo.setAdmissionId(admissionId);
 		vo.setHeaderVO(patientDetailDashboardHeaderVO);		// 상단 헤더 정보 바인딩
 		vo.setNoticeVOList(noticeVOList);					// 알림내역
+
+        //05. 진료기록 내역 조회
+        List<RecordVO> recordVOList = recordDao.selectRecordListByAdmissionId(admissionId);
+        vo.setRecordVOList(recordVOList);
+
 
 		return vo;
 	}

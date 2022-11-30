@@ -25,4 +25,8 @@ public class ResponseVO<T> extends BaseResponse {
 
     private T result;
 
+    private String userNm;
+
+    private String userId;
+
 }

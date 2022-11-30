@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+
+
+    <!-- 신규 진료기록 내역 생성 - kr.co.hconnect.sqlmapper.insertRecord -->
+    <insert id="insertRecord" parameterType="kr.co.hconnect.vo.RecordVO"
+            useGeneratedKeys="true"
+            keyColumn="MEDICAL_SEQ"
+            keyProperty="medicalSeq">
+        INSERT
+          INTO MEDICAL_RECORD
+             ( MEDICAL_DATE
+             , MEDICAL_RECORD
+             , MEDICAL_RECORDER
+             , ADMISSION_ID
+             , REG_ID
+             )
+        VALUES
+             ( #{medicalDate}
+             , #{medicalRecord}
+             , #{medicalRecorder}
+             , #{admissionId}
+             , #{regId}
+             )
+    </insert>
+
+    <!-- 내원별 알림 리스트 조회 - kr.co.hconnect.sqlmapper.selectNoticeListByAdmissionId -->
+    <select id="selectRecordListByAdmissionId"
+            parameterType="String"
+            resultType="kr.co.hconnect.vo.RecordVO">
+        SELECT A.MEDICAL_SEQ,
+               A.MEDICAL_DATE,
+               A.MEDICAL_RECORD,
+               A.MEDICAL_RECORDER,
+               A.ADMISSION_ID
+        FROM MEDICAL_RECORD A
+        WHERE A.ADMISSION_ID = #{admissionId}
+        ORDER BY MEDICAL_DATE , MEDICAL_SEQ DESC;
+    </select>
+
+
+</mapper>

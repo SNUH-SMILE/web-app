@@ -32,4 +32,8 @@ public class PatientDetailDashboardVO implements Serializable {
      */
     private List<NoticeVO> noticeVOList;
 
+    /**
+     *
+     */
+    private List<RecordVO> recordVOList;
 }
