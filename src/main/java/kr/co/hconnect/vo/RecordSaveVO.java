@@ -6,6 +6,7 @@ import lombok.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -35,8 +36,8 @@ public class RecordSaveVO implements Serializable {
     /**
      * 진료기록일
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date medicalDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Timestamp medicalDate;
 
 
 

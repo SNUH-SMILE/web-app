@@ -1,11 +1,13 @@
 package kr.co.hconnect.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import kr.co.hconnect.common.BaseDefaultVO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -34,7 +36,8 @@ public class RecordVO extends BaseDefaultVO {
     /**
      * 등록일시
      */
-    private Date medicalDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Timestamp medicalDate;
     /**
      * 진료기록자
      */
