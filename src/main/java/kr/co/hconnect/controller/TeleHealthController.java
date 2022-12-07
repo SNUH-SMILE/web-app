@@ -44,7 +44,7 @@ public class TeleHealthController {
         }
         ResponseBaseVO<TeleHealthConnectVO> responseVO = new ResponseBaseVO<>();
         try{
-
+            vo.setLoginId(tokenDetailInfo.getId());
             TeleHealthConnectVO dt = teleHealthService.selectConnection(vo);
             responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
             responseVO.setMessage("저장 완료");

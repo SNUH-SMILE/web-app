@@ -55,7 +55,7 @@ public class TeleHealthService extends EgovAbstractServiceImpl{
                 int apikey = 47595911;
                 vo.setApiKey(apikey);
                 vo.setApiSecret("2ddde1eb92a2528bd22be0c465174636daca363d");
-
+                teleEntity.setApiKey(apikey);
                 //# 세션 생성
                 openTok = new OpenTok(vo.getApiKey(), vo.getApiSecret());
                 SessionProperties sessionProperties = new SessionProperties.Builder()
@@ -84,7 +84,7 @@ public class TeleHealthService extends EgovAbstractServiceImpl{
                 teleEntity.setOfficerToken(openTok.generateToken(teleEntity.getSessionId()
                     , tokenOptions));
 
-
+              //  teleEntity.setAttendeeToken(openTok.generateToken(sessionid));
 
                 //# 화상상담 시작정보 저장
                 //saveStartTelehealthInfo(teleEntity);
