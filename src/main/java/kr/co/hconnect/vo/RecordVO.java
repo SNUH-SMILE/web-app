@@ -36,7 +36,7 @@ public class RecordVO extends BaseDefaultVO {
     /**
      * 등록일시
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Timestamp medicalDate;
     /**
      * 진료기록자

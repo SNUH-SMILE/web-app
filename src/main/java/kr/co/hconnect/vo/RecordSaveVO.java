@@ -36,7 +36,7 @@ public class RecordSaveVO implements Serializable {
     /**
      * 진료기록일
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Timestamp medicalDate;
 
 
