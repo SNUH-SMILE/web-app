@@ -33,4 +33,6 @@ public class TeleHealthConnectVO implements Serializable {
 
     private String attendeeToken;           // 참석자 토큰
 
+    private String admissionId;
+
 }

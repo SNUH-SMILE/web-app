@@ -81,4 +81,58 @@ public class TeleHealthController {
         return responseVO;
     }
 
+    /**
+     * 화면녹화
+     * @param vo
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/getArchive", method = RequestMethod.POST)
+    public ResponseBaseVO<String> getArchive(@Validated(VoValidationGroups.add.class) @RequestBody TeleHealthConnectVO vo
+        , BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+        ResponseBaseVO<String> responseVO = new ResponseBaseVO<>();
+        try{
+            responseVO.setResult(teleHealthService.archive(vo));
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("녹화가 시작되었습니다");
+
+
+        }catch (Exception  e){
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
+
+        return responseVO;
+    }
+    /**
+     * 화면녹화중지
+     * @param vo
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/ArchiveStop", method = RequestMethod.POST)
+    public ResponseBaseVO<String> ArchiveStop(@Validated(VoValidationGroups.add.class) @RequestBody TeleHealthArchiveVO vo
+        , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+
+
+        ResponseBaseVO<String> responseVO = new ResponseBaseVO<>();
+        try{
+            teleHealthService.archiveStop(vo);
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("녹화가 중지되었습니다");
+
+        }catch (Exception  e){
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
+
+        return responseVO;
+
+    }
 }

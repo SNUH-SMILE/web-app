@@ -1,33 +1,37 @@
 package kr.co.hconnect.service;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
-import egovframework.rte.fdl.cmmn.exception.FdlException;
-import egovframework.rte.fdl.idgnr.EgovIdGnrService;
+import kr.co.hconnect.repository.ArchiveDao;
+import kr.co.hconnect.vo.TeleHealthArchiveVO;
 import kr.co.hconnect.vo.TeleHealthConnectVO;
 import org.springframework.beans.BeanUtils;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.opentok.Archive.OutputMode;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import java.util.List;
 import com.opentok.*;
 import com.opentok.exception.OpenTokException;
+import com.opentok.Archive;
 
 /**
  * 화상상담 서비스
  */
 @Service
 @Transactional(rollbackFor = Exception.class, readOnly = true)
-public class TeleHealthService extends EgovAbstractServiceImpl{
+public class TeleHealthService extends EgovAbstractServiceImpl {
 
 
-
+    private final ArchiveDao archiveDao;
     @Autowired
-    public TeleHealthService() {
+    public TeleHealthService(ArchiveDao archiveDao) {
+        this.archiveDao = archiveDao;
     }
+    int apikey = 47595911;
+    String apiSecret = "2ddde1eb92a2528bd22be0c465174636daca363d";
 
     /**
      *화상상담
@@ -52,9 +56,9 @@ public class TeleHealthService extends EgovAbstractServiceImpl{
 
         OpenTok openTok = null;
             try {
-                int apikey = 47595911;
+
                 vo.setApiKey(apikey);
-                vo.setApiSecret("2ddde1eb92a2528bd22be0c465174636daca363d");
+                vo.setApiSecret(apiSecret);
                 teleEntity.setApiKey(apikey);
                 //# 세션 생성
                 openTok = new OpenTok(vo.getApiKey(), vo.getApiSecret());
@@ -65,7 +69,6 @@ public class TeleHealthService extends EgovAbstractServiceImpl{
                 System.out.println("session =================================================");
                 System.out.println(session.getSessionId());
                 System.out.println("=================================================");
-
                 teleEntity.setSessionId(session.getSessionId());
 
                 //# 담당자 또는 참석자의 토큰 생성
@@ -111,9 +114,9 @@ public class TeleHealthService extends EgovAbstractServiceImpl{
         System.out.println("=================================================");
         OpenTok openTok = null;
         try {
-            int apikey = 47595911;
+
             vo.setApiKey(apikey);
-            vo.setApiSecret("2ddde1eb92a2528bd22be0c465174636daca363d");
+            vo.setApiSecret(apiSecret);
 
             openTok = new OpenTok(vo.getApiKey(), vo.getApiSecret());
 
@@ -145,6 +148,70 @@ public class TeleHealthService extends EgovAbstractServiceImpl{
         }
         return teleEntity;
     }
+    @Transactional(rollbackFor = Exception.class)
+    public String archive (TeleHealthConnectVO vo) {
+        OpenTok openTok =null;
+        Archive archive;
+        try {
 
+            vo.setApiKey(apikey);
+            vo.setApiSecret(apiSecret);
 
+            //# 세션 생성
+            openTok = new OpenTok(vo.getApiKey(), vo.getApiSecret());
+            OutputMode outputMode = OutputMode.INDIVIDUAL;
+            ArchiveLayout layout = null;
+
+            outputMode = OutputMode.COMPOSED;
+            layout = new ArchiveLayout(ArchiveLayout.Type.HORIZONTAL);
+
+            archive = openTok.startArchive(vo.getSessionId(), new ArchiveProperties.Builder()
+                .name(vo.getAdmissionId())
+                .hasAudio(true)
+                .hasVideo(false)
+                .outputMode(outputMode)
+                .layout(layout)
+                .build());
+            String archiveId = archive.getId();
+
+            TeleHealthArchiveVO teleHealthArchiveVO =new TeleHealthArchiveVO();
+            teleHealthArchiveVO.setArchiveId(archiveId);
+            teleHealthArchiveVO.setName(archive.getName());
+            teleHealthArchiveVO.setReason(archive.getReason());
+            teleHealthArchiveVO.setSize(archive.getSize());
+            Date date = new Date(archive.getCreatedAt());
+            teleHealthArchiveVO.setCreateAt(date);
+            teleHealthArchiveVO.setPartnerId(archive.getPartnerId());
+            teleHealthArchiveVO.setSessionId(archive.getSessionId());
+            teleHealthArchiveVO.setStatus(archive.getStatus().toString());
+            teleHealthArchiveVO.setOutputMode(archive.getOutputMode().toString());
+
+            archiveDao.archiveInsert(teleHealthArchiveVO);
+
+        } catch (OpenTokException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return archive.getId();
+    }
+    @Transactional(rollbackFor = Exception.class)
+    public void archiveStop (TeleHealthArchiveVO vo) {
+
+        OpenTok openTok =null;
+        Archive archive;
+        //# 세션 생성
+        try {
+            openTok = new OpenTok(apikey, apiSecret);
+            archive = openTok.stopArchive(vo.getArchiveId());
+            vo.setArchiveId(archive.getId());
+            vo.setStatus(archive.getStatus().toString());
+            vo.setSize(archive.getSize());
+            vo.setReason(archive.getReason());
+
+            archiveDao.updateArchive(vo);
+
+        }catch (OpenTokException e){
+            e.printStackTrace();
+        }
+    }
 }

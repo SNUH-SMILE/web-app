@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+
+    <insert id="insertArchive" parameterType="kr.co.hconnect.vo.TeleHealthArchiveVO">
+	<![CDATA[
+
+        INSERT
+		  INTO ARCHIVE
+		     ( ARCHIVE_ID
+		     , CREATE_AT
+		     , PARTNER_ID
+		     , NAME
+		     , SESSION_ID
+		     , SIZE
+		     , STATUS
+             , OUTPUT_MODE
+	         , REASON
+		     )
+		VALUES
+		     (
+		      #{archiveId}
+		, #{createAt}
+        , #{partnerId}
+        , #{name}
+        , #{sessionId}
+        , #{size}
+        , #{status}
+        , #{outputMode}
+        , #{reason}
+        )
+        ]]>
+	</insert>
+
+    <update id="updateArchiveStatus" parameterType="kr.co.hconnect.vo.TeleHealthArchiveVO">
+	<![CDATA[
+        UPDATE ARCHIVE
+        SET STATUS = #{status}
+        ,   SIZE = #{size}
+        ,   REASON = #{reason}
+        WHERE ARCHIVE_ID = #{archiveId}
+        ]]>
+	</update>
+
+
+</mapper>
