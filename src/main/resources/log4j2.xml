@@ -8,7 +8,7 @@
             <PatternLayout pattern="%d %5p [%c] %m%n"/>
         </Console>
         <RollingFile name="rollingFile" fileName="${logFileName}.log" filePattern="${logFileName}_%d{yyyy-MM-dd}.log"
-                     append="true">
+                     append="true" filePermissions="rw-r--r--">
             <PatternLayout pattern="%d %5p [%c] %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
