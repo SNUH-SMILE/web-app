@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
+    <Properties>
+        <Property name="logFileName">/usr/local/apache-tomcat-8.5.79/logs/infectious-disease</Property>
+    </Properties>
     <Appenders>
         <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d %5p [%c] %m%n" />
+            <PatternLayout pattern="%d %5p [%c] %m%n"/>
         </Console>
-        <RollingFile name="rollingFile" fileName="./../logs/infectious-disease.log" filePattern="./../logs/infectious-disease_%d{yyyy-MM-dd}.log" append="true">
+        <RollingFile name="rollingFile" fileName="${logFileName}.log" filePattern="${logFileName}_%d{yyyy-MM-dd}.log"
+                     append="true">
             <PatternLayout pattern="%d %5p [%c] %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
