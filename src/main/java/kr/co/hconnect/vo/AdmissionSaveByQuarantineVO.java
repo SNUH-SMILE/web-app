@@ -84,4 +84,9 @@ public class AdmissionSaveByQuarantineVO extends BaseDefaultVO {
      */
     @NotBlank(message = "{validation.null.personCharge}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class})
     private String personCharge;
+
+    /**
+     * 시어스 체온계 계정
+     */
+    private String searsAccount;
 }

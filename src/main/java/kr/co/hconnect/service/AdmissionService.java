@@ -5,10 +5,10 @@ import egovframework.rte.fdl.cmmn.exception.FdlException;
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
 import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.common.QantnDiv;
-import kr.co.hconnect.domain.IdentityInfo;
-import kr.co.hconnect.domain.Patient;
+import kr.co.hconnect.domain.*;
 import kr.co.hconnect.exception.*;
 import kr.co.hconnect.repository.AdmissionDao;
+import kr.co.hconnect.repository.InterviewDao;
 import kr.co.hconnect.repository.PatientDao;
 import kr.co.hconnect.repository.ResultDao;
 import kr.co.hconnect.vo.*;
@@ -21,8 +21,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * 격리/입소내역 관리 Service
@@ -35,7 +37,10 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 	 * 입소내역 Dao
 	 */
 	private final AdmissionDao admissionDao;
-
+    /**
+     * 인터뷰 dao
+     */
+    private final InterviewDao interviewDao;
 	/**
 	 * 측정결과 Dao
 	 */
@@ -62,21 +67,24 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdmissionService.class);
 
 	/**
-	 * 생성자
-	 * @param admissionDao 격리/입소내역 Dao
-	 * @param resultDao 측정결과 Dao
-	 * @param patientDao 환자정보 관리 Dao
-	 * @param patientIdGnrService 환자 ID 채번 서비스
-	 * @param admissionIdGnrService 격리/입소 ID 채번 서비스
-	 * @param messageSource MessageSource
-	 */
+     * 생성자
+     *
+     * @param admissionDao          격리/입소내역 Dao
+     * @param interviewDao
+     * @param resultDao             측정결과 Dao
+     * @param patientDao            환자정보 관리 Dao
+     * @param patientIdGnrService   환자 ID 채번 서비스
+     * @param admissionIdGnrService 격리/입소 ID 채번 서비스
+     * @param messageSource         MessageSource
+     */
 	@Autowired
-	public AdmissionService(AdmissionDao admissionDao, ResultDao resultDao, PatientDao patientDao
+	public AdmissionService(AdmissionDao admissionDao, InterviewDao interviewDao, ResultDao resultDao, PatientDao patientDao
 			, @Qualifier("patientIdGnrService") EgovIdGnrService patientIdGnrService
 			, @Qualifier("admissionIdGnrService") EgovIdGnrService admissionIdGnrService
 			, MessageSource messageSource) {
 		this.admissionDao = admissionDao;
-		this.resultDao = resultDao;
+        this.interviewDao = interviewDao;
+        this.resultDao = resultDao;
 		this.patientDao = patientDao;
 		this.patientIdGnrService = patientIdGnrService;
 		this.admissionIdGnrService = admissionIdGnrService;
@@ -213,6 +221,7 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 			identityInfo.setBirthDate(patientIdentityVO.getBirthDate());
 			identityInfo.setSex(patientIdentityVO.getSex());
 			identityInfo.setCellPhone(patientIdentityVO.getCellPhone());
+            identityInfo.setSearsAccount(patientIdentityVO.getSearsAccount());
 
 			Patient patientByIdentityInfo = patientDao.selectPatientByIdentityInfo(identityInfo);
 
@@ -244,6 +253,8 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 				patientVO.setCellPhone(patientIdentityVO.getCellPhone());
 				patientVO.setSex(patientIdentityVO.getSex());
 				patientVO.setRegId(admissionVO.getRegId());
+				patientVO.setSearsAccount(patientIdentityVO.getSearsAccount());
+
 
 				patientDao.insertPatient(patientVO);
 			}
@@ -270,6 +281,9 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 			patientVO.setCellPhone(patientIdentityVO.getCellPhone());
 			patientVO.setSex(patientIdentityVO.getSex());
 			patientVO.setUpdId(admissionVO.getUpdId());
+			patientVO.setSearsAccount(patientIdentityVO.getSearsAccount());
+
+
 
 			// 변경 데이터 확인
 			if (!patientVO.isIdentityEquals(dbPatientVO)) {
@@ -280,6 +294,7 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 				identityInfo.setBirthDate(patientIdentityVO.getBirthDate());
 				identityInfo.setSex(patientIdentityVO.getSex());
 				identityInfo.setCellPhone(patientIdentityVO.getCellPhone());
+				identityInfo.setSearsAccount(patientIdentityVO.getSearsAccount());
 
 				Patient patientByIdentityInfo = patientDao.selectPatientByIdentityInfo(identityInfo);
 
@@ -385,4 +400,31 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 		return admissionListResponseByQuarantineVO;
 	}
 
+    public void test(){
+
+        /*1. interview를 admission 기준으로 불러옴*/
+        List<InterviewList> interviewLists = new ArrayList<>();
+        //1-1다오에서 가져옴
+        Interview interview = new Interview();
+        InterviewContent interviewContent = new InterviewContent();
+        interviewLists = interviewDao.selectInterviewList(interview);
+        //1-2 interviewSeq만 뽑아냄
+        List<String> interviewTypes = interviewLists.stream().map(InterviewList::getInterviewType).collect(Collectors.toList());
+        List<Integer> interviewSeqs = interviewLists.stream().map(InterviewList::getInterviewSeq).collect(Collectors.toList());
+        /*2. interview seq기준으로 interview content와 detail을 불러온다*/
+        for (String interviewType: interviewTypes){
+            //2-1 detail 가지고 옴
+            interviewContent = interviewDao.selectInterviewContentList(interviewType);
+        }
+        InterviewDetail detail = new InterviewDetail();
+        for(Integer interviewseq: interviewSeqs){
+            detail.setSeq(interviewseq);
+            interviewDao.insertInterviewDetail(detail);
+        }
+
+
+        /*3.*/
+
+
+    }
 }

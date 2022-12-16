@@ -389,4 +389,20 @@ public class AdmissionController {
 
 		return responseVO;
 	}
+    /**
+     *  문진 리스트 조회
+     * @param vo 퇴소 처리 정보 VO
+     * @return ResponseVO&lt;AdmissionListResponseByQuarantineVO&gt; 자가격리자 리스트 조회 결과
+     */
+    @RequestMapping(value = "/quarantine/test", method = RequestMethod.PATCH)
+    public ResponseVO<AdmissionListResponseByQuarantineVO> test(
+        @Valid @RequestBody AdmissionDischargeByQuarantineVO vo, BindingResult bindingResult
+        , @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+
+        ResponseVO<AdmissionListResponseByQuarantineVO> responseVO = new ResponseVO<>();
+
+        
+        return responseVO;
+    }
+
 }

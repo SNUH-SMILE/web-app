@@ -94,4 +94,9 @@ public class AdmissionSaveByCenterVO extends BaseDefaultVO {
      */
     @NotBlank(message = "{validation.null.room}", groups = { VoValidationGroups.add.class, VoValidationGroups.modify.class})
     private String room;
+
+    /**
+     * 시어스
+     */
+    private String searsAccount;
 }
