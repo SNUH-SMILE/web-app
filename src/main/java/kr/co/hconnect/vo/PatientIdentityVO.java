@@ -48,4 +48,9 @@ public class PatientIdentityVO implements Serializable {
     @Pattern(regexp = "^[0-9]+$",message = "{validation.patternMismatch.cellphone}")
     @Size(max = 15, message = "{validation.size.cellPhone}")
     private String cellPhone;
+
+    /**
+     * 시어스체온계계정
+     */
+    private String searsAccount;
 }

@@ -2,6 +2,7 @@ package kr.co.hconnect.repository;
 
 import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
 import kr.co.hconnect.domain.Interview;
+import kr.co.hconnect.domain.InterviewContent;
 import kr.co.hconnect.domain.InterviewDetail;
 import kr.co.hconnect.vo.InterviewList;
 import kr.co.hconnect.vo.InterviewListResponseByCenterVO;
@@ -36,6 +37,9 @@ public class InterviewDao  extends EgovAbstractMapper {
     }
     public List<SymptomList> selectInterviewDetailList(int id) {
         return selectList("kr.co.hconnect.sqlmapper.selectInterviewDetailList", id);
+    }
+    public InterviewContent selectInterviewContentList(String id) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectInterviewContentList", id);
     }
 
 

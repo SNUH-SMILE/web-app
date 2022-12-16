@@ -15,6 +15,7 @@
              , ZIP_CODE             -- 우편번호
              , ADDRESS1             -- 주소
              , ADDRESS2             -- 상세주소
+		    ,  SEARS_ACCOUNT
           FROM PATIENT
          WHERE PATIENT_ID = #{patientId}
 	</select>
@@ -52,11 +53,13 @@
 			 , ZIP_CODE             -- 우편번호
 			 , ADDRESS1             -- 주소
 			 , ADDRESS2             -- 상세주소
+		     , SEARS_ACCOUNT        -- 시어스 체온계 계정
 		  FROM PATIENT
 		 WHERE PATIENT_NM = #{patientNm}
 		   AND BIRTH_DATE = #{birthDate}
 		   AND SEX        = #{sex}
 		   AND CELL_PHONE = #{cellPhone}
+		   AND SEARS_ACCOUNT = #{searsAccount}
 	]]>
 	</select>
 
@@ -196,13 +199,15 @@
 		     , BIRTH_DATE
 		     , SEX
 		     , CELL_PHONE
+		     , SEARS_ACCOUNT
 		     )
 		VALUES
 		     ( #{patientId}
 		     , #{patientNm}
 		     , #{birthDate}
 		     , #{sex}
-		     , #{cellPhone})
+		     , #{cellPhone}
+		     , #{searsAccount})
 	</insert>
 	
 	<!-- 환자정보 수정 - kr.co.hconnect.sqlmapper.updatePatient -->
@@ -216,6 +221,7 @@
 		     , SEX        = #{sex}
 		     , CELL_PHONE = #{cellPhone}
 		     , UPD_DT     = NOW()
+		     , SEARS_ACCOUNT = #{searsAccount}
 		 WHERE PATIENT_ID = #{patientId}
 	]]> 
 	</update>

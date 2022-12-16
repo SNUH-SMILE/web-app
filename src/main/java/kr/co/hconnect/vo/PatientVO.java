@@ -90,6 +90,10 @@ public class PatientVO extends BaseDefaultVO {
 	@Size(max = 200, message = "{validation.size.address2}")
 	private String address2;
 
+    /**
+     * 시어스 체온계 계정
+     */
+    private String searsAccount;
 	/**
 	 * 환자 식별 데이터 동일 여부 확인
 	 * @param vo 비교 대상 환자정보
@@ -99,7 +103,8 @@ public class PatientVO extends BaseDefaultVO {
 		return patientNm.equals(vo.getPatientNm()) &&
 				birthDate.equals(vo.getBirthDate()) &&
 				sex.equals(vo.getSex()) &&
-				cellPhone.equals(vo.getCellPhone());
+				cellPhone.equals(vo.getCellPhone())&&
+                searsAccount.equals(vo.getSearsAccount());
 
 	}
 }
