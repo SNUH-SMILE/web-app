@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+    <insert id="insInf" parameterType="kr.co.hconnect.vo.AiInferenceVO">
+        <![CDATA[
+            INSERT
+            INTO inference
+            (
+                ADMISSION_ID,
+                INF_DIV,
+                INF_VALUE,
+                REG_DT
+            )
+            VALUES
+                ( #{admissionId}
+                , #{infDiv}
+                , #{infValue}
+                , now()
+                )
+            ]]>
+    </insert>
+
+    <insert id="insInfLog" parameterType="kr.co.hconnect.vo.AiInferenceVO">
+        <![CDATA[
+        INSERT
+        INTO inference_log
+        (
+            ADMISSION_ID,
+            INF_DIV,
+            INF_VALUE,
+            REG_DT
+        )
+        select
+              admission_id
+             ,inf_div
+             ,inf_value
+             ,reg_dt
+        from inference
+        where INF_DIV = #{infDiv}
+        ]]>
+    </insert>
+
+    <delete id="delInf" parameterType="kr.co.hconnect.vo.AiInferenceVO">
+        <![CDATA[
+            delete from inference
+            where inf_div = #{infDiv}
+        ]]>
+    </delete>
+
+    <select id="scoreList"  resultType="kr.co.hconnect.vo.ScoreVO">
+        <![CDATA[
+                SELECT A.ADMISSION_ID
+                    /* 나이 */
+                     , YEAR(NOW())-LEFT(P.BIRTH_DATE,4) + 1                    as age
+                    /* 맥박수 심박수 */
+                     , ifnull(RDPR.result, 0)                                  as pr
+                    /* 산소포화도 */
+                     , ifnull(RDSP.result, 0)                                  AS spo2
+                    /* 수축기 */
+                     , ifnull(RDSBP.result, 0)                                 AS sbp
+                    /* 이완기 */
+                     , ifnull(RDDBP.result, 0)                                 AS dbp
+                    /* 체온 */
+                     , ifnull(ROUND(RDBT.result, 1), 0)                        AS bt
+                     , ifnull((select '1'
+                                from interview i
+                                inner join interview_detail id
+                                on i.INTERVIEW_SEQ  = id.INTERVIEW_SEQ
+                                where 1=1
+                                and i.INTERVIEW_TYPE ='01'
+                                and id.ANSWER_SEQ = '54'
+                                and id.ANSWER_VALUE like '%2%'
+                                and i.ADMISSION_ID = a.ADMISSION_ID), 0
+                                ) as hyp
+                FROM ADMISSION A
+                    inner join patient p               on A.PATIENT_ID  = P.PATIENT_ID
+                    /* 혈압 */
+                    INNER JOIN ITEM            IBP     ON IBP.ITEM_ID = 'I0005'
+                    LEFT JOIN RESULT           RBP     ON RBP.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                    FROM RESULT X
+                    WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                    AND X.ITEM_ID = IBP.ITEM_ID
+                    ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                    LIMIT 1)
+                    LEFT JOIN RESULT_DETAIL    RDSBP   ON RDSBP.RESULT_SEQ = RBP.RESULT_SEQ
+                    AND RDSBP.RESULT_TYPE = '03'
+                    LEFT JOIN RESULT_DETAIL    RDDBP   ON RDDBP.RESULT_SEQ = RBP.RESULT_SEQ
+                    AND RDDBP.RESULT_TYPE = '02'
+                    /* 심박수 */
+                    INNER JOIN ITEM             IPR     ON IPR.ITEM_ID = 'I0002'
+                    LEFT JOIN RESULT            RPR     ON RPR.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                    FROM RESULT X
+                    WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                    AND X.ITEM_ID = IPR.ITEM_ID
+                    ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                    LIMIT 1)
+                    LEFT JOIN RESULT_DETAIL     RDPR    ON RDPR.RESULT_SEQ = RPR.RESULT_SEQ
+                    /* 체온 */
+                    INNER JOIN ITEM             IBT     ON IBT.ITEM_ID = 'I0001'
+                    LEFT JOIN RESULT            RBT     ON RBT.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                    FROM RESULT X
+                    WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                    AND X.ITEM_ID = IBT.ITEM_ID
+                    ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                    LIMIT 1)
+                    LEFT JOIN RESULT_DETAIL     RDBT    ON RDBT.RESULT_SEQ = RBT.RESULT_SEQ
+                    /* 산소포화도 */
+                    LEFT JOIN ITEM              ISP   ON ISP.ITEM_ID = 'I0003'
+                    LEFT JOIN RESULT            RSP   ON RSP.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                    FROM RESULT X
+                    WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                    AND X.ITEM_ID = ISP.ITEM_ID
+                    ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                    LIMIT 1)
+                    LEFT JOIN RESULT_DETAIL     RDSP  ON RDSP.RESULT_SEQ = RSP.RESULT_SEQ
+                where 1=1
+                  and a.ADMISSION_ID ='0000000055'
+                order by A.ADMISSION_ID
+        ]]>
+    </select>
+
+    <select id="archiveList"  parameterType="kr.co.hconnect.vo.ArchiveVO" resultType="kr.co.hconnect.vo.ArchiveVO">
+        <![CDATA[
+        SELECT ARCHIVE_ID,
+               CREATE_AT,
+               PARTNER_ID,
+               NAME,
+               SESSION_ID,
+               SIZE,
+               STATUS,
+               OUTPUT_MODE,
+               REASON,
+               DOWN_YN
+        FROM archive
+       WHERE STATUS ='stopped'
+         AND IFNULL(DOWN_YN,'N') ='N'
+        ]]>
+    </select>
+
+    <update id="udpArchive"  parameterType="kr.co.hconnect.vo.ArchiveVO" >
+        UPDATE archive
+         SET DOWN_YN ='Y'
+        WHERE ARCHIVE_ID ='stopped'
+    </update>
+
+</mapper>

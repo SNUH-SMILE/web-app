@@ -67,5 +67,6 @@ public class DrugDoseVO extends BaseDefaultVO {
 
     private String   resultTime;
 
+    private String   noAlarm;
 
 }

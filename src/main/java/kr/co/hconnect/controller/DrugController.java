@@ -59,15 +59,17 @@ public class DrugController {
      * @return
      */
     @RequestMapping(value = "/setNotice", method = RequestMethod.POST)
-    public ResponseVO<DrugAlarmSaveVO> insertDrugAlarm(@Validated(VoValidationGroups.add.class) @RequestBody DrugAlarmSaveVO vo
+    public ResponseBaseVO<DrugAlarmSaveVO> insertDrugAlarm(@Validated(VoValidationGroups.add.class) @RequestBody DrugAlarmSaveVO vo
         , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
 
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
-        ResponseVO<DrugAlarmSaveVO> responseVO = new ResponseVO<>();
+        ResponseBaseVO<DrugAlarmSaveVO> responseVO = new ResponseBaseVO<>();
 
         String admisstionId = getAdmissionId(vo.getLoginId());
+
+        System.out.println("admisstionId " + admisstionId);
         String loginId = vo.getLoginId();
 
         // 저장정보 구성
@@ -95,13 +97,13 @@ public class DrugController {
      * @return
      */
     @RequestMapping(value = "/setTakeResult", method = RequestMethod.POST)
-    public ResponseVO<DrugAlarmSaveVO> insertDrugDose(@Validated(VoValidationGroups.add.class) @RequestBody DrugDoseSaveVO vo
+    public ResponseBaseVO<DrugAlarmSaveVO> insertDrugDose(@Validated(VoValidationGroups.add.class) @RequestBody DrugDoseSaveVO vo
         , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
 
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
-        ResponseVO<DrugAlarmSaveVO> responseVO = new ResponseVO<>();
+        ResponseBaseVO<DrugAlarmSaveVO> responseVO = new ResponseBaseVO<>();
 
         String admisstionId = getAdmissionId(vo.getLoginId());
         String loginId = vo.getLoginId();
@@ -130,13 +132,13 @@ public class DrugController {
      * @return
      */
     @RequestMapping(value = "/setEtcResult", method = RequestMethod.POST)
-    public ResponseVO<DrugDoseVO> insertNoAlarmDrugDose(@Validated(VoValidationGroups.add.class) @RequestBody DrugDoseSaveVO vo
+    public ResponseBaseVO<DrugDoseVO> insertNoAlarmDrugDose(@Validated(VoValidationGroups.add.class) @RequestBody DrugDoseSaveVO vo
         , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
 
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
-        ResponseVO<DrugDoseVO> responseVO = new ResponseVO<>();
+        ResponseBaseVO<DrugDoseVO> responseVO = new ResponseBaseVO<>();
 
         String admisstionId = getAdmissionId(vo.getLoginId());
         String loginId = vo.getLoginId();
@@ -166,19 +168,19 @@ public class DrugController {
      * @return
      */
     @RequestMapping(value = "/timeList", method = RequestMethod.POST)
-    public ResponseTimeListVO<List<DrugTimeListVO>> selectTimeList(@Valid @RequestBody DrugSearchVO vo, BindingResult bindingResult) {
+    public ResponseBaseVO<DrugTimeListVO> selectTimeList(@Valid @RequestBody DrugSearchVO vo, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
-        ResponseTimeListVO<List<DrugTimeListVO>> responseVO = new ResponseTimeListVO<>();
+        ResponseBaseVO<DrugTimeListVO> responseVO = new ResponseBaseVO<>();
         String admisstionId = getAdmissionId(vo.getLoginId());
         String loginId = vo.getLoginId();
         vo.setAdmissionId(admisstionId);
         try{
-            List<DrugTimeListVO> dt = drugService.selectDrugTimeList(vo);
+            DrugTimeListVO dt = drugService.selectDrugTimeList(vo);
             responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
             responseVO.setMessage("조회성공");
-            responseVO.setTimeList(dt);
+            responseVO.setResult(dt);
         } catch(RuntimeException e){
             responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
             responseVO.setMessage(e.getMessage());
@@ -192,22 +194,23 @@ public class DrugController {
      * @return
      */
     @RequestMapping(value = "/noticeList", method = RequestMethod.POST)
-    public ResponseNoticeVO<List<DrugNoticeListVO>> selectㅜoticeList(@Valid @RequestBody DrugSearchVO vo, BindingResult bindingResult) {
+    public ResponseBaseVO<DrugNoticeVO> selectNoticeList(@Valid @RequestBody DrugSearchVO vo, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
 
-        ResponseNoticeVO<List<DrugNoticeListVO>> responseVO = new ResponseNoticeVO<>();
+        ResponseBaseVO<DrugNoticeVO> responseVO = new ResponseBaseVO<>();
 
         String admisstionId = getAdmissionId(vo.getLoginId());
         String loginId = vo.getLoginId();
         vo.setAdmissionId(admisstionId);
 
         try{
-            List<DrugNoticeListVO> dt = drugService.selectAlarmList(vo);
+            DrugNoticeVO dt = drugService.selectAlarmList(vo);
+
             responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
             responseVO.setMessage("조회성공");
-            responseVO.setNoticeList(dt);
+            responseVO.setResult(dt);
         } catch(RuntimeException e){
             responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
             responseVO.setMessage(e.getMessage());

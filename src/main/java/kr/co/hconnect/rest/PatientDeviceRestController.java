@@ -1,13 +1,12 @@
 package kr.co.hconnect.rest;
 
 import kr.co.hconnect.common.ApiResponseCode;
-import kr.co.hconnect.domain.PatientDevice;
-import kr.co.hconnect.domain.PatientDeviceSavedInfo;
-import kr.co.hconnect.domain.PatientDeviceUseHistory;
-import kr.co.hconnect.domain.SavePatientDeviceInfo;
+import kr.co.hconnect.domain.*;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.service.AdmissionService;
 import kr.co.hconnect.service.PatientDeviceService;
+import kr.co.hconnect.vo.ResponseBaseVO;
+import kr.co.hconnect.vo.ResponseVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
@@ -85,4 +84,27 @@ public class PatientDeviceRestController {
 
         return patientDeviceSavedInfo;
     }
+
+    @RequestMapping(value = "/patient/getDevice", method = RequestMethod.POST)
+    public ResponseBaseVO<List<PatientDeviceList>> selectPatientDevice(@Valid @RequestBody LoginId loginId
+        , BindingResult result) {
+        if (result.hasErrors()) {
+            throw new InvalidRequestArgumentException(result);
+        }
+        // 격리/입소내역ID
+        String admissionId = admissionService.selectActiveAdmissionByLoginId(loginId.getLoginId()).getAdmissionId();
+
+        PatientDevice vo = new PatientDevice();
+        vo.setAdmissionId(admissionId);
+
+        ResponseBaseVO<List<PatientDeviceList>> responseVO = new ResponseBaseVO<>();
+
+        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+        responseVO.setMessage("조회성공");
+        responseVO.setResult(patientDeviceService.selectPatientDevice(vo));
+
+        return responseVO;
+
+    }
+
 }

@@ -1,6 +1,5 @@
 package kr.co.hconnect.vo;
 
-import kr.co.hconnect.vo.DrugAlarmVO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,11 +50,16 @@ public class DrugAlarmSaveVO implements Serializable {
     @NotNull
     private String noticeName;
 
-    @NotNull
+
     private String drugName;
     private String drugCount;
     private String drugType;
     private String RegId;
+
+    /**
+     * 약물 리스트
+     */
+    private List<DrugListVO> drugList;
 
     /**
      * 복약 알람 리스트

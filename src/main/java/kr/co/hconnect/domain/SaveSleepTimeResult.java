@@ -53,10 +53,10 @@ public class SaveSleepTimeResult implements Serializable {
     @JsonFormat(pattern = "HHmm")
     private LocalTime resultEndTime;
     /**
-     * 수면유형 (0:깊은잠, 1:얕은잠, 2:기상)
+     * 수면유형 (0:깊은잠, 1:얕은잠, 2:기상 3:램수면)
      */
     @NotNull(message = "{validation.null.sleepType}")
-    @Pattern(regexp = "^[012]$", message = "{validation.patternMismatch.sleepType}")
+    @Pattern(regexp = "^[0123]$", message = "{validation.patternMismatch.sleepType}")
     private String sleepType;
     /**
      * 디바이스ID

@@ -77,4 +77,25 @@ public class MeasurementResultDao extends EgovAbstractMapper {
     public List<SleepTimeResult> selectSleepTimeList(SearchSleepResultInfo searchSleepResultInfo) {
         return selectList("kr.co.hconnect.sqlmapper.selectSleepTimeList", searchSleepResultInfo);
     }
+
+    /**
+     * 일자별 문진 목록 조회
+     *
+     * @param searchResultInfo 문진검색 조건
+     * @return 일자별 문진 목록
+     */
+    public List<InterviewResult> selectInterviewList(SearchResultInfo searchResultInfo) {
+        return selectList("kr.co.hconnect.sqlmapper.selectInviewList", searchResultInfo);
+    }
+
+    /**
+     * 일자별 문진 목록 조회
+     *
+     * @param searchResultInfo 문진검색 조건
+     * @return 일자별 문진 목록
+     */
+    public List<DrugResult> selectDrugList(SearchResultInfo searchResultInfo) {
+        return selectList("kr.co.hconnect.sqlmapper.selectDrugList", searchResultInfo);
+    }
+
 }

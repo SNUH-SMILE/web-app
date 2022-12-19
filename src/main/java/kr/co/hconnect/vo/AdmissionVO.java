@@ -51,6 +51,7 @@ public class AdmissionVO extends BaseDefaultVO {
 	 * 센터ID
 	 */
 	private String centerId;
+
 	/**
 	 * 센터명
 	 */

@@ -10,14 +10,14 @@ import kr.co.hconnect.repository.PatientEquipDao;
 import kr.co.hconnect.repository.TreatmentCenterDao;
 import kr.co.hconnect.vo.*;
 import kr.co.hconnect.repository.DrugDao;
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * 복약 서비스
@@ -57,10 +57,8 @@ public class DrugService extends EgovAbstractServiceImpl {
      */
     @Transactional(rollbackFor = Exception.class)
     public String insertDrugAlarm(DrugAlarmSaveVO vo) throws FdlException {
-
-        //String  drugSeq = drugSeqGnrService.getNextStringId(); //복약
         System.out.println("서비스 시작");
-        int drugSeq = Integer.parseInt(drugSeqGnrService.getNextStringId());
+        int drugSeq = drugSeqGnrService.getNextIntegerId();
 
         DrugVO drugEntity = new DrugVO();
         drugEntity.setDrugSeq(drugSeq);
@@ -69,22 +67,31 @@ public class DrugService extends EgovAbstractServiceImpl {
         drugEntity.setNoticeEndDate(vo.getNoticeEndDate());
         drugEntity.setNoticeDate(vo.getNoticeDate());
         drugEntity.setNoticeName(vo.getNoticeName());
-        drugEntity.setDrugName(vo.getDrugName());
-        drugEntity.setDrugCount(vo.getDrugCount());
-        drugEntity.setDrugType(vo.getDrugType());
         drugDao.insertDrug(drugEntity);
 
+
+        System.out.println("알람 서비스 시작");
         //int drugSeq = drugVO.getDrugSeq();
         List<DrugAlarmVO> drugAlarmVO = vo.getNoticeTimeList();
         int alarmSize = drugAlarmVO.size();
         if (drugAlarmVO.size() > 0 ){
             for(DrugAlarmVO ra: drugAlarmVO){
-                int drugAlarmSeq = Integer.parseInt(drugAlarmSeqGnrService.getNextStringId());
+                int drugAlarmSeq = drugAlarmSeqGnrService.getNextIntegerId();
                 ra.setDrugSeq(drugSeq);
                 ra.setDrugAlarmSeq(drugAlarmSeq);
                 drugDao.insertDrugAlarm(ra);
             }
         }
+
+        //약물리스트
+        List<DrugListVO> drugList = vo.getDrugList();
+        if (drugList.size() > 0 ){
+            for(DrugListVO dl: drugList){
+                dl.setDrugSeq(drugSeq);
+                drugDao.insertDrugList(dl);
+            }
+        }
+
         String rtn = Integer.toString(drugSeq);
         return  rtn;
     }
@@ -108,7 +115,7 @@ public class DrugService extends EgovAbstractServiceImpl {
 
         if (drugVO != null){
             //복약정보 등록
-            int drugDoseSeq = Integer.parseInt(drugDoseSeqGnrService.getNextStringId());
+            int drugDoseSeq = drugDoseSeqGnrService.getNextIntegerId();
 
             String noticeDD =vo.getResultDate();             //복약일자
             String noticeTime =vo.getResultTime();           //복약시간
@@ -119,9 +126,7 @@ public class DrugService extends EgovAbstractServiceImpl {
             drugEntity.setNoticeDd(noticeDD);
             drugEntity.setNoticeTime(noticeTime);
             drugEntity.setNoticeName(drugVO.getNoticeName());
-            drugEntity.setDrugCount(drugVO.getDrugCount());
-            drugEntity.setDrugType(drugVO.getDrugType());
-            drugEntity.setTakeResult(vo.getTakeResult());
+           drugEntity.setTakeResult(vo.getTakeResult());
             drugEntity.setDrugSeq(drugVO.getDrugSeq());
             drugEntity.setDrugAlarmSeq(vo.getDrugAlarmSeq());
 
@@ -141,7 +146,7 @@ public class DrugService extends EgovAbstractServiceImpl {
     @Transactional(rollbackFor = Exception.class)
     public String insertNoAlarmDrugDose(DrugDoseSaveVO vo) throws FdlException {
 
-        int drugDoseSeq = Integer.parseInt(drugDoseSeqGnrService.getNextStringId());
+        int drugDoseSeq = drugDoseSeqGnrService.getNextIntegerId();
 
         DrugDoseVO drugEntity = new DrugDoseVO();
 
@@ -155,6 +160,7 @@ public class DrugService extends EgovAbstractServiceImpl {
         drugEntity.setDrugType(vo.getDrugType());
         drugEntity.setTakeResult(vo.getTakeResult());
         drugEntity.setDrugSeq(vo.getDrugSeq());
+        drugEntity.setNoAlarm("Y");                            //복약 알림없이 체크 'Y'
 
         drugDao.insertDrugDose(drugEntity);
         String rtn = Integer.toString(drugDoseSeq);
@@ -164,12 +170,51 @@ public class DrugService extends EgovAbstractServiceImpl {
     }
 
 
-    public List<DrugTimeListVO> selectDrugTimeList(DrugSearchVO vo) {
-        return drugDao.selectTimeList(vo);
+    public DrugTimeListVO selectDrugTimeList(DrugSearchVO vo) {
+
+        System.out.println("타임 리스트 서비스 시작");
+
+        DrugTimeListVO dtvo = new DrugTimeListVO();
+        //복약리스트
+        List<DrugTimeVO> dt = drugDao.selectTimeList(vo);
+
+        //여러개의 리스틀
+        if (dt != null && dt.size() > 0) {
+            for (DrugTimeVO entity : dt){
+                vo.setDrugSeq(entity.getDrugSeq());
+                vo.setDrugDoseSeq(entity.getDrugDoseSeq());
+                String noAlarm = entity.getNoAlarm();
+
+                System.out.println("noAlarm  :  " + noAlarm);
+                List<DrugListNameVO> dnm = null;
+                if (StringUtils.equals(noAlarm, "Y") ) {
+                    dnm = drugDao.selectDrugListNameNoAlarm(vo);
+                } else {
+                    dnm = drugDao.selectDrugListName(vo);
+                }
+                entity.setDrugList(dnm);
+            }
+        }
+        dtvo.setDrugTimeList(dt);
+        return  dtvo;
     }
 
-    public List<DrugNoticeListVO> selectAlarmList(DrugSearchVO vo) {
-        return  drugDao.selectAlarmList(vo);
+    public DrugNoticeVO selectAlarmList(DrugSearchVO vo) {
+        DrugNoticeVO dvo = new DrugNoticeVO();
+
+        List<DrugNoticeListVO> dnl = drugDao.selectAlarmList(vo);
+
+        if (dnl != null && dnl.size() > 0){
+            for(DrugNoticeListVO entity : dnl){
+                vo.setDrugSeq(entity.getDrugSeq());
+
+                List<DrugListNameVO> dnm = drugDao.selectDrugListName(vo);
+                entity.setDrugList(dnm);
+            }
+        }
+        dvo.setNoticeList(dnl);
+
+        return  dvo;
     }
 
 }

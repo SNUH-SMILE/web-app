@@ -18,4 +18,8 @@ public class DrugSearchVO implements Serializable {
 
     private String admissionId;
 
+    private int drugSeq;
+
+    private int drugDoseSeq;
+
 }

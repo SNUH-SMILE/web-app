@@ -1,5 +1,4 @@
 package kr.co.hconnect.vo;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import kr.co.hconnect.common.BaseDefaultVO;
 import lombok.Getter;
@@ -21,24 +20,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString
-public class DrugNoticeListVO implements Serializable{
+public class DrugNoticeVO implements Serializable {
+    private static final long serialVersionUID = -2665045138073582965L;
 
-    private static final long serialVersionUID = -8868437007246030870L;
-
-    private int drugAlarmSeq;
-
-    private int drugSeq;
-
-    private String noticeName;
-
-    private String noticeTime;
-
-    private String takeResult;
-
-    /**
-     * 약물 리스트
-     */
-    private List<DrugListNameVO> drugList;
-
-
+    private List<DrugNoticeListVO> noticeList;
 }

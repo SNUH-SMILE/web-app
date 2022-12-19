@@ -173,5 +173,13 @@
 	]]>
 	</update>
 
+    <select id="selectPationtLoginId" parameterType="String" resultType="String">
+        SELECT  P.LOGIN_ID
+        FROM ADMISSION A
+                 INNER JOIN PATIENT P
+                            ON A.PATIENT_ID  = P.PATIENT_ID
+        WHERE 1=1
+          AND A.ADMISSION_ID  = #{admissionId}
+    </select>
 
 </mapper>

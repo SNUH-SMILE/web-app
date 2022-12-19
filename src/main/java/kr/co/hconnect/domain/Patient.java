@@ -98,4 +98,9 @@ public class Patient extends BaseResponse {
     @NotNull(message = "{validation.null.addressDetail}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
     @Size(max = 200, message = "{validation.size.address2}", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
     private String address2;
+
+    /**
+     * 시어스 체온 로그인 계정
+     */
+    private String searsAccount;
 }

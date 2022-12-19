@@ -44,6 +44,17 @@ public class MainContentDetail extends BaseResponse {
      * 담당자
      */
     private String personCharge;
+
+    /**
+     * 격리위치
+     */
+    private String centerNm;
+
+    /**
+     * 당일 문진 목록
+     */
+    private List<InterviewResult> todayInterviewList;
+
     /**
      * 당일 체온 목록
      */
@@ -77,5 +88,10 @@ public class MainContentDetail extends BaseResponse {
      * 당일 수면시간 목록
      */
     private List<SleepTimeResult> todaySleepTimeList;
+    /**
+     * 당일 복약 목록
+     */
+    private List<DrugResult> todayDrugList;
+
 
 }

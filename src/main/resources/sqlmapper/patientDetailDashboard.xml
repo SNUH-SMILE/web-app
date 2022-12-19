@@ -104,7 +104,7 @@
              , TIMESTAMP(RPR.RESULT_DATE, RPR.RESULT_TIME)  AS PR_RESULT_DT
              , IPR.UNIT                                     AS PR_UNIT
              -- 체온
-             , RDBT.RESULT                                  AS BT_RESULT
+             , ROUND(RDBT.RESULT,1)                         AS BT_RESULT
              , CASE WHEN RDBT.RESULT < IBT.REF_FROM
                          THEN 'L'
                     WHEN RDBT.RESULT > IBT.REF_TO
@@ -147,12 +147,17 @@
                     ELSE      DATE (NOW())
                END                                          AS SLEEP_DT                        -- 수면 측정일
              , '시간'                                        AS SLEEP_UNIT                      -- 수면 단위
-             , NULL                                         AS RESPIRATORY_RISK_RESULT         -- 호흡기계 위험도
-             , NULL                                         AS RESPIRATORY_RISK_RESULT_DT      -- 호흡기계 위험도 측정일시
-             , NULL                                         AS RESPIRATORY_RISK_UNIT           -- 호흡기계 위험도 단위
-             , NULL                                         AS MENTAL_RISK_RESULT              -- 정신건강 위험도
-             , NULL                                         AS MENTAL_RISK_RESULT_DT           -- 정신건강 위험도 측정일시
-             , NULL                                         AS MENTAL_RISK_UNIT                -- 정신건강 위험도 단위
+             , '발열'                                        AS RISK_SCORE_NM                    -- 호흡기계 스코어 이름
+             , CASE WHEN AIIN.SCORE >= 5
+                    THEN '위험' ELSE '정상' END               AS RISK_SCORE_RESULT          -- 호흡기계 스코어 위험
+             , AIIN.SCORE_DATE                              AS RISK_SCORE_DT              -- 호흡기계 스코어 위험도 측정일시
+             , '전원'                                        AS RISK_TEMPER_NM             -- 호흡기계 이름
+             , CASE WHEN AIIN.TEMPER = 1
+                    THEN '위험' ELSE '정상' END               AS RISK_TEMPER_RESULT         -- 호흡기계 체온 위험도
+             , AIIN.TEMPER_DATE                              AS RISK_TEMPER_DT             -- 호흡기계 체온 위험도 측정일시
+             , '우울'                                         AS MENTAL_RISK_NM             -- 정신건강 우울 이름
+             , AIIN.DEPR                                     AS MENTAL_RISK_RESULT         -- 정신건강 우울 위험도
+             , AIIN.DEPR_DATE                                AS MENTAL_RISK_RESULT_DT
           FROM ADMISSION A
                /* 혈압 */
                INNER JOIN ITEM            IBP     ON IBP.ITEM_ID = 'I0005'
@@ -216,7 +221,30 @@
                                                                         ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
                                                                         LIMIT 1)
                LEFT JOIN RESULT_DETAIL     RDRP    ON RDRP.RESULT_SEQ = RRP.RESULT_SEQ
-
+               /* 추론데이터 */
+               LEFT JOIN (
+                    SELECT
+					     ADMISSION_ID
+						,IFNULL(SUM(SCORE),0) SCORE
+						,MAX(SCORE_DATE) SCORE_DATE
+						,IFNULL(SUM(TEMPER),0) TEMPER
+						,MAX(TEMPER_DATE) TEMPER_DATE
+						,IFNULL(SUM(DEPR),0) DEPR
+						,MAX(DEPR_DATE) DEPR_DATE
+					FROM (
+						SELECT
+						 ADMISSION_ID
+						,CASE WHEN INF_DIV ='10' THEN INF_VALUE END SCORE
+						,CASE WHEN INF_DIV ='20' THEN INF_VALUE END TEMPER
+						,CASE WHEN INF_DIV ='30' THEN INF_VALUE END DEPR
+						,CASE WHEN INF_DIV ='10' THEN REG_DT END SCORE_DATE
+						,CASE WHEN INF_DIV ='20' THEN REG_DT END TEMPER_DATE
+						,CASE WHEN INF_DIV ='30' THEN REG_DT END DEPR_DATE
+						FROM INFERENCE
+					WHERE ADMISSION_ID  = '0000000069'
+					) T1
+					GROUP BY T1.ADMISSION_ID
+					) AIIN ON AIIN.ADMISSION_ID = A.ADMISSION_ID
          WHERE A.ADMISSION_ID = #{admissionId}
     ]]>
     </select>
