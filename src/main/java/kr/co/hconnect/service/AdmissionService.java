@@ -400,28 +400,34 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 		return admissionListResponseByQuarantineVO;
 	}
 
-    public void test(){
+    public List<InterviewList> test(Interview interview){
 
         /*1. interview를 admission 기준으로 불러옴*/
         List<InterviewList> interviewLists = new ArrayList<>();
         //1-1다오에서 가져옴
-        Interview interview = new Interview();
-        InterviewContent interviewContent = new InterviewContent();
+
         interviewLists = interviewDao.selectInterviewList(interview);
-        //1-2 interviewSeq만 뽑아냄
+
+        for(InterviewList interviewList : interviewLists){
+            interviewList.setInterviewContents(interviewDao.selectInterviewContentList(interviewList.getInterviewType()));
+            interviewList.setInterviewDetails(interviewDao.selectInterviewDetailList(interviewList.getInterviewSeq()));
+        }
+
+      /*  //1-2 interviewSeq만 뽑아냄
         List<String> interviewTypes = interviewLists.stream().map(InterviewList::getInterviewType).collect(Collectors.toList());
         List<Integer> interviewSeqs = interviewLists.stream().map(InterviewList::getInterviewSeq).collect(Collectors.toList());
-        /*2. interview seq기준으로 interview content와 detail을 불러온다*/
+        *//*2. interview seq기준으로 interview content와 detail을 불러온다*//*
         for (String interviewType: interviewTypes){
             //2-1 detail 가지고 옴
             interviewContent = interviewDao.selectInterviewContentList(interviewType);
         }
-        InterviewDetail detail = new InterviewDetail();
+        List<InterviewDetail> detail = new ArrayList<>();
         for(Integer interviewseq: interviewSeqs){
-            detail.setSeq(interviewseq);
-            interviewDao.insertInterviewDetail(detail);
-        }
 
+            detail = interviewDao.selectInterviewDetailList(interviewseq);
+        }
+*/
+        return interviewLists;
 
         /*3.*/
 

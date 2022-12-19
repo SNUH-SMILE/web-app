@@ -1,6 +1,8 @@
 package kr.co.hconnect.vo;
 
 import kr.co.hconnect.common.BaseDefaultVO;
+import kr.co.hconnect.domain.InterviewContent;
+import kr.co.hconnect.domain.InterviewDetail;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +28,10 @@ public class InterviewList implements Serializable {
     private String interviewTime;
 
     private String interviewStatus;
+
+    private List<InterviewContent> interviewContents;
+
+    private List<InterviewDetail> interviewDetails;
 
 
 }

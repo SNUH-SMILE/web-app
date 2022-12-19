@@ -18,29 +18,57 @@ public class InterviewDao  extends EgovAbstractMapper {
     /**
      * 문진 저장
      */
-    /*
-    * 어떻게 할깝쇼
-    * 1. interview를 저장
-    * 2. 문진정보를 그뒤에 저장.
-    * */
-
     public int insertInterview(Interview interview) {
         return insert("kr.co.hconnect.sqlmapper.insertInterview", interview);
     }
 
+    /**
+     * 문진 내역 답변 저장
+     * @param detail
+     * @return
+     */
     public int insertInterviewDetail(InterviewDetail detail) {
         return insert("kr.co.hconnect.sqlmapper.insertInterviewDetail", detail);
     }
 
+    /**
+     * 해당고객 문진 리스트 조회
+     * @param interview
+     * @return
+     */
+    public List<InterviewList> selectInterviewForDateList(Interview interview) {
+        return selectList("kr.co.hconnect.sqlmapper.selectInterviewForDateList", interview);
+    }
+    /**
+     * 해당고객 문진 리스트 조회
+     * @param interview
+     * @return
+     */
     public List<InterviewList> selectInterviewList(Interview interview) {
         return selectList("kr.co.hconnect.sqlmapper.selectInterviewList", interview);
     }
-    public List<SymptomList> selectInterviewDetailList(int id) {
+    /**
+     * 해당고객 문진 답변 증상 리스트 조회
+     * @param id
+     * @return
+     */
+    public List<SymptomList> selectInterviewDetailSymptomList(int id) {
+        return selectList("kr.co.hconnect.sqlmapper.selectInterviewDetailSymptomList", id);
+    }
+
+    /**
+     * 문진 질문 리스트 조회
+     * @param id
+     * @return
+     */
+    public List<InterviewContent> selectInterviewContentList(String id) {
+        return selectList("kr.co.hconnect.sqlmapper.selectInterviewContentList", id);
+    }
+
+    public List<InterviewDetail> selectInterviewDetailList(int id) {
         return selectList("kr.co.hconnect.sqlmapper.selectInterviewDetailList", id);
     }
-    public InterviewContent selectInterviewContentList(String id) {
-        return selectOne("kr.co.hconnect.sqlmapper.selectInterviewContentList", id);
-    }
+
 
 
 }
