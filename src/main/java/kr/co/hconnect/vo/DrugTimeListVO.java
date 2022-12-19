@@ -12,6 +12,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * 환자 복약 알림
@@ -24,14 +25,7 @@ public class DrugTimeListVO implements Serializable {
 
     private static final long serialVersionUID = -2180618354311714578L;
 
-    private String noticeName;
+    private List<DrugTimeVO> drugTimeList;
 
-    private String drugName;
-
-    private String drugCount;
-
-    private String drugType;
-
-    private String takeTime;
 
 }

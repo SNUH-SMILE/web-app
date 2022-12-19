@@ -2,7 +2,10 @@ package kr.co.hconnect.repository;
 
 import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
 import kr.co.hconnect.domain.PatientDevice;
+import kr.co.hconnect.domain.PatientDeviceList;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * 환자별 장비 Dao
@@ -39,5 +42,18 @@ public class PatientDeviceDao extends EgovAbstractMapper {
     public int insertPatientDevice(PatientDevice patientDevice) {
         return insert("kr.co.hconnect.sqlmapper.insertPatientDevice", patientDevice);
     }
+
+    /**
+     * 환자별 장비 리스트
+     *
+     * @param patientDevice 환자별 장비
+     * @return affectedRow
+     */
+    public List<PatientDeviceList> selectPatientDeviceList(PatientDevice vo) {
+        return selectList("kr.co.hconnect.sqlmapper.selectPatientDeviceList", vo);
+    }
+
+
+
 
 }

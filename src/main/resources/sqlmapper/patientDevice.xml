@@ -13,6 +13,16 @@
     ]]>
     </select>
 
+    <select id="selectPatientDeviceList"  parameterType="kr.co.hconnect.domain.PatientDevice"  resultType="kr.co.hconnect.domain.PatientDeviceList">
+    <![CDATA[
+        SELECT A.DEVICE_ID
+              ,A.DEVICE_NM
+        FROM PATIENT_DEVICE A
+        WHERE A.ADMISSION_ID = #{admissionId}
+          AND A.USE_YN = 'Y'
+        ]]>
+    </select>
+
     <!-- 환자별 장비 미사용 처리-격리/입소내역ID 기준 -->
     <update id="updatePatientDeviceNotUseByAdmissionId" parameterType="String">
         UPDATE PATIENT_DEVICE

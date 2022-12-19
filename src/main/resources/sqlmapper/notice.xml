@@ -38,6 +38,19 @@
 
     </select>
 
+    <!--  -->
+    <select id="selectnoticeAppList"
+            parameterType="kr.co.hconnect.vo.NoticeListSearchVO"
+            resultType="kr.co.hconnect.vo.NoticeListVO">
+        SELECT                               -- 격리/입소내역ID
+          A.NOTICE                           as NOTICE_BODY               -- 내용
+        , DATE_FORMAT(A.REG_DT, '%Y%m%d')    as NOTICE_DATE               -- 입력일시
+        FROM NOTICE A
+        WHERE 1=1
+          AND A.ADMISSION_ID = #{admissionId}
+        ORDER BY A.NOTICE_SEQ
+    </select>
+
     <!-- 신규 알림 내역 생성 - kr.co.hconnect.sqlmapper.insertNotice -->
     <insert id="insertNotice" parameterType="kr.co.hconnect.vo.NoticeVO"
             useGeneratedKeys="true"

@@ -18,7 +18,9 @@
              , A.QANTN_DIV                -- 격리/입소구분 - CD004
              , A.PERSON_CHARGE            -- 담당자
              , A.CENTER_ID                -- 센터ID
-             , TC.CENTER_NM               -- 센터명
+             , CASE WHEN A.QANTN_DIV = '1' THEN '자택격리'
+                    ELSE TC.CENTER_NM
+               END CENTER_NM             -- 센터명
              , A.ROOM                     -- 호실
              , A.DEL_YN                   -- 삭제여부
              , A.REG_ID                   -- 등록자ID
@@ -44,7 +46,9 @@
 		     , A.QANTN_DIV                -- 격리/입소구분 - CD004
 		     , A.PERSON_CHARGE            -- 담당자
 		     , A.CENTER_ID                -- 센터ID
-		     , TC.CENTER_NM               -- 센터명
+		     , CASE WHEN A.QANTN_DIV = '1' THEN '자택격리'
+		            ELSE TC.CENTER_NM
+		        END CENTER_NM             -- 센터명
 		     , A.ROOM                     -- 호실
 		     , A.DEL_YN                   -- 삭제여부
 		     , A.REG_ID                   -- 등록자ID

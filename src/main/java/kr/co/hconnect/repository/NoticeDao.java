@@ -2,6 +2,7 @@ package kr.co.hconnect.repository;
 
 import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
 import kr.co.hconnect.vo.NoticeListSearchVO;
+import kr.co.hconnect.vo.NoticeListVO;
 import kr.co.hconnect.vo.NoticeVO;
 import org.springframework.stereotype.Repository;
 
@@ -31,6 +32,16 @@ public class NoticeDao extends EgovAbstractMapper {
      */
     public List<NoticeVO> selectNoticeListByAdmissionId(NoticeListSearchVO vo) {
         return selectList("kr.co.hconnect.sqlmapper.selectNoticeListByAdmissionId", vo);
+    }
+
+    /**
+     * 알림 리스트 조회 - 격리/입소내역ID 기준
+     *
+     * @param vo 알림 리스트 조회 조건
+     * @return List&lt;NoticeVO&gt; 알림 리스트
+     */
+    public List<NoticeListVO> selectnoticeAppList(NoticeListSearchVO vo) {
+        return selectList("kr.co.hconnect.sqlmapper.selectnoticeAppList", vo);
     }
 
     /**

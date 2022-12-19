@@ -183,17 +183,52 @@ public class PatientDetailDashboardRecentResultVO implements Serializable {
      * 호흡기계 위험도 단위
      */
     private String respiratoryRiskUnit;
+
+
     /**
-     * 정신건강 위험도
+     * 호흡기계 스코어 이름
+     */
+    private String riskScoreNm;
+    /**
+     * 호흡기계 스코어 위험
+     */
+    private String riskScoreResult;
+
+    /**
+     * 호흡기계 스코어 위험도 측정일시
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Timestamp riskScoreDt;
+
+    /**
+     * 호흡기계 체온 이름
+     */
+    private String riskTemperNm;
+    /**
+     * 호흡기계 체온 위험
+     */
+    private String riskTemperResult;
+
+    /**
+     * 호흡기계 체온 위험도 측정일시
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Timestamp riskTemperDt;
+
+
+    /**
+     * 정신건강 우울 이름
+     */
+    private String mentalRiskNm;
+
+    /**
+     * 정신건강 우울 위험
      */
     private String mentalRiskResult;
+
     /**
-     * 정신건강 위험도 측정일시
+     * 정신건강 우울 위험도 측정일시
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Timestamp mentalRiskResultDt;
-    /**
-     * 정신겅강 위험도 단위
-     */
-    private String mentalRiskUnit;
 }

@@ -44,7 +44,6 @@ public class DrugVO extends BaseDefaultVO {
      * 복약종료일자
      */
     private String noticeEndDate;
-
     /** 복약일수
      *
      */
@@ -54,19 +53,5 @@ public class DrugVO extends BaseDefaultVO {
      */
     private String noticeName;
 
-    /**
-     * 약물이름
-     */
-    private String drugName;
-
-    /**
-     * 복용량
-     */
-    private String drugCount;
-
-    /**
-     *  복용량 단위
-     */
-    private String drugType;
 
 }

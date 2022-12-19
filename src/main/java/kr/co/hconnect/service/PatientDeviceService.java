@@ -2,6 +2,7 @@ package kr.co.hconnect.service;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import kr.co.hconnect.domain.PatientDevice;
+import kr.co.hconnect.domain.PatientDeviceList;
 import kr.co.hconnect.domain.PatientDeviceUseHistory;
 import kr.co.hconnect.repository.PatientDeviceDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,5 +90,14 @@ public class PatientDeviceService extends EgovAbstractServiceImpl {
         }
 
         return patientDeviceUseHistories;
+    }
+    /**
+     * 환자별 장비 리스트 조회
+     *
+     * @param patientDeviceList 환자별 장비 추가리스트
+     * @return affectedRow
+     */
+    public List<PatientDeviceList> selectPatientDevice(PatientDevice vo) {
+        return patientDeviceDao.selectPatientDeviceList(vo);
     }
 }

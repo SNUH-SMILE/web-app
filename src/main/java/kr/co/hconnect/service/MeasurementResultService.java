@@ -200,6 +200,7 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
         mainContentDetail.setDischargeScheduledDate(admissionVO.getDschgeSchdldDate());
         mainContentDetail.setDischargeDate(admissionVO.getDschgeDate());
         mainContentDetail.setPersonCharge(admissionVO.getPersonCharge());
+        mainContentDetail.setCenterNm(admissionVO.getCenterNm());
         mainContentDetail.setTodayBtList(selectBtLIst(searchResultInfo));
         mainContentDetail.setTodayBpList(selectBpList(searchResultInfos));
         mainContentDetail.setTodayHrList(selectHrList(searchResultInfo));
@@ -208,6 +209,13 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
         mainContentDetail.setTodayRrList(selectRrList(searchResultInfo));
         mainContentDetail.setTodaySleepTimeList(selectSleepTimeList(searchSleepResultInfo));
 
+        mainContentDetail.setTodayInterviewList(selectInterviewList(searchResultInfo));
+        mainContentDetail.setTodayDrugList(selectDrugList(searchResultInfo));
+
+        mainContentDetail.setTodaySleepTimeList(selectSleepTimeList(searchSleepResultInfo));
+        //to do
+        //인터뷰 
+        //복약
         mainContentDetail.setTodayTotalSleepTime(LocalTime.of(0,0));
         if (mainContentDetail.getTodaySleepTimeList().size() > 0) {
             //총 수면시간
@@ -225,4 +233,27 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
         return mainContentDetail;
 
     }
+
+
+    /**
+     * 문진내용 목록 조회
+     *
+     * @param searchResultInfo 문진 검색 조건
+     * @return
+     */
+    public List<InterviewResult> selectInterviewList(SearchResultInfo searchResultInfo) {
+        return dao.selectInterviewList(searchResultInfo);
+    }
+
+    /**
+     * 복약 알림 조회
+     *
+     * @param searchResultInfo 보약 검색 조건
+     * @return
+     */
+    public List<DrugResult> selectDrugList(SearchResultInfo searchResultInfo) {
+        return dao.selectDrugList(searchResultInfo);
+    }
+
+
 }

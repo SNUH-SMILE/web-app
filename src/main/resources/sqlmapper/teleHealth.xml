@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+    <select id="selectTeleSession" parameterType="kr.co.hconnect.vo.TeleHealthConnectVO"  resultType="kr.co.hconnect.vo.TeleHealthConnectVO">
+        SELECT LOGIN_ID,
+               SESSION_ID,
+               OFFICEER_TOKEN,
+               ATTENDEE_TOKEN,
+               ADMISSION_ID,
+               USE_END_DD,
+               REG_DT
+        FROM telehealth
+        where LOGIN_ID = #{loginId}
+          and USE_END_DD is null OR USE_END_DD = '';
+    </select>
+    <select id="selectSubscriber" parameterType="kr.co.hconnect.vo.TeleHealthConnectVO"  resultType="kr.co.hconnect.vo.TeleHealthConnectVO">
+        SELECT LOGIN_ID,
+               SESSION_ID,
+               OFFICEER_TOKEN,
+               ATTENDEE_TOKEN,
+               ADMISSION_ID,
+               USE_END_DD,
+               REG_DT
+        FROM telehealth
+        where ADMISSION_ID = #{admissionId}
+          and USE_END_DD is null OR USE_END_DD = '';
+    </select>
+
+    <insert id="insertSession" parameterType="kr.co.hconnect.vo.TeleHealthConnectVO">
+        insert into telehealth (LOGIN_ID,
+                                SESSION_ID,
+                                OFFICEER_TOKEN,
+                                ADMISSION_ID,
+                                REG_DT)
+        values (#{loginId},
+                #{sessionId},
+                #{officerToken},
+                #{admissionId},
+                now())
+    </insert>
+
+    <update id="udpSubscriberToken" parameterType="kr.co.hconnect.vo.TeleHealthConnectVO">
+        update telehealth
+           set ATTENDEE_TOKEN = #{attendeeToken}
+              ,USE_END_DD = DATE_FORMAT(NOW(), '%Y%m%d')
+        where ADMISSION_ID = #{admissionId}
+          and SESSION_ID = #{sessionId}
+        ;
+    </update>
+    <update id="endSession" parameterType="kr.co.hconnect.vo.TeleHealthSearchVO">
+        update telehealth
+           set USE_END_DD = DATE_FORMAT(now(), '%Y%m%d')
+        where LOGIN_ID = #{loginId}
+          and USE_END_DD is null OR USE_END_DD = ''
+        ;
+    </update>
+</mapper>

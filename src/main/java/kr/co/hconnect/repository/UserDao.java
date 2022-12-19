@@ -108,5 +108,8 @@ public class UserDao extends EgovAbstractMapper {
         return delete("kr.co.hconnect.sqlmapper.deleteUserTreatmentCenter", userId);
     }
 
+    public String  selectPationtLoginId(String admissionId) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectPationtLoginId", admissionId);
+    }
 
 }

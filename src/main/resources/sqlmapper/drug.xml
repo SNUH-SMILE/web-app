@@ -11,9 +11,6 @@
              , NOTICE_END_DATE
              , NOTICE_DATE
              , NOTICE_NAME
-             , DRUG_NAME
-             , DRUG_COUNT
-             , DRUG_TYPE
              , REG_DT
              )
         VALUES
@@ -23,11 +20,27 @@
              , #{noticeEndDate}
              , #{noticeDate}
              , #{noticeName}
-             , #{drugName}
-             , #{drugCount}
-             , #{drugType}
              , NOW()
              )
+    </insert>
+    <insert id="insertDrugList" parameterType="kr.co.hconnect.vo.DrugListVO" >
+        /** repository.DrugDao.insertDrug.insertDrugAlarm */
+        INSERT
+        INTO drug_list
+        (   DRUG_SEQ
+            , DRUG_NAME
+            , DRUG_COUNT
+            , DRUG_TYPE
+        , REG_DT
+        )
+        VALUES
+            (
+              #{drugSeq}
+            , #{drugName}
+            , #{drugCount}
+            , #{drugType}
+            , now()
+            )
     </insert>
     <insert id="insertDrugAlarm" parameterType="kr.co.hconnect.vo.DrugAlarmVO" >
         /** repository.DrugDao.insertDrug.insertDrugAlarm */
@@ -54,12 +67,14 @@
              , NOTICE_DD
              , NOTICE_TIME
              , NOTICE_NAME
+             , DRUG_NAME
              , DRUG_COUNT
              , DRUG_TYPE
              , TAKE_RESULT
              , REG_DT
              , DRUG_SEQ
              , DRUG_ALARM_SEQ
+             , NO_ALARM
             )
         VALUES
             ( #{drugDoseSeq}
@@ -67,12 +82,14 @@
             , #{noticeDd}
             , #{noticeTime}
             , #{noticeName}
+            , #{drugName}
             , #{drugCount}
             , #{drugType}
             , #{takeResult}
             , now()
             , #{drugSeq}
             , #{drugAlarmSeq}
+            , #{noAlarm}
             )
     </insert>
     <select id="selectDrug" parameterType="kr.co.hconnect.vo.DrugVO"  resultType="kr.co.hconnect.vo.DrugVO">
@@ -106,15 +123,21 @@
                ON D.DRUG_SEQ  = DA.DRUG_SEQ
         WHERE DA.DRUG_ALARM_SEQ = #{drugAlarmSeq}
     </select>
-    <select id="selectTimeList" parameterType="kr.co.hconnect.vo.DrugSearchVO"  resultType="kr.co.hconnect.vo.DrugTimeListVO">
+    <select id="selectTimeList" parameterType="kr.co.hconnect.vo.DrugSearchVO"  resultType="kr.co.hconnect.vo.DrugTimeVO">
         select
-                  NOTICE_NAME AS noticeName
-                , DRUG_NAME   AS drugName
-                , DRUG_COUNT  AS drugCount
-                , DRUG_TYPE   AS drugType
+                  DRUG_SEQ AS noticeId
+                , NOTICE_NAME AS noticeName
+                , NOTICE_DD   AS takeDate
                 , NOTICE_TIME AS takeTime
+                , IFNULL(NO_ALARM, 'N')     AS noAlarm
+                , DRUG_SEQ    AS drugSeq
+                , DRUG_DOSE_SEQ AS drugDoseSeq
         from drug_dose
-        where NOTICE_DD = #{requestDate}
+        where 1=1
+          and ADMISSION_ID = #{admissionId}
+          and NOTICE_DD = #{requestDate}
+
+
 
     </select>
     <select id="selectAlarmList" parameterType="kr.co.hconnect.vo.DrugSearchVO"  resultType="kr.co.hconnect.vo.DrugNoticeListVO">
@@ -134,5 +157,32 @@
 
     </select>
 
+    <select id="selectDrugListName" parameterType="kr.co.hconnect.vo.DrugSearchVO"  resultType="kr.co.hconnect.vo.DrugListNameVO">
+        select
+              da.DRUG_NAME
+             ,da.DRUG_COUNT
+             ,da.DRUG_TYPE
+        from drug_list da
+                 inner join drug d
+                            on da.DRUG_SEQ  = d.DRUG_SEQ
+        where 1=1
+          and da.DRUG_SEQ = #{drugSeq}
+          and d.ADMISSION_ID =  #{admissionId}
+          and d.NOTICE_START_DATE <![CDATA[ <= ]]> #{requestDate}
+          and d.NOTICE_END_DATE   <![CDATA[ >= ]]> #{requestDate}
+
+    </select>
+
+    <select id="selectDrugListNameNoAlarm" parameterType="kr.co.hconnect.vo.DrugSearchVO"  resultType="kr.co.hconnect.vo.DrugListNameVO">
+        select
+              dd.DRUG_NAME
+             ,dd.DRUG_COUNT
+             ,dd.DRUG_TYPE
+        from drug_dose dd
+        where 1=1
+          and dd.NO_ALARM ='Y'
+          and dd.ADMISSION_ID =  #{admissionId}
+          and dd.NOTICE_DD = #{requestDate}
+    </select>
 
 </mapper>
