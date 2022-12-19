@@ -77,7 +77,7 @@ public class UserLoginControllerTest {
         // 테스트용 토큰 발급
         String data =
                 "{\n" +
-                        "  \"loginId\": \"dev\",\n" +
+                        "  \"loginId\": \"test\",\n" +
                         "  \"password\": \"adminpass12#$\",\n" +
                         "  \"rememberYn\": \"N\"\n" +
                         "}";
