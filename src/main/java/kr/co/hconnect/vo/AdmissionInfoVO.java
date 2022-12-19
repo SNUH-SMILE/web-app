@@ -81,4 +81,5 @@ public class AdmissionInfoVO extends BaseDefaultVO {
 	 */
 	private String delYn;
 
+    private String searsAccount;
 }

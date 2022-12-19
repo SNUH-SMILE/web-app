@@ -167,6 +167,7 @@
 		     , A.ROOM                                  -- 호실(위치)
 		     , A.QANTN_DIV                             -- 격리/입소 구분
 		     , A.DEL_YN                                -- 삭제 여부
+		     , P.SEARS_ACCOUNT
 		  FROM ADMISSION A
 		       INNER JOIN PATIENT    P  ON A.PATIENT_ID = P.PATIENT_ID
 		 WHERE A.ADMISSION_ID = #{admissionId}

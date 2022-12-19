@@ -52,8 +52,8 @@
         ]]>
     </insert>
 
-    <!--해당고객 문진 리스트 조회-->
-    <select id="selectInterviewList"
+    <!--해당고객 문진 일별 리스트 조회-->
+    <select id="selectInterviewForDateList"
             parameterType="kr.co.hconnect.domain.Interview"
             resultType="kr.co.hconnect.vo.InterviewList">
         SELECT
@@ -68,8 +68,24 @@
             AND
             a.INTERVIEW_DD = #{requestDate}
     </select>
+    <!--해당고객 문진 리스트 조회-->
+    <select id="selectInterviewList"
+            parameterType="kr.co.hconnect.domain.Interview"
+            resultType="kr.co.hconnect.vo.InterviewList">
+        SELECT
+            a.INTERVIEW_TYPE,
+            a.INTERVIEW_SEQ ,
+            a.INTERVIEW_TITLE,
+            a.INTERVIEW_TIME,
+            a.INTERVIEW_STATUS,
+            a.INTERVIEW_DD
+        FROM INTERVIEW A
+        WHERE a.ADMISSION_ID = #{admissionId}
 
-    <select id="selectInterviewDetailList"
+    </select>
+
+    <!--문진내역 리스크 리스트조회-->
+    <select id="selectInterviewDetailSymptomList"
             parameterType="int"
             resultType="kr.co.hconnect.vo.SymptomList">
         SELECT
@@ -81,4 +97,50 @@
                 INNER JOIN interview b ON b.INTERVIEW_SEQ = a.INTERVIEW_SEQ
         WHERE a.INTERVIEW_SEQ = #{id};
     </select>
+
+    <!--문진내역 리스트 조회-->
+    <select id="selectInterviewContentList"
+            parameterType="String"
+            resultType="kr.co.hconnect.domain.InterviewContent"
+    >
+        SELECT INTER_SEQ
+            , INTER_CATEGORI
+            , INTER_NO
+            , INTER_CONTENT
+            , INTER_TYPE
+            , INTER_ORDER
+            , INTERVIEW_TYPE
+            , REG_ID
+            , REG_DT
+            , VAL01
+            , VAL02
+            , VAL03
+            , VAL04
+            , VAL05
+            , VAL06
+            , VAL07
+            , VAL08
+            , VAL09
+            , VAL10
+            , VAL11
+            , VAL12
+        FROM INTERVIEW_CONTENT
+        WHERE INTERVIEW_TYPE  = #{id}
+    </select>
+
+    <!--문진내역 리스트 조회-->
+    <select id="selectInterviewDetailList"
+            parameterType="int"
+            resultType="kr.co.hconnect.domain.InterviewDetail"
+    >
+        SELECT
+            INTERVIEW_SEQ
+           ,ANSWER_SEQ
+           ,ANSWER_VALUE
+        FROM INTERVIEW_DETAIL
+        WHERE INTERVIEW_SEQ = #{id}
+    </select>
+
+
+
 </mapper>

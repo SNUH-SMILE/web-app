@@ -4,6 +4,7 @@ import egovframework.rte.fdl.cmmn.exception.FdlException;
 import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.common.QantnDiv;
 import kr.co.hconnect.common.VoValidationGroups;
+import kr.co.hconnect.domain.Interview;
 import kr.co.hconnect.exception.*;
 import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.service.AdmissionService;
@@ -17,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * 생활치료센터/자가격리자 입소내역 관리 Controller
@@ -391,16 +393,19 @@ public class AdmissionController {
 	}
     /**
      *  문진 리스트 조회
-     * @param vo 퇴소 처리 정보 VO
+     *
      * @return ResponseVO&lt;AdmissionListResponseByQuarantineVO&gt; 자가격리자 리스트 조회 결과
      */
-    @RequestMapping(value = "/quarantine/test", method = RequestMethod.PATCH)
-    public ResponseVO<AdmissionListResponseByQuarantineVO> test(
-        @Valid @RequestBody AdmissionDischargeByQuarantineVO vo, BindingResult bindingResult
+    @RequestMapping(value = "/test", method = RequestMethod.POST)
+    public ResponseVO<List<InterviewList>> test(
+        @Valid @RequestBody Interview interview,BindingResult bindingResult
         , @RequestAttribute TokenDetailInfo tokenDetailInfo) {
 
-        ResponseVO<AdmissionListResponseByQuarantineVO> responseVO = new ResponseVO<>();
-
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+        ResponseVO< List<InterviewList>> responseVO = new ResponseVO<>();
+        responseVO.setResult(admissionService.test(interview));
         
         return responseVO;
     }

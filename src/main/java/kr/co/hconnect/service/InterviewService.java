@@ -68,10 +68,10 @@ public class InterviewService extends EgovAbstractServiceImpl {
 
         InterviewListResponseByCenterVO vo = new InterviewListResponseByCenterVO();
 
-        vo.setInterviewList(interviewDao.selectInterviewList(interview));
+        vo.setInterviewList(interviewDao.selectInterviewForDateList(interview));
         List<SymptomList> symptomLists = new ArrayList<>();
         for(InterviewList interviewList: vo.getInterviewList()){
-           symptomLists.addAll(interviewDao.selectInterviewDetailList(interviewList.getInterviewSeq()));
+           symptomLists.addAll(interviewDao.selectInterviewDetailSymptomList(interviewList.getInterviewSeq()));
         }
         vo.setSymptomLists(symptomLists);
 
