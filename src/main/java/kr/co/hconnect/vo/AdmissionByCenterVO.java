@@ -72,5 +72,10 @@ public class AdmissionByCenterVO extends VitalResultVO {
 	 */
 	private String qantnStatus;
 
+    private String btDown;
+
+    private String prDown;
+
+    private String rrDown;
 
 }
