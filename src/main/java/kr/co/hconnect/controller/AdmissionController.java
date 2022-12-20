@@ -397,15 +397,16 @@ public class AdmissionController {
      * @return ResponseVO&lt;AdmissionListResponseByQuarantineVO&gt; 자가격리자 리스트 조회 결과
      */
     @RequestMapping(value = "/test", method = RequestMethod.POST)
-    public ResponseVO<List<InterviewList>> test(
-        @Valid @RequestBody Interview interview,BindingResult bindingResult
-        , @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+    public ResponseVO<List<InterviewList>> selectInterviewList(
+        @Valid @RequestBody Interview interview,BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
         ResponseVO< List<InterviewList>> responseVO = new ResponseVO<>();
-        responseVO.setResult(admissionService.test(interview));
+        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+        responseVO.setMessage("입소내역 조회 성공");
+        responseVO.setResult(admissionService.selectInterviewList(interview));
         
         return responseVO;
     }

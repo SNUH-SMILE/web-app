@@ -29,9 +29,9 @@ public class InterviewList implements Serializable {
 
     private String interviewStatus;
 
-    private List<InterviewContent> interviewContents;
+    private List<InterviewContentVO> interviewContents;
 
-    private List<InterviewDetail> interviewDetails;
+
 
 
 }

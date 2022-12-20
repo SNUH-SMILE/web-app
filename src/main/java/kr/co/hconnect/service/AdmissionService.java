@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 /**
  * 격리/입소내역 관리 Service
@@ -399,38 +398,44 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 
 		return admissionListResponseByQuarantineVO;
 	}
+    /**
+     * 문진리스트 조회
+     *
+     * @param interview
+     * @return AdmissionListResponseByQuarantineVO 자가격리자 리스트
+     */
+    public List<InterviewList> selectInterviewList(Interview interview){
 
-    public List<InterviewList> test(Interview interview){
-
-        /*1. interview를 admission 기준으로 불러옴*/
+        // 사용자가 입력한 문진 조회
         List<InterviewList> interviewLists = new ArrayList<>();
-        //1-1다오에서 가져옴
-
         interviewLists = interviewDao.selectInterviewList(interview);
 
+        //검색조건 담기위한
+        InterviewSearchVO serachVO = new InterviewSearchVO();
+
         for(InterviewList interviewList : interviewLists){
-            interviewList.setInterviewContents(interviewDao.selectInterviewContentList(interviewList.getInterviewType()));
-            interviewList.setInterviewDetails(interviewDao.selectInterviewDetailList(interviewList.getInterviewSeq()));
+            //설문지 내용 조회
+            List<InterviewContentVO> contentVOS = new ArrayList<>();
+            serachVO.setInterviewType(interviewList.getInterviewType());
+            serachVO.setInterviewSeq(interviewList.getInterviewSeq());
+            contentVOS.addAll(interviewDao.selectInterviewContentList(serachVO));
+
+            //설문지에 대한 답변 조회
+            InterviewDetailVO detailVO = new InterviewDetailVO();
+            for(InterviewContentVO vo: contentVOS){
+                serachVO.setAnswerSeq(vo.getInterNo());
+                detailVO=interviewDao.selectInterviewDetailList(serachVO);
+                if (detailVO != null) {
+                    vo.setAnswerValue(detailVO.getAnswerValue());
+                    vo.setInterviewDetailSeq(detailVO.getInterviewDetailSeq());
+                }
+            }
+
+            interviewList.setInterviewContents(contentVOS);
         }
 
-      /*  //1-2 interviewSeq만 뽑아냄
-        List<String> interviewTypes = interviewLists.stream().map(InterviewList::getInterviewType).collect(Collectors.toList());
-        List<Integer> interviewSeqs = interviewLists.stream().map(InterviewList::getInterviewSeq).collect(Collectors.toList());
-        *//*2. interview seq기준으로 interview content와 detail을 불러온다*//*
-        for (String interviewType: interviewTypes){
-            //2-1 detail 가지고 옴
-            interviewContent = interviewDao.selectInterviewContentList(interviewType);
-        }
-        List<InterviewDetail> detail = new ArrayList<>();
-        for(Integer interviewseq: interviewSeqs){
 
-            detail = interviewDao.selectInterviewDetailList(interviewseq);
-        }
-*/
         return interviewLists;
-
-        /*3.*/
-
 
     }
 }
