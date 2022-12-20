@@ -38,24 +38,41 @@ public class BatchController {
      * ./score 폴더
      */
     //@Scheduled(cron="0 0 7 * * *")
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelay = 30 * 1000)
     public void scoreScheduler() throws IOException, InterruptedException {
-        // System.out.println("1. 스코어 배치 처리 하기 ");
+        System.out.println("1. 스코어 배치 처리 하기 ");
 
-        String filePath = "/home/administrator/python/score/score_file.csv";
-        String outfilePath = "/home/administrator/python/score/score_result.csv";
+        // String filePath = "/home/administrator/python/score/score_file.csv";
+        // String outfilePath = "/home/administrator/python/score/score_result.csv";
 
-        //BatchVO bvo = new BatchVO();
-        //bvo.setFilePath(filePath);
-        //bvo.setOutFilePath(outfilePath);
+        String filePath = "E://python//score//score_file.csv";
+        String outfilePath = "E://python//score//score_result.csv";
+
+        /**
+         * 스코어 데이터 파일 생성
+         */
+        BatchVO bvo = new BatchVO();
+        bvo.setFilePath(filePath);
+        bvo.setOutFilePath(outfilePath);
+
+        System.out.println("2. 스코어 배치 파일 만들기 ");
+        batchService.scoreCreate(bvo);
+
+        /**
+         * 스코어 AI 추론엔진 실행 서비스
+         */
+        System.out.println("3. 스코어 배치 실행 ");
         //batchService.scoreCreate(bvo);
 
 
+        /**
+         * 스코어 파일 임포트
+         */
+        System.out.println("4. 스코어 배치 파일 임포트 ");
+        batchService.scoreInsert(bvo);
 
-
-        //파일 생성               scoreCreate
         //파이썬 실행             scoreExcute
-        //파일 테이블 insert      scorehist / scoreDelete / scoreInsert
+
     }
 
 
@@ -64,12 +81,39 @@ public class BatchController {
      * 2. 체온 배치 처리 하기
      * ./temperature
      */
-    @Scheduled(fixedDelay = 20000)
-    public void bodyTemperatureScheduler(){
+    @Scheduled(fixedDelay = 40 * 1000)
+    public void bodyTemperatureScheduler() throws IOException, InterruptedException {
         //System.out.println("2. 체온 배치 처리 하기 ");
-        //파일 생성               temperatureCreate
-        //파이썬 실행             temperatureExcute
-        //파일 테이블 insert      temperaturehist / temperatureDelete / temperatureInsert
+
+        // String filePath = "/home/administrator/python/score/score_file.csv";
+        // String outfilePath = "/home/administrator/python/score/score_result.csv";
+
+        String filePath = "E://python//temper//temper_file.csv";
+        String outfilePath = "E://python//temper//temper_result.csv";
+
+        /**
+         * 체온 데이터 파일 생성
+         */
+        BatchVO bvo = new BatchVO();
+        bvo.setFilePath(filePath);
+        bvo.setOutFilePath(outfilePath);
+
+        System.out.println("2. 체온 배치 파일 만들기 ");
+        batchService.temperCreate(bvo);
+
+        /**
+         * 스코어 AI 추론엔진 실행 서비스
+         */
+        System.out.println("3. 체온 배치 실행 ");
+        //batchService.scoreCreate(bvo);
+
+
+        /**
+         * 스코어 파일 임포트
+         */
+        System.out.println("4. 스코어 배치 파일 임포트 ");
+        batchService.temperInsert(bvo);
+
     }
 
     /**
@@ -78,11 +122,33 @@ public class BatchController {
      * ./depressed 폴더
      */
     @Scheduled(fixedDelay = 30000)
-    public void depressedScheduler(){
-        //System.out.println("3. 우울 배치 처리 하기 ");
-        //파일 생성          depressedCreate
-        //파이썬 실행
-        //파일 테이블 insert depressedhist / depressedDelete / depressedinsert
+    public void depressedScheduler() throws IOException, InterruptedException {
+
+        String filePath = "E://python//depress//depress_file.csv";
+        String outfilePath = "E://python//depress//depress_result.csv";
+
+        /**
+         * 체온 데이터 파일 생성
+         */
+        BatchVO bvo = new BatchVO();
+        bvo.setFilePath(filePath);
+        bvo.setOutFilePath(outfilePath);
+
+        System.out.println("3. 우울 배치 파일 만들기 ");
+        batchService.depressCreate(bvo);
+
+        /**
+         * 스코어 AI 추론엔진 실행 서비스
+         */
+        System.out.println("3. 우울 배치 실행 ");
+        //batchService.scoreCreate(bvo);
+
+
+        /**
+         * 스코어 파일 임포트
+         */
+        System.out.println("4. 우울 배치 파일 임포트 ");
+        batchService.depressInsert(bvo);
     }
 
 

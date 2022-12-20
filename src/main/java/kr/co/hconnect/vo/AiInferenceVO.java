@@ -31,6 +31,6 @@ public class AiInferenceVO implements Serializable{
     /**
      * 추론엔진에서 나온 결과값
      */
-    private  float infValue;
+    private  String  infValue;
 
 }
