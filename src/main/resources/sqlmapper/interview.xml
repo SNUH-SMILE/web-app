@@ -98,47 +98,48 @@
         WHERE a.INTERVIEW_SEQ = #{id};
     </select>
 
-    <!--문진내역 리스트 조회-->
     <select id="selectInterviewContentList"
-            parameterType="String"
-            resultType="kr.co.hconnect.domain.InterviewContent"
+            parameterType="kr.co.hconnect.vo.InterviewSearchVO"
+            resultType="kr.co.hconnect.vo.InterviewContentVO"
     >
-        SELECT INTER_SEQ
-            , INTER_CATEGORI
-            , INTER_NO
-            , INTER_CONTENT
-            , INTER_TYPE
-            , INTER_ORDER
-            , INTERVIEW_TYPE
-            , REG_ID
-            , REG_DT
-            , VAL01
-            , VAL02
-            , VAL03
-            , VAL04
-            , VAL05
-            , VAL06
-            , VAL07
-            , VAL08
-            , VAL09
-            , VAL10
-            , VAL11
-            , VAL12
-        FROM INTERVIEW_CONTENT
-        WHERE INTERVIEW_TYPE  = #{id}
+        SELECT B.INTER_SEQ
+             , B.INTER_CATEGORI
+             , B.INTER_NO
+             , B.INTER_CONTENT
+             , B.INTER_TYPE
+             , B.INTER_ORDER
+             , B.INTERVIEW_TYPE
+             , B.REG_ID
+             , B.REG_DT
+             , B.VAL01
+             , B.VAL02
+             , B.VAL03
+             , B.VAL04
+             , B.VAL05
+             , B.VAL06
+             , B.VAL07
+             , B.VAL08
+             , B.VAL09
+             , B.VAL10
+             , B.VAL11
+             , B.VAL12
+
+        FROM INTERVIEW_CONTENT B
+        WHERE B.INTERVIEW_TYPE = #{interviewType}
     </select>
 
     <!--문진내역 리스트 조회-->
     <select id="selectInterviewDetailList"
-            parameterType="int"
-            resultType="kr.co.hconnect.domain.InterviewDetail"
+            parameterType="kr.co.hconnect.vo.InterviewSearchVO"
+            resultType="kr.co.hconnect.vo.InterviewDetailVO"
     >
         SELECT
             INTERVIEW_SEQ
+           ,INTERVIEW_DETAIL_SEQ
            ,ANSWER_SEQ
            ,ANSWER_VALUE
         FROM INTERVIEW_DETAIL
-        WHERE INTERVIEW_SEQ = #{id}
+        WHERE INTERVIEW_SEQ = #{interviewSeq} AND ANSWER_SEQ =#{answerSeq}
     </select>
 
 

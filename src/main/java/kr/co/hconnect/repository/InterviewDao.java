@@ -2,12 +2,8 @@ package kr.co.hconnect.repository;
 
 import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
 import kr.co.hconnect.domain.Interview;
-import kr.co.hconnect.domain.InterviewContent;
 import kr.co.hconnect.domain.InterviewDetail;
-import kr.co.hconnect.vo.InterviewList;
-import kr.co.hconnect.vo.InterviewListResponseByCenterVO;
-import kr.co.hconnect.vo.InterviewListSearchVO;
-import kr.co.hconnect.vo.SymptomList;
+import kr.co.hconnect.vo.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -58,17 +54,17 @@ public class InterviewDao  extends EgovAbstractMapper {
 
     /**
      * 문진 질문 리스트 조회
-     * @param id
+     *
      * @return
      */
-    public List<InterviewContent> selectInterviewContentList(String id) {
-        return selectList("kr.co.hconnect.sqlmapper.selectInterviewContentList", id);
+    public List<InterviewContentVO> selectInterviewContentList(InterviewSearchVO vo) {
+        return selectList("kr.co.hconnect.sqlmapper.selectInterviewContentList", vo);
     }
 
-    public List<InterviewDetail> selectInterviewDetailList(int id) {
-        return selectList("kr.co.hconnect.sqlmapper.selectInterviewDetailList", id);
-    }
 
+    public InterviewDetailVO selectInterviewDetailList(InterviewSearchVO vo) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectInterviewDetailList", vo);
+    }
 
 
 }
