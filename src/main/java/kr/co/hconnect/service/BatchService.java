@@ -27,6 +27,7 @@ import java.nio.file.Paths;
 
 import com.opentok.*;
 import com.opentok.exception.OpenTokException;
+import org.springframework.util.StringUtils;
 
 @Service
 public class BatchService extends EgovAbstractServiceImpl{
@@ -44,6 +45,11 @@ public class BatchService extends EgovAbstractServiceImpl{
     }
 
 
+    /**
+     * 스코어 데이터 파일 생성
+     * @param vo
+     * @return
+     */
     public int scoreCreate(BatchVO vo) {
 
         int resultCount = 0;
@@ -74,7 +80,6 @@ public class BatchService extends EgovAbstractServiceImpl{
                 tData += "," + "나이";    // 나이
                 tData += "," + "심박수";     //심박수
                 tData += "," + "산소포화도";   // 산소포화도
-                tData += "," + "혈압";       //혈압
                 tData += "," + "체온";     //체온
                 tData += "," + "고혈압여부";    //고혈압 여부
 
@@ -83,11 +88,10 @@ public class BatchService extends EgovAbstractServiceImpl{
 
                 for (ScoreVO dt : dataList) {
                     String aData = "";
-                    aData = dt.getAdmissionId().toString();   //환자 id
+                    aData = dt.getAdmissionId();   //환자 id
                     aData += "," + dt.getAge();    // 나이
                     aData += "," + dt.getPr();     //심박수
-                    aData += "," + dt.getSpo2();   // 산소포화도
-                    aData += "," + dt.getSbp();    //수축기 혈압
+                    aData += "," + dt.getSpo2();   //산소포화도
                     aData += "," + dt.getBt();     //체온
                     aData += "," + dt.getHyp();    //고혈압 여부
 
@@ -108,12 +112,23 @@ public class BatchService extends EgovAbstractServiceImpl{
 
     }
 
+    /**
+     * 스코어 output  데이터  테이블 import
+     * @param vo
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public String scoreInsert(BatchVO vo) throws IOException, InterruptedException {
 
         String rtn = "0";
-        //csv file open
-        //     /home/administrator/pythonCode
+
         File csv = new File(vo.getOutFilePath());
+
+        if(!csv.exists() ) {
+            System.out.println(" 상급병원 전원 예측 알고리즘 결과 파일이 없습니다.");
+            return "";
+        }
 
         BufferedReader br = null;
         String line = "";
@@ -126,13 +141,22 @@ public class BatchService extends EgovAbstractServiceImpl{
                 AiInferenceVO entityVO = new AiInferenceVO();
                 entityVO.setAdmissionId(lineArr[0]);
                 entityVO.setInfDiv("10");
-                entityVO.setInfValue(Float.parseFloat(lineArr[1].toString()));
+                entityVO.setInfValue(lineArr[1]);
+
+                System.out.println(lineArr[0]);
+                System.out.println(lineArr[1]);
+
+                if (lineArr[0].equals("Patient_id")) {
+                    continue;
+                }
 
                 aiInferenceDao.insInf(entityVO);  // 인서트
 
                 System.out.println(lineArr[0]);
                 System.out.println(lineArr[1]);
             }
+
+
         }catch (FileNotFoundException e){
             System.out.println(e.getMessage());
         }catch ( IOException e){
@@ -141,6 +165,7 @@ public class BatchService extends EgovAbstractServiceImpl{
             try{
                 if(br != null){
                     br.close();
+
                 }
             }catch (IOException e) {
                 e.printStackTrace();
@@ -151,57 +176,49 @@ public class BatchService extends EgovAbstractServiceImpl{
     }
 
 
-    @Transactional(rollbackFor = Exception.class)
-    public void temperature() throws FdlException {
-        //create
-        String filePath = "./resources/inference/temperature/temp.csv";
-        int rtnScore = csvCreate(filePath);
-        if (rtnScore != 0) {
+    /**
+     * 체온 격리 데이터 생성
+     * @param vo
+     * @return
+     */
+    public int temperCreate(BatchVO vo) {
 
-        }
-        //excute
-        //scorehist
-        //scoreDelete
-        //scoreinsert
-    }
-    @Transactional(rollbackFor = Exception.class)
-    public void depress() throws FdlException {
-        //create
-        String filePath = "./resources/inference/depressed/depressed.csv";      //우울
-        int rtnScore = csvCreate(filePath);
-        if (rtnScore != 0) {
-
-        }
-        //excute
-        //scorehist
-        //scoreDelete
-        //scoreinsert
-    }
-
-    public int csvCreate( String filePath) {
         int resultCount = 0;
 
         List list= null;
+        String filePath = vo.getFilePath();
+
         //데이터를 받아오고 파일로 쓰기
         try {
+
+            File file = new File(filePath);
+
+            if( file.exists() ) {
+                file.delete();
+            }
+
             //csv 파일의 기존 값에 이어쓰려면 위처럼 tru를 지정하고 기존갑을 덮어 쓰려면 true를 삭제한다
             BufferedWriter fw = new BufferedWriter(new FileWriter(filePath));
 
             //쿼리 를 한다.
             //
-            List<ScoreVO> dataList = aiInferenceDao.scoreList();
+            List<TemperListVO> dataList = aiInferenceDao.temperList();
 
             if (dataList.size() > 0 ) {
-                for (ScoreVO dt : dataList) {
+                for (TemperListVO dt : dataList) {
+
+                    System.out.println("환자 아이디 " + dt.getAdmissionId());
+
                     String aData = "";
                     aData = dt.getAdmissionId();   //환자 id
-                    aData += "," + dt.getAge();    // 나이
                     aData += "," + dt.getPr();     //심박수
-                    aData += "," + dt.getSpo2();   // 산소포화도
-                    aData += "," + dt.getSbp();    //수축기 혈압
-                    aData += "," + dt.getDbp();    //이완기 혈압
                     aData += "," + dt.getBt();     //체온
-                    aData += "," + dt.getAche();   //통증
+                    aData += "," + dt.getQ1Yn();   //가래
+                    aData += "," + dt.getQ2Yn();   //흉통
+                    aData += "," + dt.getQ3Yn();   //구토
+                    aData += "," + dt.getQ4Yn();   //설사
+                    aData += "," + dt.getQ5Yn();   //호흡곤란
+                    aData += "," + dt.getQ6Yn();   //통증
 
                     fw.write(aData);
                     fw.newLine();
@@ -218,6 +235,199 @@ public class BatchService extends EgovAbstractServiceImpl{
             return resultCount;
         }
 
+    }
+
+
+    public String temperInsert(BatchVO vo) throws IOException, InterruptedException {
+
+        String rtn = "0";
+
+        File csv = new File(vo.getOutFilePath());
+
+
+        if(!csv.exists() ) {
+            System.out.println(" 체온 악화 예측 알고리즘 결과 파일이 없습니다.");
+            return "";
+        }
+
+        BufferedReader br = null;
+        String line = "";
+
+        try{
+            br = new BufferedReader(new FileReader(csv));
+            while ((line = br.readLine()) != null){
+                String[] lineArr = line.split(",");
+
+                AiInferenceVO entityVO = new AiInferenceVO();
+                entityVO.setAdmissionId(lineArr[0]);
+                entityVO.setInfDiv("20");
+                entityVO.setInfValue(lineArr[1]);
+
+                System.out.println(lineArr[0]);
+                System.out.println(lineArr[1]);
+
+                if (lineArr[0].equals("Patient_id")) {
+                    continue;
+                }
+
+                aiInferenceDao.insInf(entityVO);  // 인서트
+
+                System.out.println(lineArr[0]);
+                System.out.println(lineArr[1]);
+            }
+
+
+        }catch (FileNotFoundException e){
+            System.out.println(e.getMessage());
+        }catch ( IOException e){
+            System.out.println(e.getMessage());
+        }finally {
+            try{
+                if(br != null){
+                    br.close();
+
+                }
+            }catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return rtn;
+
+    }
+
+
+    public int depressCreate(BatchVO vo) {
+
+        int resultCount = 0;
+
+        List list= null;
+        String filePath = vo.getFilePath();
+
+        //데이터를 받아오고 파일로 쓰기
+        try {
+
+            File file = new File(filePath);
+
+            if( file.exists() ) {
+                file.delete();
+            }
+
+            //csv 파일의 기존 값에 이어쓰려면 위처럼 tru를 지정하고 기존갑을 덮어 쓰려면 true를 삭제한다
+            BufferedWriter fw = new BufferedWriter(new FileWriter(filePath));
+
+            //쿼리 를 한다.
+            //
+            List<DepressListVO> dataList = aiInferenceDao.depressList();
+
+            if (dataList.size() > 0 ) {
+                for (DepressListVO dt : dataList) {
+
+                    System.out.println("환자 아이디 " + dt.getAdmissionId());
+
+                    String aData = "";
+                    aData = dt.getAdmissionId();   //환자 id
+                    aData += "," + dt.getSt1Yn();   //스트레스설문 1번
+                    aData += "," + dt.getSt2Yn();   //스트레스설문 2번
+                    aData += "," + dt.getSt3Yn();   //스트레스설문 3번
+                    aData += "," + dt.getSt4Yn();   //스트레스설문 4번
+                    aData += "," + dt.getSt5Yn();   //스트레스설문 5번
+                    aData += "," + dt.getSt6Yn();   //스트레스설문 6번
+                    aData += "," + dt.getSt7Yn();   //스트레스설문 7번
+                    aData += "," + dt.getSt8Yn();   //스트레스설문 8번
+                    aData += "," + dt.getSt9Yn();   //스트레스설문 9번
+                    aData += "," + dt.getGadTotal();  //gad7 설문총점수
+                    aData += "," + dt.getInsTotal();  //ins 설문 총점수
+                    aData += "," + dt.getVideo();     //환자음성파일위치
+                    aData += "," + dt.getTag();       //실제악화값
+                    aData += "," + dt.getSplit();     //fold number
+                    fw.write(aData);
+                    fw.newLine();
+                }
+            }
+            fw.flush();
+            //객체 닫기
+            fw.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } finally {
+            return resultCount;
+        }
+
+    }
+
+    /**
+     * 우울 추론 결과파일 테이블 임포트
+     * @param vo
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public String depressInsert(BatchVO vo) throws IOException, InterruptedException {
+
+        String rtn = "0";
+
+        File csv = new File(vo.getOutFilePath());
+
+
+        if(!csv.exists() ) {
+            System.out.println(" 우울 예측 알고리즘 결과 파일이 없습니다.");
+            return "";
+        }
+
+        BufferedReader br = null;
+        String line = "";
+
+        try{
+            br = new BufferedReader(new FileReader(csv));
+            while ((line = br.readLine()) != null){
+                String[] lineArr = line.split(",");
+
+                AiInferenceVO entityVO = new AiInferenceVO();
+                entityVO.setAdmissionId(lineArr[0]);
+                entityVO.setInfDiv("20");
+                entityVO.setInfValue(lineArr[1]);
+
+                System.out.println(lineArr[0]);
+                System.out.println(lineArr[1]);
+
+                if (lineArr[0].equals("Patient_id")) {
+                    continue;
+                }
+
+                aiInferenceDao.insInf(entityVO);  // 인서트
+
+                System.out.println(lineArr[0]);
+                System.out.println(lineArr[1]);
+            }
+
+
+        }catch (FileNotFoundException e){
+            System.out.println(e.getMessage());
+        }catch ( IOException e){
+            System.out.println(e.getMessage());
+        }finally {
+            try{
+                if(br != null){
+                    br.close();
+
+                }
+            }catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return rtn;
+
+    }
+
+
+
+
+
+
+    @Transactional(rollbackFor = Exception.class)
+    public void depress() throws FdlException {
     }
 
     /**
@@ -256,11 +466,6 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         return bool;
     }
-
-
-
-
-
 
 
     /**

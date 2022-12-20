@@ -2,7 +2,6 @@ package kr.co.hconnect.repository;
 
 import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
 import org.springframework.stereotype.Repository;
-import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
 import kr.co.hconnect.vo.*;
 
 import java.util.List;
@@ -32,4 +31,13 @@ public class AiInferenceDao extends EgovAbstractMapper {
     public int udpArchive (ArchiveVO vo) {
         return update("kr.co.hconnect.sqlmapper.udpArchive", vo);
     }
+
+    public List<TemperListVO> temperList() {
+        return selectList("kr.co.hconnect.sqlmapper.temperList");
+    }
+
+    public List<DepressListVO> depressList() {
+        return selectList("kr.co.hconnect.sqlmapper.depressList");
+    }
+
 }
