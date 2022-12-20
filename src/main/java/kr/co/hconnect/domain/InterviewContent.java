@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -14,8 +15,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @ToString
-public class InterviewContent extends BaseResponse {
-
+public class InterviewContent implements Serializable {
 
     private Integer INTER_SEQ;
 
