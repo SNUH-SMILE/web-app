@@ -51,48 +51,92 @@
         <![CDATA[
                 SELECT A.ADMISSION_ID
                     /* 나이 */
-                     , YEAR(NOW())-LEFT(P.BIRTH_DATE,4) + 1                    as age
+                     , YEAR(NOW())-LEFT(P.BIRTH_DATE,4) + 1              AS AGE
+                    /* 맥박수 심박수 */
+                     , IFNULL(T2.PR, 0)                                  AS PR
+                    /* 체온 */
+                     , IFNULL(ROUND(T2.BT, 1), 0)                        AS BT
+                     , IFNULL(ROUND(T2.SPO2, 1), 0)                      AS SPO2
+                     , IFNULL((SELECT '1'
+                                FROM INTERVIEW I
+                                INNER JOIN INTERVIEW_DETAIL ID
+                                   ON I.INTERVIEW_SEQ  = ID.INTERVIEW_SEQ
+                                WHERE 1=1
+                                  AND I.INTERVIEW_TYPE ='01'
+                                  AND ID.ANSWER_SEQ = '54'
+                                  AND ID.ANSWER_VALUE LIKE '%2%'
+                                  AND I.ADMISSION_ID = A.ADMISSION_ID), 0
+                                ) AS HYP
+                FROM ADMISSION A
+                    INNER JOIN PATIENT P               ON A.PATIENT_ID  = P.PATIENT_ID
+                    LEFT JOIN (
+                            SELECT
+                                 ADMISSION_ID
+                                ,IFNULL(MAX(BT),0) BT
+                                ,IFNULL(MAX(PR),0) PR
+                                ,IFNULL(MAX(SPO2),0) SPO2
+                            FROM (
+                                SELECT R.ADMISSION_ID
+                                      ,MAX(RD.RESULT) BT
+                                      ,'' PR
+                                      ,'' SPO2
+                                 FROM `RESULT` R
+                                      INNER JOIN RESULT_DETAIL RD
+                                         ON R.RESULT_SEQ  = RD.RESULT_SEQ
+                                 WHERE R.ITEM_ID ='I0002'
+                                   AND RESULT_DATE = DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y-%m-%d')
+                                GROUP BY R.ADMISSION_ID
+                                UNION ALL
+                                SELECT  R.ADMISSION_ID
+                                       ,'' BT
+                                       ,MAX(RESULT) PR
+                                       ,'' SPO2
+                                FROM `RESULT` R
+                                     INNER JOIN RESULT_DETAIL RD
+                                        ON R.RESULT_SEQ  = RD.RESULT_SEQ
+                                WHERE R.ITEM_ID ='I0001'
+                                  AND RESULT_DATE = DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y-%m-%d')
+                                GROUP BY R.ADMISSION_ID
+                                UNION ALL
+                                SELECT  R.ADMISSION_ID
+                                        ,'' BT
+                                        ,'' PR
+                                        ,MAX(RESULT) SPO2
+                                FROM `RESULT` R
+                                INNER JOIN RESULT_DETAIL RD
+                                ON R.RESULT_SEQ  = RD.RESULT_SEQ
+                                WHERE R.ITEM_ID ='I0003'
+                                AND RESULT_DATE = DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y-%m-%d')
+                                GROUP BY R.ADMISSION_ID
+                            ) T1
+                            GROUP BY ADMISSION_ID
+                        ) T2 ON A.ADMISSION_ID = T2.ADMISSION_ID
+                WHERE 1=1
+                ORDER BY A.ADMISSION_ID
+        ]]>
+    </select>
+    <select id="temperList"  resultType="kr.co.hconnect.vo.TemperListVO">
+        <![CDATA[
+                SELECT A.ADMISSION_ID
                     /* 맥박수 심박수 */
                      , ifnull(RDPR.result, 0)                                  as pr
-                    /* 산소포화도 */
-                     , ifnull(RDSP.result, 0)                                  AS spo2
-                    /* 수축기 */
-                     , ifnull(RDSBP.result, 0)                                 AS sbp
-                    /* 이완기 */
-                     , ifnull(RDDBP.result, 0)                                 AS dbp
                     /* 체온 */
                      , ifnull(ROUND(RDBT.result, 1), 0)                        AS bt
-                     , ifnull((select '1'
-                                from interview i
-                                inner join interview_detail id
-                                on i.INTERVIEW_SEQ  = id.INTERVIEW_SEQ
-                                where 1=1
-                                and i.INTERVIEW_TYPE ='01'
-                                and id.ANSWER_SEQ = '54'
-                                and id.ANSWER_VALUE like '%2%'
-                                and i.ADMISSION_ID = a.ADMISSION_ID), 0
-                                ) as hyp
+                     , IFNULL(T2.Q1_YN,0)                                      as Q1_YN
+                     , IFNULL(T2.Q2_YN,0)                                      as Q2_YN
+                     , IFNULL(T2.Q3_YN,0)                                      as Q3_YN
+                     , IFNULL(T2.Q4_YN,0)                                      as Q4_YN
+                     , IFNULL(T2.Q5_YN,0)                                      as Q5_YN
+                     , IFNULL(T2.Q6_YN,0)                                      as Q6_YN
                 FROM ADMISSION A
-                    inner join patient p               on A.PATIENT_ID  = P.PATIENT_ID
-                    /* 혈압 */
-                    INNER JOIN ITEM            IBP     ON IBP.ITEM_ID = 'I0005'
-                    LEFT JOIN RESULT           RBP     ON RBP.RESULT_SEQ = (SELECT X.RESULT_SEQ
-                    FROM RESULT X
-                    WHERE X.ADMISSION_ID = A.ADMISSION_ID
-                    AND X.ITEM_ID = IBP.ITEM_ID
-                    ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
-                    LIMIT 1)
-                    LEFT JOIN RESULT_DETAIL    RDSBP   ON RDSBP.RESULT_SEQ = RBP.RESULT_SEQ
-                    AND RDSBP.RESULT_TYPE = '03'
-                    LEFT JOIN RESULT_DETAIL    RDDBP   ON RDDBP.RESULT_SEQ = RBP.RESULT_SEQ
-                    AND RDDBP.RESULT_TYPE = '02'
+                         inner join patient p               on A.PATIENT_ID  = P.PATIENT_ID
                     /* 심박수 */
-                    INNER JOIN ITEM             IPR     ON IPR.ITEM_ID = 'I0002'
-                    LEFT JOIN RESULT            RPR     ON RPR.RESULT_SEQ = (SELECT X.RESULT_SEQ
-                    FROM RESULT X
-                    WHERE X.ADMISSION_ID = A.ADMISSION_ID
-                    AND X.ITEM_ID = IPR.ITEM_ID
-                    ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                         INNER JOIN ITEM             IPR     ON IPR.ITEM_ID = 'I0002'
+                         LEFT JOIN RESULT            RPR     ON RPR.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                                  FROM RESULT X
+                                                                                  WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                                    AND X.ITEM_ID = IPR.ITEM_ID
+                                                                                  ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
                     LIMIT 1)
                     LEFT JOIN RESULT_DETAIL     RDPR    ON RDPR.RESULT_SEQ = RPR.RESULT_SEQ
                     /* 체온 */
@@ -104,18 +148,99 @@
                     ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
                     LIMIT 1)
                     LEFT JOIN RESULT_DETAIL     RDBT    ON RDBT.RESULT_SEQ = RBT.RESULT_SEQ
-                    /* 산소포화도 */
-                    LEFT JOIN ITEM              ISP   ON ISP.ITEM_ID = 'I0003'
-                    LEFT JOIN RESULT            RSP   ON RSP.RESULT_SEQ = (SELECT X.RESULT_SEQ
-                    FROM RESULT X
-                    WHERE X.ADMISSION_ID = A.ADMISSION_ID
-                    AND X.ITEM_ID = ISP.ITEM_ID
-                    ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
-                    LIMIT 1)
-                    LEFT JOIN RESULT_DETAIL     RDSP  ON RDSP.RESULT_SEQ = RSP.RESULT_SEQ
-                where 1=1
-                  and a.ADMISSION_ID ='0000000055'
-                order by A.ADMISSION_ID
+                    left join (
+                            SELECT
+                                T1.ADMISSION_ID
+                                ,group_concat(if(ANSWER_SEQ = '38', ANSWER_VALUE, null))  as Q1_YN
+                                ,group_concat(if(ANSWER_SEQ = '50', ANSWER_VALUE, null))  as Q2_YN
+                                ,group_concat(if(ANSWER_SEQ = '55', ANSWER_VALUE, null))  as Q3_YN
+                                ,group_concat(if(ANSWER_SEQ = '58', ANSWER_VALUE, null))  as Q4_YN
+                                ,group_concat(if(ANSWER_SEQ = '48', ANSWER_VALUE, null))  as Q5_YN
+                                ,group_concat(if(ANSWER_SEQ = '60', ANSWER_VALUE, null))  as Q6_YN
+                            from (
+                                    SELECT I.ADMISSION_ID
+                                        ,ID.ANSWER_SEQ
+                                        ,ID.ANSWER_VALUE
+                                    FROM INTERVIEW I
+                                         INNER JOIN INTERVIEW_DETAIL ID
+                                                 ON I.INTERVIEW_SEQ  = ID.INTERVIEW_SEQ
+                                    WHERE 1=1
+                                      AND I.INTERVIEW_TYPE ='02'
+                                      AND ID.ANSWER_SEQ IN ('38','50','55','58','48','60')
+                                      AND I.INTERVIEW_SEQ = (SELECT X.INTERVIEW_SEQ FROM INTERVIEW X
+                                                                WHERE X.INTERVIEW_TYPE ='02'
+                                                                  AND X.ADMISSION_ID  = I.ADMISSION_ID
+                                                                ORDER BY X.INTERVIEW_SEQ DESC
+                                                                LIMIT 1
+                                                               )
+                            ) T1
+                            GROUP BY T1.ADMISSION_ID
+                    ) T2 on A.ADMISSION_ID  = T2.ADMISSION_ID
+                WHERE 1=1
+                ORDER BY A.ADMISSION_ID
+        ]]>
+    </select>
+    <select id="depressList"  resultType="kr.co.hconnect.vo.DepressListVO">
+        <![CDATA[
+            SELECT T1.ADMISSION_ID
+                 ,T2.STRESS_1    as ST1_YN
+                 ,T2.STRESS_2    as ST2_YN
+                 ,T2.STRESS_3    as ST3_YN
+                 ,T2.STRESS_4    as ST4_YN
+                 ,T2.STRESS_5    as ST5_YN
+                 ,T2.STRESS_6    as ST6_YN
+                 ,T2.STRESS_7    as ST7_YN
+                 ,T2.STRESS_8    as ST8_YN
+                 ,T2.STRESS_9    as ST9_YN
+                 ,T3.GADVAL      AS GAD_TOTAL
+                 ,T3.INSVAL      AS INS_TOTAL
+                 ,T3.PHQVAL      AS PHQ_TOTAL
+                 ,CASE WHEN T3.PHQVAL >= 10 THEN 1 ELSE 0 END TAG
+                 ,0 SPLIT
+            FROM
+                (
+                    SELECT ADMISSION_ID, MIN(INTERVIEW_SEQ)  INTERVIEW_SEQ FROM INTERVIEW
+                    WHERE 1=1
+                      AND INTERVIEW_TYPE IN ('01','03','04')
+                    GROUP BY ADMISSION_ID
+                ) T1 LEFT OUTER JOIN
+                (
+                    SELECT
+                        INTERVIEW_SEQ
+                         , SUM(GADVAL)  GADVAL
+                         , SUM(INSVAL)  INSVAL
+                         , SUM(PHQVAL)  PHQVAL
+                    FROM (
+                             /** 정신건강 불안 */
+                             SELECT INTERVIEW_SEQ , CAST(ANSWER_VALUE AS UNSIGNED)  GADVAL, 0 INSVAL , 0 PHQVAL FROM INTERVIEW_DETAIL
+                             WHERE ANSWER_SEQ IN ('35-1','35-2','35-3','35-4','35-5','35-6','35-7')
+                             UNION ALL
+                             /** 정신건강 불면증 */
+                             SELECT INTERVIEW_SEQ, 0 GADVAL, CAST(ANSWER_VALUE AS UNSIGNED) INSVAL, 0 PHQVAL FROM INTERVIEW_DETAIL
+                             WHERE ANSWER_SEQ IN ('36-1','36-2','36-3','36-4','36-5','36-6')
+                             UNION ALL
+                             /** 정신건강 우울*/
+                             SELECT INTERVIEW_SEQ, 0 GADVAL, 0 INSVAL, CAST(ANSWER_VALUE AS UNSIGNED)  PHQVAL FROM INTERVIEW_DETAIL
+                             WHERE ANSWER_SEQ IN ('33-1','33-2','33-3','33-4','33-5','33-6','33-7','33-8','33-9')
+                         ) DT
+                    GROUP BY INTERVIEW_SEQ
+                ) T3 ON T1.INTERVIEW_SEQ = T3.INTERVIEW_SEQ
+                     LEFT OUTER JOIN
+                (	/** 정신건강 불안 */
+                    SELECT INTERVIEW_SEQ ,
+                        SUM(CASE WHEN ANSWER_SEQ = '34-2' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_1
+                         ,SUM(CASE WHEN ANSWER_SEQ = '34-3' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_2
+                         ,SUM(CASE WHEN ANSWER_SEQ = '34-4' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_3
+                         ,SUM(CASE WHEN ANSWER_SEQ = '34-5' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_4
+                         ,SUM(CASE WHEN ANSWER_SEQ = '34-6' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_5
+                         ,SUM(CASE WHEN ANSWER_SEQ = '34-7' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_6
+                         ,SUM(CASE WHEN ANSWER_SEQ = '34-8' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_7
+                         ,SUM(CASE WHEN ANSWER_SEQ = '34-9' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_8
+                         ,SUM(CASE WHEN ANSWER_SEQ = '34-10' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_9
+                    FROM INTERVIEW_DETAIL
+                    WHERE ANSWER_SEQ IN ('34-2','34-3','34-4','34-5','34-6','34-7', '34-8', '34-9', '34-10')
+                    GROUP  BY INTERVIEW_SEQ
+                ) T2 ON T1.INTERVIEW_SEQ = T2.INTERVIEW_SEQ
         ]]>
     </select>
 
