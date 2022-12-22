@@ -28,8 +28,8 @@ public class AiInferenceDao extends EgovAbstractMapper {
     public List<ArchiveVO> archiveList(ArchiveVO vo) {
         return selectList("kr.co.hconnect.sqlmapper.archiveList", vo);
     }
-    public int udpArchive (ArchiveVO vo) {
-        return update("kr.co.hconnect.sqlmapper.udpArchive", vo);
+    public int udpArchiveDown (ArchiveVO vo) {
+        return update("kr.co.hconnect.sqlmapper.udpArchiveDown", vo);
     }
 
     public List<TemperListVO> temperList() {

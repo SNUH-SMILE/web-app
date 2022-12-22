@@ -3,7 +3,11 @@ package kr.co.hconnect.service;
 import com.opentok.Archive;
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.rte.fdl.cmmn.exception.FdlException;
+import kr.co.hconnect.controller.AdmissionController;
 import kr.co.hconnect.vo.*;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,15 +19,13 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
+import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import com.opentok.*;
 import com.opentok.exception.OpenTokException;
@@ -31,6 +33,8 @@ import org.springframework.util.StringUtils;
 
 @Service
 public class BatchService extends EgovAbstractServiceImpl{
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BatchService.class);
 
     private  final  AiInferenceDao aiInferenceDao;
 
@@ -520,8 +524,8 @@ public class BatchService extends EgovAbstractServiceImpl{
 
 
 
-    public int vonageArchiveList() {
-
+    public int vonageArchiveList() throws IOException, OpenTokException {
+        LOGGER.info("vonageArchiveList   Start" );
         ArchiveVO avo = new ArchiveVO();
 
         List<ArchiveVO> rtnvoList = new ArrayList<>();
@@ -530,8 +534,12 @@ public class BatchService extends EgovAbstractServiceImpl{
         if (rtnvoList != null) {
 
             for (ArchiveVO rvo : rtnvoList) {
-
-                //  String strRtn = fileDownload(rvo);
+                  //파일다운로드
+                  String strRtn = fileDownload(rvo);
+                  //파일 다운로드가 성공하면 다운로드성공 업데이트
+                  if (strRtn.equals("0")){
+                      aiInferenceDao.udpArchiveDown(rvo);
+                  }
             }
 
         }
@@ -541,100 +549,53 @@ public class BatchService extends EgovAbstractServiceImpl{
      * 아카리브 파일 다운로드
      * @return
      */
-    public String fileDownload(String aid, String aName) throws IOException, OpenTokException , MalformedURLException {
+    public String fileDownload(ArchiveVO vo) throws IOException, OpenTokException , MalformedURLException {
 
-        String rtn = "";
+        LOGGER.info("파일 다운로드 시작");
 
-        String OUTPUT_FILE_PATH = ""; // "출력 파일 경로";
-        String FILE_URL ="";         // "리소스 경로";
-        String outputDir  = "/home/administrator/python/depressed/";
+        String rtn = "0";
+        //String filePath = "/home/administrator/python/video/";
+        String filePath = "E://python//video//";
+        String fileName = vo.getName();
+        String archiveId = vo.getArchiveId();
+        String url = "";
+
+        //디렉토리생성
+        filePath = filePath + fileName;
+
+        Path directoryPath = Paths.get(filePath);
+        try {
+            // 디렉토리 생성
+            Files.createDirectory(directoryPath);
+        } catch (FileAlreadyExistsException e) {
+            //LOGGER.info("디렉토리가 이미 존재합니다");
+        } catch (NoSuchFileException e) {
+            LOGGER.info("디렉토리 경로가 존재하지 않습니다");
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         Archive archive = null;
+        try {
+            LOGGER.info("파일 다운로드 시작");
 
-        InputStream is = null;
-        FileOutputStream os = null;
-
-        //아카이브 아이디 찾기
-        String archiveId = aid;
-
-        try{
             OpenTok openTok = new OpenTok(apikey, apiSecret);
             archive =openTok.getArchive(archiveId);
 
-            FILE_URL = archive.getUrl();
+            url = archive.getUrl();
+            filePath = filePath + "\\" + fileName + ".mp4";
 
-            rtn = FILE_URL;
+            LOGGER.info("filePath & file name  ==  " + filePath);
 
-            //해당 url
-            URL url = new URL(FILE_URL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            int responseCode = conn.getResponseCode();
+            File f= new File((filePath));
+            FileUtils.copyURLToFile(new URL(url), f);
 
-            System.out.println("responseCode " + responseCode);
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                String fileName = "";
-                String disposition = conn.getHeaderField("Content-Disposition");
-                String contentType = conn.getContentType();
+            LOGGER.info("파일 다운로드 종료");
 
-                // 일반적으로 Content-Disposition 헤더에 있지만
-                // 없을 경우 url 에서 추출해 내면 된다.
-                // if (disposition != null) {
-                //     String target = "filename=";
-                //     int index = disposition.indexOf(target);
-                //     if (index != -1) {
-                //         fileName = disposition.substring(index + target.length() + 1);
-                //     }
-                // } else {
-                //     //fileName = FILE_URL.substring(FILE_URL.lastIndexOf("/") + 1);
-                //     fileName = "archive.mp4";
-                //
-                // }
-
-                //파일이름 규칙
-                // admission_di + "-" + 년월일시분
-                //A999999624_202212130737
-                SimpleDateFormat format = new SimpleDateFormat ( "yyyyMMddHHmm");
-                String formatdate = format.format (System.currentTimeMillis());
-                fileName =aName +"_"+ formatdate+ ".mp4";
-
-                System.out.println("Content-Type = " + contentType);
-                System.out.println("Content-Disposition = " + disposition);
-                System.out.println("fileName = " + fileName);
-
-                is = conn.getInputStream();
-                os = new FileOutputStream(new File(outputDir, fileName));
-
-                final int BUFFER_SIZE = 4096;
-                int bytesRead;
-                byte[] buffer = new byte[BUFFER_SIZE];
-
-
-                System.out.println("is.read(buffer) = " + is.read(buffer));
-                while ((bytesRead = is.read(buffer)) != -1) {
-                    os.write(buffer, 0, bytesRead);
-                }
-                os.close();
-                is.close();
-                System.out.println("File downloaded");
-            } else {
-                System.out.println("No file to download. Server replied HTTP code: " + responseCode);
-            }
-            conn.disconnect();
-
-        } catch (OpenTokException e) {
+        } catch(IOException e){
             System.out.println(e.getMessage());
-        } catch (Exception e){
-            System.out.println("An error occurred while trying to download a file.");
-            e.printStackTrace();
-            try {
-                if (is != null){
-                    is.close();
-                }
-                if (os != null){
-                    os.close();
-                }
-            } catch (IOException e1){
-                e1.printStackTrace();
-            }
+            rtn="1";
         }
 
         return rtn;

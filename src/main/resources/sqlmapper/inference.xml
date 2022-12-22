@@ -262,10 +262,10 @@
         ]]>
     </select>
 
-    <update id="udpArchive"  parameterType="kr.co.hconnect.vo.ArchiveVO" >
+    <update id="udpArchiveDown"  parameterType="kr.co.hconnect.vo.ArchiveVO" >
         UPDATE archive
          SET DOWN_YN ='Y'
-        WHERE ARCHIVE_ID ='stopped'
+        WHERE ARCHIVE_ID = #{archiveId}
     </update>
 
 </mapper>
