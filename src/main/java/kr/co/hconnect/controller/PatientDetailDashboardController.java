@@ -1,7 +1,6 @@
 package kr.co.hconnect.controller;
 
 import kr.co.hconnect.common.ApiResponseCode;
-import kr.co.hconnect.domain.LoginId;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
 import kr.co.hconnect.jwt.TokenDetailInfo;
@@ -12,7 +11,6 @@ import kr.co.hconnect.vo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,21 +33,27 @@ public class PatientDetailDashboardController {
 	 * 환자 상세 대쉬보드 서비스
 	 */
 	public final PatientDetailDashboardService patientDetailDashboardService;
+    /**
+     * 진료기록 서비스
+     */
+    public final MedicalRecordService medicalRecordService;
 	/**
 	 * 알림 서비스
 	 */
 	public final NoticeService noticeService;
 
 	/**
-	 * 생성자
-	 *
-	 * @param patientDetailDashboardService 환자상세 대시보드 서비스
-	 * @param noticeService 알림 서비스
-	 */
+     * 생성자
+     *
+     * @param patientDetailDashboardService 환자상세 대시보드 서비스
+     * @param medicalRecordService
+     * @param noticeService                 알림 서비스
+     */
 	@Autowired
-	public PatientDetailDashboardController(PatientDetailDashboardService patientDetailDashboardService, NoticeService noticeService) {
+	public PatientDetailDashboardController(PatientDetailDashboardService patientDetailDashboardService, MedicalRecordService medicalRecordService, NoticeService noticeService) {
 		this.patientDetailDashboardService = patientDetailDashboardService;
-		this.noticeService = noticeService;
+        this.medicalRecordService = medicalRecordService;
+        this.noticeService = noticeService;
 	}
 
 	/**
@@ -75,6 +79,33 @@ public class PatientDetailDashboardController {
 
 		return responseVO;
 	}
+    /**
+     * 신규 진료 기록 내역 저장
+     *
+     * @param vo 진료기록 저장 정보
+     * @return ResponseVO&lt;List&lt;Record&gt;&gt; 진료기록 저장 완료 정보
+     */
+    @RequestMapping(value = "/record", method = RequestMethod.PUT)
+    public ResponseVO<List<RecordVO>> insertRecord(@Valid @RequestBody RecordSaveVO vo, BindingResult bindingResult
+        , @RequestAttribute TokenDetailInfo tokenDetailInfo
+    ) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+        RecordVO recordVO = new RecordVO();
+        recordVO.setMedicalRecord(vo.getRecord());
+        recordVO.setMedicalRecorder(tokenDetailInfo.getName());
+        recordVO.setMedicalDate(vo.getMedicalDate());
+        recordVO.setAdmissionId(vo.getAdmissionId());
+        recordVO.setRegId(tokenDetailInfo.getId());
+
+        medicalRecordService.insertNotice(recordVO);
+        ResponseVO<List<RecordVO>> responseVO = new ResponseVO<>();
+        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+        responseVO.setMessage("저장 성공");
+        responseVO.setResult(medicalRecordService.selectRecordList(vo.getAdmissionId()));
+        return responseVO;
+    }
 
 	/**
 	 * 신규 알림 내역 저장

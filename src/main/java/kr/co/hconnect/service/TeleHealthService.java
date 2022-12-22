@@ -168,7 +168,7 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
             archive = openTok.startArchive(vo.getSessionId(), new ArchiveProperties.Builder()
                 .name(vo.getAdmissionId())
                 .hasAudio(true)
-                .hasVideo(false)
+                .hasVideo(true)
                 .outputMode(outputMode)
                 .layout(layout)
                 .build());
