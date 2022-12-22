@@ -67,14 +67,28 @@ public class TestService {
         String OUTPUT_FILE_PATH = ""; // "출력 파일 경로";
         String FILE_URL ="";         // "리소스 경로";
         //String archiveId = "ab279a4b-f158-417b-95e2-4f2e4f1a3428";
-        String outputDir  = "E:\\socre\\";
+        String outputDir  = "E:\\python\\video\\";
         Archive archive = null;
 
         InputStream is = null;
         FileOutputStream os = null;
 
         String archiveId = vo.getArchiveId();
+        String admissionId = vo.getAdmissionId();
 
+        outputDir += "\\" + admissionId;
+
+        //디렉토리 생성하기
+        File dir = new File(outputDir);
+        if (!dir.exists()){
+            try{
+                dir.mkdir();
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+                return "";
+            }
+        }
+        //디렉토리 생성하기
         try{
             OpenTok openTok = new OpenTok(apikey, apiSecret);
             archive =openTok.getArchive(archiveId);
@@ -104,7 +118,7 @@ public class TestService {
                     }
                 } else {
                     //fileName = FILE_URL.substring(FILE_URL.lastIndexOf("/") + 1);
-                    fileName = "archive.mp4";
+                    fileName = admissionId + ".mp4";
 
                 }
 
@@ -129,6 +143,15 @@ public class TestService {
                 os.close();
                 is.close();
                 System.out.println("File downloaded");
+
+                //파일 다운로드 등록
+                ArchiveDownVO dn = new ArchiveDownVO();
+                dn.setAdmissionId(admissionId);
+                dn.setDnFolder(outputDir);
+                dn.setDnFileName(fileName);
+                dn.setArchiveId(archiveId);
+
+
             } else {
                 System.out.println("No file to download. Server replied HTTP code: " + responseCode);
             }

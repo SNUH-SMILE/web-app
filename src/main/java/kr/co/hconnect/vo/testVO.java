@@ -29,4 +29,7 @@ public class testVO implements Serializable {
 
     private int count;
 
+
+    private String admissionId;
+
 }

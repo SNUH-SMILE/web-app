@@ -246,19 +246,20 @@
 
     <select id="archiveList"  parameterType="kr.co.hconnect.vo.ArchiveVO" resultType="kr.co.hconnect.vo.ArchiveVO">
         <![CDATA[
-        SELECT ARCHIVE_ID,
-               CREATE_AT,
-               PARTNER_ID,
-               NAME,
-               SESSION_ID,
-               SIZE,
-               STATUS,
-               OUTPUT_MODE,
-               REASON,
-               DOWN_YN
-        FROM archive
-       WHERE STATUS ='stopped'
-         AND IFNULL(DOWN_YN,'N') ='N'
+        SELECT a.ARCHIVE_ID,
+               a.CREATE_AT,
+               a.PARTNER_ID,
+               a.NAME,
+               a.SESSION_ID,
+               a.SIZE,
+               a.STATUS,
+               a.OUTPUT_MODE,
+               a.REASON,
+               a.DOWN_YN
+        FROM archive a
+       WHERE a.STATUS ='stopped'
+         AND IFNULL(a.DOWN_YN,'N') ='N'
+         AND  NOT EXISTS (SELECT * FROM ARCHIVE_DOWN b WHERE ISNULL(b.DN_YN ,'N') = 'N' AND b.ARCHIVE_ID = a.ARCHIVE_ID)
         ]]>
     </select>
 
@@ -267,5 +268,61 @@
          SET DOWN_YN ='Y'
         WHERE ARCHIVE_ID ='stopped'
     </update>
+
+    <insert id="insArchiveDown"  parameterType="kr.co.hconnect.vo.ArchiveDownVO" >
+        <![CDATA[
+            INSERT INTO archive_down (
+                      ADMISSION_ID,
+                      DN_DATE,
+                      DN_TIME,
+                      DN_DATE_VOICE,
+                      DN_TIME_VOICE,
+                      DN_FOLDER,
+                      DN_FOLDER_VOICE,
+                      ARCHIVE_ID,
+                      SESSION_ID,
+                      REG_DT,
+                      DN_FILE_NAME,
+                      DN_FILE_NAME_VOICE,
+                      DN_YN.
+                      DN_YN_VOIDE)
+            VALUES(
+                   #{admissionId},
+                   #{dnDate},
+                   #{dnTime},
+                   #{dnDateVoice},
+                   #{dnTimeVoice},
+                   #{dnFolder},
+                   #{dnFolderVoice},
+                   #{archiveId},
+                   #{sessionId},
+                   now(),
+                   #{dnFileName},
+                   #{dnFileNameVoice},
+                   #{dnYn},
+                   #{dnYnVoice}
+            )
+        ]]>
+    </insert>
+
+    <select id="selectVoiceList"  resultType="kr.co.hconnect.vo.ArchiveDownVO">
+        <![CDATA[
+        select
+            ADMISSION_ID,
+            DN_DATE,
+            DN_TIME,
+            DN_DATE_VOICE,
+            DN_TIME_VOICE,
+            DN_FOLDER,
+            DN_FOLDER_VOICE,
+            ARCHIVE_ID,
+            SESSION_ID,
+            REG_DT,
+            DN_FILE_NAME,
+            DN_FILE_NAME_VOICE
+        from archive_down
+        where DN_FILE_NAME_VOICE is null OR DN_FILE_NAME_VOICE = ''
+        ]]>
+    </select>
 
 </mapper>
