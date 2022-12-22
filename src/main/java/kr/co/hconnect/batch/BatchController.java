@@ -1,5 +1,6 @@
 package kr.co.hconnect.batch;
 
+import com.opentok.exception.OpenTokException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -161,12 +162,14 @@ public class BatchController {
 
 
 
-    @Scheduled(fixedDelay = 30000)
-    public void fileDownScheduler(){
+    @Scheduled(fixedDelay = 30 * 1000)
+    public void fileDownScheduler() throws IOException, OpenTokException {
         //System.out.println("3. 우울 배치 처리 하기 ");
         //파일 생성          depressedCreate
         //파이썬 실행
         //파일 테이블 insert depressedhist / depressedDelete / depressedinsert
+        int rtn = batchService.vonageArchiveList();
+
     }
 
 

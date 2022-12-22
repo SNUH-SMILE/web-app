@@ -3,7 +3,11 @@ package kr.co.hconnect.service;
 import com.opentok.Archive;
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.rte.fdl.cmmn.exception.FdlException;
+import kr.co.hconnect.controller.AdmissionController;
 import kr.co.hconnect.vo.*;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,13 +19,13 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
+import java.nio.file.*;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import com.opentok.*;
 import com.opentok.exception.OpenTokException;
@@ -530,26 +534,9 @@ public class BatchService extends EgovAbstractServiceImpl{
             for (ArchiveVO rvo : rtnvoList) {
 
                 //  String strRtn = fileDownload(rvo);
-
-                //name = admissionId;
-
             }
 
         }
-
-        //음성 변환
-        List<ArchiveDownVO> voiceList = new ArrayList<>();
-        voiceList = aiInferenceDao.selectVoiceList();
-        if (voiceList != null) {
-            for (ArchiveDownVO rvo : voiceList) {
-                    //음성변환하기
-            }
-        }
-
-
-
-
-
         return 0;
     }
     /**
@@ -570,16 +557,6 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         //아카이브 아이디 찾기
         String archiveId = aid;
-
-        File dir = new File(outputDir);
-        if (!dir.exists()){
-            try{
-                dir.mkdir();
-            } catch (Exception e){
-                System.out.println(e.getMessage());
-                return "";
-            }
-        }
 
         try{
             OpenTok openTok = new OpenTok(apikey, apiSecret);
@@ -640,14 +617,6 @@ public class BatchService extends EgovAbstractServiceImpl{
                 os.close();
                 is.close();
                 System.out.println("File downloaded");
-                ArchiveDownVO dn = new ArchiveDownVO();
-                //dn.setAdmissionId(admissionId);
-                dn.setDnFolder(outputDir);
-                dn.setDnFileName(fileName);
-                dn.setArchiveId(archiveId);
-                dn.setDnYn("Y"); //성공
-
-
             } else {
                 System.out.println("No file to download. Server replied HTTP code: " + responseCode);
             }
@@ -658,14 +627,6 @@ public class BatchService extends EgovAbstractServiceImpl{
         } catch (Exception e){
             System.out.println("An error occurred while trying to download a file.");
             e.printStackTrace();
-
-            ArchiveDownVO dn = new ArchiveDownVO();
-            //dn.setAdmissionId(admissionId);
-            dn.setDnFolder(outputDir);
-            dn.setArchiveId(archiveId);
-            dn.setDnYn("N"); //실패
-
-
             try {
                 if (is != null){
                     is.close();
@@ -680,51 +641,6 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         return rtn;
 
-    }
-
-
-
-    //파일 음성 변환
-    public String convertAudio(ArchiveDownVO vo){
-
-        Map<String, Object>  cvAudio = new HashMap<String, Object>();
-        try {
-            System.setProperty("java.io.tmpdir", "E:\\python\\");
-
-            File source = new File("E:\\python\\cat.mp4");
-            File target = new File("E:\\python\\cat.mp3");
-
-            // //Audio Attributes
-            // System.out.println("Audio Attributes");
-            // AudioAttributes audio = new AudioAttributes();
-            // audio.setCodec("libmp3lame");
-            // audio.setBitRate(128000);
-            // audio.setChannels(2);
-            // audio.setSamplingRate(44100);
-            //
-            // //Encoding attributes
-            // System.out.println("Encoding attributes");
-            // EncodingAttributes attrs = new EncodingAttributes();
-            // attrs.setFormat("mp3");
-            // attrs.setAudioAttributes(audio);
-            //
-            // //Encode
-            // //Encoder encoder = new Encoder(new MyFFMPEGExecutableLocator())
-            // System.out.println("Encoding ");
-            // Encoder encoder = new Encoder(new DefaultFFMPEGLocator());
-            // encoder.encode(new MultimediaObject(source), target, attrs);
-            // cvAudio.put("성공", "와우 대댠해");
-
-
-//로그 기록 저장하기
-
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            cvAudio.put("실패", ex.getMessage());
-        }
-
-        return  "";
     }
 
 
