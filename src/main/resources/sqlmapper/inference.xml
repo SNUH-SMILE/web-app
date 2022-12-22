@@ -259,6 +259,7 @@
         FROM archive
        WHERE STATUS ='stopped'
          AND IFNULL(DOWN_YN,'N') ='N'
+
         ]]>
     </select>
 
