@@ -38,15 +38,15 @@ public class BatchController {
      * ./score 폴더
      */
     //@Scheduled(cron="0 0 7 * * *")
-    @Scheduled(fixedDelay = 30 * 1000)
+    @Scheduled(fixedDelay = 30 * 100000)
     public void scoreScheduler() throws IOException, InterruptedException {
         System.out.println("1. 스코어 배치 처리 하기 ");
 
-        // String filePath = "/home/administrator/python/score/score_file.csv";
-        // String outfilePath = "/home/administrator/python/score/score_result.csv";
+         String filePath = "/home/administrator/python/score/score_file.csv";
+         String outfilePath = "/home/administrator/python/score/score_result.csv";
 
-        String filePath = "E://python//score//score_file.csv";
-        String outfilePath = "E://python//score//score_result.csv";
+        //String filePath = "E://python//score//score_file.csv";
+        //String outfilePath = "E://python//score//score_result.csv";
 
         /**
          * 스코어 데이터 파일 생성
@@ -81,15 +81,15 @@ public class BatchController {
      * 2. 체온 배치 처리 하기
      * ./temperature
      */
-    @Scheduled(fixedDelay = 40 * 1000)
+    @Scheduled(fixedDelay = 40 * 10000)
     public void bodyTemperatureScheduler() throws IOException, InterruptedException {
         //System.out.println("2. 체온 배치 처리 하기 ");
 
-        // String filePath = "/home/administrator/python/score/score_file.csv";
-        // String outfilePath = "/home/administrator/python/score/score_result.csv";
+        String filePath = "/home/administrator/python/temper/temper_file.csv";
+        String outfilePath = "/home/administrator/python/temper/temper_result.csv";
 
-        String filePath = "E://python//temper//temper_file.csv";
-        String outfilePath = "E://python//temper//temper_result.csv";
+        //String filePath = "E://python//temper//temper_file.csv";
+        //String outfilePath = "E://python//temper//temper_result.csv";
 
         /**
          * 체온 데이터 파일 생성
@@ -121,11 +121,14 @@ public class BatchController {
      * 파이썬 exe 파일
      * ./depressed 폴더
      */
-    @Scheduled(fixedDelay = 30000)
+    @Scheduled(fixedDelay = 300000)
     public void depressedScheduler() throws IOException, InterruptedException {
 
-        String filePath = "E://python//depress//depress_file.csv";
-        String outfilePath = "E://python//depress//depress_result.csv";
+        String filePath = "/home/administrator/python/depress/depress_file.csv";
+        String outfilePath = "/home/administrator/python/depress/depress_result.csv";
+
+        //String filePath = "E://python//depress//depress_file.csv";
+        //String outfilePath = "E://python//depress//depress_result.csv";
 
         /**
          * 체온 데이터 파일 생성
