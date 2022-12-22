@@ -2,8 +2,10 @@ package kr.co.hconnect.service;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import kr.co.hconnect.repository.ArchiveDao;
-import kr.co.hconnect.vo.TeleHealthArchiveVO;
-import kr.co.hconnect.vo.TeleHealthConnectVO;
+import kr.co.hconnect.repository.UserDao;
+import kr.co.hconnect.repository.TeleHealthDao;
+import kr.co.hconnect.vo.*;
+import kr.co.hconnect.common.HttpUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,8 @@ import com.opentok.Archive.OutputMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 import com.opentok.*;
 import com.opentok.exception.OpenTokException;
@@ -26,10 +30,16 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
 
 
     private final ArchiveDao archiveDao;
+    private final UserDao userDao;
+    private final TeleHealthDao teleHealthDao;
+
     @Autowired
-    public TeleHealthService(ArchiveDao archiveDao) {
+    public TeleHealthService(ArchiveDao archiveDao, UserDao userDao, TeleHealthDao teleHealthDao) {
         this.archiveDao = archiveDao;
+        this.userDao = userDao;
+        this.teleHealthDao = teleHealthDao;
     }
+
     int apikey = 47595911;
     String apiSecret = "2ddde1eb92a2528bd22be0c465174636daca363d";
 
@@ -39,9 +49,8 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
      */
     @Transactional(rollbackFor = Exception.class)
     public TeleHealthConnectVO selectConnection (TeleHealthConnectVO vo){
-        TeleHealthConnectVO teleEntity = new TeleHealthConnectVO();
-
-        BeanUtils.copyProperties(vo, teleEntity);
+        TeleHealthConnectVO  teleVO = new TeleHealthConnectVO();
+        BeanUtils.copyProperties(vo, teleVO);
 
 /*
         String format = "name=[%s]%s&clientType=web&serialNumber=%s&profileImgUrl=%s";
@@ -57,49 +66,84 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
         OpenTok openTok = null;
             try {
 
+              //   vo.setApiKey(apikey);
+              //   vo.setApiSecret(apiSecret);
+              //   teleEntity.setApiKey(apikey);
+              //   //# 세션 생성
+              //   openTok = new OpenTok(vo.getApiKey(), vo.getApiSecret());
+              //   SessionProperties sessionProperties = new SessionProperties.Builder()
+              //       .mediaMode(MediaMode.ROUTED)
+              //       .build();
+              //   Session session = openTok.createSession(sessionProperties);
+              //   System.out.println("session =================================================");
+              //   System.out.println(session.getSessionId());
+              //   System.out.println("=================================================");
+              //   teleEntity.setSessionId(session.getSessionId());
+              //
+              //   //# 담당자 또는 참석자의 토큰 생성
+              //   TokenOptions tokenOptions = new TokenOptions.Builder()
+              //       .role(Role.MODERATOR)
+              //       .data(metaData)
+              //       .build();
+              //
+              //   System.out.println("generateToken =================================================");
+              //   System.out.println(openTok.generateToken(teleEntity.getSessionId()
+              //       , tokenOptions));
+              //   System.out.println("=================================================");
+              //
+              //
+              //   //화상상담 개설자  토큰생성
+              //   teleEntity.setOfficerToken(openTok.generateToken(teleEntity.getSessionId()
+              //       , tokenOptions));
+              //
+              // //  teleEntity.setAttendeeToken(openTok.generateToken(sessionid));
+              //
+              //   //# 화상상담 시작정보 저장
+              //   //saveStartTelehealthInfo(teleEntity);
+              //
+              //   //# 참석자(대상자 & 보호자)에게 푸시내역 생성
+              //   createTelehealthStartPush(teleEntity);
+
                 vo.setApiKey(apikey);
                 vo.setApiSecret(apiSecret);
-                teleEntity.setApiKey(apikey);
+
+                System.out.println("세션 생성");
+
                 //# 세션 생성
                 openTok = new OpenTok(vo.getApiKey(), vo.getApiSecret());
                 SessionProperties sessionProperties = new SessionProperties.Builder()
                     .mediaMode(MediaMode.ROUTED)
                     .build();
                 Session session = openTok.createSession(sessionProperties);
-                System.out.println("session =================================================");
-                System.out.println(session.getSessionId());
-                System.out.println("=================================================");
-                teleEntity.setSessionId(session.getSessionId());
+                String ssid  = session.getSessionId();
 
-                //# 담당자 또는 참석자의 토큰 생성
+                //화상상담 개설자  토큰생성
                 TokenOptions tokenOptions = new TokenOptions.Builder()
                     .role(Role.MODERATOR)
                     .data(metaData)
                     .build();
 
-                System.out.println("generateToken =================================================");
-                System.out.println(openTok.generateToken(teleEntity.getSessionId()
-                    , tokenOptions));
-                System.out.println("=================================================");
+                String ofToken = openTok.generateToken(ssid, tokenOptions);
 
 
-                //화상상담 개설자  토큰생성
-                teleEntity.setOfficerToken(openTok.generateToken(teleEntity.getSessionId()
-                    , tokenOptions));
-
-              //  teleEntity.setAttendeeToken(openTok.generateToken(sessionid));
-
+                System.out.println("화상상담 시작정보 저장");
                 //# 화상상담 시작정보 저장
-                //saveStartTelehealthInfo(teleEntity);
+                teleVO.setLoginId(vo.getLoginId());
+                teleVO.setSessionId(ssid);
+                teleVO.setOfficerToken(ofToken);
+                teleVO.setAdmissionId(vo.getAdmissionId());
 
+                int rtn = teleHealthDao.insertSession(teleVO);
+
+
+                System.out.println("참석자(대상자 & 보호자)에게 푸시내역 생성");
                 //# 참석자(대상자 & 보호자)에게 푸시내역 생성
-                //createTelehealthStartPush(teleEntity);
-
+                createTelehealthStartPush(teleVO);
 
             } catch (OpenTokException e){
                 System.out.println(e.getMessage());
             }
-        return teleEntity;
+        return teleVO;
     }
     @Transactional(rollbackFor = Exception.class)
     public TeleHealthConnectVO getSubscriberToken (TeleHealthConnectVO vo){
@@ -214,4 +258,138 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
             e.printStackTrace();
         }
     }
+
+
+    /**
+     * 화상 접속시 푸시발송
+     * @param vo
+     */
+    public void createTelehealthStartPush(TeleHealthConnectVO vo){
+        //텔레헬스
+        String admissionId = vo.getAdmissionId();
+
+        String CUID = userDao.selectPationtLoginId(admissionId);
+        System.out.println(" CUID =====================================");
+        System.out.println(admissionId);
+        System.out.println(CUID);
+        System.out.println(" CUID =====================================");
+
+        //CUID = "smile01";
+        //admissionId = "";
+
+        String message = "화상진료를 시작합니다. 참여 부탁드립니다!";
+        String sessionId  = vo.getSessionId();
+
+        TeleHealthConnectVO  teleSsubVO = new TeleHealthConnectVO();
+
+        OpenTok openTok = null;
+        try {
+            vo.setApiKey(apikey);
+            vo.setApiSecret(apiSecret);
+
+            openTok = new OpenTok(vo.getApiKey(), vo.getApiSecret());
+            String attendeeToken = openTok.generateToken(sessionId);
+
+            System.out.println("sessionId====================================================================");
+            System.out.println(sessionId);
+            System.out.println("sessionId====================================================================");
+
+            System.out.println("attendeeToken====================================================================");
+            System.out.println(attendeeToken);
+            System.out.println("attendeeToken====================================================================");
+
+            //생성된 구독자 토큰 저장
+
+            //
+            teleSsubVO.setLoginId(vo.getLoginId());
+            teleSsubVO.setApiKey(apikey);
+            teleSsubVO.setSessionId(sessionId);
+            teleSsubVO.setAttendeeToken(attendeeToken);
+            teleSsubVO.setAdmissionId(vo.getAdmissionId());
+
+            int rtn = teleHealthDao.udpSubscriberToken(teleSsubVO);
+
+            HashMap<String, Object> mapValue = new HashMap<String, Object>();
+            mapValue.put("CUID", CUID);
+            mapValue.put("MESSAGE", message);
+            mapValue.put("apikey", apikey);
+            mapValue.put("sessionId", vo.getSessionId());
+            mapValue.put("attendeeToken", attendeeToken);
+
+            //#푸시내역 생성
+            int ret = sendPush(mapValue);
+
+        } catch (OpenTokException e){
+            System.out.println(e.getMessage());
+        }
+
+
+
+    }
+
+
+    /**
+     * 푸시발송
+     * 화상시작시 고객에게 푸시 발송한다.
+     * @param mapValue
+     * @return
+     */
+
+    public int sendPush (HashMap<String, Object> mapValue){
+        int rtn = 0;
+
+        try {
+
+            String cuid = mapValue.get("CUID").toString();
+            String msg =  mapValue.get("MESSAGE").toString();
+
+            String apikey =  mapValue.get("apikey").toString();
+            String sessionID =  mapValue.get("sessionId").toString();
+            String token =  mapValue.get("attendeeToken").toString();
+
+            String message = "{\n" +
+                "    \"title\": \" 안녕하세요 \",\n" +
+                "    \"body\": \"" + msg + "\"\n" +
+                "}";
+
+            String attendeeToken = "{\n" +
+                "    \"action\": \"doctor\",\n" +
+                "    \"infomation\": {\n" +
+                "        \"apikey\": \"" + apikey + "\",\n" +
+                "        \"sessionId\": \""+ sessionID + "\",\n" +
+                "        \"token\": \""+ token +"\"\n" +
+                "    }\n" +
+                "}";
+
+
+            HashMap<String, Object> params = new HashMap<String , Object>();
+            params.put("CUID", cuid);
+            params.put("MESSAGE", message);
+            params.put("PRIORITY", "3");
+            params.put("BADGENO", "0");
+            params.put("RESERVEDATE", "");
+            params.put("SERVICECODE", "ALL");
+            params.put("SOUNDFILE", "alert.aif");
+            params.put("EXT", attendeeToken);
+            params.put("SENDERCODE", "smile");
+            params.put("APP_ID", "iitp.infection.pm");
+            params.put("TYPE", "E");
+            params.put("DB_IN", "Y");
+
+            HashMap<String, Object> result = new HttpUtil()
+                .url("http://192.168.42.193:8380/upmc/rcv_register_message.ctl")
+                .method("POST")
+                .body(params)
+                .build();
+
+        } catch (Exception e){
+            rtn=1;
+            System.out.println(e.getMessage());
+
+        }
+
+        return rtn;
+    }
+
+
 }
