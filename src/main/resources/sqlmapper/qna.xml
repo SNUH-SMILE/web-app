@@ -15,6 +15,7 @@
              , P.PATIENT_NM                                  -- 환자명
              , Q.QUESTION_TYPE                               -- 문의유형
              , CD.DETAIL_CD_NM         AS QUESTION_TYPE_NM   -- 문의유형명
+             , Q.QUESTION_TITLE                              -- 문의유형명
              , Q.QUESTION_CONTENT                            -- 문의내용
              , Q.REG_DT                                      -- 등록일시
              , Q.REPLY_ID                                    -- 답변자ID

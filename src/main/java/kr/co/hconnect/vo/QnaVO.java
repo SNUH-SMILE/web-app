@@ -45,6 +45,11 @@ public class QnaVO implements Serializable {
      */
     private String questionTypeNm;
     /**
+     * 문의 타이틀
+     */
+    private String questionTitle;
+
+    /**
      * 문의내용
      */
     private String questionContent;
