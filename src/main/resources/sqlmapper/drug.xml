@@ -3,39 +3,39 @@
 <mapper namespace="kr.co.hconnect.sqlmapper">
     <insert id="insertDrug" parameterType="kr.co.hconnect.vo.DrugVO" >
         /** repository.DrugDao.insertDrug.insertDrug */
-		INSERT
-		  INTO drug
-             ( DRUG_SEQ
-             , ADMISSION_ID
-             , NOTICE_START_DATE
-             , NOTICE_END_DATE
-             , NOTICE_DATE
-             , NOTICE_NAME
-             , REG_DT
-             )
+        INSERT
+        INTO drug
+        ( DRUG_SEQ
+        , ADMISSION_ID
+        , NOTICE_START_DATE
+        , NOTICE_END_DATE
+        , NOTICE_DATE
+        , NOTICE_NAME
+        , REG_DT
+        )
         VALUES
-             ( #{drugSeq}
-             , #{admissionId}
-             , #{noticeStartDate}
-             , #{noticeEndDate}
-             , #{noticeDate}
-             , #{noticeName}
-             , NOW()
-             )
+            ( #{drugSeq}
+            , #{admissionId}
+            , #{noticeStartDate}
+            , #{noticeEndDate}
+            , #{noticeDate}
+            , #{noticeName}
+            , NOW()
+            )
     </insert>
     <insert id="insertDrugList" parameterType="kr.co.hconnect.vo.DrugListVO" >
         /** repository.DrugDao.insertDrug.insertDrugAlarm */
         INSERT
         INTO drug_list
         (   DRUG_SEQ
-            , DRUG_NAME
-            , DRUG_COUNT
-            , DRUG_TYPE
+        , DRUG_NAME
+        , DRUG_COUNT
+        , DRUG_TYPE
         , REG_DT
         )
         VALUES
             (
-              #{drugSeq}
+                #{drugSeq}
             , #{drugName}
             , #{drugCount}
             , #{drugType}
@@ -44,38 +44,38 @@
     </insert>
     <insert id="insertDrugAlarm" parameterType="kr.co.hconnect.vo.DrugAlarmVO" >
         /** repository.DrugDao.insertDrug.insertDrugAlarm */
-		INSERT
-		  INTO drug_alarm
-             (   DRUG_ALARM_SEQ
-               , DRUG_SEQ
-               , NOTICE_TIME
-               , REG_DT
-             )
+        INSERT
+        INTO drug_alarm
+        (   DRUG_ALARM_SEQ
+        , DRUG_SEQ
+        , NOTICE_TIME
+        , REG_DT
+        )
         VALUES
-             (   #{drugAlarmSeq}
-               , #{drugSeq}
-               , #{noticeTime}
-               , now()
-             )
+            (   #{drugAlarmSeq}
+            , #{drugSeq}
+            , #{noticeTime}
+            , now()
+            )
     </insert>
     <insert id="insertDrugDose" parameterType="kr.co.hconnect.vo.DrugDoseVO" >
         /** repository.DrugDao.insertDrug.insertDrugDose */
         INSERT
-            INTO drug_dose
-            (  DRUG_DOSE_SEQ
-             , ADMISSION_ID
-             , NOTICE_DD
-             , NOTICE_TIME
-             , NOTICE_NAME
-             , DRUG_NAME
-             , DRUG_COUNT
-             , DRUG_TYPE
-             , TAKE_RESULT
-             , REG_DT
-             , DRUG_SEQ
-             , DRUG_ALARM_SEQ
-             , NO_ALARM
-            )
+        INTO drug_dose
+        (  DRUG_DOSE_SEQ
+        , ADMISSION_ID
+        , NOTICE_DD
+        , NOTICE_TIME
+        , NOTICE_NAME
+        , DRUG_NAME
+        , DRUG_COUNT
+        , DRUG_TYPE
+        , TAKE_RESULT
+        , REG_DT
+        , DRUG_SEQ
+        , DRUG_ALARM_SEQ
+        , NO_ALARM
+        )
         VALUES
             ( #{drugDoseSeq}
             , #{admissionId}
@@ -94,44 +94,44 @@
     </insert>
     <select id="selectDrug" parameterType="kr.co.hconnect.vo.DrugVO"  resultType="kr.co.hconnect.vo.DrugVO">
         SELECT
-             D.DRUG_SEQ
-            ,D.ADMISSION_ID
-            ,D.NOTICE_START_DATE
-            ,D.NOTICE_END_DATE
-            ,D.NOTICE_DATE
-            ,D.NOTICE_NAME
-            ,D.DRUG_NAME
-            ,D.DRUG_COUNT
-            ,D.DRUG_TYPE
+            D.DRUG_SEQ
+             ,D.ADMISSION_ID
+             ,D.NOTICE_START_DATE
+             ,D.NOTICE_END_DATE
+             ,D.NOTICE_DATE
+             ,D.NOTICE_NAME
+             ,D.DRUG_NAME
+             ,D.DRUG_COUNT
+             ,D.DRUG_TYPE
         FROM DRUG D
         WHERE 1=1
-            AND D.DRUG_SEQ= #{drugSeq}
+          AND D.DRUG_SEQ= #{drugSeq}
     </select>
     <select id="selectAlarmDrug" parameterType="kr.co.hconnect.vo.DrugAlarmVO"  resultType="kr.co.hconnect.vo.DrugVO">
         SELECT
-        D.DRUG_SEQ
-        ,D.ADMISSION_ID
-        ,D.NOTICE_START_DATE
-        ,D.NOTICE_END_DATE
-        ,D.NOTICE_DATE
-        ,D.NOTICE_NAME
-        ,D.DRUG_NAME
-        ,D.DRUG_COUNT
-        ,D.DRUG_TYPE
+            D.DRUG_SEQ
+             ,D.ADMISSION_ID
+             ,D.NOTICE_START_DATE
+             ,D.NOTICE_END_DATE
+             ,D.NOTICE_DATE
+             ,D.NOTICE_NAME
+             ,D.DRUG_NAME
+             ,D.DRUG_COUNT
+             ,D.DRUG_TYPE
         FROM DRUG D
-             INNER JOIN DRUG_ALARM DA
-               ON D.DRUG_SEQ  = DA.DRUG_SEQ
+                 INNER JOIN DRUG_ALARM DA
+                            ON D.DRUG_SEQ  = DA.DRUG_SEQ
         WHERE DA.DRUG_ALARM_SEQ = #{drugAlarmSeq}
     </select>
     <select id="selectTimeList" parameterType="kr.co.hconnect.vo.DrugSearchVO"  resultType="kr.co.hconnect.vo.DrugTimeVO">
         select
-                  DRUG_SEQ AS noticeId
-                , NOTICE_NAME AS noticeName
-                , NOTICE_DD   AS takeDate
-                , NOTICE_TIME AS takeTime
-                , IFNULL(NO_ALARM, 'N')     AS noAlarm
-                , DRUG_SEQ    AS drugSeq
-                , DRUG_DOSE_SEQ AS drugDoseSeq
+            DRUG_SEQ AS noticeId
+             , NOTICE_NAME AS noticeName
+             , NOTICE_DD   AS takeDate
+             , NOTICE_TIME AS takeTime
+             , IFNULL(NO_ALARM, 'N')     AS noAlarm
+             , DRUG_SEQ    AS drugSeq
+             , DRUG_DOSE_SEQ AS drugDoseSeq
         from drug_dose
         where 1=1
           and ADMISSION_ID = #{admissionId}
@@ -142,24 +142,24 @@
     </select>
     <select id="selectAlarmList" parameterType="kr.co.hconnect.vo.DrugSearchVO"  resultType="kr.co.hconnect.vo.DrugNoticeListVO">
         select
-                 da.DRUG_ALARM_SEQ  as drugAlarmSeq
-                ,da.DRUG_SEQ       as drugSeq
-                ,d.NOTICE_NAME     as noticeName
-                ,da.NOTICE_TIME    as noticeTime
-                ,IFNULL((select 1 from drug_dose dd where dd.DRUG_ALARM_SEQ = da.DRUG_ALARM_SEQ and dd.NOTICE_DD = #{requestDate}), 2) as takeResult
-         from drug_alarm da
-              inner join drug d
-                on da.DRUG_SEQ  = d.DRUG_SEQ
+            da.DRUG_ALARM_SEQ  as drugAlarmSeq
+             ,da.DRUG_SEQ       as drugSeq
+             ,d.NOTICE_NAME     as noticeName
+             ,da.NOTICE_TIME    as noticeTime
+             ,IFNULL((select 1 from drug_dose dd where dd.DRUG_ALARM_SEQ = da.DRUG_ALARM_SEQ and dd.NOTICE_DD = #{requestDate}), 2) as takeResult
+        from drug_alarm da
+                 inner join drug d
+                            on da.DRUG_SEQ  = d.DRUG_SEQ
         where 1=1
-        and d.ADMISSION_ID =  #{admissionId}
-        and d.NOTICE_START_DATE <![CDATA[ <= ]]> #{requestDate}
-        and d.NOTICE_END_DATE   <![CDATA[ >= ]]> #{requestDate}
+          and d.ADMISSION_ID =  #{admissionId}
+          and d.NOTICE_START_DATE <![CDATA[ <= ]]> #{requestDate}
+          and d.NOTICE_END_DATE   <![CDATA[ >= ]]> #{requestDate}
 
     </select>
 
     <select id="selectDrugListName" parameterType="kr.co.hconnect.vo.DrugSearchVO"  resultType="kr.co.hconnect.vo.DrugListNameVO">
         select
-              da.DRUG_NAME
+            da.DRUG_NAME
              ,da.DRUG_COUNT
              ,da.DRUG_TYPE
         from drug_list da
@@ -175,7 +175,7 @@
 
     <select id="selectDrugListNameNoAlarm" parameterType="kr.co.hconnect.vo.DrugSearchVO"  resultType="kr.co.hconnect.vo.DrugListNameVO">
         select
-              dd.DRUG_NAME
+            dd.DRUG_NAME
              ,dd.DRUG_COUNT
              ,dd.DRUG_TYPE
         from drug_dose dd

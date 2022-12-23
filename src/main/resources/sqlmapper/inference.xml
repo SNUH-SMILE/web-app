@@ -259,7 +259,6 @@
         FROM archive a
        WHERE a.STATUS ='stopped'
          AND IFNULL(a.DOWN_YN,'N') ='N'
-         AND  NOT EXISTS (SELECT * FROM ARCHIVE_DOWN b WHERE ISNULL(b.DN_YN ,'N') = 'N' AND b.ARCHIVE_ID = a.ARCHIVE_ID)
         ]]>
     </select>
 
