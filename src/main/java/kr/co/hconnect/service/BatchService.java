@@ -114,6 +114,10 @@ public class BatchService extends EgovAbstractServiceImpl{
 
     }
 
+
+    /**
+     * 스코어 배치 파일 실행하기
+     */
     /**
      * 스코어 output  데이터  테이블 import
      * @param vo
@@ -213,7 +217,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
                     String aData = "";
                     aData = dt.getAdmissionId();   //환자 id
-                    aData += "," + dt.getRr();     //심박수
+                    aData += "," + dt.getRr();     //호흡
                     aData += "," + dt.getPr();     //심박수
                     aData += "," + dt.getBt();     //체온
                     aData += "," + dt.getQ1Yn();   //가래
@@ -475,50 +479,34 @@ public class BatchService extends EgovAbstractServiceImpl{
      * 파이썬 파일 실행
      */
 
-    public void excuteFile() {
+    public String excuteFile(String excutePath) {
 
-        List<String> cmd = new ArrayList<String>();
-        cmd.add("/bin/bash");
-        cmd.add("-c");
-        cmd.add("/pythonCode/test.py");
-
-        StringBuilder sb = new StringBuilder(1024);
-        String s = null;
-        ProcessBuilder prsbld = null;
-        Process prs = null;
-
-        try {
-            prsbld = new ProcessBuilder(cmd);
-            // prsbld.directory(new File("/pythonCode")); // 디렉토리 이동
-            // System.out.println("command: " + prsbld.command()); 	// 커맨드 확인
-
-            // 프로세스 수행시작
-            prs = prsbld.start();
-
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(prs.getErrorStream()));
-            while ((s = stdError.readLine()) != null)
-            {
-                sb.append(s);
+            String rtn="";
+            if (StringUtils.isEmpty(excutePath)){
+                rtn = "1";
+                return rtn;
             }
-            prs.getErrorStream().close();
-            prs.getInputStream().close();
-            prs.getOutputStream().close();
+            try {
+                // Run script
+                Process process = Runtime.getRuntime().exec(excutePath);
 
-            // 종료까지 대기
-            prs.waitFor();
+                // Read output
+                StringBuilder output = new StringBuilder();
+                BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
 
-        }catch (Exception e1) {
-        }
-        finally
-        {
-            if(prs != null)
-                try {
-                    prs.destroy();
-                } catch(Exception e2) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line);
                 }
+                rtn = "0";
+                System.out.println(output.toString());
 
-        }
-
+            } catch (Exception e) {
+                rtn = "1";
+                e.printStackTrace();
+            }
+        return "0";
     }
 
 
