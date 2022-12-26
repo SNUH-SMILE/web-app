@@ -414,6 +414,17 @@ public class AdmissionService extends EgovAbstractServiceImpl {
         InterviewSearchVO serachVO = new InterviewSearchVO();
 
         for(InterviewList interviewList : interviewLists){
+            if(interviewList.getInterviewType().equals("01")){
+                interviewList.setInterviewTitlePlus("초기평가지");
+            }else if (interviewList.getInterviewType().equals("02")) {
+                interviewList.setInterviewTitlePlus("격리 중 코로나 증상 기록지 (격리 중 매일)");
+            }else if (interviewList.getInterviewType().equals("03")){
+                interviewList.setInterviewTitlePlus("격리 중 코로나 증상 기록지 (격리 중 매일)");
+            }else if (interviewList.getInterviewType().equals("04")) {
+                interviewList.setInterviewTitlePlus("격리 해제 기록지");
+            }else {
+                interviewList.setInterviewTitlePlus("격리 해제 후 한달 뒤 증상 기록지");
+            }
             //설문지 내용 조회
             List<InterviewContentVO> contentVOS = new ArrayList<>();
             serachVO.setInterviewType(interviewList.getInterviewType());

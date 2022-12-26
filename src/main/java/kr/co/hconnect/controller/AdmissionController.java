@@ -396,7 +396,7 @@ public class AdmissionController {
      *
      * @return ResponseVO&lt;AdmissionListResponseByQuarantineVO&gt; 자가격리자 리스트 조회 결과
      */
-    @RequestMapping(value = "/test", method = RequestMethod.POST)
+    @RequestMapping(value = "/interview/list", method = RequestMethod.POST)
     public ResponseVO<List<InterviewList>> selectInterviewList(
         @Valid @RequestBody Interview interview,BindingResult bindingResult) {
 
