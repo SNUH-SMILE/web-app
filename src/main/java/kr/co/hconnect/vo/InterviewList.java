@@ -21,6 +21,9 @@ public class InterviewList implements Serializable {
 
     private Integer interviewSeq;
 
+    /*유라클 설문지명 추가 */
+    private String interviewTitlePlus;
+
     private String interviewTitle;
 
     private String interviewType;
@@ -28,6 +31,8 @@ public class InterviewList implements Serializable {
     private String interviewTime;
 
     private String interviewStatus;
+
+    private String interviewDD;
 
     private List<InterviewContentVO> interviewContents;
 

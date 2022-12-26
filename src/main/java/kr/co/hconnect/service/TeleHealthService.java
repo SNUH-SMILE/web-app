@@ -195,6 +195,8 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
     @Transactional(rollbackFor = Exception.class)
     public String archive (TeleHealthConnectVO vo) {
         OpenTok openTok =null;
+        Date today = new Date();
+        SimpleDateFormat date = new SimpleDateFormat("yyyy/MM/dd");
         Archive archive;
         try {
 
@@ -210,7 +212,7 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
             layout = new ArchiveLayout(ArchiveLayout.Type.HORIZONTAL);
 
             archive = openTok.startArchive(vo.getSessionId(), new ArchiveProperties.Builder()
-                .name(vo.getAdmissionId())
+                .name(vo.getAdmissionId()+date.toString())
                 .hasAudio(true)
                 .hasVideo(true)
                 .outputMode(outputMode)
@@ -223,8 +225,8 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
             teleHealthArchiveVO.setName(archive.getName());
             teleHealthArchiveVO.setReason(archive.getReason());
             teleHealthArchiveVO.setSize(archive.getSize());
-            Date date = new Date(archive.getCreatedAt());
-            teleHealthArchiveVO.setCreateAt(date);
+            Date archiveDate = new Date(archive.getCreatedAt());
+            teleHealthArchiveVO.setCreateAt(archiveDate);
             teleHealthArchiveVO.setPartnerId(archive.getPartnerId());
             teleHealthArchiveVO.setSessionId(archive.getSessionId());
             teleHealthArchiveVO.setStatus(archive.getStatus().toString());
