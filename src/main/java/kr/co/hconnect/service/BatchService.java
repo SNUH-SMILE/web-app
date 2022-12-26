@@ -213,6 +213,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
                     String aData = "";
                     aData = dt.getAdmissionId();   //환자 id
+                    aData += "," + dt.getRr();     //심박수
                     aData += "," + dt.getPr();     //심박수
                     aData += "," + dt.getBt();     //체온
                     aData += "," + dt.getQ1Yn();   //가래

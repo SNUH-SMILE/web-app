@@ -18,6 +18,7 @@ public class TemperListVO implements Serializable{
 
     private String admissionId;
 
+    private float rr;
     private float pr;
 
     private float bt;
