@@ -1,6 +1,7 @@
 package kr.co.hconnect.repository;
 
 import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
+import kr.co.hconnect.vo.TreatmentCenterVO;
 import kr.co.hconnect.vo.UserSearchVO;
 import kr.co.hconnect.vo.UserTreatmentCenterVO;
 import kr.co.hconnect.vo.UserVO;
@@ -13,6 +14,14 @@ import java.util.List;
  */
 @Repository
 public class UserDao extends EgovAbstractMapper {
+    /**
+     * 생활치료센터 Dao
+     */
+    private final TreatmentCenterDao treatmentCenterDao;
+
+    public UserDao(TreatmentCenterDao treatmentCenterDao) {
+        this.treatmentCenterDao = treatmentCenterDao;
+    }
 
     /**
      * 사용자 정보 조회
@@ -23,13 +32,19 @@ public class UserDao extends EgovAbstractMapper {
     public UserVO selectUserInfo(String userId) {
         // 1. 사용자 정보 조회
         UserVO userVO = selectOne("kr.co.hconnect.sqlmapper.selectUserInfo", userId);
+        TreatmentCenterVO vo = new TreatmentCenterVO();
 
         // 2. 사용자 센터리스트 조회
-        List<UserTreatmentCenterVO> userTreatmentCenterVOList = selectUserTreatmentCenterList(userId);
+        List<UserTreatmentCenterVO>  userTreatmentCenterVOList = selectUserTreatmentCenterList(userId);
         if (userTreatmentCenterVOList != null && userTreatmentCenterVOList.size() > 0) {
             userVO.setUserTreatmentCenterVOList(userTreatmentCenterVOList);
         }
+       // List<UserTreatmentCenterVO>  userTreatmentCenterVOList2 = selectUserTreatmentCenterList(userId);
+        List<TreatmentCenterVO> treatmentCenterVOList = treatmentCenterDao.selectTreatmentCenterList(vo);
 
+        if (treatmentCenterVOList != null && treatmentCenterVOList.size() > 0) {
+            userVO.setTreatmentCenterVOList(treatmentCenterVOList);
+        }
         return userVO;
     }
 

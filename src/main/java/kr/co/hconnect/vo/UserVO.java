@@ -71,5 +71,6 @@ public class UserVO extends BaseDefaultVO {
 	@NotNull(message = "{validation.null.centerList}", groups = VoValidationGroups.add.class)
 	@Size(min = 1, message = "{validation.null.centerList}", groups = VoValidationGroups.add.class)
 	private List<UserTreatmentCenterVO> userTreatmentCenterVOList;
-	
+
+    private List<TreatmentCenterVO> treatmentCenterVOList;
 }
