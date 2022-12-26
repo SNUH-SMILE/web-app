@@ -117,67 +117,60 @@
     </select>
     <select id="temperList"  resultType="kr.co.hconnect.vo.TemperListVO">
         <![CDATA[
-                SELECT A.ADMISSION_ID
-                    /* 맥박수 심박수 */
-                     , ifnull(RDPR.result, 0)                                  as pr
-                    /* 체온 */
-                     , ifnull(ROUND(RDBT.result, 1), 0)                        AS bt
-                     , IFNULL(T2.Q1_YN,0)                                      as Q1_YN
-                     , IFNULL(T2.Q2_YN,0)                                      as Q2_YN
-                     , IFNULL(T2.Q3_YN,0)                                      as Q3_YN
-                     , IFNULL(T2.Q4_YN,0)                                      as Q4_YN
-                     , IFNULL(T2.Q5_YN,0)                                      as Q5_YN
-                     , IFNULL(T2.Q6_YN,0)                                      as Q6_YN
-                FROM ADMISSION A
-                         inner join patient p               on A.PATIENT_ID  = P.PATIENT_ID
-                    /* 심박수 */
-                         INNER JOIN ITEM             IPR     ON IPR.ITEM_ID = 'I0002'
-                         LEFT JOIN RESULT            RPR     ON RPR.RESULT_SEQ = (SELECT X.RESULT_SEQ
-                                                                                  FROM RESULT X
-                                                                                  WHERE X.ADMISSION_ID = A.ADMISSION_ID
-                                                                                    AND X.ITEM_ID = IPR.ITEM_ID
-                                                                                  ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
-                    LIMIT 1)
-                    LEFT JOIN RESULT_DETAIL     RDPR    ON RDPR.RESULT_SEQ = RPR.RESULT_SEQ
-                    /* 체온 */
-                    INNER JOIN ITEM             IBT     ON IBT.ITEM_ID = 'I0001'
-                    LEFT JOIN RESULT            RBT     ON RBT.RESULT_SEQ = (SELECT X.RESULT_SEQ
-                    FROM RESULT X
-                    WHERE X.ADMISSION_ID = A.ADMISSION_ID
-                    AND X.ITEM_ID = IBT.ITEM_ID
-                    ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
-                    LIMIT 1)
-                    LEFT JOIN RESULT_DETAIL     RDBT    ON RDBT.RESULT_SEQ = RBT.RESULT_SEQ
-                    left join (
-                            SELECT
-                                T1.ADMISSION_ID
-                                ,group_concat(if(ANSWER_SEQ = '38', ANSWER_VALUE, null))  as Q1_YN
-                                ,group_concat(if(ANSWER_SEQ = '50', ANSWER_VALUE, null))  as Q2_YN
-                                ,group_concat(if(ANSWER_SEQ = '55', ANSWER_VALUE, null))  as Q3_YN
-                                ,group_concat(if(ANSWER_SEQ = '58', ANSWER_VALUE, null))  as Q4_YN
-                                ,group_concat(if(ANSWER_SEQ = '48', ANSWER_VALUE, null))  as Q5_YN
-                                ,group_concat(if(ANSWER_SEQ = '60', ANSWER_VALUE, null))  as Q6_YN
-                            from (
-                                    SELECT I.ADMISSION_ID
-                                        ,ID.ANSWER_SEQ
-                                        ,ID.ANSWER_VALUE
-                                    FROM INTERVIEW I
-                                         INNER JOIN INTERVIEW_DETAIL ID
-                                                 ON I.INTERVIEW_SEQ  = ID.INTERVIEW_SEQ
-                                    WHERE 1=1
-                                      AND I.INTERVIEW_TYPE ='02'
-                                      AND ID.ANSWER_SEQ IN ('38','50','55','58','48','60')
-                                      AND I.INTERVIEW_SEQ = (SELECT X.INTERVIEW_SEQ FROM INTERVIEW X
-                                                                WHERE X.INTERVIEW_TYPE ='02'
-                                                                  AND X.ADMISSION_ID  = I.ADMISSION_ID
-                                                                ORDER BY X.INTERVIEW_SEQ DESC
-                                                                LIMIT 1
-                                                               )
-                            ) T1
-                            GROUP BY T1.ADMISSION_ID
-                    ) T2 on A.ADMISSION_ID  = T2.ADMISSION_ID
-                WHERE 1=1
-                ORDER BY A.ADMISSION_ID
+            SELECT
+                A.ADMISSION_ID
+                 ,SUM(CASE WHEN T1.ITEM_ID='I0006' THEN T1.BIO_RESULT ELSE 0 END) RR
+                 ,SUM(CASE WHEN T1.ITEM_ID='I0001' THEN T1.BIO_RESULT ELSE 0 END) BT
+                 ,SUM(CASE WHEN T1.ITEM_ID='I0002' THEN T1.BIO_RESULT ELSE 0 END) PR
+                 ,IFNULL(Q1_YN,0)  Q1_YN
+                 ,IFNULL(Q2_YN,0)  Q2_YN
+                 ,IFNULL(Q3_YN,0)  Q3_YN
+                 ,IFNULL(Q4_YN,0)  Q4_YN
+                 ,IFNULL(Q5_YN,0)  Q5_YN
+                 ,IFNULL(Q6_YN,0)  Q6_YN
+            FROM ADMISSION A
+                     INNER JOIN PATIENT P
+                                ON A.PATIENT_ID  = P.PATIENT_ID
+                     LEFT JOIN (
+                SELECT ADMISSION_ID , ITEM_ID, ROUND(AVG(RESULT),2)  BIO_RESULT
+                FROM RESULT R
+                         INNER JOIN RESULT_DETAIL RD
+                                    ON R.RESULT_SEQ  = RD.RESULT_SEQ
+                WHERE R.ITEM_ID  IN ('I0002', 'I0006', 'I0001')
+                  AND CONCAT(RESULT_DATE, ' ', RESULT_TIME) BETWEEN  DATE_ADD(NOW(), INTERVAL -1 HOUR) AND NOW()
+                GROUP BY R.ADMISSION_ID, R.ITEM_ID
+            ) T1
+                               ON A.ADMISSION_ID = T1.ADMISSION_ID
+                     LEFT JOIN (
+                SELECT
+                    T1.ADMISSION_ID
+                     ,GROUP_CONCAT(IF(ANSWER_SEQ = '38', ANSWER_VALUE, NULL))  AS Q1_YN
+                     ,GROUP_CONCAT(IF(ANSWER_SEQ = '50', ANSWER_VALUE, NULL))  AS Q2_YN
+                     ,GROUP_CONCAT(IF(ANSWER_SEQ = '55', ANSWER_VALUE, NULL))  AS Q3_YN
+                     ,GROUP_CONCAT(IF(ANSWER_SEQ = '58', ANSWER_VALUE, NULL))  AS Q4_YN
+                     ,GROUP_CONCAT(IF(ANSWER_SEQ = '48', ANSWER_VALUE, NULL))  AS Q5_YN
+                     ,GROUP_CONCAT(IF(ANSWER_SEQ = '60', ANSWER_VALUE, NULL))  AS Q6_YN
+                FROM (
+                         SELECT I.ADMISSION_ID
+                              ,ID.ANSWER_SEQ
+                              ,ID.ANSWER_VALUE
+                         FROM INTERVIEW I
+                                  INNER JOIN INTERVIEW_DETAIL ID
+                                             ON I.INTERVIEW_SEQ  = ID.INTERVIEW_SEQ
+                         WHERE 1=1
+                           AND I.INTERVIEW_TYPE ='02'
+                           AND ID.ANSWER_SEQ IN ('38','50','55','58','48','60')
+                           AND I.INTERVIEW_SEQ = (SELECT X.INTERVIEW_SEQ FROM INTERVIEW X
+                                                  WHERE X.INTERVIEW_TYPE ='02'
+                                                    AND X.ADMISSION_ID  = I.ADMISSION_ID
+                                                  ORDER BY X.INTERVIEW_SEQ DESC
+                             LIMIT 1
+                     )
+            ) T1
+            GROUP BY T1.ADMISSION_ID
+                ) T2 ON A.ADMISSION_ID  = T2.ADMISSION_ID
+            WHERE 1=1
+            GROUP BY ADMISSION_ID
         ]]>
     </select>
     <select id="depressList"  resultType="kr.co.hconnect.vo.DepressListVO">
