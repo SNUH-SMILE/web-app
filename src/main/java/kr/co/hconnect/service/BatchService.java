@@ -33,13 +33,12 @@ import org.springframework.util.StringUtils;
 
 @Service
 public class BatchService extends EgovAbstractServiceImpl{
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(BatchService.class);
     private  final  AiInferenceDao aiInferenceDao;
 
     private int apikey = 47595911;
     private String apiSecret = "2ddde1eb92a2528bd22be0c465174636daca363d";
 
-    private String orgPath ="E:\\projects\\snuh_smile\\web-app\\src\\main\\resources\\inference\\score\\";
 
     @Autowired
     public BatchService(AiInferenceDao dao) {
@@ -52,8 +51,8 @@ public class BatchService extends EgovAbstractServiceImpl{
      * @param vo
      * @return
      */
-    public int scoreCreate(BatchVO vo) {
-
+    public String scoreCreate(BatchVO vo) {
+        String rtn ="";
         int resultCount = 0;
 
         List list= null;
@@ -71,12 +70,11 @@ public class BatchService extends EgovAbstractServiceImpl{
             //csv 파일의 기존 값에 이어쓰려면 위처럼 tru를 지정하고 기존갑을 덮어 쓰려면 true를 삭제한다
             BufferedWriter fw = new BufferedWriter(new FileWriter(filePath));
 
-            //쿼리 를 한다.
-            //
             List<ScoreVO> dataList = aiInferenceDao.scoreList();
 
             if (dataList.size() > 0 ) {
                 //타이틀 넣기
+                /*
                 String tData = "";
                 tData = "환자 id";   //환자 id
                 tData += "," + "나이";    // 나이
@@ -87,6 +85,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
                 fw.write(tData);
                 fw.newLine();
+                */
 
                 for (ScoreVO dt : dataList) {
                     String aData = "";
@@ -106,18 +105,21 @@ public class BatchService extends EgovAbstractServiceImpl{
             fw.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            rtn = e.getMessage();
+            LOGGER.error(e.getMessage());
             throw new RuntimeException(e);
         } finally {
-            return resultCount;
+            return rtn;
         }
-
     }
 
 
     /**
      * 스코어 배치 파일 실행하기
      */
+
+
+
     /**
      * 스코어 output  데이터  테이블 import
      * @param vo
@@ -127,7 +129,7 @@ public class BatchService extends EgovAbstractServiceImpl{
      */
     public String scoreInsert(BatchVO vo) throws IOException, InterruptedException {
 
-        String rtn = "0";
+        String rtn = "";
 
         File csv = new File(vo.getOutFilePath());
 
@@ -164,9 +166,11 @@ public class BatchService extends EgovAbstractServiceImpl{
 
 
         }catch (FileNotFoundException e){
-            System.out.println(e.getMessage());
+            rtn = e.getMessage();
+            LOGGER.error(e.getMessage());
         }catch ( IOException e){
-            System.out.println(e.getMessage());
+            rtn = e.getMessage();
+            LOGGER.error(e.getMessage());
         }finally {
             try{
                 if(br != null){
@@ -175,6 +179,8 @@ public class BatchService extends EgovAbstractServiceImpl{
                 }
             }catch (IOException e) {
                 e.printStackTrace();
+                rtn = e.getMessage();
+                LOGGER.error(e.getMessage());
             }
         }
         return rtn;
@@ -429,85 +435,45 @@ public class BatchService extends EgovAbstractServiceImpl{
     }
 
 
-
-
-
-
-    @Transactional(rollbackFor = Exception.class)
-    public void depress() throws FdlException {
-    }
-
     /**
      * 파이썬 소스 파일 실행하기
      * @return
      */
-    public Boolean pythonProcessbuilder() throws IOException, InterruptedException {
+    public String pythonProcessbuilder( String arg1) throws IOException, InterruptedException {
         System.out.println("pythonbuilder ");
-        Boolean bool = true;
-        String arg1;
+        String bool = "";
         ProcessBuilder builder;
         BufferedReader br;
 
-        arg1 = "./resources/inference/score/score.py";
-        builder = new ProcessBuilder("python",arg1); //python3 error
+        try{
+            builder = new ProcessBuilder("python3",arg1); //python3 error
 
-        builder.redirectErrorStream(true);
-        Process process = builder.start();
+            builder.redirectErrorStream(true);
+            Process process = builder.start();
 
-        // 자식 프로세스가 종료될 때까지 기다림
-        int exitval = process.waitFor();
+            // 자식 프로세스가 종료될 때까지 기다림
+            int exitval = process.waitFor();
 
-        //// 서브 프로세스가 출력하는 내용을 받기 위해
-        br = new BufferedReader(new InputStreamReader(process.getInputStream(),"UTF-8"));
+            //// 서브 프로세스가 출력하는 내용을 받기 위해
+            br = new BufferedReader(new InputStreamReader(process.getInputStream(),"UTF-8"));
 
-        String line;
-        while ((line = br.readLine()) != null) {
-            System.out.println(">>>  " + line); // 표준출력에 쓴다
-        }
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(">>>  " + line); // 표준출력에 쓴다
+            }
 
-        if(exitval !=0){
-            //비정상종료
-            System.out.println("비정상종료");
-            bool=false;
+            if(exitval !=0){
+                //비정상종료
+                System.out.println("비정상종료");
+            }
+        } catch (IOException e){
+            bool = e.getMessage();
+            LOGGER.error(e.getMessage());
         }
 
         return bool;
     }
 
-
-    /**
-     * 파이썬 파일 실행
-     */
-
-    public String excuteFile(String excutePath) {
-
-            String rtn="";
-            if (StringUtils.isEmpty(excutePath)){
-                rtn = "1";
-                return rtn;
-            }
-            try {
-                // Run script
-                Process process = Runtime.getRuntime().exec(excutePath);
-
-                // Read output
-                StringBuilder output = new StringBuilder();
-                BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    output.append(line);
-                }
-                rtn = "0";
-                System.out.println(output.toString());
-
-            } catch (Exception e) {
-                rtn = "1";
-                e.printStackTrace();
-            }
-        return "0";
-    }
 
 
 
@@ -528,6 +494,7 @@ public class BatchService extends EgovAbstractServiceImpl{
         }
         return 0;
     }
+
     /**
      * 아카리브 파일 다운로드
      * @return
