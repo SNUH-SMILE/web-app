@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 복약 서비스
@@ -215,6 +216,19 @@ public class DrugService extends EgovAbstractServiceImpl {
         dvo.setNoticeList(dnl);
 
         return  dvo;
+    }
+
+    /**
+     * 환자상세의 투약내역 조회
+     * @param admissionId
+     * @return
+     */
+    public  List<DrugDoseVO> selectDrugListForDetail(String admissionId){
+
+
+        List<DrugDoseVO> drugAlarmVOList =  drugDao.selectDrugListForDetail(admissionId);
+
+        return drugAlarmVOList;
     }
 
 }

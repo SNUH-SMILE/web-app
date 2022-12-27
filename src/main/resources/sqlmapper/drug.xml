@@ -185,4 +185,14 @@
           and dd.NOTICE_DD = #{requestDate}
     </select>
 
+    <select id="selectDrugListForDetail" parameterType="String" resultType="kr.co.hconnect.vo.DrugDoseVO">
+        SELECT
+             d.NOTICE_NAME
+            ,a.NOTICE_TIME
+            ,c.DRUG_DOSE_SEQ
+            ,c.NOTICE_DD
+        FROM DRUG D LEFT JOIN DRUG_ALARM A ON A.DRUG_SEQ =D.DRUG_SEQ
+            LEFT JOIN DRUG_DOSE C ON A.DRUG_ALARM_SEQ = C.DRUG_ALARM_SEQ
+        WHERE d.ADMISSION_ID  = #{id};
+    </select>
 </mapper>

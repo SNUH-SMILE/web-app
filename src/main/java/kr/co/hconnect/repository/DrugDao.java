@@ -69,5 +69,8 @@ public class DrugDao extends EgovAbstractMapper {
         return selectList("kr.co.hconnect.sqlmapper.selectDrugListNameNoAlarm", vo);
     }
 
+    public List<DrugDoseVO> selectDrugListForDetail(String id) {
+        return selectList("kr.co.hconnect.sqlmapper.selectDrugListForDetail",id);
+    }
 
 }
