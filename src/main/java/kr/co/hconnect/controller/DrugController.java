@@ -218,4 +218,20 @@ public class DrugController {
 
         return responseVO;
     }
+    /**
+     * 환자상세의 투약내역 조회
+     * @param admissionId
+     * @return
+     */
+    @RequestMapping(value = "/listForDetail", method = RequestMethod.GET)
+    public ResponseBaseVO<List<DrugDoseVO>> selectDrugListForDetail(@RequestParam String admissionId) {
+        ResponseBaseVO<List<DrugDoseVO>> responseVO = new ResponseBaseVO<>();
+
+        List<DrugDoseVO> drugDetailVOS =  drugService.selectDrugListForDetail(admissionId);
+        responseVO.setResult(drugDetailVOS);
+        responseVO.setMessage("입소내역 조회 성공");
+
+        return responseVO;
+
+    }
 }
