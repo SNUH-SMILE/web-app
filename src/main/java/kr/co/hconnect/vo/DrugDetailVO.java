@@ -7,24 +7,46 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
- * 환자 복약 알림 
+ * 환자상세 투약내역 vo
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-public class DrugDetailVO extends BaseDefaultVO{
+public class DrugDetailVO implements Serializable {
 
-    private static final long serialVersionUID = 2314074066063819256L;
+
     /**
-     * 복약 알람순번
+     * 복약일자
      */
     private String noticeDd;
 
-    private List<DrugDoseVO> drugDose;
+    /**
+     * 복약 알람 이름
+     */
+    private String noticeName;
+    /**
+     * 복약 알람 시간
+     */
+    private String noticeTime;
+    /**
+     * 복약 알람 시작 날짜
+     */
+    private String noticeStartDate;
+    /**
+     * 복약 알람 종료 일자
+     */
+    private String noticeEndDate;
+    /**
+     * 복약내역순번
+     */
+    private String drugDoseSeq;
+
+
 
 
 }
