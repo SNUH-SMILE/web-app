@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
 
 @Service
 public class BatchService extends EgovAbstractServiceImpl{
-    private static final Logger LOGGER = LoggerFactory.getLogger(BatchService.class);
+    private static final Logger log = LoggerFactory.getLogger(BatchService.class);
     private  final  AiInferenceDao aiInferenceDao;
 
     private int apikey = 47595911;
@@ -106,7 +106,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         } catch (IOException e) {
             rtn = e.getMessage();
-            LOGGER.error(e.getMessage());
+            log.error(e.getMessage());
             throw new RuntimeException(e);
         } finally {
             return rtn;
@@ -167,10 +167,10 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         }catch (FileNotFoundException e){
             rtn = e.getMessage();
-            LOGGER.error(e.getMessage());
+            log.error(e.getMessage());
         }catch ( IOException e){
             rtn = e.getMessage();
-            LOGGER.error(e.getMessage());
+            log.error(e.getMessage());
         }finally {
             try{
                 if(br != null){
@@ -180,7 +180,7 @@ public class BatchService extends EgovAbstractServiceImpl{
             }catch (IOException e) {
                 e.printStackTrace();
                 rtn = e.getMessage();
-                LOGGER.error(e.getMessage());
+                log.error(e.getMessage());
             }
         }
         return rtn;
@@ -194,7 +194,7 @@ public class BatchService extends EgovAbstractServiceImpl{
      * @return
      */
     public int temperCreate(BatchVO vo) {
-
+        log.info("체온 상승 데이터 파일 만들기");
         int resultCount = 0;
 
         List list= null;
@@ -243,8 +243,10 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         } catch (IOException e) {
             e.printStackTrace();
+            log.error(e.getMessage());
             throw new RuntimeException(e);
         } finally {
+            log.info("체온 상승 데이터 파일 만들기");
             return resultCount;
         }
 
@@ -253,13 +255,13 @@ public class BatchService extends EgovAbstractServiceImpl{
 
     public String temperInsert(BatchVO vo) throws IOException, InterruptedException {
 
+        log.info("체온 상승 결과 데이터 데이틀 임포트");
         String rtn = "0";
 
         File csv = new File(vo.getOutFilePath());
 
-
         if(!csv.exists() ) {
-            System.out.println(" 체온 악화 예측 알고리즘 결과 파일이 없습니다.");
+            log.warn("체온 악화 예측 알고리즘 결과 파일이 없습니다.");
             return "";
         }
 
@@ -291,9 +293,9 @@ public class BatchService extends EgovAbstractServiceImpl{
 
 
         }catch (FileNotFoundException e){
-            System.out.println(e.getMessage());
+            log.error(e.getMessage());
         }catch ( IOException e){
-            System.out.println(e.getMessage());
+            log.error(e.getMessage());
         }finally {
             try{
                 if(br != null){
@@ -440,11 +442,12 @@ public class BatchService extends EgovAbstractServiceImpl{
      * @return
      */
     public String pythonProcessbuilder( String arg1) throws IOException, InterruptedException {
-        System.out.println("pythonbuilder ");
+        log.info("========pythonProcessbuilder");
+
         String bool = "";
         ProcessBuilder builder;
         BufferedReader br;
-
+        log.info(" 파이썬 실행 프로세스 >>>> " + arg1);
         try{
             builder = new ProcessBuilder("python3",arg1); //python3 error
 
@@ -464,11 +467,11 @@ public class BatchService extends EgovAbstractServiceImpl{
 
             if(exitval !=0){
                 //비정상종료
-                System.out.println("비정상종료");
+                log.warn("파이썬 프로세스 비정상 종료" );
             }
         } catch (IOException e){
             bool = e.getMessage();
-            LOGGER.error(e.getMessage());
+            log.error(e.getMessage());
         }
 
         return bool;
@@ -487,8 +490,6 @@ public class BatchService extends EgovAbstractServiceImpl{
         if (rtnvoList != null) {
 
             for (ArchiveVO rvo : rtnvoList) {
-
-                //  String strRtn = fileDownload(rvo);
             }
 
         }
@@ -505,7 +506,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         String OUTPUT_FILE_PATH = ""; // "출력 파일 경로";
         String FILE_URL ="";         // "리소스 경로";
-        String outputDir  = "/home/administrator/python/depressed/";
+        String outputDir  = "/usr/local/apache-tomcat-8.5.79/python/video/";
         Archive archive = null;
 
         InputStream is = null;

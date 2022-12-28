@@ -1,11 +1,14 @@
 package kr.co.hconnect.service;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import kr.co.hconnect.controller.HealthController;
 import kr.co.hconnect.repository.ArchiveDao;
 import kr.co.hconnect.repository.UserDao;
 import kr.co.hconnect.repository.TeleHealthDao;
 import kr.co.hconnect.vo.*;
 import kr.co.hconnect.common.HttpUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +31,7 @@ import com.opentok.Archive;
 @Transactional(rollbackFor = Exception.class, readOnly = true)
 public class TeleHealthService extends EgovAbstractServiceImpl {
 
-
+    private static final Logger log = LoggerFactory.getLogger(HealthController.class);
     private final ArchiveDao archiveDao;
     private final UserDao userDao;
     private final TeleHealthDao teleHealthDao;
@@ -52,62 +55,10 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
         TeleHealthConnectVO  teleVO = new TeleHealthConnectVO();
         BeanUtils.copyProperties(vo, teleVO);
 
-/*
-        String format = "name=[%s]%s&clientType=web&serialNumber=%s&profileImgUrl=%s";
-        String metaData = String.format(format
-            , webUser.getManagementCtnm()
-            , webUser.getManagementNm()
-            , condition.getLoginUserSno()
-            , FilePathConfig.getFilePathConfig(FilePathConfig.BASE_MOBILE_CONTENTS_URL) + webUser.ge
-            tFileSaveNm());
-*/
-        String metaData = vo.getLoginId();
-
         OpenTok openTok = null;
             try {
-
-              //   vo.setApiKey(apikey);
-              //   vo.setApiSecret(apiSecret);
-              //   teleEntity.setApiKey(apikey);
-              //   //# 세션 생성
-              //   openTok = new OpenTok(vo.getApiKey(), vo.getApiSecret());
-              //   SessionProperties sessionProperties = new SessionProperties.Builder()
-              //       .mediaMode(MediaMode.ROUTED)
-              //       .build();
-              //   Session session = openTok.createSession(sessionProperties);
-              //   System.out.println("session =================================================");
-              //   System.out.println(session.getSessionId());
-              //   System.out.println("=================================================");
-              //   teleEntity.setSessionId(session.getSessionId());
-              //
-              //   //# 담당자 또는 참석자의 토큰 생성
-              //   TokenOptions tokenOptions = new TokenOptions.Builder()
-              //       .role(Role.MODERATOR)
-              //       .data(metaData)
-              //       .build();
-              //
-              //   System.out.println("generateToken =================================================");
-              //   System.out.println(openTok.generateToken(teleEntity.getSessionId()
-              //       , tokenOptions));
-              //   System.out.println("=================================================");
-              //
-              //
-              //   //화상상담 개설자  토큰생성
-              //   teleEntity.setOfficerToken(openTok.generateToken(teleEntity.getSessionId()
-              //       , tokenOptions));
-              //
-              // //  teleEntity.setAttendeeToken(openTok.generateToken(sessionid));
-              //
-              //   //# 화상상담 시작정보 저장
-              //   //saveStartTelehealthInfo(teleEntity);
-              //
-              //   //# 참석자(대상자 & 보호자)에게 푸시내역 생성
-              //   createTelehealthStartPush(teleEntity);
-
                 vo.setApiKey(apikey);
                 vo.setApiSecret(apiSecret);
-
-                System.out.println("세션 생성");
 
                 //# 세션 생성
                 openTok = new OpenTok(vo.getApiKey(), vo.getApiSecret());
@@ -117,6 +68,15 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
                 Session session = openTok.createSession(sessionProperties);
                 String ssid  = session.getSessionId();
 
+
+                String guardianMetaDataFormat = "loginId=%s&admissionId=%s&clientType=pc";
+                String metaData;
+
+                metaData = String.format(guardianMetaDataFormat
+                    , vo.getLoginId()
+                    , ""
+                );
+
                 //화상상담 개설자  토큰생성
                 TokenOptions tokenOptions = new TokenOptions.Builder()
                     .role(Role.MODERATOR)
@@ -125,8 +85,8 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
 
                 String ofToken = openTok.generateToken(ssid, tokenOptions);
 
+                log.info("화상상담 시작정보 저장");
 
-                System.out.println("화상상담 시작정보 저장");
                 //# 화상상담 시작정보 저장
                 teleVO.setLoginId(vo.getLoginId());
                 teleVO.setSessionId(ssid);
@@ -136,7 +96,6 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
                 int rtn = teleHealthDao.insertSession(teleVO);
 
 
-                System.out.println("참석자(대상자 & 보호자)에게 푸시내역 생성");
                 //# 참석자(대상자 & 보호자)에게 푸시내역 생성
                 createTelehealthStartPush(teleVO);
 
@@ -208,11 +167,11 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
             OutputMode outputMode = OutputMode.INDIVIDUAL;
             ArchiveLayout layout = null;
 
-            outputMode = OutputMode.COMPOSED;
-            layout = new ArchiveLayout(ArchiveLayout.Type.HORIZONTAL);
+            //outputMode = OutputMode.COMPOSED;
+            //layout = new ArchiveLayout(ArchiveLayout.Type.HORIZONTAL);
 
             archive = openTok.startArchive(vo.getSessionId(), new ArchiveProperties.Builder()
-                .name(vo.getAdmissionId()+date.toString())
+                .name(vo.getAdmissionId())
                 .hasAudio(true)
                 .hasVideo(true)
                 .outputMode(outputMode)
@@ -268,16 +227,14 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
      */
     public void createTelehealthStartPush(TeleHealthConnectVO vo){
         //텔레헬스
+
+        log.info(("화상접속 클라이언트 토큰생성 및 푸시 발송"));
+
         String admissionId = vo.getAdmissionId();
+        log.info("admissionId" + admissionId);
 
         String CUID = userDao.selectPationtLoginId(admissionId);
-        System.out.println(" CUID =====================================");
-        System.out.println(admissionId);
-        System.out.println(CUID);
-        System.out.println(" CUID =====================================");
-
-        //CUID = "smile01";
-        //admissionId = "";
+        log.info("CUID" + CUID);
 
         String message = "화상진료를 시작합니다. 참여 부탁드립니다!";
         String sessionId  = vo.getSessionId();
@@ -289,20 +246,27 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
             vo.setApiKey(apikey);
             vo.setApiSecret(apiSecret);
 
+            String subjectMetaDataFormat = "loginId=%s&admissionId=%s&clientType=mobile";
+            String metaData;
+            //보호자면
+                metaData = String.format(subjectMetaDataFormat
+                    , ""
+                    , admissionId
+                );
+
             openTok = new OpenTok(vo.getApiKey(), vo.getApiSecret());
-            String attendeeToken = openTok.generateToken(sessionId);
 
-            System.out.println("sessionId====================================================================");
-            System.out.println(sessionId);
-            System.out.println("sessionId====================================================================");
+            TokenOptions tokenOpts = new TokenOptions.Builder()
+                .role(Role.MODERATOR)
+                .data(metaData)
+                .build();
 
-            System.out.println("attendeeToken====================================================================");
-            System.out.println(attendeeToken);
-            System.out.println("attendeeToken====================================================================");
+            String attendeeToken = openTok.generateToken(sessionId, tokenOpts);
+
+            log.info("sessionId" + sessionId);
+            log.info("attendeeToken" + attendeeToken);
 
             //생성된 구독자 토큰 저장
-
-            //
             teleSsubVO.setLoginId(vo.getLoginId());
             teleSsubVO.setApiKey(apikey);
             teleSsubVO.setSessionId(sessionId);
@@ -322,7 +286,7 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
             int ret = sendPush(mapValue);
 
         } catch (OpenTokException e){
-            System.out.println(e.getMessage());
+            log.error(e.getMessage());
         }
 
 
