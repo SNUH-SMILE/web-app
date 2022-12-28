@@ -223,12 +223,12 @@ public class DrugService extends EgovAbstractServiceImpl {
      * @param admissionId
      * @return
      */
-    public  List<DrugDoseVO> selectDrugListForDetail(String admissionId){
+    public  List<DrugDetailVO> selectDrugListForDetail(String admissionId){
 
 
-        List<DrugDoseVO> drugAlarmVOList =  drugDao.selectDrugListForDetail(admissionId);
+        List<DrugDetailVO> drugDetailVOS =  drugDao.selectDrugListForDetail(admissionId);
 
-        return drugAlarmVOList;
+        return drugDetailVOS;
     }
 
 }
