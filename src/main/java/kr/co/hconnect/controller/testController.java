@@ -47,7 +47,7 @@ public class testController {
         ResponseBaseVO<testVO> responseVO = new ResponseBaseVO<>();
 
         try {
-            String rtn = testService.fileDownload2(vo);
+            String rtn = testService.fileDownload4(vo);
 
             vo.setArchiveUrl(rtn);
 
