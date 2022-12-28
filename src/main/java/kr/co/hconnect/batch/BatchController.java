@@ -117,7 +117,7 @@ public class BatchController {
      * 파이썬 exe 파일
      * ./depressed 폴더
      */
-    @Scheduled(cron="0 0 22 * * *")
+    @Scheduled(cron="0 0 23 * * *")
     public void depressedScheduler() throws IOException, InterruptedException {
 
         String filePath = aiPath+ "depress/depress_file.csv";
@@ -158,7 +158,7 @@ public class BatchController {
 
 
     //@Scheduled(fixedDelay = 30 * 1000)
-    @Scheduled(cron="0 0 21 * * *")
+    @Scheduled(cron="0 0 20 * * *")
     public void fileDownScheduler() throws IOException, OpenTokException {
         //System.out.println("3. 우울 배치 처리 하기 ");
         //파일 생성          depressedCreate
