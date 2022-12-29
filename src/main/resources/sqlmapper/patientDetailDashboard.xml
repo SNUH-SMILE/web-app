@@ -217,7 +217,7 @@
                LEFT JOIN RESULT            RRP     ON RRP.RESULT_SEQ = (SELECT X.RESULT_SEQ
                                                                          FROM RESULT X
                                                                         WHERE X.ADMISSION_ID = A.ADMISSION_ID
-                                                                          AND X.ITEM_ID = ISP.ITEM_ID
+                                                                          AND X.ITEM_ID = IRP.ITEM_ID
                                                                         ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
                                                                         LIMIT 1)
                LEFT JOIN RESULT_DETAIL     RDRP    ON RDRP.RESULT_SEQ = RRP.RESULT_SEQ
@@ -241,7 +241,6 @@
 						,CASE WHEN INF_DIV ='20' THEN REG_DT END TEMPER_DATE
 						,CASE WHEN INF_DIV ='30' THEN REG_DT END DEPR_DATE
 						FROM INFERENCE
-					WHERE ADMISSION_ID  = '0000000069'
 					) T1
 					GROUP BY T1.ADMISSION_ID
 					) AIIN ON AIIN.ADMISSION_ID = A.ADMISSION_ID
