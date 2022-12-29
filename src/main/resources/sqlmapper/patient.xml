@@ -59,7 +59,10 @@
 		   AND BIRTH_DATE = #{birthDate}
 		   AND SEX        = #{sex}
 		   AND CELL_PHONE = #{cellPhone}
-		   AND SEARS_ACCOUNT = #{searsAccount}
+           <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(searsAccount)">
+            	AND SEARS_ACCOUNT = #{searsAccount}
+           </if>
+
 	]]>
 	</select>
 
