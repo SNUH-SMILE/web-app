@@ -28,13 +28,15 @@
             ADMISSION_ID,
             INF_DIV,
             INF_VALUE,
-            REG_DT
+            REG_DT,
+            LOG_DT
         )
         select
               admission_id
              ,inf_div
              ,inf_value
              ,reg_dt
+             ,NOW()
         from inference
         where INF_DIV = #{infDiv}
         ]]>
@@ -187,6 +189,7 @@
                  ,T2.STRESS_9    as ST9_YN
                  ,T3.GADVAL      AS GAD_TOTAL
                  ,T3.INSVAL      AS INS_TOTAL
+                 ,T4.DN_FOLDER_VOICE AS VIDEO
                  ,T3.PHQVAL      AS PHQ_TOTAL
                  ,CASE WHEN T3.PHQVAL >= 10 THEN 1 ELSE 0 END TAG
                  ,0 SPLIT
@@ -196,7 +199,13 @@
                     WHERE 1=1
                       AND INTERVIEW_TYPE IN ('01','03','04')
                     GROUP BY ADMISSION_ID
-                ) T1 LEFT OUTER JOIN
+                ) T1 INNER JOIN
+                (
+                    SELECT DN_SEQ, ADMISSION_ID , DN_FOLDER_VOICE  FROM ARCHIVE_DOWN AD
+                     ORDER BY DN_SEQ DESC
+                     LIMIT 1
+                ) T4 ON T1.ADMISSION_ID = T4.ADMISSION_ID
+                LEFT OUTER JOIN
                 (
                     SELECT
                         INTERVIEW_SEQ
@@ -210,7 +219,7 @@
                              UNION ALL
                              /** 정신건강 불면증 */
                              SELECT INTERVIEW_SEQ, 0 GADVAL, CAST(ANSWER_VALUE AS UNSIGNED) INSVAL, 0 PHQVAL FROM INTERVIEW_DETAIL
-                             WHERE ANSWER_SEQ IN ('36-1','36-2','36-3','36-4','36-5','36-6')
+                             WHERE ANSWER_SEQ IN ('36-1','36-2','36-3','36-4','36-5','36-6','36-7')
                              UNION ALL
                              /** 정신건강 우울*/
                              SELECT INTERVIEW_SEQ, 0 GADVAL, 0 INSVAL, CAST(ANSWER_VALUE AS UNSIGNED)  PHQVAL FROM INTERVIEW_DETAIL
@@ -219,7 +228,7 @@
                     GROUP BY INTERVIEW_SEQ
                 ) T3 ON T1.INTERVIEW_SEQ = T3.INTERVIEW_SEQ
                      LEFT OUTER JOIN
-                (	/** 정신건강 불안 */
+                (	/** 정신건강 스트레스 */
                     SELECT INTERVIEW_SEQ ,
                         SUM(CASE WHEN ANSWER_SEQ = '34-2' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_1
                          ,SUM(CASE WHEN ANSWER_SEQ = '34-3' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_2
@@ -251,7 +260,7 @@
                a.DOWN_YN
         FROM archive a
        WHERE a.STATUS ='stopped'
-         AND IFNULL(a.DOWN_YN,'N') ='N'
+         AND IFNULL(a.DOWN_YN,'N') ='N' OR a.DOWN_YN =''
         ]]>
     </select>
 
@@ -264,34 +273,20 @@
     <insert id="insArchiveDown"  parameterType="kr.co.hconnect.vo.ArchiveDownVO" >
         <![CDATA[
             INSERT INTO archive_down (
-                      ADMISSION_ID,
-                      DN_DATE,
-                      DN_TIME,
-                      DN_DATE_VOICE,
-                      DN_TIME_VOICE,
-                      DN_FOLDER,
-                      DN_FOLDER_VOICE,
-                      ARCHIVE_ID,
-                      SESSION_ID,
-                      REG_DT,
-                      DN_FILE_NAME,
-                      DN_FILE_NAME_VOICE,
-                      DN_YN.
-                      DN_YN_VOIDE)
+                ADMISSION_ID,
+                DN_DATE_VOICE,
+                DN_TIME_VOICE,
+                DN_FOLDER_VOICE,
+                ARCHIVE_ID,
+                REG_DT,
+                DN_YN_VOICE)
             VALUES(
                    #{admissionId},
-                   #{dnDate},
-                   #{dnTime},
                    #{dnDateVoice},
                    #{dnTimeVoice},
-                   #{dnFolder},
                    #{dnFolderVoice},
                    #{archiveId},
-                   #{sessionId},
                    now(),
-                   #{dnFileName},
-                   #{dnFileNameVoice},
-                   #{dnYn},
                    #{dnYnVoice}
             )
         ]]>

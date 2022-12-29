@@ -24,6 +24,9 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.json.simple.parser.JSONParser;
@@ -319,17 +322,36 @@ public class TestService {
         String archiveId = vo.getArchiveId();
         String admissionId = vo.getAdmissionId();
 
+        LocalDate nowDate = LocalDate.now();
+        LocalTime nowTime = LocalTime.now();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String formatedNow = nowDate.format(formatter);
+
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmm");
+        String timeFormatedNow = nowTime.format(timeFormatter);
+
+
         outputDir += admissionId;
 
         //디렉토리 생성하기
         File dir = new File(outputDir);
-        if (!dir.exists()){
+        if (dir.exists()){
+
+            File newFile = new File(dir+"_"+formatedNow );
+            dir.renameTo(newFile);
+
+            File dirNew = new File(outputDir);
+            dirNew.mkdir();
+
+        } else {
             try{
                 dir.mkdir();
             } catch (Exception e){
                 System.out.println(e.getMessage());
                 return "";
             }
+
         }
         //디렉토리 생성하기
         try{
@@ -349,14 +371,21 @@ public class TestService {
             //파일 다운 로드
             FileUtils.copyURLToFile(url, f );
 
-            String zipFile = admissionId + ".zip";
+            //파일 다운로드 완료 업데이트
+            ArchiveVO archiveVO = new ArchiveVO();
+            archiveVO.setArchiveId(archiveId);
+            aiInferenceDao.udpArchiveDown(archiveVO);
 
-            zipUtil zipf = new zipUtil();
+
+
+            //압축파일 풀기
+            zipUtil ziputil = new zipUtil();
+            String zipFile = admissionId + ".zip";
             outputDir +="/"  ;
             System.out.println("outputDir >> " + outputDir);
             System.out.println("zipFile >> "+ zipFile);
-
-            if(zipf.unZip(outputDir, zipFile, outputDir)){
+            //압축해제
+            if(ziputil.unZip(outputDir, zipFile, outputDir)){
 
                 /* json  파일 찾아서 읽기 */
                 getJsonPath = outputDir +  admissionId + "/";
@@ -414,6 +443,9 @@ public class TestService {
                 }
 
             }
+
+            System.out.println("vFileName  >>>>>>>>>>  "+ vFileName);
+
             //mp3 파일 추출
             if (!StringUtils.isEmpty(vFileName)) {
                 //mpe3파일 추출
@@ -433,6 +465,25 @@ public class TestService {
 
                 String r = convertMp3(cvAudio);
 
+                if (StringUtils.isEmpty(r)){
+
+                    // 결과 출력
+                    System.out.println(formatedNow);  // 20221229
+                    System.out.println(timeFormatedNow);  // 1500
+
+                    //제대로 변환이 되었으면 디비에 넣기
+                    ArchiveDownVO archiveDownVO = new ArchiveDownVO();
+
+                    archiveDownVO.setArchiveId(vo.getArchiveId());
+                    archiveDownVO.setAdmissionId(vo.getAdmissionId());
+                    archiveDownVO.setDnDateVoice(formatedNow);
+                    archiveDownVO.setDnTimeVoice(timeFormatedNow);
+                    archiveDownVO.setDnFolderVoice(targetPath);
+                    archiveDownVO.setDnYn("Y");
+
+                    aiInferenceDao.insArchiveDown(archiveDownVO);
+
+                }
                 System.out.println("video convert end");
 
             }
@@ -444,7 +495,7 @@ public class TestService {
 
     }
 
-
+    //확장로 파일 이름 가져오기
     private File[] getFileNames(String targetDirName, String fileExt) {
         File dir = new File(targetDirName);
 
@@ -464,6 +515,7 @@ public class TestService {
         return files;
     }
 
+    //webm to mp3 convert
     private String convertMp3(Map<String, Object> cvAudio) {
 
         String rtn ="";
@@ -508,6 +560,7 @@ public class TestService {
         return rtn;
     }
 
+    //webm to mp4 convert
     private String convertMp4(Map<String, Object> cvVideo) {
 
         String rtn ="";
@@ -548,6 +601,34 @@ public class TestService {
         } catch (Exception ex) {
             rtn = ex.getMessage();
             ex.printStackTrace();
+        }
+        return rtn;
+    }
+
+
+    public String ArchiveList(testVO vo) throws IOException, OpenTokException {
+        String rtn ="";
+
+        ArchiveVO avo = new ArchiveVO();
+
+        List<ArchiveVO> rtnvoList = new ArrayList<>();
+        rtnvoList = aiInferenceDao.archiveList(avo);
+
+        if (rtnvoList != null) {
+
+            for (ArchiveVO rvo : rtnvoList) {
+
+                vo.setArchiveId(rvo.getArchiveId());
+                vo.setAdmissionId(rvo.getName());
+                try{
+                    fileDownload4(vo);
+                } catch (Exception e){
+                    rtn = e.getMessage();
+                    System.out.println(e.getMessage());
+                }
+
+            }
+
         }
         return rtn;
     }

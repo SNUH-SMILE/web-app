@@ -14,7 +14,7 @@ public class AiInferenceDao extends EgovAbstractMapper {
     }
 
     public void insInf_log (AiInferenceVO vo) {
-        insert("kr.co.hconnect.sqlmapper.insInf_log", vo);
+        insert("kr.co.hconnect.sqlmapper.insInfLog", vo);
     }
 
     public void delInf (AiInferenceVO vo) {
@@ -41,7 +41,7 @@ public class AiInferenceDao extends EgovAbstractMapper {
     }
 
     public int insArchiveDown(ArchiveDownVO vo) {
-        return insert("kr.co.hconnect.sqlmapper.insArchiveDown");
+        return insert("kr.co.hconnect.sqlmapper.insArchiveDown", vo);
     }
     public List<ArchiveDownVO> selectVoiceList() {
         return selectList("kr.co.hconnect.sqlmapper.selectVoiceList");

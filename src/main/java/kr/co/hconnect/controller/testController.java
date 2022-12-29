@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.hconnect.service.TestService;
@@ -47,6 +48,9 @@ public class testController {
         ResponseBaseVO<testVO> responseVO = new ResponseBaseVO<>();
 
         try {
+
+
+
             String rtn = testService.fileDownload4(vo);
 
             vo.setArchiveUrl(rtn);
@@ -66,6 +70,35 @@ public class testController {
 
         return responseVO;
     }
+
+
+
+
+    @RequestMapping(value = "/archiveFileDown", method = RequestMethod.POST)
+    public ResponseBaseVO<testVO> archiveFileDown(@Validated(VoValidationGroups.add.class) @RequestBody testVO vo
+        , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+
+        ResponseBaseVO<testVO> responseVO = new ResponseBaseVO<>();
+        try {
+            String rtn = testService.ArchiveList(vo);
+            vo.setArchiveUrl(rtn);
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("fileDown ok");
+            responseVO.setResult(vo);
+
+        } catch (NotFoundUserInfoException e) {
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (OpenTokException e) {
+            throw new RuntimeException(e);
+        }
+
+        return responseVO;
+    }
+
+
 
 
     /**
