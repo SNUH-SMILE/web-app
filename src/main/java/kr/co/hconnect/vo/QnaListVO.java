@@ -28,8 +28,8 @@ public class QnaListVO implements Serializable {
 
     private String questionBody;
 
-    private String anawerDate;
+    private String answerDate;
 
-    private String anawerBody;
+    private String answerBody;
 
 }
