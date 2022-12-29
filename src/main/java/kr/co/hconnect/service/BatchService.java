@@ -142,6 +142,13 @@ public class BatchService extends EgovAbstractServiceImpl{
         String line = "";
 
         try{
+            AiInferenceVO logVO = new AiInferenceVO();
+            logVO.setInfDiv("10");
+            //로그로 데이터 복사
+            aiInferenceDao.insInf_log(logVO);
+            //데이터 삭제
+            aiInferenceDao.delInf(logVO);
+
             br = new BufferedReader(new FileReader(csv));
             while ((line = br.readLine()) != null){
                 String[] lineArr = line.split(",");
@@ -269,6 +276,13 @@ public class BatchService extends EgovAbstractServiceImpl{
         String line = "";
 
         try{
+            AiInferenceVO logVO = new AiInferenceVO();
+            logVO.setInfDiv("20");
+            //로그로 데이터 복사
+            aiInferenceDao.insInf_log(logVO);
+            //데이터 삭제
+            aiInferenceDao.delInf(logVO);
+
             br = new BufferedReader(new FileReader(csv));
             while ((line = br.readLine()) != null){
                 String[] lineArr = line.split(",");
@@ -395,6 +409,13 @@ public class BatchService extends EgovAbstractServiceImpl{
         String line = "";
 
         try{
+            AiInferenceVO logVO = new AiInferenceVO();
+            logVO.setInfDiv("30");
+            //로그로 데이터 복사
+            aiInferenceDao.insInf_log(logVO);
+            //데이터 삭제
+            aiInferenceDao.delInf(logVO);
+
             br = new BufferedReader(new FileReader(csv));
             while ((line = br.readLine()) != null){
                 String[] lineArr = line.split(",");
