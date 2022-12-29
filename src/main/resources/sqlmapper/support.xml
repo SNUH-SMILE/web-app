@@ -37,8 +37,8 @@
              QUESTION_TITLE                     as questionTitle
             ,DATE_FORMAT(REG_DT, '%Y%m%d')      as questionDate
             ,QUESTION_CONTENT                   as questionBody
-            ,DATE_FORMAT(REPLY_DT, '%Y%m%d')    as anawerDate
-            ,REPLY_CONTENT                      as anawerBody
+            ,DATE_FORMAT(REPLY_DT, '%Y%m%d')    as answerDate
+            ,REPLY_CONTENT                      as answerBody
         FROM QNA
         WHERE 1=1
           AND REG_ID = #{loginId};
