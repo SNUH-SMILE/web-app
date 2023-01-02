@@ -156,7 +156,8 @@
                     THEN '위험' ELSE '정상' END               AS RISK_TEMPER_RESULT         -- 호흡기계 체온 위험도
              , AIIN.TEMPER_DATE                              AS RISK_TEMPER_DT             -- 호흡기계 체온 위험도 측정일시
              , '우울'                                         AS MENTAL_RISK_NM             -- 정신건강 우울 이름
-             , AIIN.DEPR                                     AS MENTAL_RISK_RESULT         -- 정신건강 우울 위험도
+             , CASE WHEN AIIN.DEPR = 1
+                    THEN '위험' ELSE '정상' END               AS MENTAL_RISK_RESULT         -- 호흡기계 체온 위험도
              , AIIN.DEPR_DATE                                AS MENTAL_RISK_RESULT_DT
           FROM ADMISSION A
                /* 혈압 */
