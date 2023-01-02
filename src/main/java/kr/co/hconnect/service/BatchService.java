@@ -2,38 +2,48 @@ package kr.co.hconnect.service;
 
 import com.opentok.Archive;
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
-import egovframework.rte.fdl.cmmn.exception.FdlException;
-import kr.co.hconnect.controller.AdmissionController;
+import kr.co.hconnect.common.zipUtil;
 import kr.co.hconnect.vo.*;
 import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import kr.co.hconnect.repository.*;
-import org.springframework.util.ResourceUtils;
 
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import java.nio.file.Files;
 
 import com.opentok.*;
 import com.opentok.exception.OpenTokException;
 import org.springframework.util.StringUtils;
+import ws.schild.jave.*;
 
 @Service
 public class BatchService extends EgovAbstractServiceImpl{
     private static final Logger log = LoggerFactory.getLogger(BatchService.class);
+
+    @Value("${ai.path}")
+    private String ai_path;
+
+    @Value("${ai.video.path}")
+    private String ai_video_path;
+
     private  final  AiInferenceDao aiInferenceDao;
 
     private int apikey = 47595911;
@@ -365,10 +375,17 @@ public class BatchService extends EgovAbstractServiceImpl{
                     aData += "," + dt.getSt8Yn();   //스트레스설문 8번
                     aData += "," + dt.getSt9Yn();   //스트레스설문 9번
                     aData += "," + dt.getGadTotal();  //gad7 설문총점수
-                    aData += "," + dt.getInsTotal();  //ins 설문 총점수
+                    aData += "," + dt.getPhq1Yn();  //정신건강 우울 1
+                    aData += "," + dt.getPhq2Yn();  //정신건강 우울 2
+                    aData += "," + dt.getPhq3Yn();  //정신건강 우울 3
+                    aData += "," + dt.getPhq4Yn();  //정신건강 우울 4
+                    aData += "," + dt.getPhq5Yn();  //정신건강 우울 5
+                    aData += "," + dt.getPhq6Yn();  //정신건강 우울 6
+                    aData += "," + dt.getPhq7Yn();  //정신건강 우울 7
+                    aData += "," + dt.getPhq8Yn();  //정신건강 우울 8
+                    aData += "," + dt.getPhq9Yn();  //정신건강 우울 9
                     aData += "," + dt.getVideo();     //환자음성파일위치
                     aData += "," + dt.getTag();       //실제악화값
-                    aData += "," + dt.getSplit();     //fold number
                     fw.write(aData);
                     fw.newLine();
                 }
@@ -421,12 +438,12 @@ public class BatchService extends EgovAbstractServiceImpl{
                 String[] lineArr = line.split(",");
 
                 AiInferenceVO entityVO = new AiInferenceVO();
-                entityVO.setAdmissionId(lineArr[0]);
-                entityVO.setInfDiv("20");
-                entityVO.setInfValue(lineArr[1]);
+                entityVO.setAdmissionId(lineArr[0]);          //환자번호
+                entityVO.setInfDiv("30");                     //우울
+                entityVO.setInfValue(lineArr[22]);            //실제 예측값
 
                 System.out.println(lineArr[0]);
-                System.out.println(lineArr[1]);
+                System.out.println(lineArr[22]);
 
                 if (lineArr[0].equals("Patient_id")) {
                     continue;
@@ -435,7 +452,7 @@ public class BatchService extends EgovAbstractServiceImpl{
                 aiInferenceDao.insInf(entityVO);  // 인서트
 
                 System.out.println(lineArr[0]);
-                System.out.println(lineArr[1]);
+                System.out.println(lineArr[22]);
             }
 
 
@@ -501,7 +518,9 @@ public class BatchService extends EgovAbstractServiceImpl{
 
 
 
-    public int vonageArchiveList() {
+    public String vonageArchiveList() throws IOException, OpenTokException {
+
+        String rtn ="";
 
         ArchiveVO avo = new ArchiveVO();
 
@@ -511,32 +530,74 @@ public class BatchService extends EgovAbstractServiceImpl{
         if (rtnvoList != null) {
 
             for (ArchiveVO rvo : rtnvoList) {
+
+                try{
+                    fileDownload(rvo);
+                } catch (Exception e){
+                    rtn = e.getMessage();
+                    System.out.println(e.getMessage());
+                }
+
             }
 
         }
-        return 0;
+        return rtn;
     }
 
-    /**
-     * 아카리브 파일 다운로드
-     * @return
-     */
-    public String fileDownload(String aid, String aName) throws IOException, OpenTokException , MalformedURLException {
+    public String fileDownload(ArchiveVO vo) throws IOException, OpenTokException , MalformedURLException {
 
         String rtn = "";
 
-        String OUTPUT_FILE_PATH = ""; // "출력 파일 경로";
+        log.debug("ai_path  >>>  " + ai_path);
+        log.debug("ai_video_path  >>>  " + ai_video_path);
+
         String FILE_URL ="";         // "리소스 경로";
-        String outputDir  = "/usr/local/apache-tomcat-8.5.79/python/video/";
+        String outputDir  = ai_video_path;
         Archive archive = null;
+        String vFileName ="";
+        String getJsonPath ="";
+        String getVideoPath ="";
 
         InputStream is = null;
         FileOutputStream os = null;
 
-        //아카이브 아이디 찾기
-        String archiveId = aid;
+        String archiveId = vo.getArchiveId();
+        String admissionId = vo.getName();   //admissionId
 
+        LocalDate nowDate = LocalDate.now();
+        LocalTime nowTime = LocalTime.now();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String formatedNow = nowDate.format(formatter);
+
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmm");
+        String timeFormatedNow = nowTime.format(timeFormatter);
+
+
+        outputDir += admissionId;
+
+        //디렉토리 생성하기
+        File dir = new File(outputDir);
+        if (dir.exists()){
+
+            File newFile = new File(dir+"_"+formatedNow );
+            dir.renameTo(newFile);
+
+            File dirNew = new File(outputDir);
+            dirNew.mkdir();
+
+        } else {
+            try{
+                dir.mkdir();
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+                return "";
+            }
+
+        }
+        //디렉토리 생성하기
         try{
+
             OpenTok openTok = new OpenTok(apikey, apiSecret);
             archive =openTok.getArchive(archiveId);
 
@@ -546,79 +607,244 @@ public class BatchService extends EgovAbstractServiceImpl{
 
             //해당 url
             URL url = new URL(FILE_URL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            int responseCode = conn.getResponseCode();
+            String outputFile = outputDir + "/" + admissionId +".zip";
 
-            System.out.println("responseCode " + responseCode);
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                String fileName = "";
-                String disposition = conn.getHeaderField("Content-Disposition");
-                String contentType = conn.getContentType();
+            File f = new File(outputFile);
+            //파일 다운 로드
+            FileUtils.copyURLToFile(url, f );
 
-                // 일반적으로 Content-Disposition 헤더에 있지만
-                // 없을 경우 url 에서 추출해 내면 된다.
-                // if (disposition != null) {
-                //     String target = "filename=";
-                //     int index = disposition.indexOf(target);
-                //     if (index != -1) {
-                //         fileName = disposition.substring(index + target.length() + 1);
-                //     }
-                // } else {
-                //     //fileName = FILE_URL.substring(FILE_URL.lastIndexOf("/") + 1);
-                //     fileName = "archive.mp4";
-                //
-                // }
-
-                //파일이름 규칙
-                // admission_di + "-" + 년월일시분
-                //A999999624_202212130737
-                SimpleDateFormat format = new SimpleDateFormat ( "yyyyMMddHHmm");
-                String formatdate = format.format (System.currentTimeMillis());
-                fileName =aName +"_"+ formatdate+ ".mp4";
-
-                System.out.println("Content-Type = " + contentType);
-                System.out.println("Content-Disposition = " + disposition);
-                System.out.println("fileName = " + fileName);
-
-                is = conn.getInputStream();
-                os = new FileOutputStream(new File(outputDir, fileName));
-
-                final int BUFFER_SIZE = 4096;
-                int bytesRead;
-                byte[] buffer = new byte[BUFFER_SIZE];
+            //파일 다운로드 완료 업데이트
+            ArchiveVO archiveVO = new ArchiveVO();
+            archiveVO.setArchiveId(archiveId);
+            aiInferenceDao.udpArchiveDown(archiveVO);
 
 
-                System.out.println("is.read(buffer) = " + is.read(buffer));
-                while ((bytesRead = is.read(buffer)) != -1) {
-                    os.write(buffer, 0, bytesRead);
+
+            //압축파일 풀기
+            zipUtil ziputil = new zipUtil();
+            String zipFile = admissionId + ".zip";
+            outputDir +="/"  ;
+            System.out.println("outputDir >> " + outputDir);
+            System.out.println("zipFile >> "+ zipFile);
+            //압축해제
+            if(ziputil.unZip(outputDir, zipFile, outputDir)){
+
+                /* json  파일 찾아서 읽기 */
+                getJsonPath = outputDir +  admissionId + "/";
+                getVideoPath = getJsonPath;
+
+                System.out.println("getJsonPath  " + getJsonPath);
+                File[] jsonFiles = getFileNames(getJsonPath, "json");
+
+                System.out.println("jsonFiles.length  " + jsonFiles.length);
+                String jsonfileName="";
+                for(int i=0; i<jsonFiles.length; i++ ){
+                    System.out.println("= jsonfile   " + i );
+                    System.out.println("===================================================="  );
+
+                    jsonfileName = jsonFiles[i].getName();
+                    System.out.println("jsonfileName  " + jsonfileName);
                 }
-                os.close();
-                is.close();
-                System.out.println("File downloaded");
-            } else {
-                System.out.println("No file to download. Server replied HTTP code: " + responseCode);
-            }
-            conn.disconnect();
 
+                getJsonPath += jsonfileName;
+
+                //json 파일에서 환자의 파일이름을 읽는다.
+                // jackson objectmapper 객체 생성
+                JSONParser parser = new JSONParser();
+
+                try(Reader reader = new FileReader(getJsonPath)){
+
+                    JSONObject jsonObject = (JSONObject) parser.parse(reader);
+                    System.out.println(jsonObject);
+
+                    String name = (String) jsonObject.get("name");
+                    System.out.println(name);
+
+                    JSONArray files = (JSONArray) jsonObject.get("files");
+                    System.out.println(files);
+
+                    for ( int i=0; i<files.size(); i++){
+
+                        System.out.println("=files  " + i +" ===========================================");
+                        JSONObject dataObject = (JSONObject) files.get(i);
+                        System.out.println("files: connectionData==>"+dataObject.get("connectionData"));
+
+                        String connData = (String) dataObject.get("connectionData");
+
+                        //파일명 찾기
+                        if (connData.contains(admissionId)){
+                            System.out.println("files: connectionData==>");
+                            vFileName = (String) dataObject.get("filename");
+                            System.out.println(vFileName);
+                        }
+
+                    }
+
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+
+            System.out.println("vFileName  >>>>>>>>>>  "+ vFileName);
+
+            //mp3 파일 추출
+            if (!StringUtils.isEmpty(vFileName)) {
+                //mpe3파일 추출
+                System.setProperty("java.io.tmpdir", ai_path);   //비디오 실행 파일
+
+                String sourcePath = getVideoPath + vFileName;
+                String targetPath = getVideoPath + admissionId +".mp3";
+
+                System.out.println("video sourcePath" + sourcePath);
+                System.out.println("video targetPath" + targetPath);
+
+                Map<String, Object> cvAudio = new HashMap<String, Object>();
+                cvAudio.put("sourcePath", sourcePath);
+                cvAudio.put("targetPath", targetPath);
+
+                System.out.println("video convert start");
+
+                String r = convertMp3(cvAudio);
+
+                if (StringUtils.isEmpty(r)){
+
+                    // 결과 출력
+                    System.out.println(formatedNow);  // 20221229
+                    System.out.println(timeFormatedNow);  // 1500
+
+                    //제대로 변환이 되었으면 디비에 넣기
+                    ArchiveDownVO archiveDownVO = new ArchiveDownVO();
+
+                    archiveDownVO.setArchiveId(vo.getArchiveId());
+                    archiveDownVO.setAdmissionId(vo.getName());
+                    archiveDownVO.setDnDateVoice(formatedNow);
+                    archiveDownVO.setDnTimeVoice(timeFormatedNow);
+                    archiveDownVO.setDnFolderVoice(targetPath);
+                    archiveDownVO.setDnYn("Y");
+
+                    aiInferenceDao.insArchiveDown(archiveDownVO);
+
+                }
+                System.out.println("video convert end");
+
+            }
         } catch (OpenTokException e) {
             System.out.println(e.getMessage());
-        } catch (Exception e){
-            System.out.println("An error occurred while trying to download a file.");
-            e.printStackTrace();
-            try {
-                if (is != null){
-                    is.close();
-                }
-                if (os != null){
-                    os.close();
-                }
-            } catch (IOException e1){
-                e1.printStackTrace();
-            }
         }
 
         return rtn;
 
+    }
+
+    //확장로 파일 이름 가져오기
+    private File[] getFileNames(String targetDirName, String fileExt) {
+        File dir = new File(targetDirName);
+
+        File[] files = null;
+        if (dir.isDirectory()) {
+            final String ext = fileExt.toLowerCase();
+            files = dir.listFiles(new FileFilter() {
+                public boolean accept(File file) {
+                    if (file.isDirectory()) {
+                        return false;
+                    }
+                    return file.getName().toLowerCase().endsWith("." + ext);
+                }
+            });
+        }
+
+        return files;
+    }
+
+    //webm to mp3 convert
+    private String convertMp3(Map<String, Object> cvAudio) {
+
+        String rtn ="";
+        //mpe3파일 추출
+        System.setProperty("java.io.tmpdir", "E:\\python\\");
+
+        String sourcePath =(String)cvAudio.get("sourcePath");
+        String targetPath = (String)cvAudio.get("targetPath");
+
+
+        System.out.println("video sourcePath" + sourcePath);
+        System.out.println("video targetPath" + targetPath);
+
+        File source = new File(sourcePath);
+        File target = new File(targetPath);
+
+        try {
+            //Audio Attributes
+            System.out.println("Audio Attributes");
+            AudioAttributes audio = new AudioAttributes();
+            audio.setCodec("libmp3lame");
+            audio.setBitRate(128000);
+            audio.setChannels(2);
+            audio.setSamplingRate(44100);
+
+            //Encoding attributes
+            System.out.println("Encoding attributes");
+            EncodingAttributes attrs = new EncodingAttributes();
+            attrs.setFormat("mp3");
+            attrs.setAudioAttributes(audio);
+
+            //Encode
+            //Encoder encoder = new Encoder(new MyFFMPEGExecutableLocator())
+            System.out.println("Encoding ");
+            Encoder encoder = new Encoder(new DefaultFFMPEGLocator());
+            encoder.encode(new MultimediaObject(source), target, attrs);
+
+        } catch (Exception ex) {
+            rtn = ex.getMessage();
+            ex.printStackTrace();
+        }
+        return rtn;
+    }
+
+    //webm to mp4 convert
+    private String convertMp4(Map<String, Object> cvVideo) {
+
+        String rtn ="";
+        //mpe3파일 추출
+        System.setProperty("java.io.tmpdir", "E:\\python\\");
+
+        String sourcePath =(String)cvVideo.get("sourcePath");
+        String targetPath = (String)cvVideo.get("targetPath");
+
+
+        System.out.println("video sourcePath" + sourcePath);
+        System.out.println("video targetPath" + targetPath);
+
+        File source = new File(sourcePath);
+        File target = new File(targetPath);
+
+        try {
+            //Audio Attributes
+            System.out.println("Audio Attributes");
+            AudioAttributes audio = new AudioAttributes();
+            audio.setCodec("libmp3lame");
+            audio.setBitRate(128000);
+            audio.setChannels(2);
+            audio.setSamplingRate(44100);
+
+            //Encoding attributes
+            System.out.println("Encoding attributes");
+            EncodingAttributes attrs = new EncodingAttributes();
+            attrs.setFormat("mp3");
+            attrs.setAudioAttributes(audio);
+
+            //Encode
+            //Encoder encoder = new Encoder(new MyFFMPEGExecutableLocator())
+            System.out.println("Encoding ");
+            Encoder encoder = new Encoder(new DefaultFFMPEGLocator());
+            encoder.encode(new MultimediaObject(source), target, attrs);
+
+        } catch (Exception ex) {
+            rtn = ex.getMessage();
+            ex.printStackTrace();
+        }
+        return rtn;
     }
 
 

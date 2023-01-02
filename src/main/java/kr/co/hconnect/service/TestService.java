@@ -1,14 +1,15 @@
 package kr.co.hconnect.service;
 
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opentok.Archive;
 import com.opentok.OpenTok;
 import com.opentok.exception.OpenTokException;
 import kr.co.hconnect.vo.*;
 import kr.co.hconnect.repository.AiInferenceDao;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,9 +47,17 @@ import ws.schild.jave.*;
 @Transactional(rollbackFor = Exception.class, readOnly = true)
 public class TestService {
 
+    private static final Logger log = LoggerFactory.getLogger(TestService.class);
 
     private int apikey = 47595911;
     private String apiSecret = "2ddde1eb92a2528bd22be0c465174636daca363d";
+
+    @Value("${ai.path}")
+    private String ai_path;
+
+    @Value("${ai.video.path}")
+    private String ai_video_path;
+
 
     private final AiInferenceDao aiInferenceDao;
 
@@ -306,11 +315,14 @@ public class TestService {
     public String fileDownload4(testVO vo) throws IOException, OpenTokException , MalformedURLException {
 
         String rtn = "";
+        ;
 
-        String OUTPUT_FILE_PATH = ""; // "출력 파일 경로";
+        System.out.println("ai_path  >>>  " + ai_path);
+        System.out.println("ai_video_path  >>>  " + ai_video_path);
+
+
         String FILE_URL ="";         // "리소스 경로";
-        //String archiveId = "ab279a4b-f158-417b-95e2-4f2e4f1a3428";
-        String outputDir  = "E:/python/video/";
+        String outputDir  = ai_video_path;
         Archive archive = null;
         String vFileName ="";
         String getJsonPath ="";

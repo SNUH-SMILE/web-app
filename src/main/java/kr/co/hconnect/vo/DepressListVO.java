@@ -33,6 +33,17 @@ public class DepressListVO implements Serializable {
 
     private String phqTotal;
 
+    private int phq1Yn;
+    private int phq2Yn;
+    private int phq3Yn;
+    private int phq4Yn;
+    private int phq5Yn;
+    private int phq6Yn;
+    private int phq7Yn;
+    private int phq8Yn;
+    private int phq9Yn;
+
+
     private String video;
 
     private String tag;
