@@ -12,7 +12,6 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import kr.co.hconnect.repository.*;
 
@@ -27,7 +26,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import java.nio.file.Files;
 
 import com.opentok.*;
 import com.opentok.exception.OpenTokException;
@@ -38,11 +36,9 @@ import ws.schild.jave.*;
 public class BatchService extends EgovAbstractServiceImpl{
     private static final Logger log = LoggerFactory.getLogger(BatchService.class);
 
-    @Value("${ai.path}")
-    private String ai_path;
+    private String ai_path="/usr/local/apache-tomcat-8.5.79/python/";
 
-    @Value("${ai.video.path}")
-    private String ai_video_path;
+    private String ai_video_path="/usr/local/apache-tomcat-8.5.79/python/video/";
 
     private  final  AiInferenceDao aiInferenceDao;
 
@@ -528,14 +524,16 @@ public class BatchService extends EgovAbstractServiceImpl{
         rtnvoList = aiInferenceDao.archiveList(avo);
 
         if (rtnvoList != null) {
+            String admissionId ="";
+            log.info("rtnvoList.size :  " + rtnvoList.size());
 
             for (ArchiveVO rvo : rtnvoList) {
-
+                log.info("download  admissionId :  " + rvo.getName());
                 try{
                     fileDownload(rvo);
                 } catch (Exception e){
                     rtn = e.getMessage();
-                    System.out.println(e.getMessage());
+                    log.error("vonageArchiveList   >>>  " + e.getMessage());
                 }
 
             }
@@ -693,25 +691,30 @@ public class BatchService extends EgovAbstractServiceImpl{
                 //mpe3파일 추출
                 System.setProperty("java.io.tmpdir", ai_path);   //비디오 실행 파일
 
+                DefaultFFMPEGLocator locator= new  DefaultFFMPEGLocator();
+                String exePath= locator.getFFMPEGExecutablePath();
+                log.info("ffmpeg executable found in <"+exePath+">");
+
+
                 String sourcePath = getVideoPath + vFileName;
                 String targetPath = getVideoPath + admissionId +".mp3";
 
-                System.out.println("video sourcePath" + sourcePath);
-                System.out.println("video targetPath" + targetPath);
+                log.info("video sourcePath" + sourcePath);
+                log.info("video targetPath" + targetPath);
 
                 Map<String, Object> cvAudio = new HashMap<String, Object>();
                 cvAudio.put("sourcePath", sourcePath);
                 cvAudio.put("targetPath", targetPath);
 
-                System.out.println("video convert start");
+                log.info("video convert start");
 
                 String r = convertMp3(cvAudio);
 
                 if (StringUtils.isEmpty(r)){
 
-                    // 결과 출력
-                    System.out.println(formatedNow);  // 20221229
-                    System.out.println(timeFormatedNow);  // 1500
+                    log.info("결과출력");
+                    log.info(formatedNow);  // 20221229
+                    log.info(timeFormatedNow);  // 1500
 
                     //제대로 변환이 되었으면 디비에 넣기
                     ArchiveDownVO archiveDownVO = new ArchiveDownVO();
@@ -726,11 +729,11 @@ public class BatchService extends EgovAbstractServiceImpl{
                     aiInferenceDao.insArchiveDown(archiveDownVO);
 
                 }
-                System.out.println("video convert end");
+                log.info("video convert end");
 
             }
         } catch (OpenTokException e) {
-            System.out.println(e.getMessage());
+            log.error("오픈톡 오류 >>>>  " +  e.getMessage());
         }
 
         return rtn;
@@ -762,21 +765,21 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         String rtn ="";
         //mpe3파일 추출
-        System.setProperty("java.io.tmpdir", "E:\\python\\");
+        //System.setProperty("java.io.tmpdir", "E:\\python\\");
 
         String sourcePath =(String)cvAudio.get("sourcePath");
         String targetPath = (String)cvAudio.get("targetPath");
 
 
-        System.out.println("video sourcePath" + sourcePath);
-        System.out.println("video targetPath" + targetPath);
+        log.info(" convertMp3 video sourcePath" + sourcePath);
+        log.info(" convertMp3 video targetPath" + targetPath);
 
         File source = new File(sourcePath);
         File target = new File(targetPath);
 
         try {
             //Audio Attributes
-            System.out.println("Audio Attributes");
+            log.info(" convertMp3  Audio Attributes");
             AudioAttributes audio = new AudioAttributes();
             audio.setCodec("libmp3lame");
             audio.setBitRate(128000);
@@ -784,20 +787,22 @@ public class BatchService extends EgovAbstractServiceImpl{
             audio.setSamplingRate(44100);
 
             //Encoding attributes
-            System.out.println("Encoding attributes");
+            log.info(" convertMp3  Encoding attributes");
             EncodingAttributes attrs = new EncodingAttributes();
             attrs.setFormat("mp3");
             attrs.setAudioAttributes(audio);
 
             //Encode
             //Encoder encoder = new Encoder(new MyFFMPEGExecutableLocator())
-            System.out.println("Encoding ");
+            log.info(" convertMp3  Encoding ");
             Encoder encoder = new Encoder(new DefaultFFMPEGLocator());
             encoder.encode(new MultimediaObject(source), target, attrs);
 
         } catch (Exception ex) {
             rtn = ex.getMessage();
+            log.error("convertMp3  >>> " + ex.getMessage());
             ex.printStackTrace();
+
         }
         return rtn;
     }

@@ -18,7 +18,7 @@ public class AiInferenceDao extends EgovAbstractMapper {
     }
 
     public void delInf (AiInferenceVO vo) {
-        delete("kr.co.hconnect.sqlmapper.udpScore", vo);
+        delete("kr.co.hconnect.sqlmapper.delInf", vo);
     }
 
     public List<ScoreVO> scoreList() {

@@ -37,6 +37,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import org.springframework.util.StringUtils;
+import sun.rmi.runtime.Log;
 import ws.schild.jave.*;
 
 
@@ -461,7 +462,11 @@ public class TestService {
             //mp3 파일 추출
             if (!StringUtils.isEmpty(vFileName)) {
                 //mpe3파일 추출
-                System.setProperty("java.io.tmpdir", "E:\\python\\");
+                System.setProperty("java.io.tmpdir", ai_video_path);
+
+                DefaultFFMPEGLocator locator= new  DefaultFFMPEGLocator();
+                String exePath= locator.getFFMPEGExecutablePath();
+                System.out.println("ffmpeg executable found in <"+exePath+">");
 
                 String sourcePath = getVideoPath + vFileName;
                 String targetPath = getVideoPath + admissionId +".mp3";
@@ -532,7 +537,7 @@ public class TestService {
 
         String rtn ="";
         //mpe3파일 추출
-        System.setProperty("java.io.tmpdir", "E:\\python\\");
+        //System.setProperty("java.io.tmpdir", ai_video_path);
 
         String sourcePath =(String)cvAudio.get("sourcePath");
         String targetPath = (String)cvAudio.get("targetPath");
@@ -577,7 +582,7 @@ public class TestService {
 
         String rtn ="";
         //mpe3파일 추출
-        System.setProperty("java.io.tmpdir", "E:\\python\\");
+        System.setProperty("java.io.tmpdir", ai_video_path);
 
         String sourcePath =(String)cvVideo.get("sourcePath");
         String targetPath = (String)cvVideo.get("targetPath");
@@ -636,7 +641,7 @@ public class TestService {
                     fileDownload4(vo);
                 } catch (Exception e){
                     rtn = e.getMessage();
-                    System.out.println(e.getMessage());
+                    log.info(e.getMessage());
                 }
 
             }
