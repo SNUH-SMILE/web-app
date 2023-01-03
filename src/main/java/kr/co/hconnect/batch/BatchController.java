@@ -18,10 +18,8 @@ import java.io.IOException;
 public class BatchController {
 
 
-    @Value("${ai.path}")
-    private String ai_path;
 
-    //private String aiPath = "/usr/local/apache-tomcat-8.5.79/python/";
+    private String ai_path = "/usr/local/apache-tomcat-8.5.79/python/";
 
     private final BatchService batchService;
 

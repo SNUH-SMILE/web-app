@@ -178,59 +178,95 @@
     <select id="depressList"  resultType="kr.co.hconnect.vo.DepressListVO">
         <![CDATA[
         SELECT T1.ADMISSION_ID
-             ,T2.STRESS_1    as ST1_YN
-             ,T2.STRESS_2    as ST2_YN
-             ,T2.STRESS_3    as ST3_YN
-             ,T2.STRESS_4    as ST4_YN
-             ,T2.STRESS_5    as ST5_YN
-             ,T2.STRESS_6    as ST6_YN
-             ,T2.STRESS_7    as ST7_YN
-             ,T2.STRESS_8    as ST8_YN
-             ,T2.STRESS_9    as ST9_YN
-             ,T3.GADVAL      AS GAD_TOTAL
-             ,T3.INSVAL      AS INS_TOTAL
-             ,T4.DN_FOLDER_VOICE AS VIDEO
-             ,T3.PHQVAL      AS PHQ_TOTAL
-             ,CASE WHEN T3.PHQVAL >= 10 THEN 1 ELSE 0 END TAG
-             ,0 SPLIT
+             ,T1.INTERVIEW_SEQ
+             ,IFNULL(T2.STRESS_1,0)    AS ST1_YN
+             ,IFNULL(T2.STRESS_2,0)    AS ST2_YN
+             ,IFNULL(T2.STRESS_3,0)    AS ST3_YN
+             ,IFNULL(T2.STRESS_4,0)    AS ST4_YN
+             ,IFNULL(T2.STRESS_5,0)    AS ST5_YN
+             ,IFNULL(T2.STRESS_6,0)    AS ST6_YN
+             ,IFNULL(T2.STRESS_7,0)    AS ST7_YN
+             ,IFNULL(T2.STRESS_8,0)    AS ST8_YN
+             ,IFNULL(T2.STRESS_9,0)    AS ST9_YN
+             ,IFNULL(T3.GADVAL,0)      AS GAD_TOTAL
+             ,IFNULL(T2.PHQ_1,0)       AS PHQ1_YN
+             ,IFNULL(T2.PHQ_2,0)       AS PHQ2_YN
+             ,IFNULL(T2.PHQ_3,0)       AS PHQ3_YN
+             ,IFNULL(T2.PHQ_4,0)       AS PHQ4_YN
+             ,IFNULL(T2.PHQ_5,0)       AS PHQ5_YN
+             ,IFNULL(T2.PHQ_6,0)       AS PHQ6_YN
+             ,IFNULL(T2.PHQ_7,0)       AS PHQ7_YN
+             ,IFNULL(T2.PHQ_8,0)       AS PHQ8_YN
+             ,IFNULL(T2.PHQ_9,0)       AS PHQ9_YN
+             ,T4.DN_FOLDER_VOICE       AS VIDEO
+             ,CASE WHEN IFNULL(T3.PHQVAL,0) >= 10 THEN 1 ELSE 0 END TAG
         FROM
             (
-                SELECT ADMISSION_ID, MIN(INTERVIEW_SEQ)  INTERVIEW_SEQ FROM INTERVIEW
+                SELECT ADMISSION_ID, MAX(INTERVIEW_SEQ)  INTERVIEW_SEQ FROM INTERVIEW
                 WHERE 1=1
-                  AND INTERVIEW_TYPE IN ('01','03','04')
+                  AND INTERVIEW_TYPE ='01'
                 GROUP BY ADMISSION_ID
-            ) T1 INNER JOIN
+            ) T1
+                INNER JOIN
             (
                 SELECT DN_SEQ, ADMISSION_ID , DN_FOLDER_VOICE  FROM ARCHIVE_DOWN AD
                 ORDER BY DN_SEQ DESC
                     LIMIT 1
             ) T4 ON T1.ADMISSION_ID = T4.ADMISSION_ID
-                 LEFT OUTER JOIN
-            (
-                SELECT
-                    INTERVIEW_SEQ
-                     , SUM(GADVAL)  GADVAL
-                     , SUM(INSVAL)  INSVAL
-                     , SUM(PHQVAL)  PHQVAL
-                FROM (
-                         /** 정신건강 불안 */
-                         SELECT INTERVIEW_SEQ , CAST(ANSWER_VALUE AS UNSIGNED)  GADVAL, 0 INSVAL , 0 PHQVAL FROM INTERVIEW_DETAIL
-                         WHERE ANSWER_SEQ IN ('35-1','35-2','35-3','35-4','35-5','35-6','35-7')
-                         UNION ALL
-                         /** 정신건강 불면증 */
-                         SELECT INTERVIEW_SEQ, 0 GADVAL, CAST(ANSWER_VALUE AS UNSIGNED) INSVAL, 0 PHQVAL FROM INTERVIEW_DETAIL
-                         WHERE ANSWER_SEQ IN ('36-1','36-2','36-3','36-4','36-5','36-6','36-7')
-                         UNION ALL
-                         /** 정신건강 우울*/
-                         SELECT INTERVIEW_SEQ, 0 GADVAL, 0 INSVAL, CAST(ANSWER_VALUE AS UNSIGNED)  PHQVAL FROM INTERVIEW_DETAIL
-                         WHERE ANSWER_SEQ IN ('33-1','33-2','33-3','33-4','33-5','33-6','33-7','33-8','33-9')
-                     ) DT
-                GROUP BY INTERVIEW_SEQ
-            ) T3 ON T1.INTERVIEW_SEQ = T3.INTERVIEW_SEQ
-                 LEFT OUTER JOIN
+                LEFT JOIN
+            ( SELECT ADMISSION_ID
+                   , MAX(INTERVIEW_SEQ)  INTERVIEW_SEQ
+                   , SUM(GADVAL)  GADVAL
+                   , SUM(INSVAL)  INSVAL
+                   , SUM(PHQVAL)  PHQVAL
+              FROM (
+                       /** 정신건강 불안 */
+                       SELECT K1.ADMISSION_ID
+                            ,K1.INTERVIEW_SEQ
+                            ,CAST(ANSWER_VALUE AS UNSIGNED)  GADVAL, 0 INSVAL , 0 PHQVAL
+                       FROM INTERVIEW_DETAIL K5
+                                INNER JOIN INTERVIEW K1
+                                           ON K5.INTERVIEW_SEQ = K1.INTERVIEW_SEQ
+                       WHERE  1=1
+                         AND  ANSWER_SEQ IN ('35-1','35-2','35-3','35-4','35-5','35-6','35-7')
+                       UNION ALL
+                       /** 정신건강 불면증 */
+                       SELECT K1.ADMISSION_ID
+                            ,K1.INTERVIEW_SEQ
+                            , 0 GADVAL, CAST(ANSWER_VALUE AS UNSIGNED) INSVAL, 0 PHQVAL
+                       FROM INTERVIEW_DETAIL K5
+                                INNER JOIN INTERVIEW K1
+                                           ON K5.INTERVIEW_SEQ = K1.INTERVIEW_SEQ
+                       WHERE 1=1
+                         AND K1.INTERVIEW_TYPE ='05'
+                         AND ANSWER_SEQ IN ('36-1','36-2','36-3','36-4','36-5','36-6','36-7')
+                       UNION ALL
+                       /** 정신건강 우울*/
+                       SELECT K1.ADMISSION_ID
+                            ,K1.INTERVIEW_SEQ
+                            , 0 GADVAL, 0 INSVAL, CAST(ANSWER_VALUE AS UNSIGNED)  PHQVAL
+                       FROM INTERVIEW_DETAIL K5
+                                INNER JOIN INTERVIEW K1
+                                           ON K5.INTERVIEW_SEQ = K1.INTERVIEW_SEQ
+                       WHERE 1=1
+                         AND ANSWER_SEQ IN ('33-1','33-2','33-3','33-4','33-5','33-6','33-7','33-8','33-9')
+                   ) DT
+              GROUP BY ADMISSION_ID
+            ) T3 ON T1.ADMISSION_ID = T3.ADMISSION_ID  AND T1.INTERVIEW_SEQ = T3.INTERVIEW_SEQ
+                LEFT OUTER JOIN
             (	/** 정신건강 스트레스 */
-                SELECT INTERVIEW_SEQ ,
-                    SUM(CASE WHEN ANSWER_SEQ = '34-2' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_1
+                SELECT K1.ADMISSION_ID
+                     ,MAX(K1.INTERVIEW_SEQ) INTERVIEW_SEQ
+                     ,SUM(CASE WHEN ANSWER_SEQ = '33-1' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_1
+                     ,SUM(CASE WHEN ANSWER_SEQ = '33-2' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_2
+                     ,SUM(CASE WHEN ANSWER_SEQ = '33-3' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_3
+                     ,SUM(CASE WHEN ANSWER_SEQ = '33-4' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_4
+                     ,SUM(CASE WHEN ANSWER_SEQ = '33-5' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_5
+                     ,SUM(CASE WHEN ANSWER_SEQ = '33-6' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_6
+                     ,SUM(CASE WHEN ANSWER_SEQ = '33-7' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_7
+                     ,SUM(CASE WHEN ANSWER_SEQ = '33-8' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_8
+                     ,SUM(CASE WHEN ANSWER_SEQ = '33-0' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_9
+                     ,SUM(CASE WHEN ANSWER_SEQ = '34-2' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_1
                      ,SUM(CASE WHEN ANSWER_SEQ = '34-3' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_2
                      ,SUM(CASE WHEN ANSWER_SEQ = '34-4' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_3
                      ,SUM(CASE WHEN ANSWER_SEQ = '34-5' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_4
@@ -239,10 +275,14 @@
                      ,SUM(CASE WHEN ANSWER_SEQ = '34-8' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_7
                      ,SUM(CASE WHEN ANSWER_SEQ = '34-9' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_8
                      ,SUM(CASE WHEN ANSWER_SEQ = '34-10' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_9
-                FROM INTERVIEW_DETAIL
-                WHERE ANSWER_SEQ IN ('34-2','34-3','34-4','34-5','34-6','34-7', '34-8', '34-9', '34-10')
-                GROUP  BY INTERVIEW_SEQ
-            ) T2 ON T1.INTERVIEW_SEQ = T2.INTERVIEW_SEQ
+                FROM INTERVIEW_DETAIL K4
+                         INNER JOIN INTERVIEW K1
+                                    ON K4.INTERVIEW_SEQ = K1.INTERVIEW_SEQ
+                WHERE 1=1
+                  AND ANSWER_SEQ IN ('33-1','33-2', '33-3', '33-4', '33-5', '33-6', '33-7', '33-8', '33-9'
+                    '34-2','34-3','34-4','34-5','34-6','34-7', '34-8', '34-9', '34-10')
+                GROUP  BY K1.ADMISSION_ID
+            ) T2 ON T1.ADMISSION_ID = T2.ADMISSION_ID  AND T1.INTERVIEW_SEQ = T2.INTERVIEW_SEQ
         ]]>
     </select>
 
@@ -312,97 +352,63 @@
         ]]>
     </select>
 
+
     <select id="depressList_old"  resultType="kr.co.hconnect.vo.DepressListVO">
         <![CDATA[
         SELECT T1.ADMISSION_ID
-             ,T1.INTERVIEW_SEQ
-             ,IFNULL(T2.STRESS_1,0)    AS ST1_YN
-             ,IFNULL(T2.STRESS_2,0)    AS ST2_YN
-             ,IFNULL(T2.STRESS_3,0)    AS ST3_YN
-             ,IFNULL(T2.STRESS_4,0)    AS ST4_YN
-             ,IFNULL(T2.STRESS_5,0)    AS ST5_YN
-             ,IFNULL(T2.STRESS_6,0)    AS ST6_YN
-             ,IFNULL(T2.STRESS_7,0)    AS ST7_YN
-             ,IFNULL(T2.STRESS_8,0)    AS ST8_YN
-             ,IFNULL(T2.STRESS_9,0)    AS ST9_YN
-             ,IFNULL(T3.GADVAL,0)      AS GAD_TOTAL
-             ,IFNULL(T2.PHQ_1,0)       AS PHQ1_YN
-             ,IFNULL(T2.PHQ_2,0)       AS PHQ2_YN
-             ,IFNULL(T2.PHQ_3,0)       AS PHQ3_YN
-             ,IFNULL(T2.PHQ_4,0)       AS PHQ4_YN
-             ,IFNULL(T2.PHQ_5,0)       AS PHQ5_YN
-             ,IFNULL(T2.PHQ_6,0)       AS PHQ6_YN
-             ,IFNULL(T2.PHQ_7,0)       AS PHQ7_YN
-             ,IFNULL(T2.PHQ_8,0)       AS PHQ8_YN
-             ,IFNULL(T2.PHQ_9,0)       AS PHQ9_YN
-             ,T4.DN_FOLDER_VOICE       AS VIDEO
-             ,CASE WHEN IFNULL(T3.PHQVAL,0) >= 10 THEN 1 ELSE 0 END TAG
+             ,T2.STRESS_1    as ST1_YN
+             ,T2.STRESS_2    as ST2_YN
+             ,T2.STRESS_3    as ST3_YN
+             ,T2.STRESS_4    as ST4_YN
+             ,T2.STRESS_5    as ST5_YN
+             ,T2.STRESS_6    as ST6_YN
+             ,T2.STRESS_7    as ST7_YN
+             ,T2.STRESS_8    as ST8_YN
+             ,T2.STRESS_9    as ST9_YN
+             ,T3.GADVAL      AS GAD_TOTAL
+             ,T3.INSVAL      AS INS_TOTAL
+             ,T4.DN_FOLDER_VOICE AS VIDEO
+             ,T3.PHQVAL      AS PHQ_TOTAL
+             ,CASE WHEN T3.PHQVAL >= 10 THEN 1 ELSE 0 END TAG
+             ,0 SPLIT
         FROM
             (
-                SELECT ADMISSION_ID, MAX(INTERVIEW_SEQ)  INTERVIEW_SEQ FROM INTERVIEW
+                SELECT ADMISSION_ID, MIN(INTERVIEW_SEQ)  INTERVIEW_SEQ FROM INTERVIEW
                 WHERE 1=1
                   AND INTERVIEW_TYPE IN ('01','03','04')
                 GROUP BY ADMISSION_ID
-            ) T1
-                INNER JOIN
+            ) T1 INNER JOIN
             (
                 SELECT DN_SEQ, ADMISSION_ID , DN_FOLDER_VOICE  FROM ARCHIVE_DOWN AD
                 ORDER BY DN_SEQ DESC
                     LIMIT 1
             ) T4 ON T1.ADMISSION_ID = T4.ADMISSION_ID
-                LEFT JOIN
-            ( SELECT ADMISSION_ID
-                   , MAX(INTERVIEW_SEQ)  INTERVIEW_SEQ
-                   , SUM(GADVAL)  GADVAL
-                   , SUM(INSVAL)  INSVAL
-                   , SUM(PHQVAL)  PHQVAL
-              FROM (
-                       /** 정신건강 불안 */
-                       SELECT K1.ADMISSION_ID
-                            ,K1.INTERVIEW_SEQ
-                            ,CAST(ANSWER_VALUE AS UNSIGNED)  GADVAL, 0 INSVAL , 0 PHQVAL
-                       FROM INTERVIEW_DETAIL K5
-                                INNER JOIN INTERVIEW K1
-                                           ON K5.INTERVIEW_SEQ = K1.INTERVIEW_SEQ
-                       WHERE  1=1
-                         AND  ANSWER_SEQ IN ('35-1','35-2','35-3','35-4','35-5','35-6','35-7')
-                       UNION ALL
-                       /** 정신건강 불면증 */
-                       SELECT K1.ADMISSION_ID
-                            ,K1.INTERVIEW_SEQ
-                            , 0 GADVAL, CAST(ANSWER_VALUE AS UNSIGNED) INSVAL, 0 PHQVAL
-                       FROM INTERVIEW_DETAIL K5
-                                INNER JOIN INTERVIEW K1
-                                           ON K5.INTERVIEW_SEQ = K1.INTERVIEW_SEQ
-                       WHERE 1=1
-                         AND ANSWER_SEQ IN ('36-1','36-2','36-3','36-4','36-5','36-6','36-7')
-                       UNION ALL
-                       /** 정신건강 우울*/
-                       SELECT K1.ADMISSION_ID
-                            ,K1.INTERVIEW_SEQ
-                            , 0 GADVAL, 0 INSVAL, CAST(ANSWER_VALUE AS UNSIGNED)  PHQVAL
-                       FROM INTERVIEW_DETAIL K5
-                                INNER JOIN INTERVIEW K1
-                                           ON K5.INTERVIEW_SEQ = K1.INTERVIEW_SEQ
-                       WHERE 1=1
-                         AND ANSWER_SEQ IN ('33-1','33-2','33-3','33-4','33-5','33-6','33-7','33-8','33-9')
-                   ) DT
-              GROUP BY ADMISSION_ID
-            ) T3 ON T1.ADMISSION_ID = T3.ADMISSION_ID  AND T1.INTERVIEW_SEQ = T3.INTERVIEW_SEQ
-                LEFT OUTER JOIN
+                 LEFT OUTER JOIN
+            (
+                SELECT
+                    INTERVIEW_SEQ
+                     , SUM(GADVAL)  GADVAL
+                     , SUM(INSVAL)  INSVAL
+                     , SUM(PHQVAL)  PHQVAL
+                FROM (
+                         /** 정신건강 불안 */
+                         SELECT INTERVIEW_SEQ , CAST(ANSWER_VALUE AS UNSIGNED)  GADVAL, 0 INSVAL , 0 PHQVAL FROM INTERVIEW_DETAIL
+                         WHERE ANSWER_SEQ IN ('35-1','35-2','35-3','35-4','35-5','35-6','35-7')
+                         UNION ALL
+                         /** 정신건강 불면증 */
+                         SELECT INTERVIEW_SEQ, 0 GADVAL, CAST(ANSWER_VALUE AS UNSIGNED) INSVAL, 0 PHQVAL FROM INTERVIEW_DETAIL
+                         WHERE ANSWER_SEQ IN ('36-1','36-2','36-3','36-4','36-5','36-6','36-7')
+                         UNION ALL
+                         /** 정신건강 우울*/
+                         SELECT INTERVIEW_SEQ, 0 GADVAL, 0 INSVAL, CAST(ANSWER_VALUE AS UNSIGNED)  PHQVAL FROM INTERVIEW_DETAIL
+                         WHERE ANSWER_SEQ IN ('33-1','33-2','33-3','33-4','33-5','33-6','33-7','33-8','33-9')
+                     ) DT
+                GROUP BY INTERVIEW_SEQ
+            ) T3 ON T1.INTERVIEW_SEQ = T3.INTERVIEW_SEQ
+                 LEFT OUTER JOIN
             (	/** 정신건강 스트레스 */
-                SELECT K1.ADMISSION_ID
-                     ,MAX(K1.INTERVIEW_SEQ) INTERVIEW_SEQ
-                     ,SUM(CASE WHEN ANSWER_SEQ = '33-1' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_1
-                     ,SUM(CASE WHEN ANSWER_SEQ = '33-2' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_2
-                     ,SUM(CASE WHEN ANSWER_SEQ = '33-3' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_3
-                     ,SUM(CASE WHEN ANSWER_SEQ = '33-4' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_4
-                     ,SUM(CASE WHEN ANSWER_SEQ = '33-5' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_5
-                     ,SUM(CASE WHEN ANSWER_SEQ = '33-6' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_6
-                     ,SUM(CASE WHEN ANSWER_SEQ = '33-7' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_7
-                     ,SUM(CASE WHEN ANSWER_SEQ = '33-8' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_8
-                     ,SUM(CASE WHEN ANSWER_SEQ = '33-0' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) PHQ_9
-                     ,SUM(CASE WHEN ANSWER_SEQ = '34-2' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_1
+                SELECT INTERVIEW_SEQ ,
+                    SUM(CASE WHEN ANSWER_SEQ = '34-2' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_1
                      ,SUM(CASE WHEN ANSWER_SEQ = '34-3' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_2
                      ,SUM(CASE WHEN ANSWER_SEQ = '34-4' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_3
                      ,SUM(CASE WHEN ANSWER_SEQ = '34-5' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_4
@@ -411,14 +417,10 @@
                      ,SUM(CASE WHEN ANSWER_SEQ = '34-8' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_7
                      ,SUM(CASE WHEN ANSWER_SEQ = '34-9' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_8
                      ,SUM(CASE WHEN ANSWER_SEQ = '34-10' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_9
-                FROM INTERVIEW_DETAIL K4
-                         INNER JOIN INTERVIEW K1
-                                    ON K4.INTERVIEW_SEQ = K1.INTERVIEW_SEQ
-                WHERE 1=1
-                  AND ANSWER_SEQ IN ('33-1','33-2', '33-3', '33-4', '33-5', '33-6', '33-7', '33-8', '33-9'
-                    '34-2','34-3','34-4','34-5','34-6','34-7', '34-8', '34-9', '34-10')
-                GROUP  BY K1.ADMISSION_ID
-            ) T2 ON T1.ADMISSION_ID = T2.ADMISSION_ID  AND T1.INTERVIEW_SEQ = T2.INTERVIEW_SEQ
+                FROM INTERVIEW_DETAIL
+                WHERE ANSWER_SEQ IN ('34-2','34-3','34-4','34-5','34-6','34-7', '34-8', '34-9', '34-10')
+                GROUP  BY INTERVIEW_SEQ
+            ) T2 ON T1.INTERVIEW_SEQ = T2.INTERVIEW_SEQ
         ]]>
     </select>
 
