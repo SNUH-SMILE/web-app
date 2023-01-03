@@ -238,7 +238,6 @@
                                 INNER JOIN INTERVIEW K1
                                            ON K5.INTERVIEW_SEQ = K1.INTERVIEW_SEQ
                        WHERE 1=1
-                         AND K1.INTERVIEW_TYPE ='05'
                          AND ANSWER_SEQ IN ('36-1','36-2','36-3','36-4','36-5','36-6','36-7')
                        UNION ALL
                        /** 정신건강 우울*/
@@ -248,7 +247,9 @@
                        FROM INTERVIEW_DETAIL K5
                                 INNER JOIN INTERVIEW K1
                                            ON K5.INTERVIEW_SEQ = K1.INTERVIEW_SEQ
+
                        WHERE 1=1
+                         AND K1.INTERVIEW_TYPE ='05'
                          AND ANSWER_SEQ IN ('33-1','33-2','33-3','33-4','33-5','33-6','33-7','33-8','33-9')
                    ) DT
               GROUP BY ADMISSION_ID
