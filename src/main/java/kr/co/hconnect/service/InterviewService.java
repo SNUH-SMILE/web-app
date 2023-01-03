@@ -78,39 +78,21 @@ public class InterviewService extends EgovAbstractServiceImpl {
         /*확진당일문진*/
         if((vo.getInterviewList().stream().filter(i -> ("01").equals(i.getInterviewType())).collect(Collectors.toList()).size()) == 0 && now.compareTo(admissionDate) == 0){
             InterviewList interviewList = new InterviewList();
-            interviewList.setInterviewType("00");
+            interviewList.setInterviewType("01");
             interviewList.setInterviewStatus("0");
             interviewList.setInterviewTitle("확진 당일 문진");
             vo.getInterviewList().add(interviewList);
         }
-        /*오전문진*/
+        /*일일문진*/
         if((vo.getInterviewList().stream().filter(i -> ("02").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && dschgeDtate == null){
             InterviewList interviewList = new InterviewList();
-            interviewList.setInterviewType("00");
-            // 퇴소 안한상태 && 현재시간이 오전 12시 이전
-            if(dschgeDtate == null && nowTime.isBefore(LocalTime.parse("12:00"))){
-                interviewList.setInterviewStatus("0");//작성하기
-            }else{
-                interviewList.setInterviewStatus("1");//작성하기 비활성화
-            }
-            interviewList.setInterviewTitle("오전문진");
-            vo.getInterviewList().add(interviewList);
-        }
-        /*오후문진*/
-        if((vo.getInterviewList().stream().filter(i -> ("03").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && dschgeDtate == null){
-            InterviewList interviewList = new InterviewList();
             interviewList.setInterviewType("02");
-            // 퇴소 안한상태 && 현재시간이 오전 12시 이전
-            if(dschgeDtate == null && nowTime.isAfter(LocalTime.parse("12:00"))){
-                interviewList.setInterviewStatus("0");//작성하기
-            }else{
-                interviewList.setInterviewStatus("1");//작성하기 비활성화
-            }
-            interviewList.setInterviewTitle("오후문진");
+            interviewList.setInterviewStatus("0");//작성하기
+            interviewList.setInterviewTitle("일일문진");
             vo.getInterviewList().add(interviewList);
         }
         /*격리해제 문진*/
-        if((vo.getInterviewList().stream().filter(i -> ("04").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && now.equals(dschgeDtate)){
+        if((vo.getInterviewList().stream().filter(i -> ("03").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && now.equals(dschgeDtate)){
             InterviewList interviewList = new InterviewList();
             interviewList.setInterviewType("03");
             interviewList.setInterviewStatus("0"); //작성하기
@@ -118,11 +100,11 @@ public class InterviewService extends EgovAbstractServiceImpl {
             vo.getInterviewList().add(interviewList);
         }
         /*격리해제 후 30일 문진*/
-        if((vo.getInterviewList().stream().filter(i -> ("05").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && now.minusDays(30).equals(dschgeDtate)){
+        if((vo.getInterviewList().stream().filter(i -> ("04").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && now.minusDays(30).equals(dschgeDtate)){
             InterviewList interviewList = new InterviewList();
             interviewList.setInterviewType("04");
             interviewList.setInterviewStatus("0"); //작성하기
-            interviewList.setInterviewTitle("격리해제");
+            interviewList.setInterviewTitle("격리해제 30일 후 문진");
             vo.getInterviewList().add(interviewList);
         }
 
@@ -145,15 +127,12 @@ public class InterviewService extends EgovAbstractServiceImpl {
                     title = "확진 당일 문진";
                     break;
                 case "02":
-                    title = "오전 문진";
+                    title = "일일 문진";
                     break;
                 case "03":
-                    title = "오후 문진";
-                    break;
-                case "04":
                     title = "격리 해제일 문진";
                     break;
-                case "05":
+                case "04":
                     title = "격리 해제 30일 후 문진";
                     break;
             }
