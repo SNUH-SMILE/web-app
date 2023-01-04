@@ -112,69 +112,17 @@
                          THEN '1'
                     ELSE      '2'
                END                          AS QANTN_STATUS   -- 입소/격리 상태
-             , IFNULL(DN.BT_DOWN,'X')       AS BT_DOWN
-             , IFNULL(DN.PR_DOWN,'X')       AS PR_DOWN
-             , IFNULL(DN.RR_DOWN,'X')       AS RR_DOWN
+             , CASE WHEN VI.ADMISSION_ID IS NULL THEN 'X' ELSE 'O' END    AS VIDEO_DOWN
+             , ''                           AS AI_EXE
 		  FROM ADMISSION A
 			   INNER JOIN PATIENT 			P      ON A.PATIENT_ID = P.PATIENT_ID
 			   INNER JOIN TREATMENT_CENTER 	TC     ON A.CENTER_ID  = TC.CENTER_ID
 			   LEFT JOIN COM_CD_DETAIL 	    ROOM   ON ROOM.COM_CD    = 'CD005'
 			                                      AND ROOM.DETAIL_CD = A.ROOM
 										          AND ROOM.PROPERTY1 = TC.CENTER_ID
-		  	   LEFT OUTER JOIN (
-                        SELECT
-                                T1.ADMISSION_ID
-                                ,MAX(T1.ITEM001)  ITEM001
-                                ,MAX(T1.CHA001)   BT_DOWN
-                                ,MAX(T1.ITEM002)  ITEM002
-                                ,MAX(T1.CHA002)   PR_DOWN
-                                ,MAX(T1.ITEM006)  ITEM006
-                                ,MAX(T1.CHA006)   RR_DOWN
-                            FROM (
-                                    SELECT
-                                          R.ADMISSION_ID,
-                                          R.ITEM_ID AS ITEM001,
-                                          CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),MAX(R.REG_DT)), '%H') <=2 THEN 'O' ELSE 'X' END AS CHA001,
-                                          '' AS ITEM002,
-                                          '' AS CHA002,
-                                          '' AS ITEM006,
-                                          '' AS CHA006
-                                      FROM  RESULT R
-                                           INNER JOIN RESULT_DETAIL RD
-                                              ON R.RESULT_SEQ  = RD.RESULT_SEQ
-                                     WHERE R.ITEM_ID = 'I0001'
-                                     GROUP BY ADMISSION_ID, R.ITEM_ID
-                                     UNION ALL
-                                     SELECT
-                                          R.ADMISSION_ID,
-                                          '' AS ITEM001,
-                                          '' AS CHA001,
-                                          R.ITEM_ID AS ITEM002,
-                                          CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),MAX(R.REG_DT)), '%H') <=2 THEN 'O' ELSE 'X' END AS CHA002,
-                                          '' AS ITEM006,
-                                          '' AS CHA006
-                                      FROM  RESULT R
-                                           INNER JOIN RESULT_DETAIL RD
-                                              ON R.RESULT_SEQ  = RD.RESULT_SEQ
-                                     WHERE R.ITEM_ID = 'I0002'
-                                     GROUP BY ADMISSION_ID, R.ITEM_ID
-                                     UNION ALL
-                                     SELECT
-                                          R.ADMISSION_ID,
-                                          '' AS ITEM001,
-                                          '' AS CHA001,
-                                          '' AS ITEM002,
-                                          '' AS CHA002,
-                                          R.ITEM_ID AS ITEM006,
-                                          CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),MAX(R.REG_DT)), '%H') <=2 THEN 'O' ELSE 'X' END AS CHA006
-                                      FROM  RESULT R
-                                           INNER JOIN RESULT_DETAIL RD
-                                              ON R.RESULT_SEQ  = RD.RESULT_SEQ
-                                     WHERE R.ITEM_ID = 'I0006'
-                                     GROUP BY ADMISSION_ID, R.ITEM_ID
-                            ) T1
-                            GROUP BY T1.ADMISSION_ID
-			   ) DN ON A.ADMISSION_ID  = DN. ADMISSION_ID
+               LEFT JOIN (
+                     SELECT DISTINCT ADMISSION_ID  FROM ARCHIVE_DOWN
+               ) VI ON A.ADMISSION_ID = VI.ADMISSION_ID
          WHERE A.CENTER_ID = #{centerId}	-- 센터ID
 		   AND A.QANTN_DIV = '2'            -- 생활치료센터 입소자 구분
 		   AND A.DEL_YN = 'N'
@@ -317,65 +265,13 @@
                          THEN '1'
                     ELSE      '2'
                END                          AS QANTN_STATUS   -- 입소/격리 상태
-             , IFNULL(DN.BT_DOWN,'X')       AS BT_DOWN
-             , IFNULL(DN.PR_DOWN,'X')       AS PR_DOWN
-             , IFNULL(DN.RR_DOWN,'X')       AS RR_DOWN
+             , CASE WHEN VI.ADMISSION_ID IS NULL THEN 'X' ELSE 'O' END    AS VIDEO_DOWN
+             , ''                           AS AI_EXE
 		  FROM ADMISSION A
 			   INNER JOIN PATIENT 			P      ON A.PATIENT_ID = P.PATIENT_ID
-			   LEFT OUTER JOIN (
-                        SELECT
-                                T1.ADMISSION_ID
-                                ,MAX(T1.ITEM001)  ITEM001
-                                ,MAX(T1.CHA001)   BT_DOWN
-                                ,MAX(T1.ITEM002)  ITEM002
-                                ,MAX(T1.CHA002)   PR_DOWN
-                                ,MAX(T1.ITEM006)  ITEM006
-                                ,MAX(T1.CHA006)   RR_DOWN
-                            FROM (
-                                    SELECT
-                                          R.ADMISSION_ID,
-                                          R.ITEM_ID AS ITEM001,
-                                          CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),MAX(R.REG_DT)), '%H') <=2 THEN 'O' ELSE 'X' END AS CHA001,
-                                          '' AS ITEM002,
-                                          '' AS CHA002,
-                                          '' AS ITEM006,
-                                          '' AS CHA006
-                                      FROM  RESULT R
-                                           INNER JOIN RESULT_DETAIL RD
-                                              ON R.RESULT_SEQ  = RD.RESULT_SEQ
-                                     WHERE R.ITEM_ID = 'I0001'
-                                     GROUP BY ADMISSION_ID, R.ITEM_ID
-                                     UNION ALL
-                                     SELECT
-                                          R.ADMISSION_ID,
-                                          '' AS ITEM001,
-                                          '' AS CHA001,
-                                          R.ITEM_ID AS ITEM002,
-                                          CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),MAX(R.REG_DT)), '%H') <=2 THEN 'O' ELSE 'X' END AS CHA002,
-                                          '' AS ITEM006,
-                                          '' AS CHA006
-                                      FROM  RESULT R
-                                           INNER JOIN RESULT_DETAIL RD
-                                              ON R.RESULT_SEQ  = RD.RESULT_SEQ
-                                     WHERE R.ITEM_ID = 'I0002'
-                                     GROUP BY ADMISSION_ID, R.ITEM_ID
-                                     UNION ALL
-                                     SELECT
-                                          R.ADMISSION_ID,
-                                          '' AS ITEM001,
-                                          '' AS CHA001,
-                                          '' AS ITEM002,
-                                          '' AS CHA002,
-                                          R.ITEM_ID AS ITEM006,
-                                          CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),MAX(R.REG_DT)), '%H') <=2 THEN 'O' ELSE 'X' END AS CHA006
-                                      FROM  RESULT R
-                                           INNER JOIN RESULT_DETAIL RD
-                                              ON R.RESULT_SEQ  = RD.RESULT_SEQ
-                                     WHERE R.ITEM_ID = 'I0006'
-                                     GROUP BY ADMISSION_ID, R.ITEM_ID
-                            ) T1
-                            GROUP BY T1.ADMISSION_ID
-			   ) DN ON A.ADMISSION_ID  = DN. ADMISSION_ID
+		       LEFT JOIN (
+		           SELECT DISTINCT ADMISSION_ID  FROM ARCHIVE_DOWN
+		       ) VI ON A.ADMISSION_ID = VI.ADMISSION_ID
          WHERE A.QANTN_DIV = '1'            -- 자가격리자 구분
 		   AND A.DEL_YN = 'N'
 	]]>

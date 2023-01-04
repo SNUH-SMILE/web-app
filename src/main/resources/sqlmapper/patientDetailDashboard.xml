@@ -147,17 +147,20 @@
                     ELSE      DATE (NOW())
                END                                          AS SLEEP_DT                        -- 수면 측정일
              , '시간'                                        AS SLEEP_UNIT                      -- 수면 단위
-             , '발열'                                        AS RISK_SCORE_NM                    -- 호흡기계 스코어 이름
-             , CASE WHEN AIIN.SCORE >= 5
-                    THEN '위험' ELSE '정상' END               AS RISK_SCORE_RESULT          -- 호흡기계 스코어 위험
+             , '전원'                                        AS RISK_SCORE_NM                    -- 호흡기계 스코어 이름
+             , CASE WHEN AIIN.SCORE >=5 THEN '전원예측'
+                    WHEN AIIN.SCORE <=4 THEN '정상'
+                    ELSE '' END                            AS RISK_SCORE_RESULT          -- 호흡기계 스코어 위험
              , AIIN.SCORE_DATE                              AS RISK_SCORE_DT              -- 호흡기계 스코어 위험도 측정일시
-             , '전원'                                        AS RISK_TEMPER_NM             -- 호흡기계 이름
-             , CASE WHEN AIIN.TEMPER = 1
-                    THEN '위험' ELSE '정상' END               AS RISK_TEMPER_RESULT         -- 호흡기계 체온 위험도
+             , '발열'                                        AS RISK_TEMPER_NM             -- 호흡기계 이름
+             , CASE WHEN AIIN.TEMPER = 1 THEN '체온상승'
+                    WHEN AIIN.TEMPER = 0 THEN '체온유지'
+                    ELSE '' END                              AS RISK_TEMPER_RESULT         -- 호흡기계 체온 위험도
              , AIIN.TEMPER_DATE                              AS RISK_TEMPER_DT             -- 호흡기계 체온 위험도 측정일시
              , '우울'                                         AS MENTAL_RISK_NM             -- 정신건강 우울 이름
-             , CASE WHEN AIIN.DEPR = 1
-                    THEN '위험' ELSE '정상' END               AS MENTAL_RISK_RESULT         -- 호흡기계 체온 위험도
+             , CASE WHEN AIIN.DEPR = 1 THEN '우울예측'
+                    WHEN AIIN.DEPR = 0 THEN '정상'
+                    ELSE '' END                              AS MENTAL_RISK_RESULT         -- 호흡기계 체온 위험도
              , AIIN.DEPR_DATE                                AS MENTAL_RISK_RESULT_DT
           FROM ADMISSION A
                /* 혈압 */
