@@ -21,8 +21,9 @@ public class AiInferenceDao extends EgovAbstractMapper {
         delete("kr.co.hconnect.sqlmapper.delInf", vo);
     }
 
-    public List<ScoreVO> scoreList() {
-        return selectList("kr.co.hconnect.sqlmapper.scoreList");
+    public List<ScoreVO> scoreList(BatchVO vo) {
+
+        return selectList("kr.co.hconnect.sqlmapper.scoreList", vo);
     }
 
     public List<ArchiveVO> archiveList(ArchiveVO vo) {
@@ -32,12 +33,12 @@ public class AiInferenceDao extends EgovAbstractMapper {
         return update("kr.co.hconnect.sqlmapper.udpArchiveDown", vo);
     }
 
-    public List<TemperListVO> temperList() {
-        return selectList("kr.co.hconnect.sqlmapper.temperList");
+    public List<TemperListVO> temperList(BatchVO vo) {
+        return selectList("kr.co.hconnect.sqlmapper.temperList", vo);
     }
 
-    public List<DepressListVO> depressList() {
-        return selectList("kr.co.hconnect.sqlmapper.depressList");
+    public List<DepressListVO> depressList(BatchVO vo) {
+        return selectList("kr.co.hconnect.sqlmapper.depressList", vo);
     }
 
     public int insArchiveDown(ArchiveDownVO vo) {
@@ -57,9 +58,22 @@ public class AiInferenceDao extends EgovAbstractMapper {
         return selectOne("kr.co.hconnect.sqlmapper.bioCheck", vo);
     }
 
+    //2시간안에 데이터가 있는지 체크
+    public int bioTimeCheck(BioCheckVO vo) {
+
+        return selectOne("kr.co.hconnect.sqlmapper.bioTimeCheck", vo);
+    }
+
+
     //퇴소일이 오늘 보다 큰 입소자의 문진 데이터
     public int interviewCheck(BioCheckVO vo) {
         return selectOne("kr.co.hconnect.sqlmapper.interviewCheck", vo);
     }
+
+    public int insBioError(BioErrorVO vo) {
+        return insert("kr.co.hconnect.sqlmapper.insBioError", vo);
+    }
+
+
 
 }

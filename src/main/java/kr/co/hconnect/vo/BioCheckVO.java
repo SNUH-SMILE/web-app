@@ -1,9 +1,6 @@
 package kr.co.hconnect.vo;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -24,9 +21,9 @@ public class BioCheckVO implements Serializable{
 
     private String itemId;
 
-    private String date;
+    private String bioDate;
 
-    private String time;
+    private String bioTime;
 
     private String interviewType;   //문진타입
 

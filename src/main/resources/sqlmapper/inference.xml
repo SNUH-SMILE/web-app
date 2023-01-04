@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.hconnect.sqlmapper">
+
     <insert id="insInf" parameterType="kr.co.hconnect.vo.AiInferenceVO">
         <![CDATA[
         INSERT
@@ -49,7 +50,7 @@
         ]]>
     </delete>
 
-    <select id="scoreList"  resultType="kr.co.hconnect.vo.ScoreVO">
+    <select id="scoreList"  parameterType="kr.co.hconnect.vo.BatchVO" resultType="kr.co.hconnect.vo.ScoreVO">
         <![CDATA[
         SELECT A.ADMISSION_ID
             /* 나이 */
@@ -114,10 +115,11 @@
             GROUP BY ADMISSION_ID
             ) T2 ON A.ADMISSION_ID = T2.ADMISSION_ID
         WHERE 1=1
+          AND IFNULL(A.DSCHGE_DATE ,'9999-12-31') >=  DATE_FORMAT(NOW(), '%Y-%m-%d')
         ORDER BY A.ADMISSION_ID
         ]]>
     </select>
-    <select id="temperList"  resultType="kr.co.hconnect.vo.TemperListVO">
+    <select id="temperList"  parameterType="kr.co.hconnect.vo.BatchVO"  resultType="kr.co.hconnect.vo.TemperListVO">
         <![CDATA[
         SELECT
             A.ADMISSION_ID
@@ -134,48 +136,48 @@
                  INNER JOIN PATIENT P
                             ON A.PATIENT_ID  = P.PATIENT_ID
                  LEFT JOIN (
-            SELECT ADMISSION_ID , ITEM_ID, ROUND(AVG(RESULT),2)  BIO_RESULT
-            FROM RESULT R
-                     INNER JOIN RESULT_DETAIL RD
-                                ON R.RESULT_SEQ  = RD.RESULT_SEQ
-            WHERE R.ITEM_ID  IN ('I0002', 'I0006', 'I0001')
-              AND CONCAT(RESULT_DATE, ' ', RESULT_TIME) BETWEEN  DATE_ADD(NOW(), INTERVAL -1 HOUR) AND NOW()
-            GROUP BY R.ADMISSION_ID, R.ITEM_ID
-        ) T1
-                           ON A.ADMISSION_ID = T1.ADMISSION_ID
+                        SELECT ADMISSION_ID , ITEM_ID, ROUND(AVG(RESULT),2)  BIO_RESULT
+                        FROM RESULT R
+                                 INNER JOIN RESULT_DETAIL RD
+                                            ON R.RESULT_SEQ  = RD.RESULT_SEQ
+                        WHERE R.ITEM_ID  IN ('I0002', 'I0006', 'I0001')
+                          AND CONCAT(RESULT_DATE, ' ', RESULT_TIME) BETWEEN  DATE_ADD(NOW(), INTERVAL -1 HOUR) AND NOW()
+                        GROUP BY R.ADMISSION_ID, R.ITEM_ID
+                    ) T1  ON A.ADMISSION_ID = T1.ADMISSION_ID
                  LEFT JOIN (
-            SELECT
-                T1.ADMISSION_ID
-                 ,GROUP_CONCAT(IF(ANSWER_SEQ = '38', ANSWER_VALUE, NULL))  AS Q1_YN
-                 ,GROUP_CONCAT(IF(ANSWER_SEQ = '50', ANSWER_VALUE, NULL))  AS Q2_YN
-                 ,GROUP_CONCAT(IF(ANSWER_SEQ = '55', ANSWER_VALUE, NULL))  AS Q3_YN
-                 ,GROUP_CONCAT(IF(ANSWER_SEQ = '58', ANSWER_VALUE, NULL))  AS Q4_YN
-                 ,GROUP_CONCAT(IF(ANSWER_SEQ = '48', ANSWER_VALUE, NULL))  AS Q5_YN
-                 ,GROUP_CONCAT(IF(ANSWER_SEQ = '60', ANSWER_VALUE, NULL))  AS Q6_YN
-            FROM (
-                     SELECT I.ADMISSION_ID
-                          ,ID.ANSWER_SEQ
-                          ,ID.ANSWER_VALUE
-                     FROM INTERVIEW I
-                              INNER JOIN INTERVIEW_DETAIL ID
-                                         ON I.INTERVIEW_SEQ  = ID.INTERVIEW_SEQ
-                     WHERE 1=1
-                       AND I.INTERVIEW_TYPE ='02'
-                       AND ID.ANSWER_SEQ IN ('38','50','55','58','48','60')
-                       AND I.INTERVIEW_SEQ = (SELECT X.INTERVIEW_SEQ FROM INTERVIEW X
-                                              WHERE X.INTERVIEW_TYPE ='02'
-                                                AND X.ADMISSION_ID  = I.ADMISSION_ID
-                                              ORDER BY X.INTERVIEW_SEQ DESC
-                         LIMIT 1
-                 )
-        ) T1
-        GROUP BY T1.ADMISSION_ID
-            ) T2 ON A.ADMISSION_ID  = T2.ADMISSION_ID
+                    SELECT
+                        T1.ADMISSION_ID
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '38', ANSWER_VALUE, NULL))  AS Q1_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '50', ANSWER_VALUE, NULL))  AS Q2_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '55', ANSWER_VALUE, NULL))  AS Q3_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '58', ANSWER_VALUE, NULL))  AS Q4_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '48', ANSWER_VALUE, NULL))  AS Q5_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '60', ANSWER_VALUE, NULL))  AS Q6_YN
+                    FROM (
+                             SELECT I.ADMISSION_ID
+                                  ,ID.ANSWER_SEQ
+                                  ,ID.ANSWER_VALUE
+                             FROM INTERVIEW I
+                                      INNER JOIN INTERVIEW_DETAIL ID
+                                                 ON I.INTERVIEW_SEQ  = ID.INTERVIEW_SEQ
+                             WHERE 1=1
+                               AND I.INTERVIEW_TYPE ='02'
+                               AND ID.ANSWER_SEQ IN ('38','50','55','58','48','60')
+                               AND I.INTERVIEW_SEQ = (SELECT X.INTERVIEW_SEQ FROM INTERVIEW X
+                                                      WHERE X.INTERVIEW_TYPE ='02'
+                                                        AND X.ADMISSION_ID  = I.ADMISSION_ID
+                                                      ORDER BY X.INTERVIEW_SEQ DESC
+                                 LIMIT 1
+                         )
+                ) T1
+                GROUP BY T1.ADMISSION_ID
+                    ) T2 ON A.ADMISSION_ID  = T2.ADMISSION_ID
         WHERE 1=1
+          AND IFNULL(A.DSCHGE_DATE ,'9999-12-31') >=  DATE_FORMAT(NOW(), '%Y-%m-%d')
         GROUP BY ADMISSION_ID
         ]]>
     </select>
-    <select id="depressList"  resultType="kr.co.hconnect.vo.DepressListVO">
+    <select id="depressList"  parameterType="kr.co.hconnect.vo.BatchVO"  resultType="kr.co.hconnect.vo.DepressListVO">
         <![CDATA[
         SELECT T1.ADMISSION_ID
              ,T1.INTERVIEW_SEQ
@@ -204,7 +206,11 @@
             (
                 SELECT ADMISSION_ID, MAX(INTERVIEW_SEQ)  INTERVIEW_SEQ FROM INTERVIEW
                 WHERE 1=1
-                  AND INTERVIEW_TYPE ='01'
+                  AND NOT EXISTS (SELECT ADMISSION_ID FROM INFERENCE_ERROR_LOG
+                                  WHERE ADMISSION_ID = A.ADMISSION_ID
+                                    AND INF_DIV ='30'
+                                    AND CDATE =  DATE_FORMAT(#{cDate}, '%Y-%m-%d')  )
+                  AND IFNULL(A.DSCHGE_DATE ,'9999-12-31') >=  DATE_FORMAT(NOW(), '%Y-%m-%d')
                 GROUP BY ADMISSION_ID
             ) T1
                 INNER JOIN
@@ -284,6 +290,8 @@
                     '34-2','34-3','34-4','34-5','34-6','34-7', '34-8', '34-9', '34-10')
                 GROUP  BY K1.ADMISSION_ID
             ) T2 ON T1.ADMISSION_ID = T2.ADMISSION_ID  AND T1.INTERVIEW_SEQ = T2.INTERVIEW_SEQ
+         WHERE 1=1
+           AND IFNULL(A.DSCHGE_DATE ,'9999-12-31') >=  DATE_FORMAT(NOW(), '%Y-%m-%d')
         ]]>
     </select>
 
@@ -425,7 +433,7 @@
         ]]>
     </select>
 
-    <select id="bioAdmissionId"  parameterType="kr.co.hconnect.vo.BioCheckVO"  resultType="kr.co.hconnect.vo.BioCheckVO" >
+    <select id="bioAdmissionId"   resultType="kr.co.hconnect.vo.BioCheckVO" >
         <![CDATA[
             SELECT A.ADMISSION_ID
                   ,A.DSCHGE_DATE as END_DATE
@@ -442,19 +450,50 @@
               FROM RESULT
             WHERE ADMISSION_ID = #{admissionId}
               AND ITEM_ID = #{itemId}
-              AND RESULT_DATE = #{date}
+              AND RESULT_DATE = #{bioDate}
         ]]>
-        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(time)">
-            AND RESULT_TIME = #{time}
-        </if>
+    </select>
+    <select id="bioTimeCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="int">
+        <![CDATA[
+        SELECT
+            CASE WHEN RE ='O' THEN 1 ELSE 0 END AS CNT
+        FROM (SELECT CASE
+                         WHEN DATE_FORMAT(TIMEDIFF(NOW(), TIMESTAMP(R.RESULT_DATE, R.RESULT_TIME)), '%H') <= 2
+                             THEN '0'
+                         ELSE 'X' END AS RE
+              FROM `RESULT` R
+              WHERE 1 = 1
+                AND ADMISSION_ID = #{admissionId}
+                AND ITEM_ID = #{itemId}
+                AND RESULT_DATE = #{bioDate}
+                AND RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                  FROM RESULT X
+                                  WHERE X.ADMISSION_ID = R.ADMISSION_ID
+                                    AND X.ITEM_ID = #{itemId}
+                                  ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                  LIMIT 1)
+            )
+        ]]>
     </select>
 
     <select id="interviewCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="int">
         <![CDATA[
-            SELECT *
+            SELECT count(*) cnt
               FROM INTERVIEW
              WHERE ADMISSION_ID = #{admissionId}
                AND INTERVIEW_TYPE  = #{interviewType}
         ]]>
     </select>
+
+    <insert id="insBioError"  parameterType="kr.co.hconnect.vo.BioErrorVO" >
+        <![CDATA[
+            INSERT INTO inference_error_log (ADMISSION_ID, CDATE, INF_DIV, MESSAGE, REG_DT)
+            VALUES(#{admissionId},
+                   #{cDate},
+                   #{infDiv},
+                   #{message},
+                   now());
+        ]]>
+    </insert>
+
 </mapper>

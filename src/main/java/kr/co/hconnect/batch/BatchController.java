@@ -19,7 +19,8 @@ public class BatchController {
 
 
 
-    private String ai_path = "/usr/local/apache-tomcat-8.5.79/python/";
+    //private String ai_path = "/usr/local/apache-tomcat-8.5.79/python/";
+    private String ai_path = "E://python/";
 
     private final BatchService batchService;
 
@@ -35,7 +36,7 @@ public class BatchController {
      * 1. 스코어 배치 처리 하기
      * ./score 폴더
      */
-    @Scheduled(cron="0 0 0/1 * * *")
+    //@Scheduled(cron="0 0 0/1 * * *")
     public void scoreScheduler() throws IOException, InterruptedException {
 
         String filePath = ai_path+ "score/score_file.csv";
@@ -77,7 +78,8 @@ public class BatchController {
      * 2. 체온 배치 처리 하기
      * ./temperature
      */
-    @Scheduled(cron="0 0 0/2 * * *")
+    //@Scheduled(cron="0 0 0/2 * * *")
+    @Scheduled(fixedDelay=10000)
     public void bodyTemperatureScheduler() throws IOException, InterruptedException {
         //System.out.println("2. 체온 배치 처리 하기 ");
 
