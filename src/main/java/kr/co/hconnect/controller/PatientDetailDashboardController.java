@@ -1,6 +1,8 @@
 package kr.co.hconnect.controller;
 
 import kr.co.hconnect.common.ApiResponseCode;
+import kr.co.hconnect.common.VoValidationGroups;
+import kr.co.hconnect.domain.LoginId;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
 import kr.co.hconnect.jwt.TokenDetailInfo;
@@ -11,10 +13,14 @@ import kr.co.hconnect.vo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import kr.co.hconnect.service.AdmissionService;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -33,25 +39,39 @@ public class PatientDetailDashboardController {
 	 * 환자 상세 대쉬보드 서비스
 	 */
 	public final PatientDetailDashboardService patientDetailDashboardService;
-	/**
-	 * 알림 서비스
-	 */
-	public final NoticeService noticeService;
     /**
      * 진료기록 서비스
      */
     public final MedicalRecordService medicalRecordService;
 	/**
-	 * 생성자
-	 *
-	 * @param patientDetailDashboardService 환자상세 대시보드 서비스
-	 * @param noticeService 알림 서비스
+	 * 알림 서비스
 	 */
+	public final NoticeService noticeService;
+
+
+    /**
+     * 격리/입소내역 관리 Service
+     */
+    private final AdmissionService admissionService;
+
+    private final MessageSource messageSource;
+
+	/**
+     * 생성자
+     *
+     * @param patientDetailDashboardService 환자상세 대시보드 서비스
+     * @param medicalRecordService
+     * @param noticeService                 알림 서비스
+     */
 	@Autowired
-	public PatientDetailDashboardController(PatientDetailDashboardService patientDetailDashboardService, NoticeService noticeService, MedicalRecordService medicalRecordService) {
+	public PatientDetailDashboardController(PatientDetailDashboardService patientDetailDashboardService,
+                                            MedicalRecordService medicalRecordService, NoticeService noticeService,
+                                            AdmissionService admissionService, MessageSource messageSource) {
 		this.patientDetailDashboardService = patientDetailDashboardService;
-		this.noticeService = noticeService;
         this.medicalRecordService = medicalRecordService;
+        this.noticeService = noticeService;
+        this.admissionService = admissionService;
+        this.messageSource = messageSource;
 	}
 
 	/**
@@ -86,7 +106,7 @@ public class PatientDetailDashboardController {
     @RequestMapping(value = "/record", method = RequestMethod.PUT)
     public ResponseVO<List<RecordVO>> insertRecord(@Valid @RequestBody RecordSaveVO vo, BindingResult bindingResult
         , @RequestAttribute TokenDetailInfo tokenDetailInfo
-        ) {
+    ) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
@@ -97,7 +117,32 @@ public class PatientDetailDashboardController {
         recordVO.setAdmissionId(vo.getAdmissionId());
         recordVO.setRegId(tokenDetailInfo.getId());
 
-        medicalRecordService.insertNotice(recordVO);
+        medicalRecordService.insertRecord(recordVO);
+        ResponseVO<List<RecordVO>> responseVO = new ResponseVO<>();
+        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+        responseVO.setMessage("저장 성공");
+        responseVO.setResult(medicalRecordService.selectRecordList(vo.getAdmissionId()));
+        return responseVO;
+    }
+    @RequestMapping(value = "/record/update", method = RequestMethod.PATCH)
+    public ResponseVO<List<RecordVO>> updateAdmissionByQuarantine(
+        @Validated(VoValidationGroups.modify.class) @RequestBody RecordSaveVO vo
+        , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+        LocalDate now = LocalDate.now();
+        RecordVO recordVO = new RecordVO();
+        recordVO.setMedicalSeq(vo.getMedicalSeq());
+        recordVO.setMedicalRecord(vo.getRecord());
+        recordVO.setMedicalRecorder(tokenDetailInfo.getName());
+        recordVO.setMedicalDate(vo.getMedicalDate());
+        recordVO.setAdmissionId(vo.getAdmissionId());
+        recordVO.setUpdateId(tokenDetailInfo.getId());
+        recordVO.setUpdateRecorder(tokenDetailInfo.getName());
+        recordVO.setUpdateDate(now);
+        medicalRecordService.updateRecord(recordVO);
+
         ResponseVO<List<RecordVO>> responseVO = new ResponseVO<>();
         responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
         responseVO.setMessage("저장 성공");

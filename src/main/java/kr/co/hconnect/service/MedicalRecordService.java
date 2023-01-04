@@ -13,6 +13,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 
@@ -51,7 +52,7 @@ public class MedicalRecordService extends EgovAbstractServiceImpl {
      * @return int 알림순번(NOTICE_SEQ)
      */
     @Transactional(rollbackFor = Exception.class)
-    public int insertNotice(RecordVO vo) throws NotFoundAdmissionInfoException {
+    public int insertRecord(RecordVO vo) throws NotFoundAdmissionInfoException {
         // 입소내역 존재여부 확인
         AdmissionInfoVO admissionInfoVO = admissionDao.selectAdmissionInfo(vo.getAdmissionId());
         if (admissionInfoVO == null || admissionInfoVO.getDelYn().equals("Y")) {
@@ -63,6 +64,19 @@ public class MedicalRecordService extends EgovAbstractServiceImpl {
         recordDao.insertRecord(vo);
         return vo.getMedicalSeq();
     }
+    @Transactional(rollbackFor = Exception.class)
+    public void updateRecord(RecordVO vo){
+        /* todo: 입소내역 확인해야 하나 ? 추후에 질문*/
+    /*    AdmissionInfoVO admissionInfoVO = admissionDao.selectAdmissionInfo(vo.getAdmissionId());
+        if (admissionInfoVO == null || admissionInfoVO.getDelYn().equals("Y")) {
+            throw new NotFoundAdmissionInfoException(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()
+                , messageSource.getMessage("message.notfound.admissionInfo"
+                , null, Locale.getDefault()));
+        }*/
+        recordDao.updatePatient(vo);
+
+    }
+
     /**
      * 알림 리스트 조회 - 격리/입소내역ID 기준
      *

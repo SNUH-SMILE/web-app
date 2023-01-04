@@ -25,6 +25,21 @@
              )
     </insert>
 
+    <!-- 환자정보 수정 - kr.co.hconnect.sqlmapper.updatePatient -->
+    <update id="updateRecord" parameterType="kr.co.hconnect.vo.RecordVO">
+	<![CDATA[
+        -- 진료기록 수정
+        -- updateRecord
+        UPDATE MEDICAL_RECORD
+        SET UPDATE_DATE = #{updateDate}
+          , MEDICAL_DATE = #{medicalDate}
+          , UPDATE_ID = #{updateId}
+          , UPDATE_RECORDER = #{updateRecorder}
+          , MEDICAL_RECORD = #{medicalRecord}
+        WHERE MEDICAL_SEQ = #{medicalSeq}
+        ]]>
+	</update>
+
     <!-- 내원별 알림 리스트 조회 - kr.co.hconnect.sqlmapper.selectNoticeListByAdmissionId -->
     <select id="selectRecordListByAdmissionId"
             parameterType="String"
@@ -33,7 +48,9 @@
                A.MEDICAL_DATE,
                A.MEDICAL_RECORD,
                A.MEDICAL_RECORDER,
-               A.ADMISSION_ID
+               A.ADMISSION_ID,
+               A.UPDATE_RECORDER,
+               A.UPDATE_DATE
         FROM MEDICAL_RECORD A
         WHERE A.ADMISSION_ID = #{admissionId}
         ORDER BY MEDICAL_DATE , MEDICAL_SEQ DESC;

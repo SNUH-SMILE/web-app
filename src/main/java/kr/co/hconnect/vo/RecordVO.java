@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -46,4 +47,17 @@ public class RecordVO extends BaseDefaultVO {
      * 등록자
      */
     private String regId;
+    /**
+     * 수정아이디
+     */
+    private String updateId;
+    /**
+     * 수정자
+     */
+    private String updateRecorder;
+    /**
+     * 수정일자
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate updateDate;
 }
