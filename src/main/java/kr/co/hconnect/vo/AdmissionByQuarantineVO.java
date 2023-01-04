@@ -57,10 +57,10 @@ public class AdmissionByQuarantineVO extends VitalResultVO {
 
     private String searsAccount;
 
-    private String btDown;
+    private String videoDown;
 
-    private String prDown;
+    private String aiExe;
 
-    private String rrDown;
+
 
 }

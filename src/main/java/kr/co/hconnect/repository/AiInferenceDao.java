@@ -47,4 +47,19 @@ public class AiInferenceDao extends EgovAbstractMapper {
         return selectList("kr.co.hconnect.sqlmapper.selectVoiceList");
     }
 
+    //퇴소일이 오늘 보다 큰 입소자
+    public List<BioCheckVO> bioAdmissionId() {
+        return selectList("kr.co.hconnect.sqlmapper.bioAdmissionId");
+    }
+
+    //퇴소일이 오늘 보다 큰 입소자의 바이오 데이터 체크
+    public int bioCheck(BioCheckVO vo) {
+        return selectOne("kr.co.hconnect.sqlmapper.bioCheck", vo);
+    }
+
+    //퇴소일이 오늘 보다 큰 입소자의 문진 데이터
+    public int interviewCheck(BioCheckVO vo) {
+        return selectOne("kr.co.hconnect.sqlmapper.interviewCheck", vo);
+    }
+
 }

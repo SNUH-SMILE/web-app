@@ -59,11 +59,11 @@
 		   AND BIRTH_DATE = #{birthDate}
 		   AND SEX        = #{sex}
 		   AND CELL_PHONE = #{cellPhone}
-           <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(searsAccount)">
-            	AND SEARS_ACCOUNT = #{searsAccount}
-           </if>
 
 	]]>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(searsAccount)">
+            AND SEARS_ACCOUNT = #{searsAccount}
+        </if>
 	</select>
 
     <select id="selectPatientByCellPhone" parameterType="String" resultType="kr.co.hconnect.domain.Patient">

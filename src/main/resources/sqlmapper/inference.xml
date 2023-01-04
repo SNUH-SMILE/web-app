@@ -425,4 +425,36 @@
         ]]>
     </select>
 
+    <select id="bioAdmissionId"  parameterType="kr.co.hconnect.vo.BioCheckVO"  resultType="kr.co.hconnect.vo.BioCheckVO" >
+        <![CDATA[
+            SELECT A.ADMISSION_ID
+                  ,A.DSCHGE_DATE as END_DATE
+             FROM ADMISSION A
+            WHERE 1=1
+            AND ADMISSION_DATE <= NOW()
+            AND IFNULL(DSCHGE_DATE,'9999-12-31') >= NOW()
+        ]]>
+    </select>
+
+    <select id="bioCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="int">
+        <![CDATA[
+            SELECT COUNT(*) CNT
+              FROM RESULT
+            WHERE ADMISSION_ID = #{admissionId}
+              AND ITEM_ID = #{itemId}
+              AND RESULT_DATE = #{date}
+        ]]>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(time)">
+            AND RESULT_TIME = #{time}
+        </if>
+    </select>
+
+    <select id="interviewCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="int">
+        <![CDATA[
+            SELECT *
+              FROM INTERVIEW
+             WHERE ADMISSION_ID = #{admissionId}
+               AND INTERVIEW_TYPE  = #{interviewType}
+        ]]>
+    </select>
 </mapper>

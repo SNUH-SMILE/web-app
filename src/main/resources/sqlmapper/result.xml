@@ -19,7 +19,8 @@
              , TIMESTAMP(RBP.RESULT_DATE, RBP.RESULT_TIME)  AS BP_RESULT_DT
              , IBP.UNIT                                     AS BP_UNIT
              -- 심박수
-             , RDPR.RESULT                                  AS PR_RESULT
+             , RDPR.RESULT                                  AS PR_RESULT_VALUE
+             , CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),TIMESTAMP(RPR.RESULT_DATE, RPR.RESULT_TIME)), '%H') <=2 THEN  RDPR.result  ELSE 'X' END AS PR_RESULT
              , CASE WHEN RDPR.RESULT < IPR.REF_FROM
                          THEN 'L'
                     WHEN RDPR.RESULT > IPR.REF_TO
@@ -29,7 +30,8 @@
              , TIMESTAMP(RPR.RESULT_DATE, RPR.RESULT_TIME)  AS PR_RESULT_DT
              , IPR.UNIT                                     AS PR_UNIT
              -- 체온
-             , LEFT(RDBT.RESULT,5)                                  AS BT_RESULT
+             , ROUND(RDBT.RESULT,1)                         AS BT_RESULT_VALUE
+             , CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),TIMESTAMP(RBT.RESULT_DATE, RBT.RESULT_TIME)), '%H') <=2 THEN  ROUND(RDBT.RESULT,1)   ELSE 'X' END AS BT_RESULT
              , CASE WHEN RDBT.RESULT < IBT.REF_FROM
                          THEN 'L'
                     WHEN RDBT.RESULT > IBT.REF_TO
@@ -39,19 +41,28 @@
              , TIMESTAMP(RBT.RESULT_DATE, RBT.RESULT_TIME)  AS BT_RESULT_DT
              , IBT.UNIT                                     AS BT_UNIT
              -- 걸음수
-             , RDST1.RESULT                                 AS ST1_RESULT
+             , RDST1.RESULT                                 AS ST1_RESULT_VALUE
+             , CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),TIMESTAMP(RST.RESULT_DATE, RST.RESULT_TIME)), '%H') <=2 THEN  RDST1.RESULT  ELSE 'X' END AS ST1_RESULT
+             , CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),TIMESTAMP(RST.RESULT_DATE, RST.RESULT_TIME)), '%H') <=2 THEN  RDST1.RESULT  ELSE 'X' END AS ST1_RESULT
              , RDST2.RESULT                                 AS ST2_RESULT
              , ''                                           AS ST1_RISK_GB
              , ''                                           AS ST2_RISK_GB
              , TIMESTAMP(RST.RESULT_DATE, RST.RESULT_TIME)  AS ST_RESULT_DT
              , IST.UNIT                                     AS ST_UNIT
              -- 호흡(데이터 입력 가능 여부 미정)
-             , ''                                           AS RR_RESULT
-             , ''                                           AS RR_RISK_GB
-             , ''                                           AS RR_RESULT_DT
-             , ''                                           AS RR_UNIT
+             , RDRP.RESULT                                  AS RR_RESULT_VALUE
+             , CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),TIMESTAMP(RRP.RESULT_DATE, RRP.RESULT_TIME)), '%H') <=2 THEN  RDRP.RESULT  ELSE 'X' END AS RR_RESULT
+             , CASE WHEN RDRP.RESULT < IRP.REF_FROM
+                         THEN 'L'
+                    WHEN RDSP.RESULT > IRP.REF_TO
+                         THEN 'H'
+                    ELSE      ''
+               END                                          AS RR_RISK_GB
+             , TIMESTAMP(RRP.RESULT_DATE, RRP.RESULT_TIME)  AS RR_RESULT_DT
+             , IRP.UNIT                                     AS RR_UNIT
              -- 산소포화도
-             , RDSP.RESULT                                  AS SP_RESULT
+             , RDSP.RESULT                                  AS SP_RESULT_VALUE
+             , CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),TIMESTAMP(RSP.RESULT_DATE, RSP.RESULT_TIME)), '%H') <=2 THEN  RDSP.RESULT  ELSE 'X' END AS SP_RESULT
              , CASE WHEN RDSP.RESULT < ISP.REF_FROM
                          THEN 'L'
                     WHEN RDSP.RESULT > ISP.REF_TO
@@ -112,6 +123,15 @@
                                                                       ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
                                                                       LIMIT 1)
                LEFT JOIN RESULT_DETAIL     RDSP  ON RDSP.RESULT_SEQ = RSP.RESULT_SEQ
+               LEFT JOIN ITEM              IRP     ON IRP.ITEM_ID = 'I0006'
+               LEFT JOIN RESULT            RRP     ON RRP.RESULT_SEQ = (SELECT X.RESULT_SEQ
+                                                                         FROM RESULT X
+                                                                        WHERE X.ADMISSION_ID = A.ADMISSION_ID
+                                                                          AND X.ITEM_ID = IRP.ITEM_ID
+                                                                        ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
+                                                                        LIMIT 1)
+               LEFT JOIN RESULT_DETAIL     RDRP    ON RDRP.RESULT_SEQ = RRP.RESULT_SEQ
+
     ]]>
     </sql>
 
