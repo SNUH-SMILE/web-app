@@ -3,6 +3,7 @@ package kr.co.hconnect.repository;
 import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
 import kr.co.hconnect.vo.NoticeListSearchVO;
 import kr.co.hconnect.vo.NoticeVO;
+import kr.co.hconnect.vo.PatientVO;
 import kr.co.hconnect.vo.RecordVO;
 import org.springframework.stereotype.Repository;
 
@@ -35,6 +36,8 @@ public class RecordDao extends EgovAbstractMapper {
     public List<RecordVO> selectRecordListByAdmissionId(String id) {
         return selectList("kr.co.hconnect.sqlmapper.selectRecordListByAdmissionId", id);
     }
-
+    public int updatePatient(RecordVO vo) {
+        return update("kr.co.hconnect.sqlmapper.updateRecord", vo);
+    }
 
 }

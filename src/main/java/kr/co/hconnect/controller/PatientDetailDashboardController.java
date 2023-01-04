@@ -1,6 +1,7 @@
 package kr.co.hconnect.controller;
 
 import kr.co.hconnect.common.ApiResponseCode;
+import kr.co.hconnect.common.VoValidationGroups;
 import kr.co.hconnect.domain.LoginId;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.exception.NotFoundAdmissionInfoException;
@@ -14,10 +15,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import kr.co.hconnect.service.AdmissionService;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -114,7 +117,32 @@ public class PatientDetailDashboardController {
         recordVO.setAdmissionId(vo.getAdmissionId());
         recordVO.setRegId(tokenDetailInfo.getId());
 
-        medicalRecordService.insertNotice(recordVO);
+        medicalRecordService.insertRecord(recordVO);
+        ResponseVO<List<RecordVO>> responseVO = new ResponseVO<>();
+        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+        responseVO.setMessage("저장 성공");
+        responseVO.setResult(medicalRecordService.selectRecordList(vo.getAdmissionId()));
+        return responseVO;
+    }
+    @RequestMapping(value = "/record/update", method = RequestMethod.PATCH)
+    public ResponseVO<List<RecordVO>> updateAdmissionByQuarantine(
+        @Validated(VoValidationGroups.modify.class) @RequestBody RecordSaveVO vo
+        , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+        LocalDate now = LocalDate.now();
+        RecordVO recordVO = new RecordVO();
+        recordVO.setMedicalSeq(vo.getMedicalSeq());
+        recordVO.setMedicalRecord(vo.getRecord());
+        recordVO.setMedicalRecorder(tokenDetailInfo.getName());
+        recordVO.setMedicalDate(vo.getMedicalDate());
+        recordVO.setAdmissionId(vo.getAdmissionId());
+        recordVO.setUpdateId(tokenDetailInfo.getId());
+        recordVO.setUpdateRecorder(tokenDetailInfo.getName());
+        recordVO.setUpdateDate(now);
+        medicalRecordService.updateRecord(recordVO);
+
         ResponseVO<List<RecordVO>> responseVO = new ResponseVO<>();
         responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
         responseVO.setMessage("저장 성공");

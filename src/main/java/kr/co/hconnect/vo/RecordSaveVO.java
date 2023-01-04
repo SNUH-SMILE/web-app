@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -39,8 +40,11 @@ public class RecordSaveVO implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Timestamp medicalDate;
 
-
-
-
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate updateDate;
+    /**
+     * 알림순번
+     */
+    private Integer medicalSeq;
 
 }
