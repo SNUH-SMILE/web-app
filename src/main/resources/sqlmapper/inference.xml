@@ -123,15 +123,19 @@
         <![CDATA[
         SELECT
             A.ADMISSION_ID
-             ,SUM(CASE WHEN T1.ITEM_ID='I0006' THEN T1.BIO_RESULT ELSE 0 END) RR
-             ,SUM(CASE WHEN T1.ITEM_ID='I0001' THEN T1.BIO_RESULT ELSE 0 END) BT
-             ,SUM(CASE WHEN T1.ITEM_ID='I0002' THEN T1.BIO_RESULT ELSE 0 END) PR
-             ,IFNULL(Q1_YN,0)  Q1_YN
-             ,IFNULL(Q2_YN,0)  Q2_YN
-             ,IFNULL(Q3_YN,0)  Q3_YN
-             ,IFNULL(Q4_YN,0)  Q4_YN
-             ,IFNULL(Q5_YN,0)  Q5_YN
-             ,IFNULL(Q6_YN,0)  Q6_YN
+             ,SUM(CASE WHEN T1.ITEM_ID='I0006' THEN T1.BIO_RESULT ELSE 0 END) RR  -- 호흡
+             ,SUM(CASE WHEN T1.ITEM_ID='I0001' THEN T1.BIO_RESULT ELSE 0 END) BT  -- 체온
+             ,SUM(CASE WHEN T1.ITEM_ID='I0002' THEN T1.BIO_RESULT ELSE 0 END) PR  -- 심박수
+             ,IFNULL(Q1_YN,0)  Q1_YN   -- 가래
+             ,IFNULL(Q2_YN,0)  Q2_YN   -- 발열
+             ,IFNULL(Q3_YN,0)  Q3_YN   -- 인후통
+             ,IFNULL(Q4_YN,0)  Q4_YN   -- 호흡곤란
+             ,IFNULL(Q5_YN,0)  Q5_YN   -- 흉통
+             ,IFNULL(Q6_YN,0)  Q6_YN   -- 오심
+             ,IFNULL(Q7_YN,0)  Q7_YN   -- 구토
+             ,IFNULL(Q8_YN,0)  Q8_YN   -- 변비
+             ,IFNULL(Q9_YN,0)  Q9_YN   -- 설사
+             ,IFNULL(Q10_YN,0)  Q10_YN  -- 수면장애
         FROM ADMISSION A
                  INNER JOIN PATIENT P
                             ON A.PATIENT_ID  = P.PATIENT_ID
@@ -147,12 +151,16 @@
                  LEFT JOIN (
                     SELECT
                         T1.ADMISSION_ID
-                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '38', ANSWER_VALUE, NULL))  AS Q1_YN
-                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '50', ANSWER_VALUE, NULL))  AS Q2_YN
-                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '55', ANSWER_VALUE, NULL))  AS Q3_YN
-                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '58', ANSWER_VALUE, NULL))  AS Q4_YN
-                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '48', ANSWER_VALUE, NULL))  AS Q5_YN
-                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '60', ANSWER_VALUE, NULL))  AS Q6_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '40', ANSWER_VALUE, NULL))  AS Q1_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '42', ANSWER_VALUE, NULL))  AS Q2_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '46', ANSWER_VALUE, NULL))  AS Q3_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '50', ANSWER_VALUE, NULL))  AS Q4_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '54', ANSWER_VALUE, NULL))  AS Q5_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '55', ANSWER_VALUE, NULL))  AS Q6_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '57', ANSWER_VALUE, NULL))  AS Q7_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '58', ANSWER_VALUE, NULL))  AS Q8_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '59', ANSWER_VALUE, NULL))  AS Q9_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '62', ANSWER_VALUE, NULL))  AS Q10_YN
                     FROM (
                              SELECT I.ADMISSION_ID
                                   ,ID.ANSWER_SEQ
@@ -162,7 +170,7 @@
                                                  ON I.INTERVIEW_SEQ  = ID.INTERVIEW_SEQ
                              WHERE 1=1
                                AND I.INTERVIEW_TYPE ='02'
-                               AND ID.ANSWER_SEQ IN ('38','50','55','58','48','60')
+                               AND ID.ANSWER_SEQ IN ('40','42','46','48','50','54','55','57','58','59','62')
                                AND I.INTERVIEW_SEQ = (SELECT X.INTERVIEW_SEQ FROM INTERVIEW X
                                                       WHERE X.INTERVIEW_TYPE ='02'
                                                         AND X.ADMISSION_ID  = I.ADMISSION_ID
@@ -444,7 +452,7 @@
         ]]>
     </select>
 
-    <select id="bioCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="int">
+    <select id="bioCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="String">
         <![CDATA[
             SELECT COUNT(*) CNT
               FROM RESULT
@@ -453,10 +461,10 @@
               AND RESULT_DATE = #{bioDate}
         ]]>
     </select>
-    <select id="bioTimeCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="int">
+    <select id="bioTimeCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="String">
         <![CDATA[
         SELECT
-            CASE WHEN RE ='O' THEN 1 ELSE 0 END AS CNT
+            CASE WHEN T1.RE ='O' THEN 1 ELSE 0 END AS CNT
         FROM (SELECT CASE
                          WHEN DATE_FORMAT(TIMEDIFF(NOW(), TIMESTAMP(R.RESULT_DATE, R.RESULT_TIME)), '%H') <= 2
                              THEN '0'
@@ -472,11 +480,11 @@
                                     AND X.ITEM_ID = #{itemId}
                                   ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
                   LIMIT 1)
-            )
+            ) T1
         ]]>
     </select>
 
-    <select id="interviewCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="int">
+    <select id="interviewCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="String">
         <![CDATA[
             SELECT count(*) cnt
               FROM INTERVIEW

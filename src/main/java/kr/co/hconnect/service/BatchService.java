@@ -5,6 +5,7 @@ import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import kr.co.hconnect.common.zipUtil;
 import kr.co.hconnect.vo.*;
 import org.apache.commons.io.FileUtils;
+import org.apache.ibatis.jdbc.Null;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -75,12 +76,13 @@ public class BatchService extends EgovAbstractServiceImpl{
         String msg;
         for (BioCheckVO bcvo: bvo){
             int biochkint =0;
+            String sBiochk;
             //날짜 / 생체 데이터
             bcvo.setBioDate(nowDate.toString());
 
             bcvo.setItemId("I0002");
-            biochkint = aiInferenceDao.bioCheck(bcvo);
-            if (biochkint == 0 ){
+            sBiochk = aiInferenceDao.bioCheck(bcvo);
+            if (sBiochk == null && sBiochk.equals("0")){
                 msg= String.format(bioMetaDataFormat
                     , bcvo.getAdmissionId()
                     , nowDate.toString()
@@ -100,8 +102,8 @@ public class BatchService extends EgovAbstractServiceImpl{
             }
 
             bcvo.setItemId("I0003");
-            biochkint = aiInferenceDao.bioCheck(bcvo);
-            if (biochkint == 0 ){
+            sBiochk = aiInferenceDao.bioCheck(bcvo);
+            if (sBiochk == null && sBiochk.equals("0")){
                 msg= String.format(bioMetaDataFormat
                     ,bcvo.getAdmissionId()
                     , nowDate.toString()
@@ -118,8 +120,8 @@ public class BatchService extends EgovAbstractServiceImpl{
             }
 
             bcvo.setItemId("I0001");
-            biochkint = aiInferenceDao.bioCheck(bcvo);
-            if (biochkint == 0 ){
+            sBiochk = aiInferenceDao.bioCheck(bcvo);
+            if (sBiochk == null && sBiochk.equals("0")){
                 msg= String.format(bioMetaDataFormat
                     ,bcvo.getAdmissionId()
                     , nowDate.toString()
@@ -137,8 +139,8 @@ public class BatchService extends EgovAbstractServiceImpl{
 
             String interviewMetaDataFormat = "id=%s & 문진 =%s & 데이터가 없습니다.";
             bcvo.setInterviewType("01");
-            biochkint = aiInferenceDao.interviewCheck(bcvo);
-            if (biochkint == 0 ){
+            sBiochk = aiInferenceDao.interviewCheck(bcvo);
+            if (sBiochk == null && sBiochk.equals("0")){
                 msg= String.format(interviewMetaDataFormat
                     , bcvo.getAdmissionId()
                     ,"확진당일 "
@@ -321,20 +323,19 @@ public class BatchService extends EgovAbstractServiceImpl{
         String msg;
         for (BioCheckVO bcvo: bvo){
             int biochkint =0;
+            String bioch;
 
             bcvo.setBioDate(nowDate.toString());
             bcvo.setBioTime(nowTime.toString());
 
             bcvo.setItemId("I0006");                             //호흡
-            biochkint = aiInferenceDao.bioTimeCheck(bcvo);
-            if (biochkint == 0 ){
+            bioch = aiInferenceDao.bioTimeCheck(bcvo);
+            if (bioch == null || bioch.equals("0")){
                 msg= String.format(bioMetaDataFormat
                     , bcvo.getAdmissionId()
                     , nowDate.toString()
                     ,"  호흡  "
                 );
-
-                System.out.println(msg);
 
                 //에러 메세지 저장
                 bioErrorVO = new BioErrorVO();
@@ -347,8 +348,8 @@ public class BatchService extends EgovAbstractServiceImpl{
             }
 
             bcvo.setItemId("I0002");
-            biochkint = aiInferenceDao.bioTimeCheck(bcvo);
-            if (biochkint == 0 ){
+            bioch = aiInferenceDao.bioTimeCheck(bcvo);
+            if (bioch == null || bioch.equals("0")){
                 msg= String.format(bioMetaDataFormat
                     ,bcvo.getAdmissionId()
                     , nowDate.toString()
@@ -365,8 +366,8 @@ public class BatchService extends EgovAbstractServiceImpl{
             }
 
             bcvo.setItemId("I0001");
-            biochkint = aiInferenceDao.bioTimeCheck(bcvo);
-            if (biochkint == 0 ){
+            bioch = aiInferenceDao.bioTimeCheck(bcvo);
+            if (bioch == null || bioch.equals("0") ){
                 msg= String.format(bioMetaDataFormat
                     ,bcvo.getAdmissionId()
                     , nowDate.toString()
@@ -386,8 +387,8 @@ public class BatchService extends EgovAbstractServiceImpl{
             String endDate = bcvo.getEndDate();  //마지막일
 
             bcvo.setInterviewType("01");
-            biochkint = aiInferenceDao.interviewCheck(bcvo);
-            if (biochkint == 0 ){
+            bioch = aiInferenceDao.interviewCheck(bcvo);
+            if (bioch == null || bioch.equals("0") ){
                 msg= String.format(interviewMetaDataFormat
                     , bcvo.getAdmissionId()
                     ,"확진당일 "
@@ -405,58 +406,79 @@ public class BatchService extends EgovAbstractServiceImpl{
         }
 
 
-        // List list= null;
-        // String filePath = vo.getFilePath();
-        //
-        // //데이터를 받아오고 파일로 쓰기
-        // try {
-        //
-        //     File file = new File(filePath);
-        //
-        //     if( file.exists() ) {
-        //         file.delete();
-        //     }
-        //
-        //     //csv 파일의 기존 값에 이어쓰려면 위처럼 tru를 지정하고 기존갑을 덮어 쓰려면 true를 삭제한다
-        //     BufferedWriter fw = new BufferedWriter(new FileWriter(filePath));
-        //
-        //     //쿼리 를 한다.
-        //     //
-        //     List<TemperListVO> dataList = aiInferenceDao.temperList();
-        //
-        //     if (dataList.size() > 0 ) {
-        //         for (TemperListVO dt : dataList) {
-        //
-        //             System.out.println("환자 아이디 " + dt.getAdmissionId());
-        //
-        //             String aData = "";
-        //             aData = dt.getAdmissionId();   //환자 id
-        //             aData += "," + dt.getRr();     //호흡
-        //             aData += "," + dt.getPr();     //심박수
-        //             aData += "," + dt.getBt();     //체온
-        //             aData += "," + dt.getQ1Yn();   //가래
-        //             aData += "," + dt.getQ2Yn();   //흉통
-        //             aData += "," + dt.getQ3Yn();   //구토
-        //             aData += "," + dt.getQ4Yn();   //설사
-        //             aData += "," + dt.getQ5Yn();   //호흡곤란
-        //             aData += "," + dt.getQ6Yn();   //통증
-        //
-        //             fw.write(aData);
-        //             fw.newLine();
-        //         }
-        //     }
-        //     fw.flush();
-        //     //객체 닫기
-        //     fw.close();
-        //
-        // } catch (IOException e) {
-        //     e.printStackTrace();
-        //     log.error(e.getMessage());
-        //     throw new RuntimeException(e);
-        // } finally {
-        //     log.info("체온 상승 데이터 파일 만들기");
-        //     return resultCount;
-        // }
+        List list= null;
+        String filePath = vo.getFilePath();
+
+        //데이터를 받아오고 파일로 쓰기
+        try {
+
+            File file = new File(filePath);
+
+            if( file.exists() ) {
+                file.delete();
+            }
+
+            //csv 파일의 기존 값에 이어쓰려면 위처럼 tru를 지정하고 기존갑을 덮어 쓰려면 true를 삭제한다
+            BufferedWriter fw = new BufferedWriter(new FileWriter(filePath));
+
+            //쿼리 를 한다.
+            //
+            List<TemperListVO> dataList = aiInferenceDao.temperList(vo);
+
+            if (dataList.size() > 0 ) {
+                //타이틀 넣기
+                String tData = "";
+                tData = "Patient_id";   //환자 id
+                tData += "," + "rr";      //호흡
+                tData += "," + "hr";      //심박수
+                tData += "," + "체온";     //
+                tData += "," + "가래";     //
+                tData += "," + "발열";    //
+                tData += "," + "인후통";    //
+                tData += "," + "호흡곤란";    //
+                tData += "," + "흉통";    //
+                tData += "," + "오심";    //
+                tData += "," + "구토";    //
+                tData += "," + "설사";    //
+                tData += "," + "복통";    //
+                tData += "," + "수면장애";    //
+
+                fw.write(tData);
+                fw.newLine();
+
+                for (TemperListVO dt : dataList) {
+
+                    System.out.println("환자 아이디 " + dt.getAdmissionId());
+
+                    String aData = "";
+                    aData = dt.getAdmissionId();   //환자 id
+                    aData += "," + dt.getRr();     //호흡
+                    aData += "," + dt.getPr();     //심박수
+                    aData += "," + dt.getBt();     //체온
+                    aData += "," + dt.getQ1Yn();   //가래
+                    aData += "," + dt.getQ2Yn();   //발열
+                    aData += "," + dt.getQ3Yn();   //인후통
+                    aData += "," + dt.getQ4Yn();   //호흡곤란
+                    aData += "," + dt.getQ5Yn();   //흉통
+                    aData += "," + dt.getQ6Yn();   //오심
+                    aData += "," + dt.getQ7Yn();   //구토
+                    aData += "," + dt.getQ8Yn();   //변비
+                    aData += "," + dt.getQ9Yn();   //설사
+                    aData += "," + dt.getQ10Yn();   //수면장애
+
+                    fw.write(aData);
+                    fw.newLine();
+                }
+            }
+            fw.flush();
+            //객체 닫기
+            fw.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
         return resultCount;
     }
 
@@ -546,6 +568,8 @@ public class BatchService extends EgovAbstractServiceImpl{
         String msg;
         for (BioCheckVO bcvo: bvo){
             int biochkint =0;
+            String bioch;
+
 
             bcvo.setBioDate(nowDate.toString());
             bcvo.setBioTime(nowTime.toString());
@@ -557,8 +581,8 @@ public class BatchService extends EgovAbstractServiceImpl{
             String sNowDate = nowDate.toString();  //마지막일
             //입소당일
             bcvo.setInterviewType("01");
-            biochkint = aiInferenceDao.interviewCheck(bcvo);
-            if (biochkint == 0 ){
+            bioch = aiInferenceDao.interviewCheck(bcvo);
+            if (bioch == null || bioch.equals("0")){
                 msg= String.format(interviewMetaDataFormat
                     , bcvo.getAdmissionId()
                     ,"확진당일 "
@@ -577,8 +601,8 @@ public class BatchService extends EgovAbstractServiceImpl{
             int bv = 0;
             if (bv != 0){
                 bcvo.setInterviewType("05");
-                biochkint = aiInferenceDao.interviewCheck(bcvo);
-                if (biochkint == 0 ){
+                bioch = aiInferenceDao.interviewCheck(bcvo);
+                if (bioch == null || bioch.equals("0")){
                     msg= String.format(interviewMetaDataFormat
                         , bcvo.getAdmissionId()
                         ,"확진당일 "
@@ -745,7 +769,7 @@ public class BatchService extends EgovAbstractServiceImpl{
         BufferedReader br;
         log.info(" 파이썬 실행 프로세스 >>>> " + arg1);
         try{
-            builder = new ProcessBuilder("python3",arg1); //python3 error
+            builder = new ProcessBuilder("python3.8",arg1); //python3 error
 
             builder.redirectErrorStream(true);
             Process process = builder.start();
