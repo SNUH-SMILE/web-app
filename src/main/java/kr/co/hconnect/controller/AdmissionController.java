@@ -379,7 +379,7 @@ public class AdmissionController {
 			admissionService.updateAdmissionDischarge(admissionVO);
 
 			responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
-			responseVO.setMessage("퇴소 처리 완료");
+			responseVO.setMessage("자가격리 해제 완료");
 			responseVO.setResult(admissionService.selectAdmissionListByQuarantine(vo.getAdmissionListSearchByQuarantineVO()));
 		} catch (NotFoundAdmissionInfoException e) {
 			responseVO.setCode(e.getErrorCode());
