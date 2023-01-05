@@ -19,8 +19,8 @@ public class BatchController {
 
 
 
-    //private String ai_path = "/usr/local/apache-tomcat-8.5.79/python/";
-    private String ai_path = "E://python/";
+    private String ai_path = "/usr/local/apache-tomcat-8.5.79/python/";
+    //private String ai_path = "E://python/";
 
     private final BatchService batchService;
 
@@ -36,7 +36,7 @@ public class BatchController {
      * 1. 스코어 배치 처리 하기
      * ./score 폴더
      */
-    //@Scheduled(cron="0 0 0/1 * * *")
+    @Scheduled(cron="0 0 0/1 * * *")
     public void scoreScheduler() throws IOException, InterruptedException {
 
         String filePath = ai_path+ "score/score_file.csv";
@@ -77,18 +77,15 @@ public class BatchController {
     /**
      * 2. 체온 배치 처리 하기
      * ./temperature
+     * @Scheduled(fixedDelay=10000)
      */
-    //@Scheduled(cron="0 0 0/2 * * *")
-    @Scheduled(fixedDelay=10000)
+    @Scheduled(cron="0 0 0/2 * * *")
     public void bodyTemperatureScheduler() throws IOException, InterruptedException {
         //System.out.println("2. 체온 배치 처리 하기 ");
 
         String filePath = ai_path+ "temper/temper_file.csv";
         String outfilePath = ai_path + "temper/temper_result.csv";
         String executePath = ai_path + "temper/body_temp_rise.py";
-
-        //String filePath = "E://python//temper//temper_file.csv";
-        //String outfilePath = "E://python//temper//temper_result.csv";
 
         /**
          * 체온 데이터 파일 생성
@@ -129,9 +126,6 @@ public class BatchController {
         String filePath = ai_path+ "depress/annotation.csv";
         String outfilePath = ai_path + "depress/result.csv";
         String executePath = ai_path + "ise.py";
-
-        //String filePath = "E://python//depress//depress_file.csv";
-        //String outfilePath = "E://python//depress//depress_result.csv";
 
         /**
          * 체온 데이터 파일 생성

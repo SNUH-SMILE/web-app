@@ -54,19 +54,19 @@ public class AiInferenceDao extends EgovAbstractMapper {
     }
 
     //퇴소일이 오늘 보다 큰 입소자의 바이오 데이터 체크
-    public int bioCheck(BioCheckVO vo) {
+    public String bioCheck(BioCheckVO vo) {
         return selectOne("kr.co.hconnect.sqlmapper.bioCheck", vo);
     }
 
     //2시간안에 데이터가 있는지 체크
-    public int bioTimeCheck(BioCheckVO vo) {
+    public String bioTimeCheck(BioCheckVO vo) {
 
         return selectOne("kr.co.hconnect.sqlmapper.bioTimeCheck", vo);
     }
 
 
     //퇴소일이 오늘 보다 큰 입소자의 문진 데이터
-    public int interviewCheck(BioCheckVO vo) {
+    public String interviewCheck(BioCheckVO vo) {
         return selectOne("kr.co.hconnect.sqlmapper.interviewCheck", vo);
     }
 

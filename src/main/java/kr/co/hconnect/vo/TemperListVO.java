@@ -35,6 +35,14 @@ public class TemperListVO implements Serializable{
 
     private String q6Yn;
 
+    private String q7Yn;
+
+    private String q8Yn;
+
+    private String q9Yn;
+
+    private String q10Yn;
+
 
 
 }
