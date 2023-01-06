@@ -1,7 +1,6 @@
 package kr.co.hconnect.vo;
 
-import kr.co.hconnect.common.BaseDefaultVO;
-import kr.co.hconnect.repository.DrugDao;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,34 +18,15 @@ import java.util.List;
 @ToString
 public class DrugDetailVO implements Serializable {
 
+    /**
+     * 복약 일자
+     */
+    private String admissionDate;
 
     /**
-     * 복약일자
+     * 날짜별 복약알람
      */
-    private String noticeDd;
-
-    /**
-     * 복약 알람 이름
-     */
-    private String noticeName;
-    /**
-     * 복약 알람 시간
-     */
-    private String noticeTime;
-    /**
-     * 복약 알람 시작 날짜
-     */
-    private String noticeStartDate;
-    /**
-     * 복약 알람 종료 일자
-     */
-    private String noticeEndDate;
-    /**
-     * 복약내역순번
-     */
-    private String drugDoseSeq;
-
-
+    private List<DrugDoseVO> drugDoseVO;
 
 
 }

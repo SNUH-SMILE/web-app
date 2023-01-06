@@ -185,16 +185,25 @@
           and dd.NOTICE_DD = #{requestDate}
     </select>
 
-    <select id="selectDrugListForDetail" parameterType="String" resultType="kr.co.hconnect.vo.DrugDetailVO">
+    <select id="selectDrugListForDetail" parameterType="kr.co.hconnect.vo.DrugSearchVO" resultType="kr.co.hconnect.vo.DrugDoseVO">
         SELECT
-             d.NOTICE_NAME
-            ,a.NOTICE_TIME
-            ,d.NOTICE_START_DATE
-            ,d.NOTICE_END_DATE
-            ,c.DRUG_DOSE_SEQ
-            ,c.NOTICE_DD
-        FROM DRUG D LEFT JOIN DRUG_ALARM A ON A.DRUG_SEQ =D.DRUG_SEQ
+              D.NOTICE_NAME
+            , A.NOTICE_TIME
+            , NULL AS NO_ALARM
+            , C.DRUG_DOSE_SEQ
+        FROM DRUG D  LEFT JOIN DRUG_ALARM A ON A.DRUG_SEQ =D.DRUG_SEQ
             LEFT JOIN DRUG_DOSE C ON A.DRUG_ALARM_SEQ = C.DRUG_ALARM_SEQ
-        WHERE d.ADMISSION_ID  = #{id};
+        WHERE D.NOTICE_START_DATE <![CDATA[ <= ]]> #{requestDate}
+            AND D.NOTICE_END_DATE <![CDATA[ >= ]]> #{requestDate}
+            AND D.ADMISSION_ID = #{admissionId}
+        UNION
+        SELECT DD.DRUG_NAME AS NOTICE_NAME
+             , NOTICE_TIME
+             , NO_ALARM
+             , DRUG_DOSE_SEQ
+        FROM DRUG_DOSE DD
+        WHERE NO_ALARM = 'Y'
+            AND ADMISSION_ID = #{admissionId}
+            AND NOTICE_DD = #{requestDate};
     </select>
 </mapper>
