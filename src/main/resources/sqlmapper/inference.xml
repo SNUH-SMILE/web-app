@@ -15,7 +15,7 @@
         VALUES
             ( #{admissionId}
             , #{infDiv}
-            , #{infValue}
+            , CAST(#{infValue} as unsigned)
             , now()
             )
         ]]>
@@ -136,7 +136,7 @@
              ,IFNULL(Q8_YN,0)  Q8_YN   -- 변비
              ,IFNULL(Q9_YN,0)  Q9_YN   -- 설사
              ,IFNULL(Q10_YN,0)  Q10_YN  -- 복통
-             ,IFNULL(Q10_YN,0)  Q11_YN  -- 수면장애
+             ,IFNULL(Q11_YN,0)  Q11_YN  -- 수면장애
         FROM ADMISSION A
                  INNER JOIN PATIENT P
                             ON A.PATIENT_ID  = P.PATIENT_ID
