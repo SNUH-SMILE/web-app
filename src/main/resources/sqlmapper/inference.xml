@@ -15,7 +15,7 @@
         VALUES
             ( #{admissionId}
             , #{infDiv}
-            , CAST(#{infValue} as unsigned)
+            , #{infValue}
             , now()
             )
         ]]>
