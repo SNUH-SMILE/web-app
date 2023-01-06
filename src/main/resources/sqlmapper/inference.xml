@@ -135,7 +135,8 @@
              ,IFNULL(Q7_YN,0)  Q7_YN   -- 구토
              ,IFNULL(Q8_YN,0)  Q8_YN   -- 변비
              ,IFNULL(Q9_YN,0)  Q9_YN   -- 설사
-             ,IFNULL(Q10_YN,0)  Q10_YN  -- 수면장애
+             ,IFNULL(Q10_YN,0)  Q10_YN  -- 복통
+             ,IFNULL(Q10_YN,0)  Q11_YN  -- 수면장애
         FROM ADMISSION A
                  INNER JOIN PATIENT P
                             ON A.PATIENT_ID  = P.PATIENT_ID
@@ -154,13 +155,14 @@
                          ,GROUP_CONCAT(IF(ANSWER_SEQ = '40', ANSWER_VALUE, NULL))  AS Q1_YN
                          ,GROUP_CONCAT(IF(ANSWER_SEQ = '42', ANSWER_VALUE, NULL))  AS Q2_YN
                          ,GROUP_CONCAT(IF(ANSWER_SEQ = '46', ANSWER_VALUE, NULL))  AS Q3_YN
-                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '50', ANSWER_VALUE, NULL))  AS Q4_YN
-                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '54', ANSWER_VALUE, NULL))  AS Q5_YN
-                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '55', ANSWER_VALUE, NULL))  AS Q6_YN
-                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '57', ANSWER_VALUE, NULL))  AS Q7_YN
-                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '58', ANSWER_VALUE, NULL))  AS Q8_YN
-                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '59', ANSWER_VALUE, NULL))  AS Q9_YN
-                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '62', ANSWER_VALUE, NULL))  AS Q10_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '48', ANSWER_VALUE, NULL))  AS Q4_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '50', ANSWER_VALUE, NULL))  AS Q5_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '54', ANSWER_VALUE, NULL))  AS Q6_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '55', ANSWER_VALUE, NULL))  AS Q7_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '57', ANSWER_VALUE, NULL))  AS Q8_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '58', ANSWER_VALUE, NULL))  AS Q9_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '59', ANSWER_VALUE, NULL))  AS Q10_YN
+                         ,GROUP_CONCAT(IF(ANSWER_SEQ = '62', ANSWER_VALUE, NULL))  AS Q11_YN
                     FROM (
                              SELECT I.ADMISSION_ID
                                   ,ID.ANSWER_SEQ
