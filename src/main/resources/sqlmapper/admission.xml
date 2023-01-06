@@ -266,12 +266,17 @@
                     ELSE      '2'
                END                          AS QANTN_STATUS   -- 입소/격리 상태
              , CASE WHEN VI.ADMISSION_ID IS NULL THEN 'X' ELSE 'O' END    AS VIDEO_DOWN
-             , ''                           AS AI_EXE
+		     , CASE WHEN AI.INFCNT = 3 THEN 'O' ELSE 'X' END AS AI_EXE
+		     , CASE WHEN AI.INFCNT = 3 THEN 'Y' ELSE 'N' END AS AI_EXE_YN
 		  FROM ADMISSION A
 			   INNER JOIN PATIENT 			P      ON A.PATIENT_ID = P.PATIENT_ID
 		       LEFT JOIN (
 		           SELECT DISTINCT ADMISSION_ID  FROM ARCHIVE_DOWN
 		       ) VI ON A.ADMISSION_ID = VI.ADMISSION_ID
+		       LEFT JOIN (
+		           SELECT I.ADMISSION_ID,  COUNT(I.INF_DIV) AS INFCNT FROM INFERENCE I
+                    GROUP BY ADMISSION_ID
+		       ) AI ON A.ADMISSION_ID = AI.ADMISSION_ID
          WHERE A.QANTN_DIV = '1'            -- 자가격리자 구분
 		   AND A.DEL_YN = 'N'
 	]]>

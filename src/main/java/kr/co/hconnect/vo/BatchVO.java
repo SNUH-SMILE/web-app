@@ -33,4 +33,6 @@ public class BatchVO implements Serializable {
 
     private String cDate;
 
+
+
 }

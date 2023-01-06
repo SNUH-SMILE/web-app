@@ -62,6 +62,14 @@ public class BatchService extends EgovAbstractServiceImpl{
         String rtn ="";
         int resultCount = 0;
 
+        AiInferenceVO logVO = new AiInferenceVO();
+        logVO.setInfDiv("10");
+        //로그로 데이터 복사
+        aiInferenceDao.insInf_log(logVO);
+        //데이터 삭제
+        aiInferenceDao.delInf(logVO);
+
+
         BioErrorVO bioErrorVO ;
         LocalDate nowDate = LocalDate.now();
         vo.setCDate(nowDate.toString());
@@ -216,13 +224,6 @@ public class BatchService extends EgovAbstractServiceImpl{
         return rtn;
     }
 
-
-    /**
-     * 스코어 배치 파일 실행하기
-     */
-
-
-
     /**
      * 스코어 output  데이터  테이블 import
      * @param vo
@@ -245,13 +246,6 @@ public class BatchService extends EgovAbstractServiceImpl{
         String line = "";
 
         try{
-            AiInferenceVO logVO = new AiInferenceVO();
-            logVO.setInfDiv("10");
-            //로그로 데이터 복사
-            aiInferenceDao.insInf_log(logVO);
-            //데이터 삭제
-            aiInferenceDao.delInf(logVO);
-
             br = new BufferedReader(new FileReader(csv));
             while ((line = br.readLine()) != null){
                 String[] lineArr = line.split(",");
@@ -297,21 +291,30 @@ public class BatchService extends EgovAbstractServiceImpl{
 
     }
 
-
     /**
      * 체온 격리 데이터 생성
      * @param vo
      * @return
      */
-    public int temperCreate(BatchVO vo) {
+    public String temperCreate(BatchVO vo) {
         log.info("체온 상승 데이터 파일 만들기");
         int resultCount = 0;
+        String result="";
+
+        AiInferenceVO logVO = new AiInferenceVO();
+        logVO.setInfDiv("20");
+        //로그로 데이터 복사
+        aiInferenceDao.insInf_log(logVO);
+        //데이터 삭제
+        aiInferenceDao.delInf(logVO);
+
 
         BioErrorVO bioErrorVO ;
         LocalDate nowDate = LocalDate.now();
         LocalTime nowTime = LocalTime.now();
 
         vo.setCDate(nowDate.toString());
+
 
         //스코어 대상 리스트
         List<BioCheckVO> bvo = aiInferenceDao.bioAdmissionId();
@@ -405,6 +408,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         }
 
+        log.info("체온상승 파일 만들기 ==================================");
 
         List list= null;
         String filePath = vo.getFilePath();
@@ -447,9 +451,9 @@ public class BatchService extends EgovAbstractServiceImpl{
                 fw.write(tData);
                 fw.newLine();
 
-                for (TemperListVO dt : dataList) {
+                log.info("체온상승 파일 만들기");
 
-                    System.out.println("환자 아이디 " + dt.getAdmissionId());
+                for (TemperListVO dt : dataList) {
 
                     String aData = "";
                     aData = dt.getAdmissionId();   //환자 id
@@ -477,11 +481,11 @@ public class BatchService extends EgovAbstractServiceImpl{
             fw.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
             log.error(e.getMessage());
-            throw new RuntimeException(e);
+            result= e.getMessage();
         }
-        return resultCount;
+
+        return result;
     }
 
 
@@ -553,6 +557,13 @@ public class BatchService extends EgovAbstractServiceImpl{
     public int depressCreate(BatchVO vo) {
 
         int resultCount = 0;
+
+        AiInferenceVO logVO = new AiInferenceVO();
+        logVO.setInfDiv("30");
+        //로그로 데이터 복사
+        aiInferenceDao.insInf_log(logVO);
+        //데이터 삭제
+        aiInferenceDao.delInf(logVO);
 
         BioErrorVO bioErrorVO ;
         LocalDate nowDate = LocalDate.now();
@@ -702,7 +713,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
 
         if(!csv.exists() ) {
-            System.out.println(" 우울 예측 알고리즘 결과 파일이 없습니다.");
+            log.error("우울 예측 알고리즘 결과 파일이 없습니다");
             return "";
         }
 
@@ -710,13 +721,6 @@ public class BatchService extends EgovAbstractServiceImpl{
         String line = "";
 
         try{
-            AiInferenceVO logVO = new AiInferenceVO();
-            logVO.setInfDiv("30");
-            //로그로 데이터 복사
-            aiInferenceDao.insInf_log(logVO);
-            //데이터 삭제
-            aiInferenceDao.delInf(logVO);
-
             br = new BufferedReader(new FileReader(csv));
             while ((line = br.readLine()) != null){
                 String[] lineArr = line.split(",");
@@ -764,12 +768,12 @@ public class BatchService extends EgovAbstractServiceImpl{
      * @return
      */
     public String pythonProcessbuilder( String arg1) throws IOException, InterruptedException {
-        log.info("========pythonProcessbuilder");
+        log.info("========pythonProcessbuilder ================");
 
         String bool = "";
         ProcessBuilder builder;
         BufferedReader br;
-        log.info(" 파이썬 실행 프로세스 >>>> " + arg1);
+        log.info(" 파이썬 실행 프로세스 arg1 >>>> " + arg1);
         try{
             builder = new ProcessBuilder("python3.8",arg1); //python3 error
 
@@ -782,15 +786,19 @@ public class BatchService extends EgovAbstractServiceImpl{
             //// 서브 프로세스가 출력하는 내용을 받기 위해
             br = new BufferedReader(new InputStreamReader(process.getInputStream(),"UTF-8"));
 
+            log.info("표준출력1  >>>   "+ br );
+
             String line;
             while ((line = br.readLine()) != null) {
-                System.out.println(">>>  " + line); // 표준출력에 쓴다
+                log.info("표준출력 loop  >>>   "+line );
             }
 
+            /*
             if(exitval !=0){
                 //비정상종료
                 log.warn("파이썬 프로세스 비정상 종료" );
             }
+            */
         } catch (IOException e){
             bool = e.getMessage();
             log.error(e.getMessage());
@@ -803,7 +811,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
 
     public String vonageArchiveList() throws IOException, OpenTokException {
-
+        log.info("영상녹화 파일 다운로드 시작 >>>");
         String rtn ="";
 
         ArchiveVO avo = new ArchiveVO();
