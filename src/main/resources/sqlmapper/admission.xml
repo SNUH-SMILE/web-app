@@ -308,5 +308,9 @@
 		OFFSET #{offsetCount}
 
 	</select>
-
+    <select id="selectAdmissionDate"  parameterType="String" resultType="kr.co.hconnect.vo.AdmissionVO">
+        SELECT A.ADMISSION_DATE
+        FROM ADMISSION A
+        WHERE ADMISSION_ID = #{admissionId}
+    </select>
 </mapper>
