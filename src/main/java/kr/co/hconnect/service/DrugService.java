@@ -4,12 +4,8 @@ package kr.co.hconnect.service;
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.rte.fdl.cmmn.exception.FdlException;
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
-import kr.co.hconnect.exception.ActiveAdmissionExistsException;
-import kr.co.hconnect.repository.PatientDeviceDao;
-import kr.co.hconnect.repository.PatientEquipDao;
-import kr.co.hconnect.repository.TreatmentCenterDao;
+import kr.co.hconnect.repository.*;
 import kr.co.hconnect.vo.*;
-import kr.co.hconnect.repository.DrugDao;
 import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,8 +13,9 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 복약 서비스
@@ -37,18 +34,21 @@ public class DrugService extends EgovAbstractServiceImpl {
     //@autowired
     private  final  DrugDao drugDao;
 
+    private final AdmissionDao admissionDao;
+
    // 서비스 생성하기
     @Autowired
     public DrugService(DrugDao drugDao
         , @Qualifier("drugSeqGnrService") EgovIdGnrService drugSeqGnrService
         , @Qualifier("drugAlarmSeqGnrService") EgovIdGnrService drugAlarmSeqGnrService
         , @Qualifier("drugDoseSeqGnrService") EgovIdGnrService drugDoseSeqGnrService
-        , MessageSource messageSource
-   ) {
+        , MessageSource messageSource,
+                       AdmissionDao admissionDao) {
         this.drugDao = drugDao;
         this.drugSeqGnrService = drugSeqGnrService;
         this.drugAlarmSeqGnrService = drugAlarmSeqGnrService;
         this.drugDoseSeqGnrService = drugDoseSeqGnrService;
+        this.admissionDao = admissionDao;
     }
 
 
@@ -225,8 +225,27 @@ public class DrugService extends EgovAbstractServiceImpl {
      */
     public  List<DrugDetailVO> selectDrugListForDetail(String admissionId){
 
+        //admission 입소일부터 오늘까지 복약 리스트 불러오기 위함
+        AdmissionVO admissionVO =  admissionDao.selectAdmissionDateList(admissionId);
+        LocalDate today = LocalDate.now();
+        List<DrugDetailVO> drugDetailVOS = new ArrayList<>();
+        LocalDate admissionDate = admissionVO.getAdmissionDate().minusDays(1);
 
-        List<DrugDetailVO> drugDetailVOS =  drugDao.selectDrugListForDetail(admissionId);
+        do{
+            DrugDetailVO drugDetailVO = new DrugDetailVO();
+            admissionDate = admissionDate.plusDays(1);
+            drugDetailVO.setAdmissionDate(admissionDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+            drugDetailVOS.add(drugDetailVO);
+        }
+        while(admissionDate.isBefore(today));
+
+        for(DrugDetailVO detailVO : drugDetailVOS){
+            DrugSearchVO drugSearchVO = new DrugSearchVO();
+            drugSearchVO.setAdmissionId(admissionId);
+            drugSearchVO.setRequestDate(detailVO.getAdmissionDate());
+            List<DrugDoseVO> vos = drugDao.selectDrugListForDetail(drugSearchVO);
+            detailVO.setDrugDoseVO(vos);
+        }
 
         return drugDetailVOS;
     }
