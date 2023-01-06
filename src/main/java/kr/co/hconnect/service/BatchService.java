@@ -432,16 +432,17 @@ public class BatchService extends EgovAbstractServiceImpl{
                 tData += "," + "rr";      //호흡
                 tData += "," + "hr";      //심박수
                 tData += "," + "체온";     //
-                tData += "," + "가래";     //
-                tData += "," + "발열";    //
-                tData += "," + "인후통";    //
-                tData += "," + "호흡곤란";    //
-                tData += "," + "흉통";    //
-                tData += "," + "오심";    //
-                tData += "," + "구토";    //
-                tData += "," + "설사";    //
-                tData += "," + "복통";    //
-                tData += "," + "수면장애";    //
+                tData += "," + "가래";     //1
+                tData += "," + "발열";    //2
+                tData += "," + "인후통";    //3
+                tData += "," + "호흡곤란";    //4
+                tData += "," + "흉통";    //5
+                tData += "," + "오심";    //6
+                tData += "," + "구토";    //7
+                tData += "," + "변비";    //8
+                tData += "," + "설사";    //9
+                tData += "," + "복통";    //10
+                tData += "," + "수면장애";    //11
 
                 fw.write(tData);
                 fw.newLine();
@@ -464,7 +465,8 @@ public class BatchService extends EgovAbstractServiceImpl{
                     aData += "," + dt.getQ7Yn();   //구토
                     aData += "," + dt.getQ8Yn();   //변비
                     aData += "," + dt.getQ9Yn();   //설사
-                    aData += "," + dt.getQ10Yn();   //수면장애
+                    aData += "," + dt.getQ10Yn();   //복통
+                    aData += "," + dt.getQ11Yn();   //수면장애
 
                     fw.write(aData);
                     fw.newLine();
