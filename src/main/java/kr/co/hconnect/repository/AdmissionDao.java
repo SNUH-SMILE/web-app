@@ -116,6 +116,17 @@ public class AdmissionDao extends EgovAbstractMapper {
     }
 
 
+    /**
+     * 자가격리자 입소일조회
+     * @param admissionId
+     * @return
+     */
+    public AdmissionVO selectAdmissionDateList(String admissionId) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectAdmissionDate", admissionId);
+    }
 
 
 }
+
+
+

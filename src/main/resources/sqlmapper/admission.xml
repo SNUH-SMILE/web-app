@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.hconnect.sqlmapper">
 
-	<!-- Pagination Total RowCount 조회 - kr.co.hconnect.sqlmapper.selectFoundRowsByAdmission -->
-	<select id="selectFoundRowsByAdmission" resultType="Integer">
+    <!-- Pagination Total RowCount 조회 - kr.co.hconnect.sqlmapper.selectFoundRowsByAdmission -->
+    <select id="selectFoundRowsByAdmission" resultType="Integer">
         SELECT FOUND_ROWS()
     </select>
 
@@ -20,7 +20,7 @@
              , A.CENTER_ID                -- 센터ID
              , CASE WHEN A.QANTN_DIV = '1' THEN '자택격리'
                     ELSE TC.CENTER_NM
-               END CENTER_NM             -- 센터명
+            END CENTER_NM             -- 센터명
              , A.ROOM                     -- 호실
              , A.DEL_YN                   -- 삭제여부
              , A.REG_ID                   -- 등록자ID
@@ -35,106 +35,110 @@
           AND B.LOGIN_ID = #{loginId}
         ]]>
     </select>
-	<!-- 로그인ID 기준 격리/입소내역(내원중) 리스트 조회 -->
-	<select id="selectActiveAdmissionListByLoginId" parameterType="String" resultType="kr.co.hconnect.vo.AdmissionVO">
-	<![CDATA[
-		SELECT A.ADMISSION_ID             -- 격리/입소내역ID
-		     , A.PATIENT_ID               -- 환자ID
-		     , A.ADMISSION_DATE           -- 시작일
-		     , A.DSCHGE_SCHDLD_DATE       -- 종료예정일
-		     , A.DSCHGE_DATE              -- 종료일
-		     , A.QANTN_DIV                -- 격리/입소구분 - CD004
-		     , A.PERSON_CHARGE            -- 담당자
-		     , A.CENTER_ID                -- 센터ID
-		     , CASE WHEN A.QANTN_DIV = '1' THEN '자택격리'
-		            ELSE TC.CENTER_NM
-		        END CENTER_NM             -- 센터명
-		     , A.ROOM                     -- 호실
-		     , A.DEL_YN                   -- 삭제여부
-		     , A.REG_ID                   -- 등록자ID
-		     , A.REG_DT                   -- 등록일시
-		     , A.UPD_ID                   -- 수정자ID
-		     , A.UPD_DT                   -- 수정일시
-		  FROM ADMISSION A
-		       INNER JOIN PATIENT B  ON A.PATIENT_ID = B.PATIENT_ID
-		       LEFT JOIN  TREATMENT_CENTER TC  ON A.CENTER_ID = TC.CENTER_ID
-		 WHERE A.DSCHGE_DATE IS NULL
-		   AND A.DEL_YN = 'N'
-		   AND B.LOGIN_ID = #{loginId}
-	]]>
-	</select>
+    <!-- 로그인ID 기준 격리/입소내역(내원중) 리스트 조회 -->
+    <select id="selectActiveAdmissionListByLoginId" parameterType="String" resultType="kr.co.hconnect.vo.AdmissionVO">
+   <![CDATA[
+        SELECT A.ADMISSION_ID             -- 격리/입소내역ID
+             , A.PATIENT_ID               -- 환자ID
+             , A.ADMISSION_DATE           -- 시작일
+             , A.DSCHGE_SCHDLD_DATE       -- 종료예정일
+             , A.DSCHGE_DATE              -- 종료일
+             , A.QANTN_DIV                -- 격리/입소구분 - CD004
+             , A.PERSON_CHARGE            -- 담당자
+             , A.CENTER_ID                -- 센터ID
+             , CASE WHEN A.QANTN_DIV = '1' THEN '자택격리'
+                    ELSE TC.CENTER_NM
+            END CENTER_NM             -- 센터명
+             , A.ROOM                     -- 호실
+             , A.DEL_YN                   -- 삭제여부
+             , A.REG_ID                   -- 등록자ID
+             , A.REG_DT                   -- 등록일시
+             , A.UPD_ID                   -- 수정자ID
+             , A.UPD_DT                   -- 수정일시
+        FROM ADMISSION A
+                 INNER JOIN PATIENT B  ON A.PATIENT_ID = B.PATIENT_ID
+                 LEFT JOIN  TREATMENT_CENTER TC  ON A.CENTER_ID = TC.CENTER_ID
+        WHERE A.DSCHGE_DATE IS NULL
+          AND A.DEL_YN = 'N'
+          AND B.LOGIN_ID = #{loginId}
+        ]]>
+   </select>
 
-	<!-- 환자ID 기준 격리/입소내역(내원중) 리스트 조회 - kr.co.hconnect.sqlmapper.selectActiveAdmissionListByPatientId -->
-	<select id="selectActiveAdmissionListByPatientId" parameterType="String" resultType="kr.co.hconnect.vo.AdmissionVO">
-	<![CDATA[
-		SELECT A.ADMISSION_ID             -- 격리/입소내역ID
-		     , A.PATIENT_ID               -- 환자ID
-		     , A.ADMISSION_DATE           -- 시작일
-		     , A.DSCHGE_SCHDLD_DATE       -- 종료예정일
-		     , A.DSCHGE_DATE              -- 종료일
-		     , A.QANTN_DIV                -- 격리/입소구분 - CD004
-		     , A.PERSON_CHARGE            -- 담당자
-		     , A.CENTER_ID                -- 센터ID
-		     , TC.CENTER_NM               -- 센터명
-		     , A.ROOM                     -- 호실
-		     , A.DEL_YN                   -- 삭제여부
-		     , A.REG_ID                   -- 등록자ID
-		     , A.REG_DT                   -- 등록일시
-		     , A.UPD_ID                   -- 수정자ID
-		     , A.UPD_DT                   -- 수정일시
-		  FROM ADMISSION A
-		       INNER JOIN PATIENT          B   ON A.PATIENT_ID = B.PATIENT_ID
-		       LEFT JOIN  TREATMENT_CENTER TC  ON A.CENTER_ID = TC.CENTER_ID
-		 WHERE A.DSCHGE_DATE IS NULL
-		   AND A.DEL_YN = 'N'
-		   AND B.PATIENT_ID = #{patientId}
-	]]>
-	</select>
+    <!-- 환자ID 기준 격리/입소내역(내원중) 리스트 조회 - kr.co.hconnect.sqlmapper.selectActiveAdmissionListByPatientId -->
+    <select id="selectActiveAdmissionListByPatientId" parameterType="String" resultType="kr.co.hconnect.vo.AdmissionVO">
+   <![CDATA[
+        SELECT A.ADMISSION_ID             -- 격리/입소내역ID
+             , A.PATIENT_ID               -- 환자ID
+             , A.ADMISSION_DATE           -- 시작일
+             , A.DSCHGE_SCHDLD_DATE       -- 종료예정일
+             , A.DSCHGE_DATE              -- 종료일
+             , A.QANTN_DIV                -- 격리/입소구분 - CD004
+             , A.PERSON_CHARGE            -- 담당자
+             , A.CENTER_ID                -- 센터ID
+             , TC.CENTER_NM               -- 센터명
+             , A.ROOM                     -- 호실
+             , A.DEL_YN                   -- 삭제여부
+             , A.REG_ID                   -- 등록자ID
+             , A.REG_DT                   -- 등록일시
+             , A.UPD_ID                   -- 수정자ID
+             , A.UPD_DT                   -- 수정일시
+        FROM ADMISSION A
+                 INNER JOIN PATIENT          B   ON A.PATIENT_ID = B.PATIENT_ID
+                 LEFT JOIN  TREATMENT_CENTER TC  ON A.CENTER_ID = TC.CENTER_ID
+        WHERE A.DSCHGE_DATE IS NULL
+          AND A.DEL_YN = 'N'
+          AND B.PATIENT_ID = #{patientId}
+        ]]>
+   </select>
 
-	<!-- 생활치료센터 입소자 리스트 조회 - kr.co.hconnect.sqlmapper.selectAdmissionListByCenter -->
-	<select id="selectAdmissionListByCenter"
-			parameterType="kr.co.hconnect.vo.AdmissionListSearchByCenterVO"
-			resultType="kr.co.hconnect.vo.AdmissionByCenterVO">
-		<![CDATA[
-		SELECT SQL_CALC_FOUND_ROWS
-		       A.ADMISSION_ID 					              -- 입소내역ID
-			 , A.CENTER_ID                                    -- 센터ID
-			 , TC.CENTER_NM                                   -- 센터명
-			 , P.PATIENT_ID                                   -- 환자ID
-			 , P.PATIENT_NM                                   -- 환자명
-			 , A.ADMISSION_DATE                               -- 시작일
-			 , A.ROOM                                         -- 호실
-			 , ROOM.DETAIL_CD_NM            AS ROOM_NM        -- 호실명
-			 , A.QANTN_DIV                                    -- 격리/입소 구분(CD004)
-			 , TIMESTAMPDIFF(DAY, A.ADMISSION_DATE, NOW())
-			                                AS QANTN_DAY      -- 격리일수
-			 , CASE WHEN A.DSCHGE_DATE IS NULL
+    <!-- 생활치료센터 입소자 리스트 조회 - kr.co.hconnect.sqlmapper.selectAdmissionListByCenter -->
+    <select id="selectAdmissionListByCenter"
+            parameterType="kr.co.hconnect.vo.AdmissionListSearchByCenterVO"
+            resultType="kr.co.hconnect.vo.AdmissionByCenterVO">
+        <![CDATA[
+      SELECT SQL_CALC_FOUND_ROWS
+             A.ADMISSION_ID                            -- 입소내역ID
+          , A.CENTER_ID                                    -- 센터ID
+          , TC.CENTER_NM                                   -- 센터명
+          , P.PATIENT_ID                                   -- 환자ID
+          , P.PATIENT_NM                                   -- 환자명
+          , A.ADMISSION_DATE                               -- 시작일
+          , A.ROOM                                         -- 호실
+          , ROOM.DETAIL_CD_NM            AS ROOM_NM        -- 호실명
+          , A.QANTN_DIV                                    -- 격리/입소 구분(CD004)
+          , TIMESTAMPDIFF(DAY, A.ADMISSION_DATE, NOW())
+                                         AS QANTN_DAY      -- 격리일수
+          , CASE WHEN A.DSCHGE_DATE IS NULL
                          THEN '1'
                     ELSE      '2'
                END                          AS QANTN_STATUS   -- 입소/격리 상태
              , CASE WHEN VI.ADMISSION_ID IS NULL THEN 'X' ELSE 'O' END    AS VIDEO_DOWN
-		     , CASE WHEN AI.INFCNT = 3 THEN 'O' ELSE 'X' END AS AI_EXE
-		     , CASE WHEN AI.INFCNT = 3 THEN 'Y' ELSE 'N' END AS AI_EXE_YN
-		FROM ADMISSION A
-			   INNER JOIN PATIENT 			P      ON A.PATIENT_ID = P.PATIENT_ID
-			   INNER JOIN TREATMENT_CENTER 	TC     ON A.CENTER_ID  = TC.CENTER_ID
-			   LEFT JOIN COM_CD_DETAIL 	    ROOM   ON ROOM.COM_CD    = 'CD005'
-			                                      AND ROOM.DETAIL_CD = A.ROOM
-										          AND ROOM.PROPERTY1 = TC.CENTER_ID
+           , CASE WHEN AI.INFCNT = 3 THEN 'O' ELSE 'X' END AS AI_EXE
+           , CASE WHEN AI.INFCNT = 3 THEN 'Y' ELSE 'N' END AS AI_EXE_YN
+      FROM ADMISSION A
+            INNER JOIN PATIENT        P      ON A.PATIENT_ID = P.PATIENT_ID
+            INNER JOIN TREATMENT_CENTER     TC     ON A.CENTER_ID  = TC.CENTER_ID
+            LEFT JOIN COM_CD_DETAIL         ROOM   ON ROOM.COM_CD    = 'CD005'
+                                               AND ROOM.DETAIL_CD = A.ROOM
+                                        AND ROOM.PROPERTY1 = TC.CENTER_ID
                LEFT JOIN (
                      SELECT DISTINCT ADMISSION_ID  FROM ARCHIVE_DOWN
                ) VI ON A.ADMISSION_ID = VI.ADMISSION_ID
-         WHERE A.CENTER_ID = #{centerId}	-- 센터ID
-		   AND A.QANTN_DIV = '2'            -- 생활치료센터 입소자 구분
-		   AND A.DEL_YN = 'N'
-	]]>
+             LEFT JOIN (
+                 SELECT I.ADMISSION_ID,  COUNT(I.INF_DIV) AS INFCNT FROM INFERENCE I
+                    GROUP BY ADMISSION_ID
+             ) AI ON A.ADMISSION_ID = AI.ADMISSION_ID
+         WHERE A.CENTER_ID = #{centerId}   -- 센터ID
+         AND A.QANTN_DIV = '2'            -- 생활치료센터 입소자 구분
+         AND A.DEL_YN = 'N'
+   ]]>
 
-		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientId)">
-			AND P.PATIENT_ID = #{patientId}
-		</if>
-		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientNm)">
-			AND P.PATIENT_NM LIKE CONCAT('%', #{patientNm},'%')
-		</if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientId)">
+            AND P.PATIENT_ID = #{patientId}
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientNm)">
+            AND P.PATIENT_NM LIKE CONCAT('%', #{patientNm},'%')
+        </if>
         <if test='@org.apache.commons.lang3.StringUtils@isNotEmpty(qantnStatus) and "1".equals(qantnStatus)'>
             AND A.DSCHGE_DATE IS NULL
         </if>
@@ -142,172 +146,177 @@
             AND A.DSCHGE_DATE IS NOT NULL
         </if>
 
-		ORDER
-		BY
-		<choose>
-			<when test="@org.apache.commons.lang3.StringUtils@isNotEmpty(orderBy)">
-				${orderBy} ${orderDir}
-			</when>
-			<otherwise>
+        ORDER
+        BY
+        <choose>
+            <when test="@org.apache.commons.lang3.StringUtils@isNotEmpty(orderBy)">
+                ${orderBy} ${orderDir}
+            </when>
+            <otherwise>
                 A.DSCHGE_DATE is null desc,A.ADMISSION_DATE DESC
-			</otherwise>
-		</choose>
+            </otherwise>
+        </choose>
 
-		LIMIT #{recordCountPerPage}
-		OFFSET #{offsetCount}
+        LIMIT #{recordCountPerPage}
+        OFFSET #{offsetCount}
 
-	</select>
+    </select>
 
-	<!-- 입소내역 정보 조회 - kr.co.hconnect.sqlmapper.selectAdmissionInfo -->
-	<select id="selectAdmissionInfo" parameterType="String" resultType="kr.co.hconnect.vo.AdmissionInfoVO">
-	<![CDATA[
-		-- 입소내역 정보 조회
-		-- selectAdmissionInfo
-		SELECT A.ADMISSION_ID                          -- 입소내역ID
-		     , P.PATIENT_ID                            -- 환자ID
-		     , P.PATIENT_NM                            -- 환자명
-		     , P.BIRTH_DATE                            -- 생년월일
-		     , P.SEX                                   -- 성별
-		     , P.CELL_PHONE                            -- 휴대폰
-		     , A.PERSON_CHARGE                         -- 담당자
-		     , A.ADMISSION_DATE                        -- 시작일
-		     , A.DSCHGE_SCHDLD_DATE                    -- 종료예정일
-		     , A.DSCHGE_DATE                           -- 종료일
-		     , A.CENTER_ID                             -- 센터ID
-		     , A.ROOM                                  -- 호실(위치)
-		     , A.QANTN_DIV                             -- 격리/입소 구분
-		     , A.DEL_YN                                -- 삭제 여부
-		     , P.SEARS_ACCOUNT
-		  FROM ADMISSION A
-		       INNER JOIN PATIENT    P  ON A.PATIENT_ID = P.PATIENT_ID
-		 WHERE A.ADMISSION_ID = #{admissionId}
-	]]>
-	</select>
+    <!-- 입소내역 정보 조회 - kr.co.hconnect.sqlmapper.selectAdmissionInfo -->
+    <select id="selectAdmissionInfo" parameterType="String" resultType="kr.co.hconnect.vo.AdmissionInfoVO">
+   <![CDATA[
+        -- 입소내역 정보 조회
+        -- selectAdmissionInfo
+        SELECT A.ADMISSION_ID                          -- 입소내역ID
+             , P.PATIENT_ID                            -- 환자ID
+             , P.PATIENT_NM                            -- 환자명
+             , P.BIRTH_DATE                            -- 생년월일
+             , P.SEX                                   -- 성별
+             , P.CELL_PHONE                            -- 휴대폰
+             , A.PERSON_CHARGE                         -- 담당자
+             , A.ADMISSION_DATE                        -- 시작일
+             , A.DSCHGE_SCHDLD_DATE                    -- 종료예정일
+             , A.DSCHGE_DATE                           -- 종료일
+             , A.CENTER_ID                             -- 센터ID
+             , A.ROOM                                  -- 호실(위치)
+             , A.QANTN_DIV                             -- 격리/입소 구분
+             , A.DEL_YN                                -- 삭제 여부
+             , P.SEARS_ACCOUNT
+        FROM ADMISSION A
+                 INNER JOIN PATIENT    P  ON A.PATIENT_ID = P.PATIENT_ID
+        WHERE A.ADMISSION_ID = #{admissionId}
+        ]]>
+   </select>
 
     <!-- 입소내역 생성 - kr.co.hconnect.sqlmapper.insertAdmission -->
-	<insert id="insertAdmission" parameterType="kr.co.hconnect.vo.AdmissionVO">
-	<![CDATA[
-		-- 입소내역 생성
-		-- insertAdmission
-		INSERT
-		  INTO ADMISSION
-		     ( ADMISSION_ID
-		     , PATIENT_ID
-		     , ADMISSION_DATE
-		     , DSCHGE_SCHDLD_DATE
-		     , QANTN_DIV
-		     , PERSON_CHARGE
-		     , CENTER_ID
-		     , ROOM
-		     , REG_ID
-		     , UPD_ID
-		     )
-		VALUES
-		     ( #{admissionId}
-		     , #{patientId}
-		     , #{admissionDate}
-		     , #{dschgeSchdldDate}
-		     , #{qantnDiv}
-		     , #{personCharge}
-		     , #{centerId}
-		     , #{room}
-		     , #{regId}
-		     , #{regId}
-		     )
-	]]>	
-	</insert>
-	
+    <insert id="insertAdmission" parameterType="kr.co.hconnect.vo.AdmissionVO">
+   <![CDATA[
+        -- 입소내역 생성
+        -- insertAdmission
+        INSERT
+        INTO ADMISSION
+        ( ADMISSION_ID
+        , PATIENT_ID
+        , ADMISSION_DATE
+        , DSCHGE_SCHDLD_DATE
+        , QANTN_DIV
+        , PERSON_CHARGE
+        , CENTER_ID
+        , ROOM
+        , REG_ID
+        , UPD_ID
+        )
+        VALUES
+            ( #{admissionId}
+            , #{patientId}
+            , #{admissionDate}
+            , #{dschgeSchdldDate}
+            , #{qantnDiv}
+            , #{personCharge}
+            , #{centerId}
+            , #{room}
+            , #{regId}
+            , #{regId}
+            )
+        ]]>
+   </insert>
+
     <!-- 입소내역 수정 - kr.co.hconnect.sqlmapper.updateAdmission -->
-	<update id="updateAdmission" parameterType="kr.co.hconnect.vo.AdmissionVO">
-	<![CDATA[
-		-- 입소내역 수정
-		-- updateAdmission
-		UPDATE ADMISSION 
-		   SET ADMISSION_DATE     = #{admissionDate}
-		     , DSCHGE_SCHDLD_DATE = #{dschgeSchdldDate}
-		     , PERSON_CHARGE      = #{personCharge}
-		     , CENTER_ID          = #{centerId}
-		     , ROOM               = #{room}
-		     , UPD_ID             = #{updId}
-		     , UPD_DT             = NOW()
-		 WHERE ADMISSION_ID = #{admissionId}
-	]]>
-	</update>
-	
-	<!-- 퇴소처리 - kr.co.hconnect.sqlmapper.updateAdmissionDischarge -->
-	<update id="updateAdmissionDischarge" parameterType="kr.co.hconnect.vo.AdmissionVO">
-	<![CDATA[
-		-- 퇴소처리
-		-- updateAdmissionDischarge
-		UPDATE ADMISSION 
-		   SET DSCHGE_DATE = #{dschgeDate}
-		   	 , UPD_ID      = #{updId}
-		     , UPD_DT      = NOW()
-		     , QANTN_LOCATION=#{quantLocation}
-		 WHERE ADMISSION_ID = #{admissionId}
-	]]>
-	</update>
+    <update id="updateAdmission" parameterType="kr.co.hconnect.vo.AdmissionVO">
+   <![CDATA[
+        -- 입소내역 수정
+        -- updateAdmission
+        UPDATE ADMISSION
+        SET ADMISSION_DATE     = #{admissionDate}
+          , DSCHGE_SCHDLD_DATE = #{dschgeSchdldDate}
+          , PERSON_CHARGE      = #{personCharge}
+          , CENTER_ID          = #{centerId}
+          , ROOM               = #{room}
+          , UPD_ID             = #{updId}
+          , UPD_DT             = NOW()
+        WHERE ADMISSION_ID = #{admissionId}
+        ]]>
+   </update>
+
+    <!-- 퇴소처리 - kr.co.hconnect.sqlmapper.updateAdmissionDischarge -->
+    <update id="updateAdmissionDischarge" parameterType="kr.co.hconnect.vo.AdmissionVO">
+   <![CDATA[
+        -- 퇴소처리
+        -- updateAdmissionDischarge
+        UPDATE ADMISSION
+        SET DSCHGE_DATE = #{dschgeDate}
+          , UPD_ID      = #{updId}
+          , UPD_DT      = NOW()
+          , QANTN_LOCATION=#{quantLocation}
+        WHERE ADMISSION_ID = #{admissionId}
+        ]]>
+   </update>
 
 
-	<!-- 자각격리자 리스트 조회 - kr.co.hconnect.sqlmapper.selectAdmissionListByQuarantine -->
-	<select id="selectAdmissionListByQuarantine"
-			parameterType="kr.co.hconnect.vo.AdmissionListSearchByQuarantineVO"
-			resultType="kr.co.hconnect.vo.AdmissionByQuarantineVO">
-		<![CDATA[
-		SELECT SQL_CALC_FOUND_ROWS
-		       A.ADMISSION_ID 					              -- 입소내역ID
-			 , P.PATIENT_ID                                   -- 환자ID
-			 , P.PATIENT_NM                                   -- 환자명
-			 , A.QANTN_DIV                                    -- 격리/입소 구분(CD004)
+    <!-- 자각격리자 리스트 조회 - kr.co.hconnect.sqlmapper.selectAdmissionListByQuarantine -->
+    <select id="selectAdmissionListByQuarantine"
+            parameterType="kr.co.hconnect.vo.AdmissionListSearchByQuarantineVO"
+            resultType="kr.co.hconnect.vo.AdmissionByQuarantineVO">
+        <![CDATA[
+      SELECT SQL_CALC_FOUND_ROWS
+             A.ADMISSION_ID                            -- 입소내역ID
+          , P.PATIENT_ID                                   -- 환자ID
+          , P.PATIENT_NM                                   -- 환자명
+          , A.QANTN_DIV                                    -- 격리/입소 구분(CD004)
              , A.ADMISSION_DATE                               -- 격리 시작일
-			 , TIMESTAMPDIFF(DAY, A.ADMISSION_DATE, NOW())
-			                                AS QANTN_DAY      -- 격리일수
-			 , CASE WHEN A.DSCHGE_DATE IS NULL
+          , TIMESTAMPDIFF(DAY, A.ADMISSION_DATE, NOW())
+                                         AS QANTN_DAY      -- 격리일수
+          , CASE WHEN A.DSCHGE_DATE IS NULL
                          THEN '1'
                     ELSE      '2'
                END                          AS QANTN_STATUS   -- 입소/격리 상태
              , CASE WHEN VI.ADMISSION_ID IS NULL THEN 'X' ELSE 'O' END    AS VIDEO_DOWN
-		     , CASE WHEN AI.INFCNT = 3 THEN 'O' ELSE 'X' END AS AI_EXE
-		     , CASE WHEN AI.INFCNT = 3 THEN 'Y' ELSE 'N' END AS AI_EXE_YN
-		  FROM ADMISSION A
-			   INNER JOIN PATIENT 			P      ON A.PATIENT_ID = P.PATIENT_ID
-		       LEFT JOIN (
-		           SELECT DISTINCT ADMISSION_ID  FROM ARCHIVE_DOWN
-		       ) VI ON A.ADMISSION_ID = VI.ADMISSION_ID
-		       LEFT JOIN (
-		           SELECT I.ADMISSION_ID,  COUNT(I.INF_DIV) AS INFCNT FROM INFERENCE I
+           , CASE WHEN AI.INFCNT = 3 THEN 'O' ELSE 'X' END AS AI_EXE
+           , CASE WHEN AI.INFCNT = 3 THEN 'Y' ELSE 'N' END AS AI_EXE_YN
+        FROM ADMISSION A
+            INNER JOIN PATIENT        P      ON A.PATIENT_ID = P.PATIENT_ID
+             LEFT JOIN (
+                 SELECT DISTINCT ADMISSION_ID  FROM ARCHIVE_DOWN
+             ) VI ON A.ADMISSION_ID = VI.ADMISSION_ID
+             LEFT JOIN (
+                 SELECT I.ADMISSION_ID,  COUNT(I.INF_DIV) AS INFCNT FROM INFERENCE I
                     GROUP BY ADMISSION_ID
-		       ) AI ON A.ADMISSION_ID = AI.ADMISSION_ID
+             ) AI ON A.ADMISSION_ID = AI.ADMISSION_ID
          WHERE A.QANTN_DIV = '1'            -- 자가격리자 구분
-		   AND A.DEL_YN = 'N'
-	]]>
+         AND A.DEL_YN = 'N'
+   ]]>
 
-		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientId)">
-			AND P.PATIENT_ID = #{patientId}
-		</if>
-		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientNm)">
-			AND P.PATIENT_NM LIKE CONCAT('%', #{patientNm},'%')
-		</if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientId)">
+            AND P.PATIENT_ID = #{patientId}
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(patientNm)">
+            AND P.PATIENT_NM LIKE CONCAT('%', #{patientNm},'%')
+        </if>
         <if test='@org.apache.commons.lang3.StringUtils@isNotEmpty(qantnStatus) and "1".equals(qantnStatus)'>
             AND A.DSCHGE_DATE IS NULL
         </if>
         <if test='@org.apache.commons.lang3.StringUtils@isNotEmpty(qantnStatus) and "2".equals(qantnStatus)'>
             AND A.DSCHGE_DATE IS NOT NULL
         </if>
-		ORDER
-		BY
-		<choose>
-			<when test="@org.apache.commons.lang3.StringUtils@isNotEmpty(orderBy)">
-				${orderBy} ${orderDir}
-			</when>
-			<otherwise>
+        ORDER
+        BY
+        <choose>
+            <when test="@org.apache.commons.lang3.StringUtils@isNotEmpty(orderBy)">
+                ${orderBy} ${orderDir}
+            </when>
+            <otherwise>
                 A.DSCHGE_DATE is null desc, A.ADMISSION_DATE DESC
-			</otherwise>
-		</choose>
+            </otherwise>
+        </choose>
 
-		LIMIT #{recordCountPerPage}
-		OFFSET #{offsetCount}
+        LIMIT #{recordCountPerPage}
+        OFFSET #{offsetCount}
 
-	</select>
+    </select>
+    <select id="selectAdmissionDate"  parameterType="String" resultType="kr.co.hconnect.vo.AdmissionVO">
+        SELECT A.ADMISSION_DATE
+        FROM ADMISSION A
+        WHERE ADMISSION_ID = #{admissionId}
+    </select>
 
 </mapper>
