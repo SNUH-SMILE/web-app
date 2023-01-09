@@ -554,7 +554,7 @@ public class BatchService extends EgovAbstractServiceImpl{
     }
 
 
-    public int depressCreate(BatchVO vo) {
+    public int depressCreate(BatchVO vo) throws java.text.ParseException {
 
         int resultCount = 0;
 
@@ -584,6 +584,8 @@ public class BatchService extends EgovAbstractServiceImpl{
             String bioch;
 
 
+
+
             bcvo.setBioDate(nowDate.toString());
             bcvo.setBioTime(nowTime.toString());
 
@@ -610,8 +612,22 @@ public class BatchService extends EgovAbstractServiceImpl{
                 aiInferenceDao.insBioError(bioErrorVO);
             }
 
-            //퇴소후 1달 뒤
-            int bv = 0;
+
+            SimpleDateFormat edateFormat = new SimpleDateFormat("yyyyMMdd");
+            Date nDate = new Date();
+            nDate = edateFormat.parse(nDate.toString());
+            Date endDate30 = edateFormat.parse(bcvo.getEndDate30()); //퇴소후 30일이후
+
+            //퇴소후 1달 뒤 데이터가 있는지 체크
+            int bv = 0 ;
+
+            if(nDate.equals(endDate30)){    //오늘날짜  ==  퇴소후 30일자
+                bv=1;
+            }
+            if(nDate.after(endDate30)) {    //오늘날짜  <  퇴소후 30일자
+                bv=1;
+            }
+
             if (bv != 0){
                 bcvo.setInterviewType("05");
                 bioch = aiInferenceDao.interviewCheck(bcvo);
@@ -806,9 +822,6 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         return bool;
     }
-
-
-
 
     public String vonageArchiveList() throws IOException, OpenTokException {
         log.info("영상녹화 파일 다운로드 시작 >>>");

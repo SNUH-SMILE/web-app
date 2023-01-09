@@ -301,7 +301,8 @@
                 GROUP  BY K1.ADMISSION_ID
             ) T2 ON T1.ADMISSION_ID = T2.ADMISSION_ID  AND T1.INTERVIEW_SEQ = T2.INTERVIEW_SEQ
          WHERE 1=1
-           AND IFNULL(A.DSCHGE_DATE ,'9999-12-31') >=  DATE_FORMAT(NOW(), '%Y-%m-%d')
+           AND IFNULL(A.DSCHGE_DATE ,'9999-12-31') >=  DATE_FORMAT(NOW(), '%Y-%m-%d') OR
+            DATE_FORMAT(DATE_ADD(IFNULL(A.DSCHGE_DATE ,'9999-10-31'), interval 2 month),'%Y-%m') >= DATE_FORMAT(NOW(), '%Y-%m')
         ]]>
     </select>
 
@@ -447,6 +448,7 @@
         <![CDATA[
             SELECT A.ADMISSION_ID
                   ,A.DSCHGE_DATE as END_DATE
+                  ,DATE_FORMAT(DATE_ADD(A.DSCHGE_DATE, interval 1 month),'%Y-%m-%d') END_DATE30
              FROM ADMISSION A
             WHERE 1=1
             AND ADMISSION_DATE <= NOW()

@@ -14,6 +14,7 @@ import kr.co.hconnect.vo.*;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 @Component
 @Controller
@@ -114,7 +115,7 @@ public class BatchController {
      * ./depressed 폴더
      */
     @Scheduled(cron="0 0 23 * * *")
-    public void depressedScheduler() throws IOException, InterruptedException {
+    public void depressedScheduler() throws IOException, InterruptedException, ParseException {
 
         String filePath = ai_path+ "depress/annotation.csv";
         String outfilePath = ai_path + "depress/result.csv";
