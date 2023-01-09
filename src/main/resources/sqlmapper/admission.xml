@@ -113,8 +113,9 @@
                     ELSE      '2'
                END                          AS QANTN_STATUS   -- 입소/격리 상태
              , CASE WHEN VI.ADMISSION_ID IS NULL THEN 'X' ELSE 'O' END    AS VIDEO_DOWN
-             , ''                           AS AI_EXE
-		  FROM ADMISSION A
+		     , CASE WHEN AI.INFCNT = 3 THEN 'O' ELSE 'X' END AS AI_EXE
+		     , CASE WHEN AI.INFCNT = 3 THEN 'Y' ELSE 'N' END AS AI_EXE_YN
+		FROM ADMISSION A
 			   INNER JOIN PATIENT 			P      ON A.PATIENT_ID = P.PATIENT_ID
 			   INNER JOIN TREATMENT_CENTER 	TC     ON A.CENTER_ID  = TC.CENTER_ID
 			   LEFT JOIN COM_CD_DETAIL 	    ROOM   ON ROOM.COM_CD    = 'CD005'
@@ -308,9 +309,5 @@
 		OFFSET #{offsetCount}
 
 	</select>
-    <select id="selectAdmissionDate"  parameterType="String" resultType="kr.co.hconnect.vo.AdmissionVO">
-        SELECT A.ADMISSION_DATE
-        FROM ADMISSION A
-        WHERE ADMISSION_ID = #{admissionId}
-    </select>
+
 </mapper>

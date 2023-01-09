@@ -405,10 +405,29 @@ public class AdmissionController {
         }
         ResponseVO< List<InterviewList>> responseVO = new ResponseVO<>();
         responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
-        responseVO.setMessage("입소내역 조회 성공");
+        responseVO.setMessage("문진내역 조회 성공");
         responseVO.setResult(admissionService.selectInterviewList(interview));
         
         return responseVO;
     }
+
+    /**
+     *  추론 엔진 오류 log 리스트
+     *
+     * @return
+    */
+    @RequestMapping(value = "/logInfo", method = RequestMethod.GET)
+    public ResponseBaseVO<List<InferenceErrorLogVO>> selectInferenctLogInfo(@RequestParam String admissionId) {
+
+        List<InferenceErrorLogVO> inferenceErrorLogVO = admissionService.selectInferenctLogInfo(admissionId);
+        ResponseBaseVO<List<InferenceErrorLogVO>> responseVO = new ResponseBaseVO<>();
+
+        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+        responseVO.setMessage("로그내역 조회 성공");
+        responseVO.setResult(inferenceErrorLogVO);
+
+        return responseVO;
+    }
+
 
 }

@@ -105,14 +105,17 @@ public class AdmissionDao extends EgovAbstractMapper {
 		return selectList("kr.co.hconnect.sqlmapper.selectAdmissionListByQuarantine", vo);
 	}
 
+
     /**
-     * 자가격리자 입소일조회
-     * @param admissionId
-     * @return
+     * 추론 오류 log
+     * @param admissionId 격리/입소내역ID
+     * @return affectedRow
      */
-    public AdmissionVO selectAdmissionDateList(String admissionId) {
-        return selectOne("kr.co.hconnect.sqlmapper.selectAdmissionDate", admissionId);
+    public List<InferenceErrorLogVO> selectInferenctLogInfo(String admissionId) {
+        return selectList("kr.co.hconnect.sqlmapper.selectInferenctLogInfo", admissionId);
     }
 
-	
+
+
+
 }

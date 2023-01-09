@@ -29,4 +29,6 @@ public class BioCheckVO implements Serializable{
 
     private String endDate;        //퇴소일자
 
+    private String endDate30;        //퇴소일자
+
 }

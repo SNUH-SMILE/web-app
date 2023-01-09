@@ -449,4 +449,21 @@ public class AdmissionService extends EgovAbstractServiceImpl {
         return interviewLists;
 
     }
+
+    /**
+     * 추론 로그 오류
+     * @param admissionId 입소내역ID
+     * @return AdmissionInfoVO 입소내역 정보
+     */
+    public List<InferenceErrorLogVO> selectInferenctLogInfo(String admissionId) throws NotFoundAdmissionInfoException {
+        List<InferenceErrorLogVO> inferenceErrorLogVO = admissionDao.selectInferenctLogInfo(admissionId);
+
+        if (inferenceErrorLogVO == null) {
+            throw new NotFoundAdmissionInfoException(ApiResponseCode.NOT_FOUND_ADMISSION_INFO.getCode()
+                , messageSource.getMessage("message.notfound.admissionInfo"
+                , null, Locale.getDefault()));
+        }
+
+        return inferenceErrorLogVO;
+    }
 }
