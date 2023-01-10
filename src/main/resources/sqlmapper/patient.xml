@@ -34,6 +34,7 @@
              , ZIP_CODE             -- 우편번호
              , ADDRESS1             -- 주소
              , ADDRESS2             -- 상세주소
+		     , SEARS_ACCOUNT
           FROM PATIENT
          WHERE LOGIN_ID = #{loginId}
 	]]>
@@ -79,6 +80,7 @@
              , ZIP_CODE             -- 우편번호
              , ADDRESS1             -- 주소
              , ADDRESS2             -- 상세주소
+             , SEARS_ACCOUNT
         FROM PATIENT
         WHERE CELL_PHONE = #{cellPhone}
         ]]>
@@ -98,6 +100,7 @@
              , ZIP_CODE             -- 우편번호
              , ADDRESS1             -- 주소
              , ADDRESS2             -- 상세주소
+             , SEARS_ACCOUNT
 		  FROM PATIENT
 		 WHERE PATIENT_NM = #{patientNm}
            AND CELL_PHONE = #{cellPhone}
@@ -120,6 +123,7 @@
              , ZIP_CODE             -- 우편번호
              , ADDRESS1             -- 주소
              , ADDRESS2             -- 상세주소
+             , SEARS_ACCOUNT
 	      FROM PATIENT
 		 WHERE LOGIN_ID = #{loginId}
 		   AND PATIENT_NM = #{patientNm}
@@ -141,6 +145,7 @@
 		     , ZIP_CODE             = #{zipCode}
 		     , ADDRESS1             = #{address1}
 		     , ADDRESS2             = #{address2}
+		     , SEARS_ACCOUNT        = #{searsAccount}
 			 , UPD_DT               = NOW()
 		 WHERE PATIENT_ID = #{patientId};
 
