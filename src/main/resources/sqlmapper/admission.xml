@@ -58,7 +58,8 @@
         FROM ADMISSION A
                  INNER JOIN PATIENT B  ON A.PATIENT_ID = B.PATIENT_ID
                  LEFT JOIN  TREATMENT_CENTER TC  ON A.CENTER_ID = TC.CENTER_ID
-        WHERE A.DSCHGE_DATE IS NULL
+        WHERE 1=1
+          -- AND A.DSCHGE_DATE IS NULL
           AND A.DEL_YN = 'N'
           AND B.LOGIN_ID = #{loginId}
         ]]>
@@ -85,7 +86,8 @@
         FROM ADMISSION A
                  INNER JOIN PATIENT          B   ON A.PATIENT_ID = B.PATIENT_ID
                  LEFT JOIN  TREATMENT_CENTER TC  ON A.CENTER_ID = TC.CENTER_ID
-        WHERE A.DSCHGE_DATE IS NULL
+        WHERE 1=1
+          -- AND A.DSCHGE_DATE IS NULL
           AND A.DEL_YN = 'N'
           AND B.PATIENT_ID = #{patientId}
         ]]>
