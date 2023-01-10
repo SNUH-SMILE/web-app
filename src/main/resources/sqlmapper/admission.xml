@@ -321,4 +321,22 @@
         WHERE ADMISSION_ID = #{admissionId}
     </select>
 
+    <!-- 추론에서 오류사항 log - kr.co.hconnect.sqlmapper.InferenceErrorLogVO -->
+    <select id="selectInferenctLogInfo" parameterType="String" resultType="kr.co.hconnect.vo.InferenceErrorLogVO">
+	<![CDATA[
+        -- 추론에서 오류사항 log - kr.co.hconnect.sqlmapper.InferenceErrorLogVO
+
+        SELECT ADMISSION_ID
+             ,CDATE
+             ,CASE WHEN INF_DIV = '10' THEN '병원전이'
+                   WHEN INF_DIV = '20' THEN '체온상승'
+                   WHEN INF_DIV = '30' THEN '우울'
+                   ELSE '로그' END INF_DIV_NM
+             , MESSAGE
+        FROM INFERENCE_ERROR_LOG IEL
+        WHERE CDATE = DATE_FORMAT(NOW(), '%Y-%m-%d')
+          AND ADMISSION_ID = #{ADMISSIONID}
+        ORDER BY INF_DIV
+        ]]>
+	</select>
 </mapper>

@@ -21,7 +21,7 @@ public class InferenceErrorLogVO implements Serializable {
 
     private String admissionId;
 
-    private String cdata;
+    private String cdate;
 
     private String infDiv;
 
