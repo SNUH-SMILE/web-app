@@ -1,13 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>kr.co.hconnect</groupId>
     <artifactId>infectious-disease</artifactId>
     <version>1.0</version>
     <packaging>war</packaging>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <tomcat.server.id>SMILE-DEV</tomcat.server.id>
+                <tomcat.url>http://192.168.42.193:8080/manager/text</tomcat.url>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <tomcat.server.id>SMILE-PROD</tomcat.server.id>
+                <tomcat.url>http://192.168.42.191:8080/manager/text</tomcat.url>
+            </properties>
+        </profile>
+    </profiles>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -298,12 +318,6 @@
         </dependency>
     </dependencies>
 
-    <distributionManagement>
-        <repository>
-            <id>SMILE-DEV</id>
-            <url>http://192.168.42.193:8080/manager/text</url>
-        </repository>
-    </distributionManagement>
     <build>
         <plugins>
             <plugin>
@@ -319,8 +333,8 @@
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.2</version>
                 <configuration>
-                    <url>http://192.168.42.193:8080/manager/text</url>
-                    <server>SMILE-DEV</server>
+                    <server>${tomcat.server.id}</server>
+                    <url>${tomcat.url}</url>
                     <path>/</path>
                     <update>true</update>
                 </configuration>
