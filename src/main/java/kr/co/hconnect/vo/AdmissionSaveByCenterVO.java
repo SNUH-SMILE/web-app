@@ -98,5 +98,6 @@ public class AdmissionSaveByCenterVO extends BaseDefaultVO {
     /**
      * 시어스
      */
+    @Size(max = 50, message = "{validation.size.searsAccount}", groups = {VoValidationGroups.add.class, VoValidationGroups.modify.class })
     private String searsAccount;
 }
