@@ -102,5 +102,6 @@ public class Patient extends BaseResponse {
     /**
      * 시어스 체온 로그인 계정
      */
+    @Size(max = 50, message = "validation.size.searsAccount", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
     private String searsAccount;
 }
