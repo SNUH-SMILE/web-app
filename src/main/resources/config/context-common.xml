@@ -8,7 +8,7 @@
         http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
     <!-- PropertyPlaceholderConfigurer 설정 -->
-    <context:property-placeholder location="classpath:/property/dev-config.properties"/>
+    <context:property-placeholder location="classpath:/property/config.properties"/>
 
     <!-- 스테레오 타입 Annotation 을 인식하여 Spring bean 으로 자동 등록하기 위한 component-scan 설정 -->
     <context:component-scan base-package="kr.co.hconnect">

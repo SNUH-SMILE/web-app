@@ -16,6 +16,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
+                <profile>dev</profile>
                 <tomcat.server.id>SMILE-DEV</tomcat.server.id>
                 <tomcat.url>http://192.168.42.193:8080/manager/text</tomcat.url>
             </properties>
@@ -23,6 +24,7 @@
         <profile>
             <id>prod</id>
             <properties>
+                <profile>prod</profile>
                 <tomcat.server.id>SMILE-PROD</tomcat.server.id>
                 <tomcat.url>http://192.168.42.191:8080/manager/text</tomcat.url>
             </properties>
@@ -319,6 +321,14 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/resources-${profile}</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
