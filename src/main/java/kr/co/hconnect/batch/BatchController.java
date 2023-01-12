@@ -40,7 +40,7 @@ public class BatchController {
      * ./score 폴더
      * @Scheduled(cron="0 0 0/1 * * *")
      */
-    @Scheduled(cron="0 0 0/1 * * *")
+    @Scheduled(cron="0 0 21 * * *")
     public void scoreScheduler() throws IOException, InterruptedException {
 
         String filePath = ai_path+ "score/score_file.csv";

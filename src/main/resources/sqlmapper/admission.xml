@@ -108,15 +108,26 @@
           , A.ROOM                                         -- 호실
           , ROOM.DETAIL_CD_NM            AS ROOM_NM        -- 호실명
           , A.QANTN_DIV                                    -- 격리/입소 구분(CD004)
-          , TIMESTAMPDIFF(DAY, A.ADMISSION_DATE, NOW())
-                                         AS QANTN_DAY      -- 격리일수
+          , CASE WHEN A.DSCHGE_DATE IS NOT NULL THEN
+                     TIMESTAMPDIFF(DAY, A.ADMISSION_DATE, A.DSCHGE_DATE)
+                 ELSE
+                     TIMESTAMPDIFF(DAY, A.ADMISSION_DATE, NOW())
+                 END
+                 AS QANTN_DAY      -- 격리일수
           , CASE WHEN A.DSCHGE_DATE IS NULL
                          THEN '1'
                     ELSE      '2'
                END                          AS QANTN_STATUS   -- 입소/격리 상태
              , CASE WHEN VI.ADMISSION_ID IS NULL THEN 'X' ELSE 'O' END    AS VIDEO_DOWN
-           , CASE WHEN AI.INFCNT = 3 THEN 'O' ELSE 'X' END AS AI_EXE
-           , CASE WHEN AI.INFCNT = 3 THEN 'Y' ELSE 'N' END AS AI_EXE_YN
+           , CASE WHEN A.DSCHGE_DATE IS NOT NULL  THEN
+                    CASE WHEN  TIMESTAMPDIFF(DAY, A.ADMISSION_DATE, A.DSCHGE_DATE) > 33  THEN
+                                'N'
+                         ELSE
+                             CASE WHEN AI.INFCNT = 3 THEN 'O' ELSE 'X' END
+                         END
+                 ELSE
+                     CASE WHEN AI.INFCNT = 3 THEN 'O' ELSE 'X' END
+                 END  AS AI_EXE
       FROM ADMISSION A
             INNER JOIN PATIENT        P      ON A.PATIENT_ID = P.PATIENT_ID
             INNER JOIN TREATMENT_CENTER     TC     ON A.CENTER_ID  = TC.CENTER_ID
@@ -266,15 +277,26 @@
           , P.PATIENT_NM                                   -- 환자명
           , A.QANTN_DIV                                    -- 격리/입소 구분(CD004)
              , A.ADMISSION_DATE                               -- 격리 시작일
-          , TIMESTAMPDIFF(DAY, A.ADMISSION_DATE, NOW())
-                                         AS QANTN_DAY      -- 격리일수
+          , CASE WHEN A.DSCHGE_DATE IS NOT NULL THEN
+                     TIMESTAMPDIFF(DAY, A.ADMISSION_DATE, A.DSCHGE_DATE)
+                 ELSE
+                     TIMESTAMPDIFF(DAY, A.ADMISSION_DATE, NOW())
+                 END
+                 AS QANTN_DAY      -- 격리일수     -- 격리일수
           , CASE WHEN A.DSCHGE_DATE IS NULL
                          THEN '1'
                     ELSE      '2'
                END                          AS QANTN_STATUS   -- 입소/격리 상태
-             , CASE WHEN VI.ADMISSION_ID IS NULL THEN 'X' ELSE 'O' END    AS VIDEO_DOWN
-           , CASE WHEN AI.INFCNT = 3 THEN 'O' ELSE 'X' END AS AI_EXE
-           , CASE WHEN AI.INFCNT = 3 THEN 'Y' ELSE 'N' END AS AI_EXE_YN
+           , CASE WHEN VI.ADMISSION_ID IS NULL THEN 'X' ELSE 'O' END    AS VIDEO_DOWN
+           , CASE WHEN A.DSCHGE_DATE IS NOT NULL  THEN
+                    CASE WHEN  TIMESTAMPDIFF(DAY, A.ADMISSION_DATE, A.DSCHGE_DATE) > 33  THEN
+                                'N'
+                         ELSE
+                             CASE WHEN AI.INFCNT = 3 THEN 'O' ELSE 'X' END
+                         END
+                 ELSE
+                     CASE WHEN AI.INFCNT = 3 THEN 'O' ELSE 'X' END
+                 END  AS AI_EXE
         FROM ADMISSION A
             INNER JOIN PATIENT        P      ON A.PATIENT_ID = P.PATIENT_ID
              LEFT JOIN (
