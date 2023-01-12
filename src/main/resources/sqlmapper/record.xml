@@ -53,7 +53,7 @@
                A.UPDATE_DATE
         FROM MEDICAL_RECORD A
         WHERE A.ADMISSION_ID = #{admissionId}
-        ORDER BY MEDICAL_DATE , MEDICAL_SEQ DESC;
+        ORDER BY MEDICAL_SEQ DESC;
     </select>
 
     <insert id="Recordhist" parameterType="kr.co.hconnect.vo.RecordVO">
