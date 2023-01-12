@@ -40,4 +40,14 @@ public class RecordDao extends EgovAbstractMapper {
         return update("kr.co.hconnect.sqlmapper.updateRecord", vo);
     }
 
+
+    /**
+     * 신규 진료기록 내역 생성
+     *
+     * @param vo 신규 진료기록 저장 정보
+     * @return affectedRow
+     */
+    public int Recordhist (RecordVO vo) {
+        return insert("kr.co.hconnect.sqlmapper.Recordhist", vo);
+    }
 }

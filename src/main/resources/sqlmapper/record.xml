@@ -56,5 +56,34 @@
         ORDER BY MEDICAL_DATE , MEDICAL_SEQ DESC;
     </select>
 
+    <insert id="Recordhist" parameterType="kr.co.hconnect.vo.RecordVO">
+	<![CDATA[
+        -- 진료기록 수정 히스토리 저장
+        INSERT INTO medical_record_hist (
+            MEDICAL_SEQ,
+            MEDICAL_DATE,
+            MEDICAL_RECORD,
+            MEDICAL_RECORDER,
+            ADMISSION_ID,
+            REG_DT,
+            REG_ID,
+            UPDATE_DATE,
+            UPDATE_ID,
+            UPDATE_RECORDER)
+        SELECT MEDICAL_SEQ,
+               MEDICAL_DATE,
+               MEDICAL_RECORD,
+               MEDICAL_RECORDER,
+               ADMISSION_ID,
+               REG_DT,
+               REG_ID,
+               UPDATE_DATE,
+               UPDATE_ID,
+               UPDATE_RECORDER
+        FROM MEDICAL_RECORD
+        WHERE MEDICAL_SEQ = #{medicalSeq}
+        ]]>
+	</insert>
+
 
 </mapper>

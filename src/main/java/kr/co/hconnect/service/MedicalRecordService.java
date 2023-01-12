@@ -73,6 +73,11 @@ public class MedicalRecordService extends EgovAbstractServiceImpl {
                 , messageSource.getMessage("message.notfound.admissionInfo"
                 , null, Locale.getDefault()));
         }*/
+
+        //히스토리 저장
+        recordDao.Recordhist(vo);
+
+        //진료기록 수정
         recordDao.updatePatient(vo);
 
     }
