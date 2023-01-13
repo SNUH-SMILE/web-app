@@ -11,6 +11,7 @@ import kr.co.hconnect.vo.AdmissionInfoVO;
 import kr.co.hconnect.vo.NoticeListSearchVO;
 import kr.co.hconnect.vo.NoticeListVO;
 import kr.co.hconnect.vo.NoticeVO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,9 @@ public class NoticeService extends EgovAbstractServiceImpl {
     private final MessageSource messageSource;
 
     private final UserDao userDao;
+
+    @Value("${push.url}")
+    private String push_url;
 
     /**
      * 생성자
@@ -141,12 +145,19 @@ public class NoticeService extends EgovAbstractServiceImpl {
             params.put("TYPE", "E");
             params.put("DB_IN", "Y");
 
+/*
             HashMap<String, Object> result = new HttpUtil()
                 .url("http://192.168.42.193:8380/upmc/rcv_register_message.ctl")
                 .method("POST")
                 .body(params)
                 .build();
+*/
 
+            HashMap<String, Object> result = new HttpUtil()
+                .url(push_url)
+                .method("POST")
+                .body(params)
+                .build();
         } catch (Exception e){
             rtn=1;
             System.out.println(e.getMessage());
