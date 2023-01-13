@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.opentok.Archive.OutputMode;
@@ -35,6 +36,9 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
     private final ArchiveDao archiveDao;
     private final UserDao userDao;
     private final TeleHealthDao teleHealthDao;
+
+    @Value("${push.url}")
+    private String push_url;
 
     @Autowired
     public TeleHealthService(ArchiveDao archiveDao, UserDao userDao, TeleHealthDao teleHealthDao) {
@@ -342,12 +346,21 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
             params.put("TYPE", "E");
             params.put("DB_IN", "Y");
 
+
+
+/*
             HashMap<String, Object> result = new HttpUtil()
                 .url("http://192.168.42.193:8380/upmc/rcv_register_message.ctl")
                 .method("POST")
                 .body(params)
                 .build();
+*/
 
+            HashMap<String, Object> result = new HttpUtil()
+                .url(push_url)
+                .method("POST")
+                .body(params)
+                .build();
         } catch (Exception e){
             rtn=1;
             System.out.println(e.getMessage());
