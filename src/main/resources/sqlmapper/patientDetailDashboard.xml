@@ -267,12 +267,12 @@
               WHERE END_DT < TIMESTAMP (DATE(#{searchDt}), TIME (IF(IFNULL(#{time}, '') = '', '235959', #{time})))
         )
         SELECT X.START_DT                                                                         AS RESULT_DT          -- 측정일시
-             , MAX(IF(X.ITEM_ID = 'I0001' AND X.LV = 1, X.RESULT, NULL))                          AS BT                 -- 체온
-             , MAX(IF(X.ITEM_ID = 'I0002' AND X.LV = 1, X.RESULT, NULL))                          AS PR                 -- 심박수
-             , MAX(IF(X.ITEM_ID = 'I0003' AND X.LV = 1, X.RESULT, NULL))                          AS SPO2               -- 산소포솨도
-             , MAX(IF(X.ITEM_ID = 'I0006' AND X.LV = 1, X.RESULT, NULL))                          AS RR                 -- 호흡수(현재 측정 데이터 없음)
-             , MAX(IF(X.ITEM_ID = 'I0005' AND X.RESULT_TYPE = '03' AND X.LV = 1, X.RESULT, NULL)) AS SBP                -- 혈압-SBP
-             , MAX(IF(X.ITEM_ID = 'I0005' AND X.RESULT_TYPE = '02' AND X.LV = 1, X.RESULT, NULL)) AS DBP                -- 혈압-DBP
+             , MAX(IF(X.ITEM_ID = 'I0001' AND X.LV = 1, X.RESULT, 0))                          AS BT                 -- 체온
+             , MAX(IF(X.ITEM_ID = 'I0002' AND X.LV = 1, X.RESULT, 0))                          AS PR                 -- 심박수
+             , MAX(IF(X.ITEM_ID = 'I0003' AND X.LV = 1, X.RESULT, 0))                          AS SPO2               -- 산소포솨도
+             , MAX(IF(X.ITEM_ID = 'I0006' AND X.LV = 1, X.RESULT, 0))                          AS RR                 -- 호흡수(현재 측정 데이터 없음)
+             , MAX(IF(X.ITEM_ID = 'I0005' AND X.RESULT_TYPE = '03' AND X.LV = 1, X.RESULT, 0)) AS SBP                -- 혈압-SBP
+             , MAX(IF(X.ITEM_ID = 'I0005' AND X.RESULT_TYPE = '02' AND X.LV = 1, X.RESULT, 0)) AS DBP                -- 혈압-DBP
           FROM (SELECT T.START_DT
                      /* 15분간의 기준 중 최근 측정 내역 조회를 위한 조건 */
                      , RANK() OVER(PARTITION BY T.START_DT, R.ITEM_ID ORDER BY R.RESULT_TIME DESC) AS LV
