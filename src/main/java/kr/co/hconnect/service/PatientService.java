@@ -101,6 +101,8 @@ public class PatientService extends EgovAbstractServiceImpl {
     public Patient savePatientInfo(Patient patient)
         throws NotFoundPatientInfoException, DuplicatePatientLoginIdException, DuplicatePatientInfoException {
 
+
+
         // 환자정보 신규생성
         if (patient.getFlag().equals("A")) {
             // 환자정보 존재여부 확인 (성명, 생년월일, 성별, 휴대폰)
