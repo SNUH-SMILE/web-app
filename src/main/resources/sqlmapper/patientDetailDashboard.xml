@@ -229,11 +229,11 @@
                LEFT JOIN (
                     SELECT
 					     ADMISSION_ID
-						,IFNULL(SUM(SCORE),0) SCORE
+						,SUM(SCORE) SCORE
 						,MAX(SCORE_DATE) SCORE_DATE
-						,IFNULL(SUM(TEMPER),0) TEMPER
+						,SUM(TEMPER) TEMPER
 						,MAX(TEMPER_DATE) TEMPER_DATE
-						,IFNULL(SUM(DEPR),0) DEPR
+						,SUM(DEPR) DEPR
 						,MAX(DEPR_DATE) DEPR_DATE
 					FROM (
 						SELECT
@@ -267,12 +267,13 @@
               WHERE END_DT < TIMESTAMP (DATE(#{searchDt}), TIME (IF(IFNULL(#{time}, '') = '', '235959', #{time})))
         )
         SELECT X.START_DT                                                                         AS RESULT_DT          -- 측정일시
-             , MAX(IF(X.ITEM_ID = 'I0001' AND X.LV = 1, X.RESULT, 0))                          AS BT                 -- 체온
-             , MAX(IF(X.ITEM_ID = 'I0002' AND X.LV = 1, X.RESULT, 0))                          AS PR                 -- 심박수
-             , MAX(IF(X.ITEM_ID = 'I0003' AND X.LV = 1, X.RESULT, 0))                          AS SPO2               -- 산소포솨도
-             , MAX(IF(X.ITEM_ID = 'I0006' AND X.LV = 1, X.RESULT, 0))                          AS RR                 -- 호흡수(현재 측정 데이터 없음)
-             , MAX(IF(X.ITEM_ID = 'I0005' AND X.RESULT_TYPE = '03' AND X.LV = 1, X.RESULT, 0)) AS SBP                -- 혈압-SBP
-             , MAX(IF(X.ITEM_ID = 'I0005' AND X.RESULT_TYPE = '02' AND X.LV = 1, X.RESULT, 0)) AS DBP                -- 혈압-DBP
+             , MAX(IF(X.ITEM_ID = 'I0001' AND X.LV = 1, X.RESULT, null))                          AS BT                 -- 체온
+             , MAX(IF(X.ITEM_ID = 'I0002' AND X.LV = 1, X.RESULT, null))                          AS PR                 -- 심박수
+             , MAX(IF(X.ITEM_ID = 'I0003' AND X.LV = 1, X.RESULT, null))                          AS SPO2               -- 산소포솨도
+             , MAX(IF(X.ITEM_ID = 'I0004' AND X.LV = 1, X.RESULT, null))                          AS ST                 -- 걸음수
+             , MAX(IF(X.ITEM_ID = 'I0006' AND X.LV = 1, X.RESULT, null))                          AS RR                 -- 호흡수(현재 측정 데이터 없음)
+             , MAX(IF(X.ITEM_ID = 'I0005' AND X.RESULT_TYPE = '03' AND X.LV = 1, X.RESULT, null)) AS SBP                -- 혈압-SBP
+             , MAX(IF(X.ITEM_ID = 'I0005' AND X.RESULT_TYPE = '02' AND X.LV = 1, X.RESULT, null)) AS DBP                -- 혈압-DBP
           FROM (SELECT T.START_DT
                      /* 15분간의 기준 중 최근 측정 내역 조회를 위한 조건 */
                      , RANK() OVER(PARTITION BY T.START_DT, R.ITEM_ID ORDER BY R.RESULT_TIME DESC) AS LV
@@ -282,7 +283,7 @@
                      , RD.RESULT_TYPE
                   FROM TAB T
                        LEFT JOIN  RESULT        R    ON R.ADMISSION_ID = #{admissionId}
-                                                    AND R.ITEM_ID IN ('I0001','I0002','I0003','I0005','I0006')
+                                                    AND R.ITEM_ID IN ('I0001','I0002','I0003', 'I0003', 'I0005','I0006')
                                                     AND R.RESULT_DATE BETWEEN DATE (T.START_DT) AND DATE (T.START_DT)
                                                     AND R.RESULT_TIME BETWEEN TIME (T.START_DT) AND TIME (T.END_DT)
                        LEFT JOIN ITEM          I    ON R.ITEM_ID = I.ITEM_ID

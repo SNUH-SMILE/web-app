@@ -156,10 +156,11 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 //				)
 //				.collect(Collectors.toList());
 
-		List<PatientVitalChartVO> btList = new ArrayList<>();
-		List<PatientVitalChartVO> prList = new ArrayList<>();
-		List<PatientVitalChartVO> rrList = new ArrayList<>();
-		List<PatientVitalChartVO> spo2List = new ArrayList<>();
+		List<PatientVitalChartVO> btList = new ArrayList<>();     //체온
+		List<PatientVitalChartVO> prList = new ArrayList<>();     //심박수
+		List<PatientVitalChartVO> rrList = new ArrayList<>();     //호흡수
+        List<PatientVitalChartVO> stList = new ArrayList<>();     //걸음수
+		List<PatientVitalChartVO> spo2List = new ArrayList<>();   //산소포돠도
 		List<PatientVitalChartVO> sbpList = new ArrayList<>();
 		List<PatientVitalChartVO> dbpList = new ArrayList<>();
 
@@ -208,6 +209,43 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 						pr.ifPresent(chartDataVO::setPr);
 					}
 				}
+                //호흡수
+                if (StringUtils.isEmpty(chartDataVO.getRr())) {
+                    Optional<String> rr = tempList.stream()
+                        .filter(x -> x.getResultDt().after(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getRr()))
+                        .findFirst()
+                        .map(PatientVitalChartDataVO::getRr);
+
+                    rr.ifPresent(chartDataVO::setRr);
+
+                    if (StringUtils.isEmpty(chartDataVO.getRr())) {
+                        rr = tempList.stream()
+                            .filter(x -> x.getResultDt().before(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getRr()))
+                            .max(Comparator.comparing(PatientVitalChartDataVO::getResultDt))
+                            .map(PatientVitalChartDataVO::getRr);
+
+                        rr.ifPresent(chartDataVO::setRr);
+                    }
+                }
+
+                //걸음수
+                if (StringUtils.isEmpty(chartDataVO.getSt())) {
+                    Optional<String> st = tempList.stream()
+                        .filter(x -> x.getResultDt().after(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getSt()))
+                        .findFirst()
+                        .map(PatientVitalChartDataVO::getSt);
+
+                    st.ifPresent(chartDataVO::setSt);
+
+                    if (StringUtils.isEmpty(chartDataVO.getSt())) {
+                        st = tempList.stream()
+                            .filter(x -> x.getResultDt().before(chartDataVO.getResultDt()) && StringUtils.isNotEmpty(x.getSt()))
+                            .max(Comparator.comparing(PatientVitalChartDataVO::getResultDt))
+                            .map(PatientVitalChartDataVO::getSt);
+
+                        st.ifPresent(chartDataVO::setSt);
+                    }
+                }
 
 				if (StringUtils.isEmpty(chartDataVO.getSpo2())) {
 					Optional<String> spo2 = tempList.stream()
@@ -274,15 +312,23 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 			prVal.setY(chartDataVO.getPr());
 			prList.add(prVal);
 
+
 			PatientVitalChartVO spo2Val = new PatientVitalChartVO();
 			spo2Val.setX(chartDataVO.getResultDt());
 			spo2Val.setY(chartDataVO.getSpo2());
 			spo2List.add(spo2Val);
 
-			PatientVitalChartVO rrVal = new PatientVitalChartVO();
-			rrVal.setX(chartDataVO.getResultDt());
-			rrVal.setY(null);
-			rrList.add(rrVal);
+            //호흡수
+            PatientVitalChartVO rrVal = new PatientVitalChartVO();
+            rrVal.setX(chartDataVO.getResultDt());
+            rrVal.setY(chartDataVO.getRr());
+            rrList.add(rrVal);
+
+            //걸음수
+            PatientVitalChartVO stVal = new PatientVitalChartVO();
+            stVal.setX(chartDataVO.getResultDt());
+            stVal.setY(chartDataVO.getSt());
+            stList.add(stVal);
 
 			PatientVitalChartVO sbpVal = new PatientVitalChartVO();
 			sbpVal.setX(chartDataVO.getResultDt());

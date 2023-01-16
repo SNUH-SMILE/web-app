@@ -22,8 +22,12 @@ public class BatchController {
 
     private static final Logger log = LoggerFactory.getLogger(BatchController.class);
 
-    private String ai_path = "/usr/local/apache-tomcat-8.5.79/python/";
-    //private String ai_path = "E://python/";
+    @Value("${ai.path}")
+    private String ai_path;
+
+    @Value("${ai.video.path}")
+    private String ai_video_path;
+
 
     private final BatchService batchService;
 

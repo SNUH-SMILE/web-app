@@ -39,6 +39,13 @@ public class PatientVitalChartDataVO implements Serializable {
      * 호흡수 결과
      */
     private String rr;
+
+
+    /**
+     * 걸음수 결과
+     */
+    private String st;
+
     /**
      * 혈압 결과-SBP
      */
