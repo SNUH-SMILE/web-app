@@ -139,7 +139,7 @@ public class BatchController {
          * 스코어 AI 추론엔진 실행 서비스
          */
         System.out.println("3. 우울 배치 실행 ");
-        //batchService.scoreCreate(bvo);
+        //batchService. .scoreCreate(bvo);
 
         /**
          * 스코어 파일 임포트
