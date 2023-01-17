@@ -62,6 +62,8 @@ public class BatchService extends EgovAbstractServiceImpl{
         String rtn ="";
         int resultCount = 0;
 
+        List<String> targetString  = new ArrayList<>();
+
         AiInferenceVO logVO = new AiInferenceVO();
         logVO.setInfDiv("10");
         //로그로 데이터 복사
@@ -107,6 +109,7 @@ public class BatchService extends EgovAbstractServiceImpl{
                 bioErrorVO.setMessage(msg);
                 aiInferenceDao.insBioError(bioErrorVO);
 
+                targetString.add(bcvo.getAdmissionId());
             }
 
             bcvo.setItemId("I0003");
@@ -125,6 +128,7 @@ public class BatchService extends EgovAbstractServiceImpl{
                 bioErrorVO.setCDate(nowDate.toString());
                 bioErrorVO.setMessage(msg);
                 aiInferenceDao.insBioError(bioErrorVO);
+                targetString.add(bcvo.getAdmissionId());
             }
 
             bcvo.setItemId("I0001");
@@ -143,6 +147,7 @@ public class BatchService extends EgovAbstractServiceImpl{
                 bioErrorVO.setCDate(nowDate.toString());
                 bioErrorVO.setMessage(msg);
                 aiInferenceDao.insBioError(bioErrorVO);
+                targetString.add(bcvo.getAdmissionId());
             }
 
             String interviewMetaDataFormat = "id=%s & 문진 =%s & 데이터가 없습니다.";
@@ -161,6 +166,7 @@ public class BatchService extends EgovAbstractServiceImpl{
                 bioErrorVO.setCDate(nowDate.toString());
                 bioErrorVO.setMessage(msg);
                 aiInferenceDao.insBioError(bioErrorVO);
+                targetString.add(bcvo.getAdmissionId());
             }
 
         }
@@ -199,16 +205,18 @@ public class BatchService extends EgovAbstractServiceImpl{
                 */
 
                 for (ScoreVO dt : dataList) {
-                    String aData = "";
-                    aData = dt.getAdmissionId();   //환자 id
-                    aData += "," + dt.getAge();    // 나이
-                    aData += "," + dt.getPr();     //심박수
-                    aData += "," + dt.getSpo2();   //산소포화도
-                    aData += "," + dt.getBt();     //체온
-                    aData += "," + dt.getHyp();    //고혈압 여부
+                    if(!targetString.contains(dt.getAdmissionId())) {
+                        String aData = "";
+                        aData = dt.getAdmissionId();   //환자 id
+                        aData += "," + dt.getAge();    // 나이
+                        aData += "," + dt.getPr();     //심박수
+                        aData += "," + dt.getSpo2();   //산소포화도
+                        aData += "," + dt.getBt();     //체온
+                        aData += "," + dt.getHyp();    //고혈압 여부
 
-                    fw.write(aData);
-                    fw.newLine();
+                        fw.write(aData);
+                        fw.newLine();
+                    }
                 }
             }
             fw.flush();
@@ -303,6 +311,8 @@ public class BatchService extends EgovAbstractServiceImpl{
         int resultCount = 0;
         String result="";
 
+        List<String> targetString  = new ArrayList<>();
+
         AiInferenceVO logVO = new AiInferenceVO();
         logVO.setInfDiv("20");
         //로그로 데이터 복사
@@ -350,6 +360,8 @@ public class BatchService extends EgovAbstractServiceImpl{
                 bioErrorVO.setMessage(msg);
                 aiInferenceDao.insBioError(bioErrorVO);
 
+                targetString.add(bcvo.getAdmissionId());
+
             }
 
             bcvo.setItemId("I0002");
@@ -368,6 +380,7 @@ public class BatchService extends EgovAbstractServiceImpl{
                 bioErrorVO.setCDate(nowDate.toString());
                 bioErrorVO.setMessage(msg);
                 aiInferenceDao.insBioError(bioErrorVO);
+                targetString.add(bcvo.getAdmissionId());
             }
 
             bcvo.setItemId("I0001");
@@ -386,6 +399,7 @@ public class BatchService extends EgovAbstractServiceImpl{
                 bioErrorVO.setCDate(nowDate.toString());
                 bioErrorVO.setMessage(msg);
                 aiInferenceDao.insBioError(bioErrorVO);
+                targetString.add(bcvo.getAdmissionId());
             }
             //01 확진당일
             String interviewMetaDataFormat = "id=%s & 문진 =%s & 데이터가 없습니다.";
@@ -406,6 +420,7 @@ public class BatchService extends EgovAbstractServiceImpl{
                 bioErrorVO.setCDate(nowDate.toString());
                 bioErrorVO.setMessage(msg);
                 aiInferenceDao.insBioError(bioErrorVO);
+                targetString.add(bcvo.getAdmissionId());
             }
 
         }
@@ -456,26 +471,28 @@ public class BatchService extends EgovAbstractServiceImpl{
                 log.info("체온상승 파일 만들기");
 
                 for (TemperListVO dt : dataList) {
+                    if(!targetString.contains(dt.getAdmissionId())) {      //생체테이터 체크 에서 없는 데이터만
 
-                    String aData = "";
-                    aData = dt.getAdmissionId();   //환자 id
-                    aData += "," + dt.getRr();     //호흡
-                    aData += "," + dt.getPr();     //심박수
-                    aData += "," + dt.getBt();     //체온
-                    aData += "," + dt.getQ1Yn();   //가래
-                    aData += "," + dt.getQ2Yn();   //발열
-                    aData += "," + dt.getQ3Yn();   //인후통
-                    aData += "," + dt.getQ4Yn();   //호흡곤란
-                    aData += "," + dt.getQ5Yn();   //흉통
-                    aData += "," + dt.getQ6Yn();   //오심
-                    aData += "," + dt.getQ7Yn();   //구토
-                    aData += "," + dt.getQ8Yn();   //변비
-                    aData += "," + dt.getQ9Yn();   //설사
-                    aData += "," + dt.getQ10Yn();   //복통
-                    aData += "," + dt.getQ11Yn();   //수면장애
+                        String aData = "";
+                        aData = dt.getAdmissionId();   //환자 id
+                        aData += "," + dt.getRr();     //호흡
+                        aData += "," + dt.getPr();     //심박수
+                        aData += "," + dt.getBt();     //체온
+                        aData += "," + dt.getQ1Yn();   //가래
+                        aData += "," + dt.getQ2Yn();   //발열
+                        aData += "," + dt.getQ3Yn();   //인후통
+                        aData += "," + dt.getQ4Yn();   //호흡곤란
+                        aData += "," + dt.getQ5Yn();   //흉통
+                        aData += "," + dt.getQ6Yn();   //오심
+                        aData += "," + dt.getQ7Yn();   //구토
+                        aData += "," + dt.getQ8Yn();   //변비
+                        aData += "," + dt.getQ9Yn();   //설사
+                        aData += "," + dt.getQ10Yn();   //복통
+                        aData += "," + dt.getQ11Yn();   //수면장애
 
-                    fw.write(aData);
-                    fw.newLine();
+                        fw.write(aData);
+                        fw.newLine();
+                    }
                 }
             }
             fw.flush();
