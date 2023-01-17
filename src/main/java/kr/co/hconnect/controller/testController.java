@@ -2,6 +2,7 @@ package kr.co.hconnect.controller;
 import com.opentok.exception.OpenTokException;
 
 import egovframework.rte.fdl.cmmn.exception.FdlException;
+import kr.co.hconnect.batch.BatchController;
 import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.common.VoValidationGroups;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
@@ -10,6 +11,8 @@ import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.repository.TeleHealthDao;
 import kr.co.hconnect.service.UserService;
 import kr.co.hconnect.vo.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -19,10 +22,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.hconnect.service.TestService;
+import kr.co.hconnect.service.BatchService;
 
 
 /**
@@ -31,7 +36,7 @@ import kr.co.hconnect.service.TestService;
 @RestController
 @RequestMapping("/api/test")
 public class testController {
-
+    private static final Logger log = LoggerFactory.getLogger(testController.class);
 /*
     @Value("${ai.path}")
     private String ai_path;
@@ -47,11 +52,13 @@ public class testController {
 
     private final TestService testService;
 
+    private final BatchService batchService;
     @Autowired
-    public testController(TestService testService) {
-        this.testService = testService;
-    }
+    public testController(TestService testService, BatchService batchService) {
 
+        this.testService = testService;
+        this.batchService = batchService;
+    }
 
 
 
@@ -198,22 +205,41 @@ public class testController {
 
     }
 
+    @RequestMapping(value = "/ScoreExe", method = RequestMethod.POST)
+    public void ScoreExe() throws IOException, InterruptedException {
+
+        String filePath = ai_path+ "score/score_file.csv";
+        String outfilePath = ai_path + "score/score_result.csv";
+        String executePath = ai_path + "score/scoring.py";
+
+        BatchVO bvo = new BatchVO();
+        bvo.setFilePath(filePath);
+        bvo.setOutFilePath(outfilePath);
+
+        String bool = batchService.pythonProcessbuilder(executePath);
+
+        String si = batchService.scoreInsert(bvo);
+
+    }
+
     @RequestMapping(value = "/temperCreate", method = RequestMethod.POST)
-    public void bodyTemperatureScheduler() throws IOException, InterruptedException {
+    public void bodyTemperatureScheduler() throws IOException, InterruptedException, ParseException {
 
         String filePath = ai_path+ "temper/temper_file.csv";
         String outfilePath = ai_path + "temper/temper_result.csv";
         String executePath = ai_path + "temper/body_temp_rise.py";
 
-        /**
-         * 체온 데이터 파일 생성
-         */
         BatchVO bvo = new BatchVO();
         bvo.setFilePath(filePath);
         bvo.setOutFilePath(outfilePath);
 
+        log.warn("2. 체온 배치 파일 만들기");
+        String csvResult = batchService.temperCreate(bvo);
 
-        String csvResult = testService.temperCreate(bvo);
+        String bool = batchService.pythonProcessbuilder(executePath);
+
+        batchService.temperInsert(bvo);
+
 
     }
 
