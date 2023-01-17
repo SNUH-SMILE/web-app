@@ -11,7 +11,9 @@ import kr.co.hconnect.repository.TeleHealthDao;
 import kr.co.hconnect.service.UserService;
 import kr.co.hconnect.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,18 @@ import kr.co.hconnect.service.TestService;
 @RestController
 @RequestMapping("/api/test")
 public class testController {
+
+/*
+    @Value("${ai.path}")
+    private String ai_path;
+
+    @Value("${ai.video.path}")
+    private String ai_video_path;
+*/
+
+    private String ai_path="/usr/local/apache-tomcat-8.5.79/python/";
+
+    private String ai_video_path ="/usr/local/apache-tomcat-8.5.79/python/video/";
 
 
     private final TestService testService;
@@ -130,6 +144,77 @@ public class testController {
         }
 
         return responseVO;
+    }
+
+    @RequestMapping(value = "/valueCheck", method = RequestMethod.POST)
+    public ResponseBaseVO<testVO> valueCheck(@Validated(VoValidationGroups.add.class) @RequestBody testVO vo
+        , BindingResult bindingResult, @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+
+        ResponseBaseVO<testVO> responseVO = new ResponseBaseVO<>();
+        try {
+
+            String bioMetaDataFormat = "프로퍼티 ai_path = %s  ai_video_path = %s";
+            String msg;
+
+            msg= String.format(bioMetaDataFormat
+                , ai_path
+                , ai_video_path
+            );
+            //message
+
+            System.out.println("프로퍼티 ai_path = %s  ai_video_path = %s");
+
+            System.out.println(ai_path);
+
+            System.out.println(ai_video_path);
+
+            vo.setMessage(msg);
+
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("valueCheck");
+            responseVO.setResult(vo);
+
+        } catch (NotFoundUserInfoException e) {
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
+
+        return responseVO;
+    }
+
+
+    @RequestMapping(value = "/CreateScore", method = RequestMethod.POST)
+    public void scoreScheduler() throws IOException, InterruptedException {
+
+        String filePath = ai_path+ "score/score_file.csv";
+        String outfilePath = ai_path + "score/score_result.csv";
+        String executePath = ai_path + "score/scoring.py";
+
+        BatchVO bvo = new BatchVO();
+        bvo.setFilePath(filePath);
+        bvo.setOutFilePath(outfilePath);
+
+        String cre = testService.scoreCreate(bvo);
+
+    }
+
+    @RequestMapping(value = "/temperCreate", method = RequestMethod.POST)
+    public void bodyTemperatureScheduler() throws IOException, InterruptedException {
+
+        String filePath = ai_path+ "temper/temper_file.csv";
+        String outfilePath = ai_path + "temper/temper_result.csv";
+        String executePath = ai_path + "temper/body_temp_rise.py";
+
+        /**
+         * 체온 데이터 파일 생성
+         */
+        BatchVO bvo = new BatchVO();
+        bvo.setFilePath(filePath);
+        bvo.setOutFilePath(outfilePath);
+
+
+        String csvResult = testService.temperCreate(bvo);
+
     }
 
 

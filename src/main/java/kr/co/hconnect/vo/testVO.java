@@ -32,4 +32,7 @@ public class testVO implements Serializable {
 
     private String admissionId;
 
+    private String message;
+
+
 }

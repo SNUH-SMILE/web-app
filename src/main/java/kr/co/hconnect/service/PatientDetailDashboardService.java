@@ -170,7 +170,7 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 		//  2.이후 데이터가 없을 경우 이전 데이터 바인딩
 		Date now = new Date();
 		for (PatientVitalChartDataVO chartDataVO : tempList) {
-			// 현시각 이전 데이터만 누락 데이터 가공처리
+            // 현시각 이전 데이터만 누락 데이터 가공처리
 			if (chartDataVO.getResultDt().before(now)) {
 				if (StringUtils.isEmpty(chartDataVO.getBt())) {
 					// 측정 결과가 없는 경우 측정일시 기준 이후 데이터 조히
@@ -302,7 +302,9 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 				}
 			}
 
-			PatientVitalChartVO btVal = new PatientVitalChartVO();
+
+            //체온
+            PatientVitalChartVO btVal = new PatientVitalChartVO();
 			btVal.setX(chartDataVO.getResultDt());
 			btVal.setY(chartDataVO.getBt()) ;
 			btList.add(btVal);
