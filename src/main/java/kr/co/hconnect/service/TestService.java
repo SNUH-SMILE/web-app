@@ -594,4 +594,368 @@ public class TestService {
         return rtn;
     }
 
+    public String scoreCreate(BatchVO vo) {
+        String rtn ="";
+        int resultCount = 0;
+
+        AiInferenceVO logVO = new AiInferenceVO();
+        logVO.setInfDiv("10");
+        //로그로 데이터 복사
+        aiInferenceDao.insInf_log(logVO);
+        //데이터 삭제
+        aiInferenceDao.delInf(logVO);
+
+
+        BioErrorVO bioErrorVO ;
+        LocalDate nowDate = LocalDate.now();
+        vo.setCDate(nowDate.toString());
+
+        //스코어 대상 리스트
+        List<BioCheckVO> bvo = aiInferenceDao.bioAdmissionId();
+
+        // 생체데이터 체크
+        //itemid = I0002 심박수 I0003 산소포와도  ㅑ001체온
+
+        String bioMetaDataFormat = "상급병원 전원 예측 id=%s & 일자=%s & 생체데이터=%s 데이터가 없습니다.";
+        String msg;
+
+        /*
+        for (BioCheckVO bcvo: bvo){
+            int biochkint =0;
+            String sBiochk;
+            //날짜 / 생체 데이터
+            bcvo.setBioDate(nowDate.toString());
+
+            bcvo.setItemId("I0002");
+            sBiochk = aiInferenceDao.bioCheck(bcvo);
+            if (sBiochk == null && sBiochk.equals("0")){
+                msg= String.format(bioMetaDataFormat
+                    , bcvo.getAdmissionId()
+                    , nowDate.toString()
+                    ,"  심박수  "
+                );
+
+                System.out.println(msg);
+
+                //에러 메세지 저장
+                bioErrorVO = new BioErrorVO();
+                bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
+                bioErrorVO.setInfDiv("10");
+                bioErrorVO.setCDate(nowDate.toString());
+                bioErrorVO.setMessage(msg);
+                aiInferenceDao.insBioError(bioErrorVO);
+
+            }
+
+            bcvo.setItemId("I0003");
+            sBiochk = aiInferenceDao.bioCheck(bcvo);
+            if (sBiochk == null && sBiochk.equals("0")){
+                msg= String.format(bioMetaDataFormat
+                    ,bcvo.getAdmissionId()
+                    , nowDate.toString()
+                    ,"산소포화도 "
+                );
+                System.out.println(msg);
+                //에러 메세지 저장
+                bioErrorVO = new BioErrorVO();
+                bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
+                bioErrorVO.setInfDiv("10");
+                bioErrorVO.setCDate(nowDate.toString());
+                bioErrorVO.setMessage(msg);
+                aiInferenceDao.insBioError(bioErrorVO);
+            }
+
+            bcvo.setItemId("I0001");
+            sBiochk = aiInferenceDao.bioCheck(bcvo);
+            if (sBiochk == null && sBiochk.equals("0")){
+                msg= String.format(bioMetaDataFormat
+                    ,bcvo.getAdmissionId()
+                    , nowDate.toString()
+                    ,"체온 "
+                );
+                System.out.println(msg);
+                //에러 메세지 저장
+                bioErrorVO = new BioErrorVO();
+                bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
+                bioErrorVO.setInfDiv("10");
+                bioErrorVO.setCDate(nowDate.toString());
+                bioErrorVO.setMessage(msg);
+                aiInferenceDao.insBioError(bioErrorVO);
+            }
+
+            String interviewMetaDataFormat = "id=%s & 문진 =%s & 데이터가 없습니다.";
+            bcvo.setInterviewType("01");
+            sBiochk = aiInferenceDao.interviewCheck(bcvo);
+            if (sBiochk == null && sBiochk.equals("0")){
+                msg= String.format(interviewMetaDataFormat
+                    , bcvo.getAdmissionId()
+                    ,"확진당일 "
+                );
+                System.out.println(msg);
+                //에러 메세지 저장
+                bioErrorVO = new BioErrorVO();
+                bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
+                bioErrorVO.setInfDiv("10");
+                bioErrorVO.setCDate(nowDate.toString());
+                bioErrorVO.setMessage(msg);
+                aiInferenceDao.insBioError(bioErrorVO);
+            }
+
+        }
+
+        */
+
+        List list= null;
+        String filePath = vo.getFilePath();
+
+        //데이터를 받아오고 파일로 쓰기
+        try {
+
+            File file = new File(filePath);
+
+            if( file.exists() ) {
+                file.delete();
+            }
+
+            //csv 파일의 기존 값에 이어쓰려면 위처럼 tru를 지정하고 기존갑을 덮어 쓰려면 true를 삭제한다
+            BufferedWriter fw = new BufferedWriter(new FileWriter(filePath));
+
+            List<ScoreVO> dataList = aiInferenceDao.scoreList(vo);
+            log.info(" 스코어 대상 파일 수 " +  dataList.size());
+            if (dataList.size() > 0 ) {
+                //타이틀 넣기
+                /*
+                String tData = "";
+                tData = "환자 id";   //환자 id
+                tData += "," + "나이";    // 나이
+                tData += "," + "심박수";     //심박수
+                tData += "," + "산소포화도";   // 산소포화도
+                tData += "," + "체온";     //체온
+                tData += "," + "고혈압여부";    //고혈압 여부
+
+                fw.write(tData);
+                fw.newLine();
+                */
+
+                for (ScoreVO dt : dataList) {
+                    String aData = "";
+                    aData = dt.getAdmissionId();   //환자 id
+                    aData += "," + dt.getAge();    // 나이
+                    aData += "," + dt.getPr();     //심박수
+                    aData += "," + dt.getSpo2();   //산소포화도
+                    aData += "," + dt.getBt();     //체온
+                    aData += "," + dt.getHyp();    //고혈압 여부
+
+                    fw.write(aData);
+                    fw.newLine();
+                }
+            }
+            fw.flush();
+            //객체 닫기
+            fw.close();
+
+        } catch (IOException e) {
+            rtn = e.getMessage();
+            log.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        return rtn;
+    }
+
+
+    public String temperCreate(BatchVO vo) {
+        log.info("체온 상승 데이터 파일 만들기");
+        int resultCount = 0;
+        String result="";
+
+        AiInferenceVO logVO = new AiInferenceVO();
+        logVO.setInfDiv("20");
+        //로그로 데이터 복사
+        aiInferenceDao.insInf_log(logVO);
+        //데이터 삭제
+        aiInferenceDao.delInf(logVO);
+
+
+        BioErrorVO bioErrorVO ;
+        LocalDate nowDate = LocalDate.now();
+        LocalTime nowTime = LocalTime.now();
+
+        vo.setCDate(nowDate.toString());
+
+
+        //스코어 대상 리스트
+        List<BioCheckVO> bvo = aiInferenceDao.bioAdmissionId();
+
+        // 생체데이터 체크
+        //itemid = I0006 호흡 I0002 심박수   I0001 체온
+
+        String bioMetaDataFormat = "체온상승 예측 알고리름 id=%s & 일자=%s & 생체데이터=%s 데이터가 없습니다.";
+        String msg;
+        /*
+        for (BioCheckVO bcvo: bvo){
+            int biochkint =0;
+            String bioch;
+
+            bcvo.setBioDate(nowDate.toString());
+            bcvo.setBioTime(nowTime.toString());
+
+            bcvo.setItemId("I0006");                             //호흡
+            bioch = aiInferenceDao.bioTimeCheck(bcvo);
+            if (bioch == null || bioch.equals("0")){
+                msg= String.format(bioMetaDataFormat
+                    , bcvo.getAdmissionId()
+                    , nowDate.toString()
+                    ,"  호흡  "
+                );
+
+                //에러 메세지 저장
+                bioErrorVO = new BioErrorVO();
+                bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
+                bioErrorVO.setInfDiv("20");
+                bioErrorVO.setCDate(nowDate.toString());
+                bioErrorVO.setMessage(msg);
+                aiInferenceDao.insBioError(bioErrorVO);
+
+            }
+
+            bcvo.setItemId("I0002");
+            bioch = aiInferenceDao.bioTimeCheck(bcvo);
+            if (bioch == null || bioch.equals("0")){
+                msg= String.format(bioMetaDataFormat
+                    ,bcvo.getAdmissionId()
+                    , nowDate.toString()
+                    ," 심박수 "
+                );
+                System.out.println(msg);
+                //에러 메세지 저장
+                bioErrorVO = new BioErrorVO();
+                bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
+                bioErrorVO.setInfDiv("20");
+                bioErrorVO.setCDate(nowDate.toString());
+                bioErrorVO.setMessage(msg);
+                aiInferenceDao.insBioError(bioErrorVO);
+            }
+
+            bcvo.setItemId("I0001");
+            bioch = aiInferenceDao.bioTimeCheck(bcvo);
+            if (bioch == null || bioch.equals("0") ){
+                msg= String.format(bioMetaDataFormat
+                    ,bcvo.getAdmissionId()
+                    , nowDate.toString()
+                    ,"체온 "
+                );
+                System.out.println(msg);
+                //에러 메세지 저장
+                bioErrorVO = new BioErrorVO();
+                bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
+                bioErrorVO.setInfDiv("20");
+                bioErrorVO.setCDate(nowDate.toString());
+                bioErrorVO.setMessage(msg);
+                aiInferenceDao.insBioError(bioErrorVO);
+            }
+            //01 확진당일
+            String interviewMetaDataFormat = "id=%s & 문진 =%s & 데이터가 없습니다.";
+            String endDate = bcvo.getEndDate();  //마지막일
+
+            bcvo.setInterviewType("01");
+            bioch = aiInferenceDao.interviewCheck(bcvo);
+            if (bioch == null || bioch.equals("0") ){
+                msg= String.format(interviewMetaDataFormat
+                    , bcvo.getAdmissionId()
+                    ,"확진당일 "
+                );
+                System.out.println(msg);
+                //에러 메세지 저장
+                bioErrorVO = new BioErrorVO();
+                bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
+                bioErrorVO.setInfDiv("10");
+                bioErrorVO.setCDate(nowDate.toString());
+                bioErrorVO.setMessage(msg);
+                aiInferenceDao.insBioError(bioErrorVO);
+            }
+
+        }
+        */
+
+        log.info("체온상승 파일 만들기 ==================================");
+
+        List list= null;
+        String filePath = vo.getFilePath();
+
+        //데이터를 받아오고 파일로 쓰기
+        try {
+
+            File file = new File(filePath);
+
+            if( file.exists() ) {
+                file.delete();
+            }
+
+            //csv 파일의 기존 값에 이어쓰려면 위처럼 tru를 지정하고 기존갑을 덮어 쓰려면 true를 삭제한다
+            BufferedWriter fw = new BufferedWriter(new FileWriter(filePath));
+
+            //쿼리 를 한다.
+            //
+            List<TemperListVO> dataList = aiInferenceDao.temperList(vo);
+
+            if (dataList.size() > 0 ) {
+                //타이틀 넣기
+                String tData = "";
+                tData = "Patient_id";   //환자 id
+                tData += "," + "rr";      //호흡
+                tData += "," + "hr";      //심박수
+                tData += "," + "체온";     //
+                tData += "," + "가래";     //1
+                tData += "," + "발열";    //2
+                tData += "," + "인후통";    //3
+                tData += "," + "호흡곤란";    //4
+                tData += "," + "흉통";    //5
+                tData += "," + "오심";    //6
+                tData += "," + "구토";    //7
+                tData += "," + "변비";    //8
+                tData += "," + "설사";    //9
+                tData += "," + "복통";    //10
+                tData += "," + "수면장애";    //11
+
+                fw.write(tData);
+                fw.newLine();
+
+                log.info("체온상승 파일 만들기");
+
+                for (TemperListVO dt : dataList) {
+
+                    String aData = "";
+                    aData = dt.getAdmissionId();   //환자 id
+                    aData += "," + dt.getRr();     //호흡
+                    aData += "," + dt.getPr();     //심박수
+                    aData += "," + dt.getBt();     //체온
+                    aData += "," + dt.getQ1Yn();   //가래
+                    aData += "," + dt.getQ2Yn();   //발열
+                    aData += "," + dt.getQ3Yn();   //인후통
+                    aData += "," + dt.getQ4Yn();   //호흡곤란
+                    aData += "," + dt.getQ5Yn();   //흉통
+                    aData += "," + dt.getQ6Yn();   //오심
+                    aData += "," + dt.getQ7Yn();   //구토
+                    aData += "," + dt.getQ8Yn();   //변비
+                    aData += "," + dt.getQ9Yn();   //설사
+                    aData += "," + dt.getQ10Yn();   //복통
+                    aData += "," + dt.getQ11Yn();   //수면장애
+
+                    fw.write(aData);
+                    fw.newLine();
+                }
+            }
+            fw.flush();
+            //객체 닫기
+            fw.close();
+
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            result= e.getMessage();
+        }
+
+        return result;
+    }
+
 }
