@@ -30,22 +30,19 @@
              , CDS.PROPERTY1                    AS SEX_NM
              , P.PATIENT_ID                     AS PATIENT_ID
              , P.PATIENT_NM                     AS PATIENT_NM
-             , CASE WHEN row_number() over () % 2 = 0
-                        THEN 'Y'
-                    ELSE     'N'
-               END                              AS SIGNAL1_YN
-             , CASE WHEN row_number() over () % 2 = 1
-                        THEN 'Y'
-                    ELSE     'N'
-               END                              AS SIGNAL2_YN
-          FROM ADMISSION A
+             , CASE WHEN I.INF_DIV = '10' OR I.INF_DIV ='20'
+                    THEN 'Y' ELSE 'N' END       AS SIGNAL1_YN
+             , CASE WHEN I.INF_DIV = '30'
+                    THEN 'Y' ELSE 'N' END       AS SIGNAL2_YN
+        FROM ADMISSION A
                INNER JOIN PATIENT      P    ON A.PATIENT_ID = P.PATIENT_ID
                LEFT JOIN COM_CD_DETAIL CDR  ON CDR.COM_CD    = 'CD005'
                                            AND CDR.DETAIL_CD = A.ROOM
                                            AND CDR.PROPERTY1 = A.CENTER_ID
                LEFT JOIN COM_CD_DETAIL CDS  ON CDS.COM_CD    = 'CD003'
                                            AND CDS.DETAIL_CD = P.SEX
-         WHERE A.DSCHGE_DATE IS NULL
+               LEFT JOIN INFERENCE I       ON A.ADMISSION_ID  = I.ADMISSION_ID
+        WHERE A.DSCHGE_DATE IS NULL
            AND A.QANTN_DIV = #{qantnDiv}
 
         <choose>
