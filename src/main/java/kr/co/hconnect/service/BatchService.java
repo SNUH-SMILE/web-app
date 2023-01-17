@@ -251,7 +251,9 @@ public class BatchService extends EgovAbstractServiceImpl{
                 String[] lineArr = line.split(",");
 
                 AiInferenceVO entityVO = new AiInferenceVO();
-                entityVO.setAdmissionId(lineArr[0]);
+
+                String str = String.format("%010d",  lineArr[0]);
+                entityVO.setAdmissionId(str);
                 entityVO.setInfDiv("10");
                 entityVO.setInfValue(lineArr[1]);
 
@@ -517,12 +519,12 @@ public class BatchService extends EgovAbstractServiceImpl{
                 String[] lineArr = line.split(",");
 
                 AiInferenceVO entityVO = new AiInferenceVO();
-                entityVO.setAdmissionId(lineArr[0]);
+
+
+                String str = String.format("%010d",  lineArr[0]);
+                entityVO.setAdmissionId(str);
                 entityVO.setInfDiv("20");
                 entityVO.setInfValue(lineArr[1]);
-
-                System.out.println(lineArr[0]);
-                System.out.println(lineArr[1]);
 
                 if (lineArr[0].equals("Patient_id")) {
                     continue;
