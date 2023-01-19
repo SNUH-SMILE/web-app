@@ -351,6 +351,43 @@ public class AdmissionController {
 		return responseVO;
 	}
 
+    /**
+     * 자가격리 해제 취소 처리
+     * @param vo
+     * @return ResponseVO&lt;AdmissionListResponseByQuarantineVO&gt; 자가격리자 리스트 조회 결과
+     */
+    @RequestMapping(value = "/quarantine/charge", method = RequestMethod.PATCH)
+    public ResponseVO<AdmissionListResponseByQuarantineVO> updateAdmissionDischargeCancleByQuarantine(
+        @Valid @RequestBody AdmissionDischargeCancleVO vo, BindingResult bindingResult
+        , @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+
+        ResponseVO<AdmissionListResponseByQuarantineVO> responseVO = new ResponseVO<>();
+
+        // 퇴소 정보 구성
+        AdmissionVO admissionVO = new AdmissionVO();
+        admissionVO.setAdmissionId(vo.getAdmissionId());
+        admissionVO.setUpdId(tokenDetailInfo.getId());
+
+        try {
+            // 자가격리자 퇴소 처리
+            admissionService.updateAdmissionDischargeCancle(admissionVO);
+
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("자가격리 복구");
+          /*  responseVO.setResult(admissionService.selectAdmissionListByQuarantine(vo.getAdmissionListSearchByQuarantineVO()));*/
+        } catch (NotFoundAdmissionInfoException e) {
+            responseVO.setCode(e.getErrorCode());
+            responseVO.setMessage(e.getMessage());
+        } catch (InvalidAdmissionInfoException e) {
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
+
+        return responseVO;
+    }
 	/**
 	 * 자가격리자 퇴소 처리
 	 * @param vo 퇴소 처리 정보 VO

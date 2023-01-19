@@ -264,7 +264,17 @@
         WHERE ADMISSION_ID = #{admissionId}
         ]]>
    </update>
+    <!-- 퇴소취소처리 - kr.co.hconnect.sqlmapper.updateAdmissionDischarge -->
+    <update id="updateAdmissionDischargeCancle" parameterType="kr.co.hconnect.vo.AdmissionVO">
+   <![CDATA[
 
+        UPDATE ADMISSION
+        SET DSCHGE_DATE = null
+          , UPD_ID      = #{updId}
+          , UPD_DT      = NOW()
+        WHERE ADMISSION_ID = #{admissionId}
+        ]]>
+   </update>
 
     <!-- 자각격리자 리스트 조회 - kr.co.hconnect.sqlmapper.selectAdmissionListByQuarantine -->
     <select id="selectAdmissionListByQuarantine"

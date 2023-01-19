@@ -94,6 +94,15 @@ public class AdmissionDao extends EgovAbstractMapper {
 		return update("kr.co.hconnect.sqlmapper.updateAdmissionDischarge", vo);
 	}
 
+    /**
+     * 퇴실처리취소
+     * @param vo AdmissionVO-입소내역VO
+     * @return affectedRow
+     */
+    public int updateAdmissionDischargeCancle(AdmissionVO vo) {
+        return update("kr.co.hconnect.sqlmapper.updateAdmissionDischargeCancle", vo);
+    }
+
 
 	/**
 	 * 자가격리자 리스트 조회
