@@ -115,11 +115,11 @@
              , IBT.UNIT                                     AS BT_UNIT
              -- 걸음수
              , RDST1.RESULT                                 AS ST1_RESULT
-             , RDST2.RESULT                                 AS ST2_RESULT
+             , ''                                           AS ST2_RESULT
              , ''                                           AS ST1_RISK_GB
              , ''                                           AS ST2_RISK_GB
-             , TIMESTAMP(RST.RESULT_DATE, RST.RESULT_TIME)  AS ST_RESULT_DT
-             , IST.UNIT                                     AS ST_UNIT
+             , RDST1.RESULT_DATE                            AS ST_RESULT_DT
+             , (SELECT ITEM_NM FROM ITEM  WHERE ITEM_ID ='I0004')    AS ST_UNIT
              -- 호흡(데이터 입력 가능 여부 미정)
              , RDRP.RESULT                                  AS RR_RESULT
              , CASE WHEN RDRP.RESULT < IRP.REF_FROM
@@ -193,7 +193,7 @@
                                                                         ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
                                                                         LIMIT 1)
                LEFT JOIN RESULT_DETAIL     RDBT    ON RDBT.RESULT_SEQ = RBT.RESULT_SEQ
-               /* 걸음수 */
+               /* 걸음수
                INNER JOIN ITEM             IST     ON IST.ITEM_ID = 'I0004'
                LEFT JOIN RESULT            RST     ON RST.RESULT_SEQ = (SELECT X.RESULT_SEQ
                                                                           FROM RESULT X
@@ -205,6 +205,7 @@
                                                   AND RDST1.RESULT_TYPE = '04'
                LEFT JOIN RESULT_DETAIL     RDST2   ON RDST2.RESULT_SEQ = RST.RESULT_SEQ
                                                   AND RDST2.RESULT_TYPE = '05'
+               */
                /* 산소포화도 */
                LEFT JOIN ITEM              ISP     ON ISP.ITEM_ID = 'I0003'
                LEFT JOIN RESULT            RSP     ON RSP.RESULT_SEQ = (SELECT X.RESULT_SEQ
@@ -225,6 +226,18 @@
                                                                         ORDER BY X.RESULT_DATE DESC, X.RESULT_TIME DESC
                                                                         LIMIT 1)
                LEFT JOIN RESULT_DETAIL     RDRP    ON RDRP.RESULT_SEQ = RRP.RESULT_SEQ
+               /* 걸음수 */
+               LEFT JOIN ( SELECT R.ADMISSION_ID , R.RESULT_DATE , SUM(RD.`RESULT`) RESULT
+				             FROM RESULT R
+				                  INNER JOIN RESULT_DETAIL RD
+                                     ON R.RESULT_SEQ  = RD.RESULT_SEQ
+				            WHERE 1=1
+				             AND R.ITEM_ID  = 'I0004'
+				             AND RD.RESULT_TYPE ='04'
+				             AND R.RESULT_DATE  = (SELECT MAX(RESULT_DATE) RESULT_DATE FROM RESULT S
+                                                    WHERE  S.ADMISSION_ID = R.ADMISSION_ID GROUP BY S.ADMISSION_ID)
+				           GROUP BY R.ADMISSION_ID , R.RESULT_DATE) RDST1
+                    ON A.ADMISSION_ID = RDST1.ADMISSION_ID
                /* 추론데이터 */
                LEFT JOIN (
                     SELECT

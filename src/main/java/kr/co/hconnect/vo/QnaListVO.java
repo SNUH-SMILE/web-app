@@ -32,4 +32,6 @@ public class QnaListVO implements Serializable {
 
     private String answerBody;
 
+    private int questionSeq;
+
 }
