@@ -39,6 +39,7 @@
             ,QUESTION_CONTENT                   as questionBody
             ,DATE_FORMAT(REPLY_DT, '%Y%m%d')    as answerDate
             ,REPLY_CONTENT                      as answerBody
+            ,QUESTION_SEQ                       as questionSeq
         FROM QNA
         WHERE 1=1
           AND REG_ID = #{loginId};

@@ -322,6 +322,15 @@
         <if test='@org.apache.commons.lang3.StringUtils@isNotEmpty(qantnStatus) and "2".equals(qantnStatus)'>
             AND A.DSCHGE_DATE IS NOT NULL
         </if>
+        <if test='@org.apache.commons.lang3.StringUtils@isNotEmpty(qantnStatus) and "3".equals(qantnStatus)'>
+            AND A.DSCHGE_DATE IS NOT NULL
+            AND TIMESTAMPDIFF(DAY,  A.DSCHGE_DATE, NOW())  <![CDATA[ >=  ]]> 30
+        </if>
+        <if test='@org.apache.commons.lang3.StringUtils@isNotEmpty(qantnStatus) and "4".equals(qantnStatus)'>
+            AND A.DSCHGE_DATE IS NOT NULL
+            AND TIMESTAMPDIFF(DAY, A.DSCHGE_DATE, NOW()) <![CDATA[  < ]]>  30
+        </if>
+
         ORDER
         BY
         <choose>

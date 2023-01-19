@@ -182,4 +182,10 @@
           AND A.ADMISSION_ID  = #{admissionId}
     </select>
 
+    <select id="selectLoginId" parameterType="String" resultType="String">
+        SELECT  P.LOGIN_ID
+        FROM PATIENT P
+        WHERE 1=1
+          AND P.PATIENT_ID  = #{patientId}
+    </select>
 </mapper>

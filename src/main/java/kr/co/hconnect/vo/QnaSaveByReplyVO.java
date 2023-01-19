@@ -43,4 +43,7 @@ public class QnaSaveByReplyVO implements Serializable {
      */
     private String replyId;
 
+
+    private String patientId;
+
 }
