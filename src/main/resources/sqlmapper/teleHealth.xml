@@ -54,4 +54,12 @@
           and USE_END_DD is null OR USE_END_DD = ''
         ;
     </update>
+
+    <select id="getArchiveId" parameterType="kr.co.hconnect.vo.TeleReqArchiveDownVO" resultType="String">
+        select ARCHIVE_ID  from archive
+        where name = #{admissionId}
+        order by create_at desc
+            limit 1
+    </select>
+
 </mapper>

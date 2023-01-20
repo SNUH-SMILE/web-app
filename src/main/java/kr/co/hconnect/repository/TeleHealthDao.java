@@ -53,4 +53,15 @@ public class TeleHealthDao extends EgovAbstractMapper{
     public int endSession(TeleHealthSearchVO vo) {
         return update("kr.co.hconnect.sqlmapper.endSession", vo);
     }
+
+    /**
+     * 화상다운로드 아카이브 아이디 찾기
+     * @param vo
+     * @return
+     */
+    public String getArchiveId(TeleReqArchiveDownVO vo) {
+        return selectOne("kr.co.hconnect.sqlmapper.getArchiveId", vo);
+    }
+
+
 }
