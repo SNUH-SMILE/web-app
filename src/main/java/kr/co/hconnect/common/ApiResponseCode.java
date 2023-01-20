@@ -42,6 +42,12 @@ public enum ApiResponseCode {
      * 내원중인 격리/입소내역이 존재하지 않는 경우
      */
     NOT_FOUND_ADMISSION_INFO("21"),
+
+
+    /**
+     * 화상상담 다운로드 파일이 존해 하지 않을 경우
+     */
+    NOT_FOUND_ARCHIVE_INFO("31"),
     /**
      * 내원중인 격리/입소내역이 중복된 경우
      */
