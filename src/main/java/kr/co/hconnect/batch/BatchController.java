@@ -43,6 +43,7 @@ public class BatchController {
      * 1. 스코어 배치 처리 하기
      * ./score 폴더
      * @Scheduled(cron="0 0 0/1 * * *")
+     * 매일 1번 22시 (오후10시)
      */
     @Scheduled(cron="0 0 22 * * *")
     public void scoreScheduler() throws IOException, InterruptedException {
@@ -80,8 +81,8 @@ public class BatchController {
      * ./temperature
      * @Scheduled(fixedDelay=20000)
      * @Scheduled(cron="0 0 0/2 * * *")
+     * 매일 2시간 마다
      */
-
     @Scheduled(cron="0 0 0/2 * * *")
     public void bodyTemperatureScheduler() throws IOException, InterruptedException {
 
@@ -117,13 +118,14 @@ public class BatchController {
      * 3. 우울 배치 처리 하기
      * 영상녹화 파일 다운로드 를 하고 나서 시작한다
      * ./depressed 폴더
+     * 매일 1번 23시 (오후11시)
      */
     @Scheduled(cron="0 0 23 * * *")
     public void depressedScheduler() throws IOException, InterruptedException, ParseException {
 
-        String filePath = ai_path+ "depress/annotation.csv";
-        String outfilePath = ai_path + "depress/result.csv";
-        String executePath = ai_path + "ise.py";
+        String filePath = ai_path+ "depressed/annotation.csv";
+        String outfilePath = ai_path + "depressed/result.csv";
+        String executePath = ai_path + "depressed/final_exe.py";
 
         /**
          * 체온 데이터 파일 생성
@@ -139,30 +141,26 @@ public class BatchController {
          * 스코어 AI 추론엔진 실행 서비스
          */
         System.out.println("3. 우울 배치 실행 ");
-        //batchService. .scoreCreate(bvo);
+        batchService.pythonProcessbuilder(executePath);
 
         /**
          * 스코어 파일 임포트
          */
         System.out.println("4. 우울 배치 파일 임포트 ");
         batchService.depressInsert(bvo);
+
     }
 
-
     /**
-     * 영상 녹화 파일 다운로드
+     * 4. 영상 녹화 파일 다운로드
+     * 매일 1번 20시 (오후 08시)
      */
     @Scheduled(cron="0 0 20 * * *")
     public void fileDownScheduler() throws IOException, OpenTokException {
-        //System.out.println("3. 우울 배치 처리 하기 ");
-        //파일 생성          depressedCreate
-        //파이썬 실행
-        //파일 테이블 insert depressedhist / depressedDelete / depressedinsert
 
         String rtn = batchService.vonageArchiveList();
 
     }
-
 
 
 }

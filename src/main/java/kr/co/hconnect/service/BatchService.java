@@ -64,14 +64,6 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         List<String> targetString  = new ArrayList<>();
 
-        AiInferenceVO logVO = new AiInferenceVO();
-        logVO.setInfDiv("10");
-        //로그로 데이터 복사
-        aiInferenceDao.insInf_log(logVO);
-        //데이터 삭제
-        aiInferenceDao.delInf(logVO);
-
-
         BioErrorVO bioErrorVO ;
         LocalDate nowDate = LocalDate.now();
         vo.setCDate(nowDate.toString());
@@ -250,6 +242,14 @@ public class BatchService extends EgovAbstractServiceImpl{
             return "";
         }
 
+        AiInferenceVO logVO = new AiInferenceVO();
+        logVO.setInfDiv("10");
+
+        //로그로 데이터 복사
+        aiInferenceDao.insInf_log(logVO);
+        //데이터 삭제
+        aiInferenceDao.delInf(logVO);
+
         BufferedReader br = null;
         String line = "";
 
@@ -312,14 +312,6 @@ public class BatchService extends EgovAbstractServiceImpl{
         String result="";
 
         List<String> targetString  = new ArrayList<>();
-
-        AiInferenceVO logVO = new AiInferenceVO();
-        logVO.setInfDiv("20");
-        //로그로 데이터 복사
-        aiInferenceDao.insInf_log(logVO);
-        //데이터 삭제
-        aiInferenceDao.delInf(logVO);
-
 
         BioErrorVO bioErrorVO ;
         LocalDate nowDate = LocalDate.now();
@@ -520,16 +512,18 @@ public class BatchService extends EgovAbstractServiceImpl{
             return "";
         }
 
+        AiInferenceVO logVO = new AiInferenceVO();
+        logVO.setInfDiv("20");
+
+        //로그로 데이터 복사
+        aiInferenceDao.insInf_log(logVO);
+        //데이터 삭제
+        aiInferenceDao.delInf(logVO);
+
         BufferedReader br = null;
         String line = "";
 
         try{
-            AiInferenceVO logVO = new AiInferenceVO();
-            logVO.setInfDiv("20");
-            //로그로 데이터 복사
-            aiInferenceDao.insInf_log(logVO);
-            //데이터 삭제
-            aiInferenceDao.delInf(logVO);
 
             br = new BufferedReader(new FileReader(csv));
             while ((line = br.readLine()) != null){
@@ -576,13 +570,12 @@ public class BatchService extends EgovAbstractServiceImpl{
     public int depressCreate(BatchVO vo) throws java.text.ParseException {
 
         int resultCount = 0;
+        /**
+         * 체크 리스트 확인
+         */
+        List<String> targetString  = new ArrayList<>();
 
-        AiInferenceVO logVO = new AiInferenceVO();
-        logVO.setInfDiv("30");
-        //로그로 데이터 복사
-        aiInferenceDao.insInf_log(logVO);
-        //데이터 삭제
-        aiInferenceDao.delInf(logVO);
+
 
         BioErrorVO bioErrorVO ;
         LocalDate nowDate = LocalDate.now();
@@ -602,9 +595,6 @@ public class BatchService extends EgovAbstractServiceImpl{
             int biochkint =0;
             String bioch;
 
-
-
-
             bcvo.setBioDate(nowDate.toString());
             bcvo.setBioTime(nowTime.toString());
 
@@ -613,9 +603,11 @@ public class BatchService extends EgovAbstractServiceImpl{
             String interviewMetaDataFormat = "id=%s & 문진 =%s & 데이터가 없습니다.";
             String endDate = bcvo.getEndDate();  //마지막일
             String sNowDate = nowDate.toString();  //마지막일
+
             //입소당일
             bcvo.setInterviewType("01");
             bioch = aiInferenceDao.interviewCheck(bcvo);
+
             if (bioch == null || bioch.equals("0")){
                 msg= String.format(interviewMetaDataFormat
                     , bcvo.getAdmissionId()
@@ -629,6 +621,9 @@ public class BatchService extends EgovAbstractServiceImpl{
                 bioErrorVO.setCDate(nowDate.toString());
                 bioErrorVO.setMessage(msg);
                 aiInferenceDao.insBioError(bioErrorVO);
+
+                targetString.add(bcvo.getAdmissionId());
+
             }
 
 
@@ -653,7 +648,7 @@ public class BatchService extends EgovAbstractServiceImpl{
                 if (bioch == null || bioch.equals("0")){
                     msg= String.format(interviewMetaDataFormat
                         , bcvo.getAdmissionId()
-                        ,"확진당일 "
+                        ,"퇴소후 30일 후 문진"
                     );
                     System.out.println(msg);
                     //에러 메세지 저장
@@ -663,6 +658,9 @@ public class BatchService extends EgovAbstractServiceImpl{
                     bioErrorVO.setCDate(nowDate.toString());
                     bioErrorVO.setMessage(msg);
                     aiInferenceDao.insBioError(bioErrorVO);
+
+                    targetString.add(bcvo.getAdmissionId());
+
                 }
             }
 
@@ -689,35 +687,67 @@ public class BatchService extends EgovAbstractServiceImpl{
             List<DepressListVO> dataList = aiInferenceDao.depressList(vo);
 
             if (dataList.size() > 0 ) {
-                for (DepressListVO dt : dataList) {
+                log.info("우울 추론 데이터 파일 만들기");
+                    int sno = 0;
 
-                    System.out.println("환자 아이디 " + dt.getAdmissionId());
+                    String tData = " ";
+                    tData = ","  + "patient";   //환자ID
+                    tData += "," + "stress_1";      //호흡
+                    tData += "," + "stress_2";      //심박수
+                    tData += "," + "stress_3";     //
+                    tData += "," + "stress_4";     //1
+                    tData += "," + "stress_5";    //2
+                    tData += "," + "stress_6";    //3
+                    tData += "," + "stress_7";    //4
+                    tData += "," + "stress_8";    //5
+                    tData += "," + "stress_9";    //6
+                    tData += "," + "gad7_total";    //7
+                    tData += "," + "phq9_1";      //호흡
+                    tData += "," + "phq9_2";      //심박수
+                    tData += "," + "phq9_3";     //
+                    tData += "," + "phq9_4";     //1
+                    tData += "," + "phq9_5";    //2
+                    tData += "," + "phq9_6";    //3
+                    tData += "," + "phq9_7";    //4
+                    tData += "," + "phq9_8";    //5
+                    tData += "," + "phq9_9";    //6
+                    tData += "," + "video";    //11
+                    tData += "," + "tag";    //11
 
-                    String aData = "";
-                    aData = dt.getAdmissionId();   //환자 id
-                    aData += "," + dt.getSt1Yn();   //스트레스설문 1번
-                    aData += "," + dt.getSt2Yn();   //스트레스설문 2번
-                    aData += "," + dt.getSt3Yn();   //스트레스설문 3번
-                    aData += "," + dt.getSt4Yn();   //스트레스설문 4번
-                    aData += "," + dt.getSt5Yn();   //스트레스설문 5번
-                    aData += "," + dt.getSt6Yn();   //스트레스설문 6번
-                    aData += "," + dt.getSt7Yn();   //스트레스설문 7번
-                    aData += "," + dt.getSt8Yn();   //스트레스설문 8번
-                    aData += "," + dt.getSt9Yn();   //스트레스설문 9번
-                    aData += "," + dt.getGadTotal();  //gad7 설문총점수
-                    aData += "," + dt.getPhq1Yn();  //정신건강 우울 1
-                    aData += "," + dt.getPhq2Yn();  //정신건강 우울 2
-                    aData += "," + dt.getPhq3Yn();  //정신건강 우울 3
-                    aData += "," + dt.getPhq4Yn();  //정신건강 우울 4
-                    aData += "," + dt.getPhq5Yn();  //정신건강 우울 5
-                    aData += "," + dt.getPhq6Yn();  //정신건강 우울 6
-                    aData += "," + dt.getPhq7Yn();  //정신건강 우울 7
-                    aData += "," + dt.getPhq8Yn();  //정신건강 우울 8
-                    aData += "," + dt.getPhq9Yn();  //정신건강 우울 9
-                    aData += "," + dt.getVideo();     //환자음성파일위치
-                    aData += "," + dt.getTag();       //실제악화값
-                    fw.write(aData);
+                    fw.write(tData);
                     fw.newLine();
+
+                for (DepressListVO dt : dataList) {
+                    if(!targetString.contains(dt.getAdmissionId())) {
+                        sno += 1;
+
+                        String aData = String.valueOf(sno);
+                        aData = "," + dt.getAdmissionId();   //환자 id
+                        aData += "," + dt.getSt1Yn();   //스트레스설문 1번
+                        aData += "," + dt.getSt2Yn();   //스트레스설문 2번
+                        aData += "," + dt.getSt3Yn();   //스트레스설문 3번
+                        aData += "," + dt.getSt4Yn();   //스트레스설문 4번
+                        aData += "," + dt.getSt5Yn();   //스트레스설문 5번
+                        aData += "," + dt.getSt6Yn();   //스트레스설문 6번
+                        aData += "," + dt.getSt7Yn();   //스트레스설문 7번
+                        aData += "," + dt.getSt8Yn();   //스트레스설문 8번
+                        aData += "," + dt.getSt9Yn();   //스트레스설문 9번
+                        aData += "," + dt.getGadTotal();  //gad7 설문총점수
+                        aData += "," + dt.getPhq1Yn();  //정신건강 우울 1
+                        aData += "," + dt.getPhq2Yn();  //정신건강 우울 2
+                        aData += "," + dt.getPhq3Yn();  //정신건강 우울 3
+                        aData += "," + dt.getPhq4Yn();  //정신건강 우울 4
+                        aData += "," + dt.getPhq5Yn();  //정신건강 우울 5
+                        aData += "," + dt.getPhq6Yn();  //정신건강 우울 6
+                        aData += "," + dt.getPhq7Yn();  //정신건강 우울 7
+                        aData += "," + dt.getPhq8Yn();  //정신건강 우울 8
+                        aData += "," + dt.getPhq9Yn();  //정신건강 우울 9
+                        aData += "," + dt.getVideo();     //환자음성파일위치
+                        aData += "," + dt.getTag();       //실제악화값
+                        fw.write(aData);
+                        fw.newLine();
+                    }
+                    log.info("우울 추론 데이터 파일 만들기 완료");
                 }
             }
             fw.flush();
@@ -754,55 +784,64 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         BufferedReader br = null;
         String line = "";
+        AiInferenceVO logVO = new AiInferenceVO();
+        logVO.setInfDiv("30");
+
+        //로그로 데이터 복사
+        aiInferenceDao.insInf_log(logVO);
+        //데이터 삭제
+        aiInferenceDao.delInf(logVO);
 
         try{
             br = new BufferedReader(new FileReader(csv));
+            log.info("우울 예측 알고리즘 결과 파일 업로드 시작 ");
             while ((line = br.readLine()) != null){
                 String[] lineArr = line.split(",");
-
-                AiInferenceVO entityVO = new AiInferenceVO();
-                entityVO.setAdmissionId(lineArr[0]);          //환자번호
-                entityVO.setInfDiv("30");                     //우울
-                entityVO.setInfValue(lineArr[22]);            //실제 예측값
-
-                System.out.println(lineArr[0]);
-                System.out.println(lineArr[22]);
-
-                if (lineArr[0].equals("Patient_id")) {
+                //타이틀이면 스킵
+                if (lineArr[1].equals("Patient_id")) {
                     continue;
                 }
 
+                AiInferenceVO entityVO = new AiInferenceVO();
+                entityVO.setAdmissionId(lineArr[1]);          //환자번호
+                entityVO.setInfDiv("30");                     //우울
+                entityVO.setInfValue(lineArr[23]);            //실제 예측값
+
+                log.info("우울 환자 번호 >>> " + lineArr[1]);
+                log.info("우울 추론 결과 데이터 >>> " + lineArr[23]);
+
                 aiInferenceDao.insInf(entityVO);  // 인서트
 
-                System.out.println(lineArr[0]);
-                System.out.println(lineArr[22]);
-            }
 
+            }
+            log.info("우울 예측 알고리즘 결과 파일 업로드 완료 ");
 
         }catch (FileNotFoundException e){
-            System.out.println(e.getMessage());
+            log.error("FileNotFoundException  " + e.getMessage());
+            rtn= e.getMessage();
         }catch ( IOException e){
-            System.out.println(e.getMessage());
+            log.error("IOException  " + e.getMessage());
+            rtn= e.getMessage();
         }finally {
             try{
                 if(br != null){
                     br.close();
-
                 }
             }catch (IOException e) {
-                e.printStackTrace();
+                log.error("finally IOException  " + e.getMessage());
+                rtn= e.getMessage();
             }
         }
         return rtn;
 
     }
 
-
     /**
      * 파이썬 소스 파일 실행하기
      * @return
      */
     public String pythonProcessbuilder( String arg1) throws IOException, InterruptedException {
+
         log.info("========pythonProcessbuilder ================");
 
         String bool = "";

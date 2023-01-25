@@ -52,6 +52,9 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
 
     @Value("${ai.local.video.path}")
     private String ai_local_video_path;
+    @Value("${ai.local.explorer.path}")
+    private String ai_local_explorer_path;
+
 
     private final ArchiveDao archiveDao;
     private final UserDao userDao;
@@ -431,9 +434,13 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
                 rtn = msg;
             }  //zip 파일 압축해제
 
+            //파일 다운로드 폴더 열기
+            exeProcessbuilder(outputDir);
 
         } catch (OpenTokException e) {
             System.out.println(e.getMessage());
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
         //정삭적이지
@@ -518,6 +525,47 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
         }
 
         return rtn;
+    }
+
+
+    /**
+     * 파일 탐색기 열기
+     * @return
+     */
+    public String exeProcessbuilder( String arg1) throws IOException, InterruptedException {
+
+        log.info("========파일 탐색기 Processbuilder ================");
+
+        String bool = "";
+        ProcessBuilder builder;
+        BufferedReader br;
+
+        log.info(" 탐색기 실행 프로세스 arg1 >>>> " + arg1);
+
+        try{
+            builder = new ProcessBuilder(ai_local_explorer_path,arg1); //python3 error
+
+            builder.redirectErrorStream(true);
+            Process process = builder.start();
+
+            // 자식 프로세스가 종료될 때까지 기다림
+            int exitval = process.waitFor();
+
+            //// 서브 프로세스가 출력하는 내용을 받기 위해
+            br = new BufferedReader(new InputStreamReader(process.getInputStream(),"UTF-8"));
+
+            log.info("표준출력1  >>>   "+ br );
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                log.info("표준출력 loop  >>>   "+line );
+            }
+        } catch (IOException e){
+            bool = e.getMessage();
+            log.error(e.getMessage());
+        }
+
+        return bool;
     }
 
 
