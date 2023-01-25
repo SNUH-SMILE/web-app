@@ -81,7 +81,7 @@
             a.INTERVIEW_DD
         FROM INTERVIEW A
         WHERE a.ADMISSION_ID = #{admissionId}
-        order by INTERVIEW_DD desc
+        order by INTERVIEW_DD desc, INTERVIEW_TIME
 
     </select>
 

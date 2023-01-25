@@ -94,6 +94,13 @@ public class PatientVO extends BaseDefaultVO {
      * 시어스 체온계 계정
      */
     private String searsAccount;
+
+    private String memo;
+
+    /**
+     * 환자 활성화
+     */
+    private String activeStatus;
 	/**
 	 * 환자 식별 데이터 동일 여부 확인
 	 * @param vo 비교 대상 환자정보
@@ -104,6 +111,8 @@ public class PatientVO extends BaseDefaultVO {
 				birthDate.equals(vo.getBirthDate()) &&
 				sex.equals(vo.getSex()) &&
 				cellPhone.equals(vo.getCellPhone())&&
+                memo.equals(vo.getMemo())&&
+                activeStatus.equals(vo.getActiveStatus())&&
                 searsAccount.equals(vo.getSearsAccount());
 
 	}

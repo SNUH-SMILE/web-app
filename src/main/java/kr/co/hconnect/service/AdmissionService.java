@@ -222,6 +222,7 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 			identityInfo.setCellPhone(patientIdentityVO.getCellPhone());
             identityInfo.setSearsAccount(patientIdentityVO.getSearsAccount());
 
+
 			Patient patientByIdentityInfo = patientDao.selectPatientByIdentityInfo(identityInfo);
 
 			// 퇴소처리 안된 격리/입소내역 존재여부 확인
@@ -253,6 +254,8 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 				patientVO.setSex(patientIdentityVO.getSex());
 				patientVO.setRegId(admissionVO.getRegId());
 				patientVO.setSearsAccount(patientIdentityVO.getSearsAccount());
+                patientVO.setMemo(patientIdentityVO.getMemo());
+                patientVO.setActiveStatus(patientIdentityVO.getActiveStatus());
 
 
 				patientDao.insertPatient(patientVO);
@@ -281,7 +284,8 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 			patientVO.setSex(patientIdentityVO.getSex());
 			patientVO.setUpdId(admissionVO.getUpdId());
 			patientVO.setSearsAccount(patientIdentityVO.getSearsAccount());
-
+            patientVO.setMemo(patientIdentityVO.getMemo());
+            patientVO.setActiveStatus(patientIdentityVO.getActiveStatus());
 
 
 			// 변경 데이터 확인
@@ -294,7 +298,8 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 				identityInfo.setSex(patientIdentityVO.getSex());
 				identityInfo.setCellPhone(patientIdentityVO.getCellPhone());
 				identityInfo.setSearsAccount(patientIdentityVO.getSearsAccount());
-
+                identityInfo.setMemo(patientIdentityVO.getMemo());
+                identityInfo.setActiveStatus(patientIdentityVO.getActiveStatus());
 				Patient patientByIdentityInfo = patientDao.selectPatientByIdentityInfo(identityInfo);
 
 				if (patientByIdentityInfo != null) {

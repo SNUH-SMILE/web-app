@@ -104,4 +104,13 @@ public class Patient extends BaseResponse {
      */
     @Size(max = 50, message = "validation.size.searsAccount", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
     private String searsAccount;
+
+    @Size(max = 300, message = "validation.size.memo", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
+    private String memo;
+
+    /**
+     * 환자 활성화
+     */
+    @Size(max = 1, message = "validation.size.activeStatus", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
+    private String activeStatus;
 }

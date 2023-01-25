@@ -89,4 +89,12 @@ public class AdmissionSaveByQuarantineVO extends BaseDefaultVO {
      * 시어스 체온계 계정
      */
     private String searsAccount;
+
+
+    private String memo;
+
+    /**
+     * 환자 활성화
+     */
+    private String activeStatus;
 }

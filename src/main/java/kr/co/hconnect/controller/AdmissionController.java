@@ -206,8 +206,46 @@ public class AdmissionController {
 
 		return responseVO;
 	}
+    /**
+     * 생활치료센터 입소자 복귀 처리
+     * @param vo 퇴소 처리 정보 VO
+     * @return ResponseVO&lt;AdmissionListResponseByCenterVO&gt; 생활치료센터 입소자 리스트 조회 결과
+     */
+    @RequestMapping(value = "/center/charge", method = RequestMethod.PATCH)
+    public ResponseVO<AdmissionListResponseByCenterVO> updateAdmissionDischargeByCenterCancle(
+        @Valid @RequestBody AdmissionDischargeByCenterVO vo, BindingResult bindingResult
+        , @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
 
-	/**
+        ResponseVO<AdmissionListResponseByCenterVO> responseVO = new ResponseVO<>();
+
+        // 퇴소 정보 구성
+        AdmissionVO admissionVO = new AdmissionVO();
+        admissionVO.setAdmissionId(vo.getAdmissionId());
+        admissionVO.setUpdId(tokenDetailInfo.getId());
+        try {
+            // 입소자 퇴소 처리
+            admissionService.updateAdmissionDischargeCancle(admissionVO);
+
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("북귀 처리 완료");
+            responseVO.setResult(admissionService.selectAdmissionListByCenter(vo.getAdmissionListSearchByCenterVO()));
+        } catch (NotFoundAdmissionInfoException e) {
+            responseVO.setCode(e.getErrorCode());
+            responseVO.setMessage(e.getMessage());
+        } catch (InvalidAdmissionInfoException e) {
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
+
+        return responseVO;
+    }
+
+
+
+    /**
 	 * 생활치료센터 입소자 퇴소 처리
 	 * @param vo 퇴소 처리 정보 VO
 	 * @return ResponseVO&lt;AdmissionListResponseByCenterVO&gt; 생활치료센터 입소자 리스트 조회 결과

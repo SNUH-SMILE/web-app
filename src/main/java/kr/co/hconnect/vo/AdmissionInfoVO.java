@@ -81,5 +81,16 @@ public class AdmissionInfoVO extends BaseDefaultVO {
 	 */
 	private String delYn;
 
+    /**
+     * 시어스계정
+     */
     private String searsAccount;
+
+    /**
+     *
+     */
+    private String activeStatus;
+
+    private String memo;
+
 }

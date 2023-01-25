@@ -53,4 +53,11 @@ public class IdentityInfo implements Serializable {
      * 시어스체온계계정
      */
     private String searsAccount;
+
+    private String memo;
+
+    /**
+     * 환자 활성화
+     */
+    private String activeStatus;
 }

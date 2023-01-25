@@ -55,11 +55,16 @@
 			 , ADDRESS1             -- 주소
 			 , ADDRESS2             -- 상세주소
 		     , SEARS_ACCOUNT        -- 시어스 체온계 계정
+             , ACTIVE_STATUS
+		     , MEMO
 		  FROM PATIENT
 		 WHERE PATIENT_NM = #{patientNm}
 		   AND BIRTH_DATE = #{birthDate}
 		   AND SEX        = #{sex}
 		   AND CELL_PHONE = #{cellPhone}
+		   AND SEARS_ACCOUNT = #{searsAccount}
+		   AND MEMO = #{memo}
+		   AND ACTIVE_STATUS = #{activeStatus}
 
 	]]>
         <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(searsAccount)">
@@ -208,6 +213,8 @@
 		     , SEX
 		     , CELL_PHONE
 		     , SEARS_ACCOUNT
+		     , ACTIVE_STATUS
+		     , MEMO
 		     )
 		VALUES
 		     ( #{patientId}
@@ -215,7 +222,10 @@
 		     , #{birthDate}
 		     , #{sex}
 		     , #{cellPhone}
-		     , #{searsAccount})
+		     , #{searsAccount}
+		     , #{activeStatus}
+		     , #{memo}
+		     )
 	</insert>
 	
 	<!-- 환자정보 수정 - kr.co.hconnect.sqlmapper.updatePatient -->
@@ -230,6 +240,8 @@
 		     , CELL_PHONE = #{cellPhone}
 		     , UPD_DT     = NOW()
 		     , SEARS_ACCOUNT = #{searsAccount}
+		     , MEMO = #{memo}
+		     , ACTIVE_STATUS = #{activeStatus}
 		 WHERE PATIENT_ID = #{patientId}
 	]]> 
 	</update>
