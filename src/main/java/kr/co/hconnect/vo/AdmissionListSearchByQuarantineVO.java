@@ -28,4 +28,9 @@ public class AdmissionListSearchByQuarantineVO extends PaginationInfoVO {
      * 재원상태
      * */
     private String qantnStatus;
+
+    /**
+     * 데이터 활성/비활성 상태
+     * */
+    private String activeStatus;
 }
