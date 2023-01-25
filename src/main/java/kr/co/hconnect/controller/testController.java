@@ -28,6 +28,8 @@ import java.util.List;
 
 import kr.co.hconnect.service.TestService;
 import kr.co.hconnect.service.BatchService;
+import kr.co.hconnect.service.TeleHealthService;
+
 
 
 /**
@@ -50,14 +52,22 @@ public class testController {
     private String ai_video_path ="/usr/local/apache-tomcat-8.5.79/python/video/";
 
 
+
+
     private final TestService testService;
 
     private final BatchService batchService;
+
+    private final TeleHealthService teleHealthService;
+
+
+
     @Autowired
-    public testController(TestService testService, BatchService batchService) {
+    public testController(TestService testService, BatchService batchService, TeleHealthService teleHealthService) {
 
         this.testService = testService;
         this.batchService = batchService;
+        this.teleHealthService = teleHealthService;
     }
 
 
@@ -243,5 +253,48 @@ public class testController {
 
     }
 
+    @RequestMapping(value = "/depreCreate", method = RequestMethod.POST)
+    public void depressedScheduler() throws IOException, InterruptedException, ParseException {
+
+        String filePath = ai_path+ "depress/annotation.csv";
+        String outfilePath = ai_path + "depress/result.csv";
+        String executePath = ai_path + "depress/final_exe.py";
+
+        /**
+         * 체온 데이터 파일 생성
+         */
+        BatchVO bvo = new BatchVO();
+        bvo.setFilePath(filePath);
+        bvo.setOutFilePath(outfilePath);
+
+        System.out.println("3. 우울 배치 파일 만들기 ");
+        batchService.depressCreate(bvo);
+
+        /**
+         * 스코어 AI 추론엔진 실행 서비스
+         */
+        System.out.println("3. 우울 배치 실행 ");
+        batchService.pythonProcessbuilder(executePath);
+
+        /**
+         * 스코어 파일 임포트
+         */
+        System.out.println("4. 우울 배치 파일 임포트 ");
+        batchService.depressInsert(bvo);
+
+
+    }
+
+
+    @RequestMapping(value = "/exeBuiler", method = RequestMethod.POST)
+    public void exeBuiler() throws IOException, InterruptedException, ParseException {
+
+        String executePath = "C:\\SMILE\\P000000075";
+        /**
+         * 스코어 AI 추론엔진 실행 서비스
+         */
+        teleHealthService.exeProcessbuilder(executePath);
+
+    }
 
 }
