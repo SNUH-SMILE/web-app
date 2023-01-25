@@ -1,12 +1,18 @@
 package kr.co.hconnect.service;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import kr.co.hconnect.common.zipUtil;
 import kr.co.hconnect.controller.HealthController;
 import kr.co.hconnect.repository.ArchiveDao;
 import kr.co.hconnect.repository.UserDao;
 import kr.co.hconnect.repository.TeleHealthDao;
 import kr.co.hconnect.vo.*;
 import kr.co.hconnect.common.HttpUtil;
+import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -15,15 +21,25 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.opentok.Archive.OutputMode;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.opentok.*;
 import com.opentok.exception.OpenTokException;
 import com.opentok.Archive;
+import org.springframework.util.StringUtils;
+import ws.schild.jave.DefaultFFMPEGLocator;
 
 /**
  * 화상상담 서비스
@@ -32,7 +48,14 @@ import com.opentok.Archive;
 @Transactional(rollbackFor = Exception.class, readOnly = true)
 public class TeleHealthService extends EgovAbstractServiceImpl {
 
-    private static final Logger log = LoggerFactory.getLogger(HealthController.class);
+    private static final Logger log = LoggerFactory.getLogger(TeleHealthService.class);
+
+    @Value("${ai.local.video.path}")
+    private String ai_local_video_path;
+    @Value("${ai.local.explorer.path}")
+    private String ai_local_explorer_path;
+
+
     private final ArchiveDao archiveDao;
     private final UserDao userDao;
     private final TeleHealthDao teleHealthDao;
@@ -224,7 +247,6 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
         }
     }
 
-
     /**
      * 화상 접속시 푸시발송
      * @param vo
@@ -292,10 +314,145 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
         } catch (OpenTokException e){
             log.error(e.getMessage());
         }
+    }
 
 
+    /**
+     * 화상 상담 파일 파일 다운로드
+     * @param vo
+     * @return
+     * @throws IOException
+     * @throws OpenTokException
+     * @throws MalformedURLException
+     */
+    public String getTeleArchiveDown(TeleReqArchiveDownVO vo) throws IOException, OpenTokException , MalformedURLException {
+
+        String rtn = "";
+        String metaDataFormat = "화상상담 파일 다운로드가 완료 되었습니다. 경로=%s .";
+        String msg;
+
+        log.info("ai_local_video_path  >>>  " + ai_local_video_path);
+
+
+        String FILE_URL ="";         // "리소스 경로";
+        String outputDir  = ai_local_video_path;
+        Archive archive = null;
+
+        InputStream is = null;
+        FileOutputStream os = null;
+
+        LocalDate nowDate = LocalDate.now();
+        LocalTime nowTime = LocalTime.now();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String formatedNow = nowDate.format(formatter);
+
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmmss");
+        String timeFormatedNow = nowTime.format(timeFormatter);
+
+        vo.setCDate(nowDate);
+
+        String archiveId = teleHealthDao.getArchiveId(vo);
+
+        if (StringUtils.isEmpty(archiveId)){
+            return rtn ="31";
+        }
+        String admissionId = vo.getAdmissionId();
+        String patientId = userDao.selectPatientId(admissionId);
+
+        outputDir += patientId;
+        log.info("outputDir  >>>  " + outputDir);
+
+        //디렉토리 생성하기
+        File dir = new File(outputDir);
+
+        log.info("dir.exists()  >>>  " + dir.exists());
+
+        if (dir.exists()){
+
+            File newFile = new File(dir+"_"+formatedNow );
+            dir.renameTo(newFile);
+
+            File dirNew = new File(outputDir);
+            dirNew.mkdir();
+
+        } else {
+            try{
+                dir.mkdir();
+                log.info("dir.mkdir() >>>>  폴더가 생성 되었습니다." + dir );
+            } catch (Exception e){
+
+
+                System.out.println(e.getMessage());
+                return "";
+            }
+
+        }
+        //디렉토리 생성하기
+        try{
+
+            OpenTok openTok = new OpenTok(apikey, apiSecret);
+            archive =openTok.getArchive(archiveId);
+
+            FILE_URL = archive.getUrl();
+
+            rtn = FILE_URL;
+
+            log.info("archive.getUrl  >>>  " + rtn);
+            if (StringUtils.isEmpty(rtn)){
+                log.info("다운로드 할 파일이 없어서 리턴함  " );
+
+                openTok.close();
+
+                return rtn = "31";
+            }
+
+            //해당 url
+            URL url = new URL(FILE_URL);
+            String outputFile = outputDir + "\\" + patientId +".zip";
+
+            File f = new File(outputFile);
+            //파일 다운 로드
+            FileUtils.copyURLToFile(url, f );
+
+
+            //압축파일 풀기
+            zipUtil ziputil = new zipUtil();
+            String zipFile = patientId + ".zip";
+            outputDir +="/"  ;
+            System.out.println("outputDir >> " + outputDir);
+            System.out.println("zipFile >> "+ zipFile);
+
+
+            //압축해제
+            if(ziputil.unZip(outputDir, zipFile, outputDir)){
+
+                msg= String.format(metaDataFormat
+                    , outputDir
+                );
+
+                rtn = msg;
+            }  //zip 파일 압축해제
+
+            //파일 다운로드 폴더 열기
+            exeProcessbuilder(outputDir);
+
+        } catch (OpenTokException e) {
+            System.out.println(e.getMessage());
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        //정삭적이지
+        if (StringUtils.isEmpty(rtn)){
+            rtn= "31";
+        }
+
+        return rtn;
 
     }
+
+
 
 
     /**
@@ -368,6 +525,47 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
         }
 
         return rtn;
+    }
+
+
+    /**
+     * 파일 탐색기 열기
+     * @return
+     */
+    public String exeProcessbuilder( String arg1) throws IOException, InterruptedException {
+
+        log.info("========파일 탐색기 Processbuilder ================");
+
+        String bool = "";
+        ProcessBuilder builder;
+        BufferedReader br;
+
+        log.info(" 탐색기 실행 프로세스 arg1 >>>> " + arg1);
+
+        try{
+            builder = new ProcessBuilder(ai_local_explorer_path,arg1); //python3 error
+
+            builder.redirectErrorStream(true);
+            Process process = builder.start();
+
+            // 자식 프로세스가 종료될 때까지 기다림
+            int exitval = process.waitFor();
+
+            //// 서브 프로세스가 출력하는 내용을 받기 위해
+            br = new BufferedReader(new InputStreamReader(process.getInputStream(),"UTF-8"));
+
+            log.info("표준출력1  >>>   "+ br );
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                log.info("표준출력 loop  >>>   "+line );
+            }
+        } catch (IOException e){
+            bool = e.getMessage();
+            log.error(e.getMessage());
+        }
+
+        return bool;
     }
 
 

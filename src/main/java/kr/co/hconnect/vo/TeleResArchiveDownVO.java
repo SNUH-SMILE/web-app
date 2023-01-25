@@ -1,5 +1,6 @@
 package kr.co.hconnect.vo;
 
+import egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl;
 import kr.co.hconnect.common.VoValidationGroups;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,26 +13,18 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
- * 문의사항 조회 정보 VO
+ * 화상상담 파일 다운로드 Response
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-public class QnaListVO implements Serializable {
+public class TeleResArchiveDownVO implements Serializable{
 
-    private static final long serialVersionUID = 5699446587043599073L;
+    private static final long serialVersionUID = 722291528871703594L;
 
-    private String questionTitle;
 
-    private String questionDate;
+    private String msg;
 
-    private String questionBody;
-
-    private String answerDate;
-
-    private String answerBody;
-
-    private int questionSeq;
 
 }

@@ -127,4 +127,11 @@ public class UserDao extends EgovAbstractMapper {
         return selectOne("kr.co.hconnect.sqlmapper.selectPationtLoginId", admissionId);
     }
 
+    public String  selectLoginId(String patientId) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectLoginId", patientId);
+    }
+
+    public String  selectPatientId(String admissionId) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectPatientId", admissionId);
+    }
 }

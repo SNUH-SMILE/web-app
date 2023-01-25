@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import kr.co.hconnect.service.AdmissionService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/teleHealth")
@@ -134,5 +136,47 @@ public class TeleHealthController {
 
         return responseVO;
 
+    }
+
+
+    /**
+     * 화상다운로드
+     * @param vo
+     * @param bindingResult
+     * @return
+     */
+
+    @RequestMapping(value = "/teleArchiveDown", method = RequestMethod.POST)
+    public ResponseBaseVO<TeleResArchiveDownVO> getTeleArchiveDown(@Validated(VoValidationGroups.add.class) @RequestBody TeleReqArchiveDownVO vo
+        , BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+        ResponseBaseVO<TeleResArchiveDownVO> responseVO = new ResponseBaseVO<>();
+
+        try{
+            String rtnMessage;
+            String t = teleHealthService.getTeleArchiveDown(vo);
+
+            if (t.equals("31")){
+                rtnMessage = messageSource.getMessage("message.notfound.archiveId" , null, Locale.getDefault());
+
+                responseVO.setCode(ApiResponseCode.NOT_FOUND_ARCHIVE_INFO.getCode());
+                responseVO.setMessage(rtnMessage);
+
+            } else {
+                responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+                responseVO.setMessage(t);
+            }
+
+
+
+
+        }catch (Exception  e){
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
+
+        return responseVO;
     }
 }

@@ -182,4 +182,20 @@
           AND A.ADMISSION_ID  = #{admissionId}
     </select>
 
+    <select id="selectLoginId" parameterType="String" resultType="String">
+        SELECT  P.LOGIN_ID
+        FROM PATIENT P
+        WHERE 1=1
+          AND P.PATIENT_ID  = #{patientId}
+    </select>
+
+    <select id="selectPatientId" parameterType="String" resultType="String">
+        SELECT  P.PATIENT_ID
+        FROM ADMISSION A
+                 INNER JOIN PATIENT P
+                            ON A.PATIENT_ID  = P.PATIENT_ID
+        WHERE 1=1
+          AND A.ADMISSION_ID  = #{admissionId}
+    </select>
+
 </mapper>
