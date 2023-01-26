@@ -442,6 +442,10 @@ public class BatchService extends EgovAbstractServiceImpl{
 
             //쿼리 를 한다.
             //
+
+            log.info("체온 상승 오류 대상자 리스트  >>>> " + targetString.toString());
+            log.info("체온 상스 파일 대상자 리스트  >>>> ");
+
             List<TemperListVO> dataList = aiInferenceDao.temperList(vo);
 
             if (dataList.size() > 0 ) {

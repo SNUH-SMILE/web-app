@@ -331,11 +331,11 @@
         </if>
         <if test='@org.apache.commons.lang3.StringUtils@isNotEmpty(qantnStatus) and "3".equals(qantnStatus)'>
             AND A.DSCHGE_DATE IS NOT NULL
-            AND TIMESTAMPDIFF(DAY,  A.DSCHGE_DATE, NOW())  <![CDATA[ >=  ]]> 30
+            AND TIMESTAMPDIFF(DAY,  A.DSCHGE_DATE, NOW())  <![CDATA[ <  ]]> 30
         </if>
         <if test='@org.apache.commons.lang3.StringUtils@isNotEmpty(qantnStatus) and "4".equals(qantnStatus)'>
             AND A.DSCHGE_DATE IS NOT NULL
-            AND TIMESTAMPDIFF(DAY, A.DSCHGE_DATE, NOW()) <![CDATA[  < ]]>  30
+            AND TIMESTAMPDIFF(DAY, A.DSCHGE_DATE, NOW()) <![CDATA[  >= ]]>  30
         </if>
         <if test='@org.apache.commons.lang3.StringUtils@isNotEmpty(activeStatus) and "1".equals(activeStatus)'>
             AND P.ACTIVE_STATUS = '1'

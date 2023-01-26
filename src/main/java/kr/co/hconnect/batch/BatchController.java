@@ -22,6 +22,7 @@ public class BatchController {
 
     private static final Logger log = LoggerFactory.getLogger(BatchController.class);
 
+    //경로파일 수정
     private String ai_path="/usr/local/apache-tomcat-8.5.79/python/";
 
     private String ai_video_path = "/usr/local/apache-tomcat-8.5.79/python/video/";
