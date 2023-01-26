@@ -22,11 +22,9 @@ public class BatchController {
 
     private static final Logger log = LoggerFactory.getLogger(BatchController.class);
 
-    @Value("${ai.path}")
-    private String ai_path;
+    private String ai_path="/usr/local/apache-tomcat-8.5.79/python/";
 
-    @Value("${ai.video.path}")
-    private String ai_video_path;
+    private String ai_video_path = "/usr/local/apache-tomcat-8.5.79/python/video/";
 
 
     private final BatchService batchService;
@@ -97,7 +95,7 @@ public class BatchController {
         bvo.setFilePath(filePath);
         bvo.setOutFilePath(outfilePath);
 
-        log.warn("2. 체온 배치 파일 만들기");
+        log.info("2. 체온 배치 파일 만들기");
         String csvResult = batchService.temperCreate(bvo);
         if (csvResult.equals("")) {
 
@@ -134,19 +132,19 @@ public class BatchController {
         bvo.setFilePath(filePath);
         bvo.setOutFilePath(outfilePath);
 
-        System.out.println("3. 우울 배치 파일 만들기 ");
+        log.info("3. 우울 배치 파일 만들기 ");
         batchService.depressCreate(bvo);
 
         /**
          * 스코어 AI 추론엔진 실행 서비스
          */
-        System.out.println("3. 우울 배치 실행 ");
+        log.info("3. 우울 배치 실행 ");
         batchService.pythonProcessbuilder(executePath);
 
         /**
          * 스코어 파일 임포트
          */
-        System.out.println("4. 우울 배치 파일 임포트 ");
+        log.info("4. 우울 배치 파일 임포트 ");
         batchService.depressInsert(bvo);
 
     }
@@ -155,9 +153,9 @@ public class BatchController {
      * 4. 영상 녹화 파일 다운로드
      * 매일 1번 20시 (오후 08시)
      */
-    @Scheduled(cron="0 0 20 * * *")
+    @Scheduled(cron="0 0 21 * * *")
     public void fileDownScheduler() throws IOException, OpenTokException {
-
+        log.info("5. 화상상담 파일 다운로드 ");
         String rtn = batchService.vonageArchiveList();
 
     }
