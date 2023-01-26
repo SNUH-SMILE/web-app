@@ -470,7 +470,7 @@
         SELECT
             CASE WHEN T1.RE ='O' THEN 1 ELSE 0 END AS CNT
         FROM (SELECT CASE
-                         WHEN DATE_FORMAT(TIMEDIFF(NOW(), TIMESTAMP(R.RESULT_DATE, R.RESULT_TIME)), '%H') <= 2
+                         WHEN DATE_FORMAT(TIMEDIFF(NOW(), TIMESTAMP(R.RESULT_DATE, R.RESULT_TIME)), '%H') <= 1
                              THEN '0'
                          ELSE 'X' END AS RE
               FROM `RESULT` R

@@ -5,7 +5,6 @@ import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import kr.co.hconnect.common.zipUtil;
 import kr.co.hconnect.vo.*;
 import org.apache.commons.io.FileUtils;
-import org.apache.ibatis.jdbc.Null;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,7 +19,6 @@ import kr.co.hconnect.repository.*;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -44,6 +42,7 @@ public class BatchService extends EgovAbstractServiceImpl{
     private  final  AiInferenceDao aiInferenceDao;
 
     private int apikey = 47595911;
+
     private String apiSecret = "2ddde1eb92a2528bd22be0c465174636daca363d";
 
 
@@ -69,6 +68,7 @@ public class BatchService extends EgovAbstractServiceImpl{
         vo.setCDate(nowDate.toString());
 
         //스코어 대상 리스트
+        log.info("스코어 대상 리스트 >>>> ");
         List<BioCheckVO> bvo = aiInferenceDao.bioAdmissionId();
 
         // 생체데이터 체크
@@ -166,6 +166,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         List list= null;
         String filePath = vo.getFilePath();
+        log.info("파일 대상 >>>> " + filePath);
 
         //데이터를 받아오고 파일로 쓰기
         try {
@@ -180,6 +181,7 @@ public class BatchService extends EgovAbstractServiceImpl{
             BufferedWriter fw = new BufferedWriter(new FileWriter(filePath));
 
             List<ScoreVO> dataList = aiInferenceDao.scoreList(vo);
+
             log.info(" 스코어 대상 파일 수 " +  dataList.size());
             if (dataList.size() > 0 ) {
                 //타이틀 넣기
@@ -238,7 +240,7 @@ public class BatchService extends EgovAbstractServiceImpl{
         File csv = new File(vo.getOutFilePath());
 
         if(!csv.exists() ) {
-            System.out.println(" 상급병원 전원 예측 알고리즘 결과 파일이 없습니다.");
+            log.info(" 상급병원 전원 예측 알고리즘 결과 파일이 없습니다.");
             return "";
         }
 
@@ -246,7 +248,11 @@ public class BatchService extends EgovAbstractServiceImpl{
         logVO.setInfDiv("10");
 
         //로그로 데이터 복사
+
+        log.info(" 로그로 데이터 복사.");
         aiInferenceDao.insInf_log(logVO);
+
+        log.info(" 데이터 삭제");
         //데이터 삭제
         aiInferenceDao.delInf(logVO);
 
@@ -688,34 +694,34 @@ public class BatchService extends EgovAbstractServiceImpl{
 
             if (dataList.size() > 0 ) {
                 log.info("우울 추론 데이터 파일 만들기");
-                    int sno = 0;
+                int sno = 0;
 
-                    String tData = " ";
-                    tData = ","  + "patient";   //환자ID
-                    tData += "," + "stress_1";      //호흡
-                    tData += "," + "stress_2";      //심박수
-                    tData += "," + "stress_3";     //
-                    tData += "," + "stress_4";     //1
-                    tData += "," + "stress_5";    //2
-                    tData += "," + "stress_6";    //3
-                    tData += "," + "stress_7";    //4
-                    tData += "," + "stress_8";    //5
-                    tData += "," + "stress_9";    //6
-                    tData += "," + "gad7_total";    //7
-                    tData += "," + "phq9_1";      //호흡
-                    tData += "," + "phq9_2";      //심박수
-                    tData += "," + "phq9_3";     //
-                    tData += "," + "phq9_4";     //1
-                    tData += "," + "phq9_5";    //2
-                    tData += "," + "phq9_6";    //3
-                    tData += "," + "phq9_7";    //4
-                    tData += "," + "phq9_8";    //5
-                    tData += "," + "phq9_9";    //6
-                    tData += "," + "video";    //11
-                    tData += "," + "tag";    //11
+                String tData = " ";
+                tData = ","  + "patient";   //환자ID
+                tData += "," + "stress_1";      //호흡
+                tData += "," + "stress_2";      //심박수
+                tData += "," + "stress_3";     //
+                tData += "," + "stress_4";     //1
+                tData += "," + "stress_5";    //2
+                tData += "," + "stress_6";    //3
+                tData += "," + "stress_7";    //4
+                tData += "," + "stress_8";    //5
+                tData += "," + "stress_9";    //6
+                tData += "," + "gad7_total";    //7
+                tData += "," + "phq9_1";      //호흡
+                tData += "," + "phq9_2";      //심박수
+                tData += "," + "phq9_3";     //
+                tData += "," + "phq9_4";     //1
+                tData += "," + "phq9_5";    //2
+                tData += "," + "phq9_6";    //3
+                tData += "," + "phq9_7";    //4
+                tData += "," + "phq9_8";    //5
+                tData += "," + "phq9_9";    //6
+                tData += "," + "video";    //11
+                tData += "," + "tag";    //11
 
-                    fw.write(tData);
-                    fw.newLine();
+                fw.write(tData);
+                fw.newLine();
 
                 for (DepressListVO dt : dataList) {
                     if(!targetString.contains(dt.getAdmissionId())) {
@@ -803,7 +809,8 @@ public class BatchService extends EgovAbstractServiceImpl{
                 }
 
                 AiInferenceVO entityVO = new AiInferenceVO();
-                entityVO.setAdmissionId(lineArr[1]);          //환자번호
+                String str = String.format("%010d",  lineArr[1]);
+                entityVO.setAdmissionId(str);
                 entityVO.setInfDiv("30");                     //우울
                 entityVO.setInfValue(lineArr[23]);            //실제 예측값
 
