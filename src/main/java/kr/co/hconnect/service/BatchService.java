@@ -325,7 +325,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         vo.setCDate(nowDate.toString());
 
-
+/*
         //스코어 대상 리스트
         List<BioCheckVO> bvo = aiInferenceDao.bioAdmissionId();
 
@@ -423,6 +423,8 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         }
 
+*/
+
         log.info("체온상승 파일 만들기 ==================================");
 
         List list= null;
@@ -473,7 +475,6 @@ public class BatchService extends EgovAbstractServiceImpl{
                 log.info("체온상승 파일 만들기");
 
                 for (TemperListVO dt : dataList) {
-                    if(!targetString.contains(dt.getAdmissionId())) {      //생체테이터 체크 에서 없는 데이터만
 
                         String aData = "";
                         aData = dt.getAdmissionId();   //환자 id
@@ -494,11 +495,9 @@ public class BatchService extends EgovAbstractServiceImpl{
 
                         fw.write(aData);
                         fw.newLine();
-                    }
                 }
             }
             fw.flush();
-            //객체 닫기
             fw.close();
 
         } catch (IOException e) {
@@ -596,6 +595,7 @@ public class BatchService extends EgovAbstractServiceImpl{
         //스코어 대상 리스트
         List<BioCheckVO> bvo = aiInferenceDao.bioAdmissionId();
 
+
         // 생체데이터 체크
         //itemid = I0006 호흡 I0002 심박수   I0001 체온
 
@@ -636,7 +636,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
             }
 
-
+/*
             SimpleDateFormat edateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date nDate = new Date();
             Date endDate30 = edateFormat.parse(bcvo.getEndDate30()); //퇴소후 30일이후
@@ -651,7 +651,9 @@ public class BatchService extends EgovAbstractServiceImpl{
                 bv=1;
             }
 
-            if (bv != 0){
+*/
+            int bv = 0;
+            if (bv == 0){
                 bcvo.setInterviewType("05");
                 bioch = aiInferenceDao.interviewCheck(bcvo);
                 if (bioch == null || bioch.equals("0")){
@@ -659,7 +661,7 @@ public class BatchService extends EgovAbstractServiceImpl{
                         , bcvo.getAdmissionId()
                         ,"퇴소후 30일 후 문진"
                     );
-                    System.out.println(msg);
+                    log.info(msg);
                     //에러 메세지 저장
                     bioErrorVO = new BioErrorVO();
                     bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
@@ -675,7 +677,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
 
         }
-
+        log.info(" 우울 추론 데이터 시작");
         List list= null;
         String filePath = vo.getFilePath();
 
@@ -694,6 +696,8 @@ public class BatchService extends EgovAbstractServiceImpl{
             //쿼리 를 한다.
             //
             List<DepressListVO> dataList = aiInferenceDao.depressList(vo);
+
+            log.info(" 우울 추론 데이터 대상 갯 수 : " + dataList.size());
 
             if (dataList.size() > 0 ) {
                 log.info("우울 추론 데이터 파일 만들기");
@@ -727,7 +731,6 @@ public class BatchService extends EgovAbstractServiceImpl{
                 fw.newLine();
 
                 for (DepressListVO dt : dataList) {
-                    if(!targetString.contains(dt.getAdmissionId())) {
                         sno += 1;
 
                         String aData = String.valueOf(sno);
@@ -755,16 +758,17 @@ public class BatchService extends EgovAbstractServiceImpl{
                         aData += "," + dt.getTag();       //실제악화값
                         fw.write(aData);
                         fw.newLine();
-                    }
                     log.info("우울 추론 데이터 파일 만들기 완료");
                 }
+            } else {
+                log.info("우울 추론 데이터 베이스 데이터가 없습니다.");
             }
             fw.flush();
             //객체 닫기
             fw.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             throw new RuntimeException(e);
         } finally {
             return resultCount;
@@ -807,7 +811,7 @@ public class BatchService extends EgovAbstractServiceImpl{
             while ((line = br.readLine()) != null){
                 String[] lineArr = line.split(",");
                 //타이틀이면 스킵
-                if (lineArr[1].equals("Patient_id")) {
+                if (lineArr[1].equals("patient")) {
                     continue;
                 }
 
@@ -861,7 +865,7 @@ public class BatchService extends EgovAbstractServiceImpl{
         BufferedReader br;
         log.info(" 파이썬 실행 프로세스 arg1 >>>> " + arg1);
         try{
-            builder = new ProcessBuilder("python3.8",arg1); //python3 error
+            builder = new ProcessBuilder("python3.8",arg1);
 
             builder.redirectErrorStream(true);
             Process process = builder.start();
@@ -1237,6 +1241,9 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         if (value == null)
             return "";
+
+        if(value.length() >= 10)
+            return value;
 
         char[] cValue = value.toCharArray();
         for (int i = 0; i < cValue.length; i++) {
