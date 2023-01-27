@@ -266,7 +266,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
                 AiInferenceVO entityVO = new AiInferenceVO();
 
-                String str = String.format("%010d",  lineArr[0]);
+                String str = fillZero(10,lineArr[0]);
                 entityVO.setAdmissionId(str);
                 entityVO.setInfDiv("10");
                 entityVO.setInfValue(lineArr[1]);
@@ -541,8 +541,8 @@ public class BatchService extends EgovAbstractServiceImpl{
 
                 AiInferenceVO entityVO = new AiInferenceVO();
 
+                String str = fillZero(10, lineArr[0]);
 
-                String str = String.format("%010d",  lineArr[0]);
                 entityVO.setAdmissionId(str);
                 entityVO.setInfDiv("20");
                 entityVO.setInfValue(lineArr[1]);
@@ -637,9 +637,8 @@ public class BatchService extends EgovAbstractServiceImpl{
             }
 
 
-            SimpleDateFormat edateFormat = new SimpleDateFormat("yyyyMMdd");
+            SimpleDateFormat edateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date nDate = new Date();
-            nDate = edateFormat.parse(nDate.toString());
             Date endDate30 = edateFormat.parse(bcvo.getEndDate30()); //퇴소후 30일이후
 
             //퇴소후 1달 뒤 데이터가 있는지 체크
@@ -813,7 +812,9 @@ public class BatchService extends EgovAbstractServiceImpl{
                 }
 
                 AiInferenceVO entityVO = new AiInferenceVO();
-                String str = String.format("%010d",  lineArr[1]);
+
+                String str = fillZero(10, lineArr[1]);  // 0으로 자릿수 채우기
+
                 entityVO.setAdmissionId(str);
                 entityVO.setInfDiv("30");                     //우울
                 entityVO.setInfValue(lineArr[23]);            //실제 예측값
@@ -1230,6 +1231,67 @@ public class BatchService extends EgovAbstractServiceImpl{
         return rtn;
     }
 
+
+
+    public static String fillZero(int length, String value) {
+
+        if (value == null)
+            return "";
+
+        char[] cValue = value.toCharArray();
+        for (int i = 0; i < cValue.length; i++) {
+            if (!Character.isDigit(cValue[i])) {
+                return "";
+            }
+        }
+
+        String result = value;
+        int intLength = getStringLength(result);
+
+        if (intLength == length) {
+            return result;
+        } else if (intLength > length) {
+            return hanSubstr(length, value);
+        }
+
+        for (int i = 0; i < length; i++) {
+            result = "0" + result;
+            i = getStringLength(result) - 1;
+        }
+        return result;
+    }
+    public static String hanSubstr(int length, String value) {
+
+        if (value == null || value.length() == 0) {
+            return "";
+        }
+
+        int szBytes = value.getBytes().length;
+
+        if (szBytes <= length) {
+            return value;
+        }
+
+        String result = new String(value.getBytes(), 0, length);
+        if (result.equals("")) {
+            result = new String(value.getBytes(), 0, length - 1);
+        }
+
+        return result;
+    }
+    public static int getStringLength(String str) {
+        char ch[] = str.toCharArray();
+        int max = ch.length;
+        int count = 0;
+
+        for (int i = 0; i < max; i++) {
+            // 0x80: 문자일 경우 +2
+            if (ch[i] > 0x80)
+                count++;
+            count++;
+        }
+        return count;
+    }
 
 }
 

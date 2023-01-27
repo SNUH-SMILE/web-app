@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.opentok.Archive.OutputMode;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -126,6 +127,8 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
                 //# 참석자(대상자 & 보호자)에게 푸시내역 생성
                 createTelehealthStartPush(teleVO);
 
+                openTok.close();
+
             } catch (OpenTokException e){
                 System.out.println(e.getMessage());
             }
@@ -220,10 +223,13 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
 
             archiveDao.archiveInsert(teleHealthArchiveVO);
 
+            openTok.close();
+
         } catch (OpenTokException e) {
             e.printStackTrace();
             return null;
         }
+
         return archive.getId();
     }
     @Transactional(rollbackFor = Exception.class)
@@ -241,7 +247,7 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
             vo.setReason(archive.getReason());
 
             archiveDao.updateArchive(vo);
-
+            openTok.close();
         }catch (OpenTokException e){
             e.printStackTrace();
         }
@@ -331,11 +337,15 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
         String metaDataFormat = "화상상담 파일 다운로드가 완료 되었습니다. 경로=%s .";
         String msg;
 
-        log.info("ai_local_video_path  >>>  " + ai_local_video_path);
+        //log.info("ai_local_video_path  >>>  " + ai_local_video_path);
+
+        String outputDir  = "/usr/local/apache-tomcat-8.5.79/python/video/";
+
+        log.info("outputDir  >>>  " + outputDir);
 
 
         String FILE_URL ="";         // "리소스 경로";
-        String outputDir  = ai_local_video_path;
+        //String outputDir  = ai_local_video_path;
         Archive archive = null;
 
         InputStream is = null;
@@ -360,7 +370,7 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
         String admissionId = vo.getAdmissionId();
         String patientId = userDao.selectPatientId(admissionId);
 
-        outputDir += patientId;
+        outputDir +=  patientId;
         log.info("outputDir  >>>  " + outputDir);
 
         //디렉토리 생성하기
@@ -396,10 +406,10 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
 
             FILE_URL = archive.getUrl();
 
-            rtn = FILE_URL;
+            //rtn = FILE_URL;
 
-            log.info("archive.getUrl  >>>  " + rtn);
-            if (StringUtils.isEmpty(rtn)){
+            log.info("archive.getUrl  >>>  " + FILE_URL);
+            if (StringUtils.isEmpty(FILE_URL)){
                 log.info("다운로드 할 파일이 없어서 리턴함  " );
 
                 openTok.close();
@@ -411,20 +421,74 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
             URL url = new URL(FILE_URL);
             String outputFile = outputDir + "\\" + patientId +".zip";
 
+            log.info(" Archive local Down outputFile >>>>" +  outputFile);
+
             File f = new File(outputFile);
+
+            log.info(" Archive local Down file create >>>>" + f );
+
             //파일 다운 로드
-            FileUtils.copyURLToFile(url, f );
+            //FileUtils.copyURLToFile(url, f );  //허가거부
+            //폴더의 문제도 아니고
 
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                String fileName = "";
+                String disposition = conn.getHeaderField("Content-Disposition");
+                String contentType = conn.getContentType();
 
+                // 일반적으로 Content-Disposition 헤더에 있지만
+                // 없을 경우 url 에서 추출해 내면 된다.
+                // if (disposition != null) {
+                //     String target = "filename=";
+                //     int index = disposition.indexOf(target);
+                //     if (index != -1) {
+                //         fileName = disposition.substring(index + target.length() + 1);
+                //     }
+                // } else {
+                //     fileName = patientId + ".zip";
+                //
+                // }
+
+                fileName = patientId + ".zip";
+                log.info(" Archive local Down outputDir >>>>" + outputDir);
+                log.info(" Archive local Down fileName >>>>" + fileName);
+
+                is = conn.getInputStream();
+                os = new FileOutputStream(new File(outputDir, fileName));
+
+                log.info(" Archive local getInputStream 시작 >>>>" + is);
+                log.info(" Archive local FileOutputStream 시작 >>>>" + os);
+
+                final int BUFFER_SIZE = 4096;
+                int bytesRead;
+                byte[] buffer = new byte[BUFFER_SIZE];
+
+                log.info(" Archive local Down while 시작 >>>>" );
+
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+                os.close();
+                is.close();
+                System.out.println("File downloaded");
+
+            }
+            conn.disconnect();
+            log.info(" Archive local Down file Down load >>>>" );
+
+/*
             //압축파일 풀기
             zipUtil ziputil = new zipUtil();
             String zipFile = patientId + ".zip";
-            outputDir +="/"  ;
+            //outputDir +="\\"  ;
             System.out.println("outputDir >> " + outputDir);
             System.out.println("zipFile >> "+ zipFile);
 
 
             //압축해제
+            log.error(" Archive local Down 압축해제  >>>>" + zipFile);
             if(ziputil.unZip(outputDir, zipFile, outputDir)){
 
                 msg= String.format(metaDataFormat
@@ -436,23 +500,45 @@ public class TeleHealthService extends EgovAbstractServiceImpl {
 
             //파일 다운로드 폴더 열기
             exeProcessbuilder(outputDir);
+*/
 
+            openTok.close();
         } catch (OpenTokException e) {
-            System.out.println(e.getMessage());
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
 
+            log.error(" Archive local Down OpenTokException >>>>" + e.getMessage());
+
+        // } catch (InterruptedException e) {
+        //     log.error(" Archive local Down InterruptedException >>>>" + e.getMessage());
+        //     throw new RuntimeException(e);
+        }
+/*
         //정삭적이지
         if (StringUtils.isEmpty(rtn)){
             rtn= "31";
         }
-
+*/
         return rtn;
 
     }
 
+    public String getArchiveUrl(TeleReqArchiveDownVO vo) throws IOException, OpenTokException , MalformedURLException {
 
+        String rtn = "";
+
+        String archiveId = teleHealthDao.getArchiveId(vo);
+
+        Archive archive = null;
+
+        OpenTok openTok = new OpenTok(apikey, apiSecret);
+        archive =openTok.getArchive(archiveId);
+        rtn =  archive.getUrl();
+
+        log.info("archive.getUrl()" + rtn );
+
+        openTok.close();
+        return rtn;
+
+    }
 
 
     /**
