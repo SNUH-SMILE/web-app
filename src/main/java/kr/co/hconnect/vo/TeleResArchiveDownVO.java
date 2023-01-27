@@ -26,5 +26,7 @@ public class TeleResArchiveDownVO implements Serializable{
 
     private String msg;
 
+    private String uri;
+
 
 }

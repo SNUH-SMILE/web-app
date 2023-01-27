@@ -1,10 +1,13 @@
 package kr.co.hconnect.controller;
 
+import com.opentok.exception.OpenTokException;
 import kr.co.hconnect.common.ApiResponseCode;
 import kr.co.hconnect.common.VoValidationGroups;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.jwt.TokenDetailInfo;
 import kr.co.hconnect.vo.*;
+import org.asynchttpclient.Request;
+import org.asynchttpclient.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -17,7 +20,13 @@ import org.springframework.web.bind.annotation.*;
 import kr.co.hconnect.service.TeleHealthService;
 import kr.co.hconnect.service.AdmissionService;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Locale;
 
@@ -145,9 +154,10 @@ public class TeleHealthController {
      * @param bindingResult
      * @return
      */
-
+/**
     @RequestMapping(value = "/teleArchiveDown", method = RequestMethod.POST)
-    public ResponseBaseVO<TeleResArchiveDownVO> getTeleArchiveDown(@Validated(VoValidationGroups.add.class) @RequestBody TeleReqArchiveDownVO vo
+    public ResponseBaseVO<TeleResArchiveDownVO> getTeleArchiveDown(@Validated(VoValidationGroups.add.class)
+                                                                       @RequestBody TeleReqArchiveDownVO vo
         , BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
@@ -155,6 +165,12 @@ public class TeleHealthController {
         ResponseBaseVO<TeleResArchiveDownVO> responseVO = new ResponseBaseVO<>();
 
         try{
+
+
+            String arid = teleHealthService.getArchiveUrl(vo);
+
+
+
             String rtnMessage;
             String t = teleHealthService.getTeleArchiveDown(vo);
 
@@ -171,6 +187,51 @@ public class TeleHealthController {
 
 
 
+
+        }catch (Exception  e){
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
+
+        return responseVO;
+    }
+**/
+
+    @RequestMapping(value = "/teleArchiveDown", method = RequestMethod.POST)
+    public ResponseBaseVO<TeleResArchiveDownVO> getTeleArchiveDown(@Validated(VoValidationGroups.add.class)
+                                                                   @RequestBody TeleReqArchiveDownVO vo
+        , BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestArgumentException(bindingResult);
+        }
+        ResponseBaseVO<TeleResArchiveDownVO> responseVO = new ResponseBaseVO<>();
+
+        try{
+
+            TeleResArchiveDownVO dt =new TeleResArchiveDownVO();
+
+            String arid = teleHealthService.getArchiveUrl(vo);
+            //Desktop.getDesktop().browse(new URI(arid));
+
+             //String t = teleHealthService.getTeleArchiveDown(vo);
+
+            dt.setUri(arid);
+
+            String rtnMessage;
+            String t = "00";
+
+            if (t.equals("31")){
+                rtnMessage = messageSource.getMessage("message.notfound.archiveId" , null, Locale.getDefault());
+
+                responseVO.setCode(ApiResponseCode.NOT_FOUND_ARCHIVE_INFO.getCode());
+                responseVO.setMessage(rtnMessage);
+                responseVO.setResult(dt);
+
+            } else {
+                responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+                responseVO.setMessage(t);
+                responseVO.setResult(dt);
+            }
 
         }catch (Exception  e){
             responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
