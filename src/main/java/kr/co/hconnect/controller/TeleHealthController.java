@@ -148,55 +148,6 @@ public class TeleHealthController {
     }
 
 
-    /**
-     * 화상다운로드
-     * @param vo
-     * @param bindingResult
-     * @return
-     */
-/**
-    @RequestMapping(value = "/teleArchiveDown", method = RequestMethod.POST)
-    public ResponseBaseVO<TeleResArchiveDownVO> getTeleArchiveDown(@Validated(VoValidationGroups.add.class)
-                                                                       @RequestBody TeleReqArchiveDownVO vo
-        , BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new InvalidRequestArgumentException(bindingResult);
-        }
-        ResponseBaseVO<TeleResArchiveDownVO> responseVO = new ResponseBaseVO<>();
-
-        try{
-
-
-            String arid = teleHealthService.getArchiveUrl(vo);
-
-
-
-            String rtnMessage;
-            String t = teleHealthService.getTeleArchiveDown(vo);
-
-            if (t.equals("31")){
-                rtnMessage = messageSource.getMessage("message.notfound.archiveId" , null, Locale.getDefault());
-
-                responseVO.setCode(ApiResponseCode.NOT_FOUND_ARCHIVE_INFO.getCode());
-                responseVO.setMessage(rtnMessage);
-
-            } else {
-                responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
-                responseVO.setMessage(t);
-            }
-
-
-
-
-        }catch (Exception  e){
-            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
-            responseVO.setMessage(e.getMessage());
-        }
-
-        return responseVO;
-    }
-**/
-
     @RequestMapping(value = "/teleArchiveDown", method = RequestMethod.POST)
     public ResponseBaseVO<TeleResArchiveDownVO> getTeleArchiveDown(@Validated(VoValidationGroups.add.class)
                                                                    @RequestBody TeleReqArchiveDownVO vo
@@ -204,21 +155,23 @@ public class TeleHealthController {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
+
         ResponseBaseVO<TeleResArchiveDownVO> responseVO = new ResponseBaseVO<>();
 
         try{
 
             TeleResArchiveDownVO dt =new TeleResArchiveDownVO();
-
             String arid = teleHealthService.getArchiveUrl(vo);
-            //Desktop.getDesktop().browse(new URI(arid));
-
-             //String t = teleHealthService.getTeleArchiveDown(vo);
-
             dt.setUri(arid);
 
             String rtnMessage;
-            String t = "00";
+            String t ;
+
+            if (StringUtils.isEmpty(arid)){
+                t="31";
+            } else {
+                t="00";
+            }
 
             if (t.equals("31")){
                 rtnMessage = messageSource.getMessage("message.notfound.archiveId" , null, Locale.getDefault());
