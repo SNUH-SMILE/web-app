@@ -119,7 +119,7 @@ public class BatchController {
      * ./depressed 폴더
      * 매일 1번 23시 (오후11시)
      */
-    @Scheduled(cron="0 0 0/1 * * *")
+    @Scheduled(cron="0 0 23 * * *")
     public void depressedScheduler() throws IOException, InterruptedException, ParseException {
 
         String filePath = ai_path+ "depressed/annotation.csv";
