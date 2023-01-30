@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.text.ParseException;
 
 @Component
+
 @Controller
 public class BatchController {
 
@@ -161,5 +162,20 @@ public class BatchController {
 
     }
 
+    /**
+     */
+    @Scheduled(fixedDelay=20000)
+    public void interviewAlarm10() throws IOException, OpenTokException {
+        log.info(" 문진 알람 10시 리스트 및 알람 발송 ");
+        batchService.interviewAlarm();
+
+    }
+
+    @Scheduled(cron="0 0 16 * * *")
+    public void interviewAlarm14() throws IOException, OpenTokException {
+        log.info(" 문진 알람 16시 리스트 및 알람 발송");
+        batchService.interviewAlarm();
+
+    }
 
 }

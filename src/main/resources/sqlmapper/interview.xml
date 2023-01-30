@@ -143,6 +143,87 @@
         WHERE INTERVIEW_SEQ = #{interviewSeq} AND ANSWER_SEQ =#{answerSeq}
     </select>
 
+    <!--문진내역 당일 알림 BatchVO -->
+    <select id="selectInterviewToday" resultType="kr.co.hconnect.vo.InterviewAlarmList">
+        <![CDATA[
+            SELECT A.ADMISSION_ID
+                 , P.LOGIN_ID
+                 , A.ADMISSION_DATE
+                 , (SELECT  MAX(INTERVIEW_TYPE) INTERVIEW_TYPE FROM INTERVIEW I
+                     WHERE I.INTERVIEW_DD  = DATE_FORMAT(NOW(), '%Y%M%D')
+                       AND INTERVIEW_TYPE  = '01'
+                       AND I.ADMISSION_ID = A.ADMISSION_ID
+                     GROUP BY ADMISSION_ID
+                   ) AS INTERVIEW_TYPE
+            FROM ADMISSION A
+                     INNER JOIN PATIENT P ON A.PATIENT_ID  = P.PATIENT_ID
+            WHERE 1=1
+              AND DSCHGE_DATE IS NULL
+              AND P.LOGIN_ID  IS NOT NULL
+              AND A.ADMISSION_DATE = NOW()
+        ]]>
+    </select>
 
+    <!--문진내역 매일 알림 BatchVO -->
+    <select id="selectInterviewDay" resultType="kr.co.hconnect.vo.InterviewAlarmList">
+        <![CDATA[
+        SELECT A.ADMISSION_ID
+             , P.LOGIN_ID
+             , A.ADMISSION_DATE
+             , (SELECT  MAX(INTERVIEW_TYPE) INTERVIEW_TYPE FROM INTERVIEW I
+                 WHERE I.INTERVIEW_DD  = DATE_FORMAT(NOW(), '%Y%M%D')
+                   AND INTERVIEW_TYPE  = '02'
+                   AND I.ADMISSION_ID = A.ADMISSION_ID
+                 GROUP BY ADMISSION_ID
+               ) AS INTERVIEW_TYPE
+        FROM ADMISSION A
+                 INNER JOIN PATIENT P ON A.PATIENT_ID  = P.PATIENT_ID
+        WHERE 1=1
+          AND DSCHGE_DATE IS NULL
+          AND P.LOGIN_ID  IS NOT NULL
+          AND A.ADMISSION_DATE < NOW()
+        ]]>
+    </select>
+
+    <!--문진내역 퇴소일 알림  BatchVO-->
+    <select id="selectInterviewDischarge" resultType="kr.co.hconnect.vo.InterviewAlarmList">
+        <![CDATA[
+        SELECT A.ADMISSION_ID
+             , P.LOGIN_ID
+             , A.ADMISSION_DATE
+             , (SELECT  MAX(INTERVIEW_TYPE) INTERVIEW_TYPE FROM INTERVIEW I
+                    WHERE 1=1
+                      AND INTERVIEW_TYPE  = '04'
+                      AND I.ADMISSION_ID = A.ADMISSION_ID
+                    GROUP BY ADMISSION_ID
+                ) AS INTERVIEW_TYPE
+        FROM ADMISSION A
+                 INNER JOIN PATIENT P ON A.PATIENT_ID  = P.PATIENT_ID
+        WHERE 1=1
+          AND DSCHGE_DATE IS NOT NULL
+          AND P.LOGIN_ID  IS NOT NULL
+          AND A.DSCHGE_DATE = NOW()
+        ]]>
+    </select>
+    <!--문진내역 퇴소일후 30 알림  BatchVO-->
+    <select id="selectInterviewDischarge30" resultType="kr.co.hconnect.vo.InterviewAlarmList">
+        <![CDATA[
+        SELECT A.ADMISSION_ID
+             , P.LOGIN_ID
+             , A.ADMISSION_DATE
+             , (SELECT  MAX(INTERVIEW_TYPE) INTERVIEW_TYPE FROM INTERVIEW I
+                    WHERE 1=1
+                      AND INTERVIEW_TYPE  = '05'
+                      AND I.ADMISSION_ID = A.ADMISSION_ID
+                    GROUP BY ADMISSION_ID
+                ) AS INTERVIEW_TYPE
+        FROM ADMISSION A
+                 INNER JOIN PATIENT P ON A.PATIENT_ID  = P.PATIENT_ID
+        WHERE 1=1
+          AND DSCHGE_DATE IS NOT NULL
+          AND P.LOGIN_ID  IS NOT NULL
+          AND DATEDIFF( DATE_FORMAT(NOW(), '%Y-%m-%d'), A.DSCHGE_DATE) BETWEEN 30 AND 33
+        ]]>
+    </select>
 
 </mapper>
