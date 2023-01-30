@@ -2,6 +2,7 @@ package kr.co.hconnect.service;
 
 import com.opentok.Archive;
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import kr.co.hconnect.common.HttpUtil;
 import kr.co.hconnect.common.zipUtil;
 import kr.co.hconnect.vo.*;
 import org.apache.commons.io.FileUtils;
@@ -12,6 +13,7 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import kr.co.hconnect.repository.*;
 
@@ -39,7 +41,14 @@ public class BatchService extends EgovAbstractServiceImpl{
 
     private String ai_video_path="/usr/local/apache-tomcat-8.5.79/python/video/";
 
+
+    @Value("${push.url}")
+    private String push_url;
+
+
     private  final  AiInferenceDao aiInferenceDao;
+
+    private  final  InterviewDao interviewDao;
 
     private int apikey = 47595911;
 
@@ -47,8 +56,10 @@ public class BatchService extends EgovAbstractServiceImpl{
 
 
     @Autowired
-    public BatchService(AiInferenceDao dao) {
+    public BatchService(AiInferenceDao dao, InterviewDao interviewDao)
+    {
         this.aiInferenceDao = dao;
+        this.interviewDao = interviewDao;
     }
 
 
@@ -1123,6 +1134,149 @@ public class BatchService extends EgovAbstractServiceImpl{
 
     }
 
+
+    public void interviewAlarm(){
+        //확진당일
+        interviewAlarmToDay();
+        //매일 문진
+        interviewAlarmDay();
+        //퇴소일문진
+        selectInterviewDischarge();
+        //퇴소후30일 문진
+        selectInterviewDischarge30();
+
+    }
+
+
+    /**
+     * 확진당일문진결과에 대하여 알람리스트
+     * @return
+     */
+    public String interviewAlarmToDay() {
+        log.info("01 확진당일 문진 결과 알람 리스트");
+        String rtn="";
+        List<InterviewAlarmList> entityVO = interviewDao.selectInterviewToday();
+
+        try {
+            if (entityVO.size()>0){
+                for(InterviewAlarmList vo : entityVO){
+                    if (StringUtils.isEmpty(vo.getInterviewType())){
+                        HashMap<String, Object> mapValue = new HashMap<String, Object>();
+                        String CUID = vo.getLoginId();
+                        mapValue.put("CUID", CUID);
+                        mapValue.put("MESSAGE", "확진당일 문진이 없습니다.");
+                        mapValue.put("INTERVIEWTYPE", "01");  //문진타입
+                        //#푸시내역 생성
+                         int ret = InterviewSendPush(mapValue);
+                        //log.info("CUID >>> " +  CUID);
+                        //log.info("MESSAGe  확진당일 문진이 없습니다.");
+
+                    }
+                }
+
+            }
+        } catch( Exception e ){
+            rtn = e.getMessage();
+            log.error(e.getMessage());
+        }
+        return rtn;
+    }
+
+    /**
+     * 매일 문진결과에 대하여 알람리스트
+     * @return
+     */
+    public String interviewAlarmDay(){
+        log.info("02 매일 문진 결과 알람 리스트");
+        String rtn="";
+        List<InterviewAlarmList> entityVO = interviewDao.selectInterviewDay();
+        try {
+            if (entityVO.size()>0){
+                for(InterviewAlarmList vo : entityVO){
+                    if (StringUtils.isEmpty(vo.getInterviewType())){
+                        HashMap<String, Object> mapValue = new HashMap<String, Object>();
+                        String CUID = vo.getLoginId();
+                        mapValue.put("CUID", CUID);
+                        mapValue.put("MESSAGE", "매일 문진이 없습니다.");
+                        mapValue.put("INTERVIEWTYPE", "02");  //문진타입
+                        //#푸시내역 생성
+                        int ret = InterviewSendPush(mapValue);
+
+                        //log.info("CUID >>> " +  CUID);
+                        //log.info("MESSAGe  매일 문진이 없습니다");
+
+                    }
+                }
+            }
+        } catch( Exception e ){
+            rtn = e.getMessage();
+            log.error(e.getMessage());
+        }
+        return rtn;
+    }
+
+    /**
+     * 퇴소일 문진결과에 대하여 알람리스트
+     * @return
+     */
+    public String selectInterviewDischarge(){
+        log.info("03 퇴소일 문진 결과 알람 리스트");
+        String rtn="";
+        List<InterviewAlarmList> entityVO = interviewDao.selectInterviewDischarge();
+        try {
+            if (entityVO.size()>0){
+                for(InterviewAlarmList vo : entityVO){
+                    if (StringUtils.isEmpty(vo.getInterviewType())){
+                        HashMap<String, Object> mapValue = new HashMap<String, Object>();
+                        String CUID = vo.getLoginId();
+                        mapValue.put("CUID", CUID);
+                        mapValue.put("MESSAGE", "퇴소일 문진이 없습니다.");
+                        mapValue.put("INTERVIEWTYPE", "03");  //문진타입
+                        //#푸시내역 생성
+                        int ret = InterviewSendPush(mapValue);
+                        //log.info("CUID >>> " + CUID);
+                        //log.info("MESSAGe 퇴소일 문진이 없습니다.");
+                    }
+                }
+            }
+        } catch( Exception e ){
+            rtn = e.getMessage();
+            log.error(e.getMessage());
+        }
+        return rtn;
+    }
+
+    /**
+     * 퇴소후 30일 문진결과에 대하여 알람리스트
+     * @return
+     */
+    public String selectInterviewDischarge30(){
+        log.info("04 퇴소일 후 30일 문진 결과 알람 리스트");
+        String rtn="";
+        List<InterviewAlarmList> entityVO = interviewDao.selectInterviewDischarge30();
+        try {
+            if (entityVO.size()>0){
+                for(InterviewAlarmList vo : entityVO){
+                    if (StringUtils.isEmpty(vo.getInterviewType())){
+                        HashMap<String, Object> mapValue = new HashMap<String, Object>();
+                        String CUID = vo.getLoginId();
+                        mapValue.put("CUID" , CUID);
+                        mapValue.put("MESSAGE", "퇴소일 후 30일 문진이 없습니다.");
+                        mapValue.put("INTERVIEWTYPE", "05");  //문진타입
+                        //#푸시내역 생성
+                        int ret = InterviewSendPush(mapValue);
+                        //log.info("CUID >>> " + CUID);
+                        //log.info("MESSAGE  퇴소일 후 30일 문진이 없습니다.");
+                    }
+                }
+            }
+        } catch( Exception e ){
+            rtn = e.getMessage();
+            log.error(e.getMessage());
+        }
+        return rtn;
+    }
+
     //확장로 파일 이름 가져오기
     private File[] getFileNames(String targetDirName, String fileExt) {
         File dir = new File(targetDirName);
@@ -1235,8 +1389,6 @@ public class BatchService extends EgovAbstractServiceImpl{
         return rtn;
     }
 
-
-
     public static String fillZero(int length, String value) {
 
         if (value == null)
@@ -1267,6 +1419,7 @@ public class BatchService extends EgovAbstractServiceImpl{
         }
         return result;
     }
+
     public static String hanSubstr(int length, String value) {
 
         if (value == null || value.length() == 0) {
@@ -1286,6 +1439,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         return result;
     }
+
     public static int getStringLength(String str) {
         char ch[] = str.toCharArray();
         int max = ch.length;
@@ -1299,7 +1453,55 @@ public class BatchService extends EgovAbstractServiceImpl{
         }
         return count;
     }
+    public int InterviewSendPush (HashMap<String, Object> mapValue){
+        int rtn = 0;
+        try {
 
+            String cuid = mapValue.get("CUID").toString();
+            String msg =  mapValue.get("MESSAGE").toString();
+            String interviewType =  mapValue.get("INTERVIEWTYPE").toString();
+
+            String message = "{\n" +
+                "    \"title\": \" 안녕하세요 \",\n" +
+                "    \"body\": \"" + msg + "\"\n" +
+                "}";
+
+            String attendeeToken = "{\n" +
+                "    \"action\": \"interview\",\n" +
+                "    \"interviewType\" : \"" + interviewType + "\", \n" +
+                "    }\n" +
+                "}";
+
+
+            HashMap<String, Object> params = new HashMap<String , Object>();
+            params.put("CUID", cuid);
+            params.put("MESSAGE", message);
+            params.put("PRIORITY", "3");
+            params.put("BADGENO", "0");
+            params.put("RESERVEDATE", "");
+            params.put("SERVICECODE", "ALL");
+            params.put("SOUNDFILE", "alert.aif");
+            params.put("EXT", attendeeToken);
+            params.put("SENDERCODE", "smile");
+            params.put("APP_ID", "iitp.infection.pm");
+            params.put("TYPE", "E");
+            params.put("DB_IN", "Y");
+
+
+
+            HashMap<String, Object> result = new HttpUtil()
+                .url(push_url)
+                .method("POST")
+                .body(params)
+                .build();
+        } catch (Exception e){
+            rtn=1;
+            System.out.println(e.getMessage());
+
+        }
+
+        return rtn;
+    }
 }
 
 

@@ -226,9 +226,12 @@ public class testController {
         bvo.setFilePath(filePath);
         bvo.setOutFilePath(outfilePath);
 
-        String bool = batchService.pythonProcessbuilder(executePath);
 
-        String si = batchService.scoreInsert(bvo);
+        String exeResult = batchService.pythonProcessbuilder(executePath);
+        log.info("score Exe >>>" + exeResult);
+
+        String insResult = batchService.scoreInsert(bvo);
+        log.info("score insert >>>" + insResult);
 
     }
 
@@ -314,6 +317,23 @@ public class testController {
         String csvResult = batchService.temperCreate(bvo);
 
     }
+    @RequestMapping(value = "/temperExe", method = RequestMethod.POST)
+    public void temperExe() throws IOException, InterruptedException {
+
+        String filePath = ai_path+ "temper/temper_file.csv";
+        String outfilePath = ai_path + "temper/temper_result.csv";
+        String executePath = ai_path + "temper/body_temp_rise.py";
+
+        BatchVO bvo = new BatchVO();
+        bvo.setFilePath(filePath);
+        bvo.setOutFilePath(outfilePath);
+
+        String exeResult = batchService.pythonProcessbuilder(executePath);
+        log.info("temperExe >>>" + exeResult);
+
+        // String insResult = batchService.temperInsert(bvo);
+        // log.info("temper insert >>>" + insResult);
+    }
 
     @RequestMapping(value = "/temperInset", method = RequestMethod.POST)
     public void temperinsert() throws IOException, InterruptedException {
@@ -349,6 +369,30 @@ public class testController {
 
     }
 
+    @RequestMapping(value = "/depreExe", method = RequestMethod.POST)
+    public void depreExe() throws IOException, InterruptedException, ParseException {
+
+        String filePath = ai_path+ "depressed/annotation.csv";
+        String outfilePath = ai_path + "depressed/result.csv";
+        String executePath = ai_path + "depressed/final_exe.py";
+
+        /**
+         *
+         */
+        BatchVO bvo = new BatchVO();
+        bvo.setFilePath(filePath);
+        bvo.setOutFilePath(outfilePath);
+
+
+        String exeResult = batchService.pythonProcessbuilder(executePath);
+        log.info("depressed Exe >>>" + exeResult);
+
+        String insResult = batchService.depressInsert(bvo);
+        log.info("depressed insert >>>" + insResult);
+
+
+    }
+
     @RequestMapping(value = "/depreinsert", method = RequestMethod.POST)
     public void depreinsert() throws IOException, InterruptedException, ParseException {
 
@@ -366,4 +410,15 @@ public class testController {
         System.out.println("3. 우울 배치 파일 만들기 ");
         batchService.depressInsert(bvo);
     }
+
+    @RequestMapping(value = "/interviewAlarm", method = RequestMethod.POST)
+    public void interviewAlarm()  {
+        log.info(" 문진 알람 리스트 및 알람 발송 시작");
+        batchService.interviewAlarm();
+        log.info(" 문진 알람 리스트 및 알람 발송 종료");
+    }
+
+
+
+
 }
