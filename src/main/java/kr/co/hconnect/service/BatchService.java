@@ -680,28 +680,23 @@ public class BatchService extends EgovAbstractServiceImpl{
         log.info(" 우울 추론 데이터 시작");
         List list= null;
         String filePath = vo.getFilePath();
-
+        int sno = 0;
         //데이터를 받아오고 파일로 쓰기
         try {
-
             File file = new File(filePath);
-
             if( file.exists() ) {
-                file.delete();
+                file.delete();     //기존 파일을 삭제 한다
             }
 
             //csv 파일의 기존 값에 이어쓰려면 위처럼 tru를 지정하고 기존갑을 덮어 쓰려면 true를 삭제한다
             BufferedWriter fw = new BufferedWriter(new FileWriter(filePath));
 
             //쿼리 를 한다.
-            //
             List<DepressListVO> dataList = aiInferenceDao.depressList(vo);
-
             log.info(" 우울 추론 데이터 대상 갯 수 : " + dataList.size());
 
             if (dataList.size() > 0 ) {
                 log.info("우울 추론 데이터 파일 만들기");
-                int sno = 0;
 
                 String tData = " ";
                 tData = ","  + "patient";   //환자ID
@@ -731,8 +726,8 @@ public class BatchService extends EgovAbstractServiceImpl{
                 fw.newLine();
 
                 for (DepressListVO dt : dataList) {
+                    if (!targetString.contains(dt.getAdmissionId())) {               //최초 문진이 없으면 파일을 만들지 않음
                         sno += 1;
-                    if (!targetString.contains(dt.getAdmissionId()){               //최초 문진이 없으면 파일을 만들지 않음
                         String aData = String.valueOf(sno);
                         aData = "," + dt.getAdmissionId();   //환자 id
                         aData += "," + dt.getSt1Yn();   //스트레스설문 1번
@@ -764,15 +759,14 @@ public class BatchService extends EgovAbstractServiceImpl{
                 log.info("우울 추론 데이터 베이스 데이터가 없습니다.");
             }
             fw.flush();
-            //객체 닫기
             fw.close();
-
         } catch (IOException e) {
             log.error(e.getMessage());
             throw new RuntimeException(e);
-        } finally {
-            return resultCount;
         }
+
+        log.info("우울 추론 파일 생성 건수 : " + sno);
+        return resultCount;
 
     }
 

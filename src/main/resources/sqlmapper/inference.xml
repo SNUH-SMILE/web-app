@@ -370,7 +370,6 @@
         ]]>
     </select>
 
-
     <select id="depressList_old"  resultType="kr.co.hconnect.vo.DepressListVO">
         <![CDATA[
         SELECT T1.ADMISSION_ID

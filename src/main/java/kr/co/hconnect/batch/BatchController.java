@@ -164,7 +164,7 @@ public class BatchController {
 
     /**
      */
-    @Scheduled(fixedDelay=20000)
+    @Scheduled(cron="0 0 10 * * *")
     public void interviewAlarm10() throws IOException, OpenTokException {
         log.info(" 문진 알람 10시 리스트 및 알람 발송 ");
         batchService.interviewAlarm();
@@ -175,7 +175,6 @@ public class BatchController {
     public void interviewAlarm14() throws IOException, OpenTokException {
         log.info(" 문진 알람 16시 리스트 및 알람 발송");
         batchService.interviewAlarm();
-
     }
 
 }
