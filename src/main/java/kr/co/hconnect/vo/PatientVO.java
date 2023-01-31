@@ -107,13 +107,21 @@ public class PatientVO extends BaseDefaultVO {
 	 * @return boolean
 	 */
 	public boolean isIdentityEquals(PatientVO vo) {
-		return patientNm.equals(vo.getPatientNm()) &&
-				birthDate.equals(vo.getBirthDate()) &&
-				sex.equals(vo.getSex()) &&
-				cellPhone.equals(vo.getCellPhone())&&
+        if(vo.getMemo() == null ){
+            return patientNm.equals(vo.getPatientNm()) &&
+                birthDate.equals(vo.getBirthDate()) &&
+                sex.equals(vo.getSex()) &&
+                cellPhone.equals(vo.getCellPhone())&&
+                activeStatus.equals(vo.getActiveStatus())&&
+                searsAccount.equals(vo.getSearsAccount());
+        }else{
+            return patientNm.equals(vo.getPatientNm()) &&
+                birthDate.equals(vo.getBirthDate()) &&
+                sex.equals(vo.getSex()) &&
+                cellPhone.equals(vo.getCellPhone())&&
                 memo.equals(vo.getMemo())&&
                 activeStatus.equals(vo.getActiveStatus())&&
                 searsAccount.equals(vo.getSearsAccount());
-
+        }
 	}
 }

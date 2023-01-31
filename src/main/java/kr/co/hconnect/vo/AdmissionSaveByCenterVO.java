@@ -3,6 +3,7 @@ package kr.co.hconnect.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import kr.co.hconnect.common.BaseDefaultVO;
 import kr.co.hconnect.common.VoValidationGroups;
+import kr.co.hconnect.domain.PatientValidationGroups;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -100,4 +101,13 @@ public class AdmissionSaveByCenterVO extends BaseDefaultVO {
      */
     @Size(max = 50, message = "{validation.size.searsAccount}", groups = {VoValidationGroups.add.class, VoValidationGroups.modify.class })
     private String searsAccount;
+
+    @Size(max = 300, message = "validation.size.memo", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
+    private String memo;
+
+    /**
+     * 환자 활성화
+     */
+    @Size(max = 1, message = "validation.size.activeStatus", groups = { PatientValidationGroups.add.class, PatientValidationGroups.modify.class })
+    private String activeStatus;
 }

@@ -15,7 +15,9 @@
              , ZIP_CODE             -- 우편번호
              , ADDRESS1             -- 주소
              , ADDRESS2             -- 상세주소
-		    ,  SEARS_ACCOUNT
+		     , SEARS_ACCOUNT
+             , ACTIVE_STATUS
+             , MEMO
           FROM PATIENT
          WHERE PATIENT_ID = #{patientId}
 	</select>
