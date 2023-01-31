@@ -200,7 +200,8 @@
              , RESULT_END_DATE
              , RESULT_END_TIME
              , SLEEP_TYPE
-             , DEVICE_ID)
+             , DEVICE_ID
+             , SLEEPKEY)
         VALUES
              ( #{admissionId}
              , #{resultStartDate}
@@ -209,10 +210,18 @@
              , #{resultEndTime}
              , #{sleepType}
              , #{deviceId})
+             , #{sleepListKey}
         ON DUPLICATE KEY UPDATE
           SLEEP_TYPE = #{sleepType}
         , DEVICE_ID  = #{deviceId}
         , UPD_DT    = NOW()
     </insert>
+
+    <!-- 수면 측정결과 삭제 -->
+    <delete id="deleteResultSleepTime" parameterType="kr.co.hconnect.domain.SaveSleepTimeResult">
+        DELETE FROM RESULT_SLEEP
+          WHERE ADMISSION_ID = #{admissionId}
+            AND SLEEPKEY = #{deleteSleepListKey}
+    </delete>
 
 </mapper>

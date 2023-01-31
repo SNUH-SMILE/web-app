@@ -8,6 +8,7 @@ import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.service.AdmissionService;
 import kr.co.hconnect.service.MeasurementResultService;
 import kr.co.hconnect.service.ResultService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -558,6 +559,11 @@ public class MeasurementResultRestController {
     public BaseResponse saveSleepTimeResult(@Valid @RequestBody SaveSleepResultInfo resultInfo, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
+        }
+
+        if (StringUtils.isNotEmpty(resultInfo.getDeleteSleepListKey())) {
+            // 수면 정보 측정결과 삭제
+            resultService.deleteResultSleep(resultInfo);
         }
 
         // 수면 정보 측정결과 저장

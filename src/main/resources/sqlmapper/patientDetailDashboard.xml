@@ -62,7 +62,7 @@
         WITH TOTAL_SLEEP AS (
             /* 조회일 기준 전날 오후 09시 ~ 당일 오전 06시까지 수면 시간 계산 */
             SELECT #{admissionId} AS ADMISSION_ID
-                , TRUNCATE(SUM(
+                , SUM(
                                 CASE WHEN X.RESULT_START_DATE = X.RESULT_END_DATE
                                           THEN
                                                CASE WHEN X.RESULT_START_DATE = DATE (DATE_ADD(NOW(), INTERVAL -1 DAY))
@@ -71,8 +71,7 @@
                                                END
                                      ELSE TIMESTAMPDIFF(MINUTE, TIMESTAMP(X.RESULT_START_DATE, GREATEST(X.RESULT_START_TIME, TIME('060000'))), TIMESTAMP(X.RESULT_END_DATE, LEAST(X.RESULT_END_TIME, TIME('210000'))))
                                 END
-                           ) / 60
-                  , 0)  AS SLEEP_RESULT
+                           )  AS SLEEP_RESULT
              FROM RESULT_SLEEP X
             WHERE X.ADMISSION_ID = #{admissionId}
               AND X.SLEEP_TYPE IN ('0', '1') -- 깊은잠, 얕은잠
@@ -140,13 +139,12 @@
                END                                          AS SP_RISK_GB
              , TIMESTAMP(RSP.RESULT_DATE, RSP.RESULT_TIME)  AS SP_RESULT_DT
              , ISP.UNIT                                     AS SP_UNIT
-
-             , SLEEP.SLEEP_RESULT                           AS SLEEP_RESULT                    -- 총 수면시간
+             , CONCAT(TRUNCATE(SLEEP.SLEEP_RESULT /60, 0), ' 시간 ', TRUNCATE((ROUND(SLEEP.SLEEP_RESULT/60, 2) - TRUNCATE(SLEEP.SLEEP_RESULT/60, 0)) * 60, 0), ' 분') AS SLEEP_RESULT                    -- 총 수면시간
              , CASE WHEN SLEEP_RESULT IS NULL
                          THEN NULL
                     ELSE      DATE (NOW())
                END                                          AS SLEEP_DT                        -- 수면 측정일
-             , '시간'                                        AS SLEEP_UNIT                      -- 수면 단위
+             , ''                                        AS SLEEP_UNIT                      -- 수면 단위
              , '전원'                                        AS RISK_SCORE_NM                    -- 호흡기계 스코어 이름
              , CASE WHEN AIIN.SCORE >=5 THEN '위험'
                     WHEN AIIN.SCORE <=4 THEN '정상'

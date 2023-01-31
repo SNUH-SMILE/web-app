@@ -63,4 +63,14 @@ public class ResultDao extends EgovAbstractMapper {
         return insert("kr.co.hconnect.sqlmapper.insertResultSleepTime", resultInfo);
     }
 
+    /**
+     * 수면 측정결과 삭제
+     *
+     * @param resultInfo 수면 측정결과 삭제 정보
+     * @return affectedRow
+     */
+    public int deleteResultSleepTime(SaveSleepTimeResult resultInfo) {
+        return delete("kr.co.hconnect.sqlmapper.deleteResultSleepTime", resultInfo);
+    }
+
 }

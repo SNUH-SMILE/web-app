@@ -111,14 +111,36 @@ public class ResultService extends EgovAbstractServiceImpl {
     public boolean saveResultSleep(SaveSleepResultInfo resultInfo) {
         // 격리/입소내역ID
         String admissionId = admissionService.selectActiveAdmissionByLoginId(resultInfo.getLoginId()).getAdmissionId();
-
+        String sleepkey = resultInfo.getSleepListKey();
         // 수면 측정결과 저장
         for (SaveSleepTimeResult data : resultInfo.getResults()) {
             data.setAdmissionId(admissionId);
-
+            data.setSleepListKey(sleepkey);   //insert key value
             resultDao.insertResultSleepTime(data);
         }
 
         return true;
     }
+
+    /**
+     * 수면 측정결과 내역 학제
+     *
+     * @param resultInfo 수면 측정결과 저장 정보
+     * @return boolean 저장성공여부
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteResultSleep(SaveSleepResultInfo resultInfo) {
+        // 격리/입소내역ID
+        String admissionId = admissionService.selectActiveAdmissionByLoginId(resultInfo.getLoginId()).getAdmissionId();
+        String sleepkey = resultInfo.getDeleteSleepListKey();
+        // 수면 측정결과 삭제
+        for (SaveSleepTimeResult data : resultInfo.getResults()) {
+            data.setAdmissionId(admissionId);
+            data.setDeleteSleepListKey(sleepkey);  // delete key value
+            resultDao.deleteResultSleepTime(data);
+        }
+
+        return true;
+    }
+
 }

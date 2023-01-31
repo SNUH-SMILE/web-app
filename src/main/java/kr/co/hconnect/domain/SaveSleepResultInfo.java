@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
 
@@ -27,6 +28,15 @@ public class SaveSleepResultInfo implements Serializable {
      */
     @NotNull(message = "{validation.null.loginId}")
     private String loginId;
+
+
+    @NotNull(message = "{validation.null.sleepListKey}")
+    @Size(max = 10, message = "{validation.size.sleepListKey}")
+    private String sleepListKey;
+
+    @Size(max = 10, message = "{validation.size.deleteSleepListKey}")
+    private String deleteSleepListKey;
+
     /**
      * 수면 측정 결과
      */
