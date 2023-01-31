@@ -446,8 +446,10 @@
         <![CDATA[
             SELECT A.ADMISSION_ID
                   ,A.DSCHGE_DATE as END_DATE
-                  ,DATE_FORMAT(DATE_ADD(A.DSCHGE_DATE, interval 1 month),'%Y-%m-%d') END_DATE30
-             FROM ADMISSION A
+                  ,CASE WHEN DATEDIFF(NOW(), IFNULL(DSCHGE_DATE,NOW())) < 30 THEN 'N'
+                        ELSE 'Y'
+                   END  END_DATE30
+            FROM ADMISSION A
             WHERE 1=1
             AND ADMISSION_DATE <= NOW()
             AND IFNULL(DSCHGE_DATE,'9999-12-31') >= NOW()

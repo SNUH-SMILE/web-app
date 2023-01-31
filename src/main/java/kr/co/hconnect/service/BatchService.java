@@ -610,6 +610,7 @@ public class BatchService extends EgovAbstractServiceImpl{
         // 생체데이터 체크
         //itemid = I0006 호흡 I0002 심박수   I0001 체온
 
+
         String bioMetaDataFormat = "id=%s & 일자=%s & 생체데이터=%s 데이터가 없습니다.";
         String msg;
         for (BioCheckVO bcvo: bvo){
@@ -647,41 +648,29 @@ public class BatchService extends EgovAbstractServiceImpl{
 
             }
 
-/*
-            SimpleDateFormat edateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date nDate = new Date();
-            Date endDate30 = edateFormat.parse(bcvo.getEndDate30()); //퇴소후 30일이후
+            //퇴소일이 있는 경우 30일 문진
+            String disChargeDate = bcvo.getEndDate();
+            String disChargeDate30 = bcvo.getEndDate30();
 
-            //퇴소후 1달 뒤 데이터가 있는지 체크
-            int bv = 0 ;
+            if (StringUtils.hasText(disChargeDate)){
+                if (disChargeDate30.equals('Y')){
+                    bcvo.setInterviewType("05");
+                    bioch = aiInferenceDao.interviewCheck(bcvo);
+                    if (bioch == null || bioch.equals("0")){
+                        msg= String.format(interviewMetaDataFormat
+                            , bcvo.getAdmissionId()
+                            ,"퇴소후 30일 후 문진"
+                        );
+                        log.info(msg);
+                        //에러 메세지 저장
 
-            if(nDate.equals(endDate30)){    //오늘날짜  ==  퇴소후 30일자
-                bv=1;
-            }
-            if(nDate.after(endDate30)) {    //오늘날짜  <  퇴소후 30일자
-                bv=1;
-            }
-
-*/
-            int bv = 0;
-            if (bv == 0){
-                bcvo.setInterviewType("05");
-                bioch = aiInferenceDao.interviewCheck(bcvo);
-                if (bioch == null || bioch.equals("0")){
-                    msg= String.format(interviewMetaDataFormat
-                        , bcvo.getAdmissionId()
-                        ,"퇴소후 30일 후 문진"
-                    );
-                    log.info(msg);
-                    //에러 메세지 저장
-                    bioErrorVO = new BioErrorVO();
-                    bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
-                    bioErrorVO.setInfDiv("30");
-                    bioErrorVO.setCDate(nowDate.toString());
-                    bioErrorVO.setMessage(msg);
-                    aiInferenceDao.insBioError(bioErrorVO);
-
-                    targetString.add(bcvo.getAdmissionId());
+                        BioErrorVO EVO = new BioErrorVO();
+                        EVO.setAdmissionId(bcvo.getAdmissionId());
+                        EVO.setInfDiv("30");
+                        EVO.setCDate(nowDate.toString());
+                        EVO.setMessage(msg);
+                        aiInferenceDao.insBioError(EVO);
+                    }
 
                 }
             }
@@ -743,7 +732,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
                 for (DepressListVO dt : dataList) {
                         sno += 1;
-
+                    if (!targetString.contains(dt.getAdmissionId()){               //최초 문진이 없으면 파일을 만들지 않음
                         String aData = String.valueOf(sno);
                         aData = "," + dt.getAdmissionId();   //환자 id
                         aData += "," + dt.getSt1Yn();   //스트레스설문 1번
@@ -769,7 +758,7 @@ public class BatchService extends EgovAbstractServiceImpl{
                         aData += "," + dt.getTag();       //실제악화값
                         fw.write(aData);
                         fw.newLine();
-                    log.info("우울 추론 데이터 파일 만들기 완료");
+                    }
                 }
             } else {
                 log.info("우울 추론 데이터 베이스 데이터가 없습니다.");
