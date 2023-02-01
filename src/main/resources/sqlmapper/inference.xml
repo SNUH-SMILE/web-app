@@ -74,45 +74,45 @@
             INNER JOIN PATIENT P               ON A.PATIENT_ID  = P.PATIENT_ID
             LEFT JOIN (
                 SELECT
-                ADMISSION_ID
-                ,IFNULL(MAX(BT),0) BT
-                ,IFNULL(MAX(PR),0) PR
-                ,IFNULL(MAX(SPO2),0) SPO2
+                    ADMISSION_ID
+                    ,IFNULL(MAX(BT),0) BT
+                    ,IFNULL(MAX(PR),0) PR
+                    ,IFNULL(MAX(SPO2),0) SPO2
                 FROM (
-                SELECT R.ADMISSION_ID
-                ,MAX(RD.RESULT) BT
-                ,'' PR
-                ,'' SPO2
-                FROM `RESULT` R
-                INNER JOIN RESULT_DETAIL RD
-                ON R.RESULT_SEQ  = RD.RESULT_SEQ
-                WHERE R.ITEM_ID ='I0002'
-                AND RESULT_DATE = DATE_FORMAT(NOW(), '%Y-%m-%d')
-                GROUP BY R.ADMISSION_ID
-                UNION ALL
-                SELECT  R.ADMISSION_ID
-                ,'' BT
-                ,MAX(RESULT) PR
-                ,'' SPO2
-                FROM `RESULT` R
-                INNER JOIN RESULT_DETAIL RD
-                ON R.RESULT_SEQ  = RD.RESULT_SEQ
-                WHERE R.ITEM_ID ='I0001'
-                AND RESULT_DATE = DATE_FORMAT(NOW(), '%Y-%m-%d')
-                GROUP BY R.ADMISSION_ID
-                UNION ALL
-                SELECT  R.ADMISSION_ID
-                ,'' BT
-                ,'' PR
-                ,MAX(RESULT) SPO2
-                FROM `RESULT` R
-                INNER JOIN RESULT_DETAIL RD
-                ON R.RESULT_SEQ  = RD.RESULT_SEQ
-                WHERE R.ITEM_ID ='I0003'
-                AND RESULT_DATE = DATE_FORMAT(NOW(), '%Y-%m-%d')
-                GROUP BY R.ADMISSION_ID
-            ) T1
-            GROUP BY ADMISSION_ID
+                    SELECT R.ADMISSION_ID
+                            ,MAX(RD.RESULT) BT
+                            ,0 PR
+                            ,0 SPO2
+                    FROM `RESULT` R
+                         INNER JOIN RESULT_DETAIL RD
+                            ON R.RESULT_SEQ  = RD.RESULT_SEQ
+                    WHERE R.ITEM_ID ='I0001'
+                      AND RESULT_DATE = DATE_FORMAT(NOW(), '%Y-%m-%d')
+                    GROUP BY R.ADMISSION_ID
+                    UNION ALL
+                    SELECT  R.ADMISSION_ID
+                            ,0 BT
+                            ,MAX(RESULT) PR
+                            ,0 SPO2
+                    FROM `RESULT` R
+                         INNER JOIN RESULT_DETAIL RD
+                            ON R.RESULT_SEQ  = RD.RESULT_SEQ
+                    WHERE R.ITEM_ID ='I0002'
+                      AND RESULT_DATE = DATE_FORMAT(NOW(), '%Y-%m-%d')
+                    GROUP BY R.ADMISSION_ID
+                    UNION ALL
+                    SELECT  R.ADMISSION_ID
+                            ,0 BT
+                            ,0 PR
+                            ,MAX(RESULT) SPO2
+                    FROM `RESULT` R
+                         INNER JOIN RESULT_DETAIL RD
+                            ON R.RESULT_SEQ  = RD.RESULT_SEQ
+                    WHERE R.ITEM_ID ='I0003'
+                      AND RESULT_DATE = DATE_FORMAT(NOW(), '%Y-%m-%d')
+                    GROUP BY R.ADMISSION_ID
+                ) T1
+                GROUP BY ADMISSION_ID
             ) T2 ON A.ADMISSION_ID = T2.ADMISSION_ID
         WHERE 1=1
           AND IFNULL(A.DSCHGE_DATE ,'9999-12-31') >=  DATE_FORMAT(NOW(), '%Y-%m-%d')
