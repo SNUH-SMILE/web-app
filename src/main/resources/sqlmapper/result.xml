@@ -209,8 +209,8 @@
              , #{resultEndDate}
              , #{resultEndTime}
              , #{sleepType}
-             , #{deviceId})
-             , #{sleepListKey}
+             , #{deviceId}
+             , #{sleepListKey} )
         ON DUPLICATE KEY UPDATE
           SLEEP_TYPE = #{sleepType}
         , DEVICE_ID  = #{deviceId}

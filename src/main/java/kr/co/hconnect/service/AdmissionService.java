@@ -222,14 +222,13 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 			identityInfo.setCellPhone(patientIdentityVO.getCellPhone());
             identityInfo.setSearsAccount(patientIdentityVO.getSearsAccount());
 
-
 			Patient patientByIdentityInfo = patientDao.selectPatientByIdentityInfo(identityInfo);
 
 			// 퇴소처리 안된 격리/입소내역 존재여부 확인
 			if (patientByIdentityInfo != null) {
 				List<AdmissionVO> admissionVOList = admissionDao.selectActiveAdmissionListByPatientId(patientByIdentityInfo.getPatientId());
 
-				if (admissionVOList.size() > 0) {
+				if (admissionVOList.size() > 0 ) {
 					AdmissionVO activeAdmissionVO = admissionVOList.get(0);
 					String activeInfo = activeAdmissionVO.getQantnDiv().equals(QantnDiv.CENTER.getDbValue())
 							? activeAdmissionVO.getCenterNm() + " 입소"
