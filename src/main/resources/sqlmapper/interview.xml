@@ -150,7 +150,7 @@
                  , P.LOGIN_ID
                  , A.ADMISSION_DATE
                  , (SELECT  MAX(INTERVIEW_TYPE) INTERVIEW_TYPE FROM INTERVIEW I
-                     WHERE I.INTERVIEW_DD  = DATE_FORMAT(NOW(), '%Y%M%D')
+                     WHERE I.INTERVIEW_DD  = DATE_FORMAT(NOW(), '%Y%m%d')
                        AND INTERVIEW_TYPE  = '01'
                        AND I.ADMISSION_ID = A.ADMISSION_ID
                      GROUP BY ADMISSION_ID
@@ -171,7 +171,7 @@
              , P.LOGIN_ID
              , A.ADMISSION_DATE
              , (SELECT  MAX(INTERVIEW_TYPE) INTERVIEW_TYPE FROM INTERVIEW I
-                 WHERE I.INTERVIEW_DD  = DATE_FORMAT(NOW(), '%Y%M%D')
+                 WHERE I.INTERVIEW_DD  = DATE_FORMAT(NOW(), '%Y%m%d')
                    AND INTERVIEW_TYPE  = '02'
                    AND I.ADMISSION_ID = A.ADMISSION_ID
                  GROUP BY ADMISSION_ID
@@ -181,7 +181,7 @@
         WHERE 1=1
           AND DSCHGE_DATE IS NULL
           AND P.LOGIN_ID  IS NOT NULL
-          AND A.ADMISSION_DATE < NOW()
+          AND A.ADMISSION_DATE < NOW() AND  A.ADMISSION_DATE != DATE_FORMAT(NOW(), '%Y-%m-%d')
         ]]>
     </select>
 

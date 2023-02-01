@@ -66,7 +66,6 @@ public class SaveSleepTimeResult implements Serializable {
     private String deviceId;
 
 
-    @NotNull(message = "{validation.null.sleepListKey}")
     @Size(max = 10, message = "{validation.size.sleepListKey}")
     private String sleepListKey;
 
