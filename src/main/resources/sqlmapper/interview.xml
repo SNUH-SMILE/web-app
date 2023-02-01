@@ -81,12 +81,12 @@
             a.INTERVIEW_DD
         FROM INTERVIEW A
         WHERE a.ADMISSION_ID = #{admissionId}
-        order by INTERVIEW_DD desc, INTERVIEW_TIME
+        order by INTERVIEW_DD desc, INTERVIEW_TYPE desc, INTERVIEW_TIME
 
     </select>
 
     <!--문진내역 리스크 리스트조회-->
-    <select id="selectInterviewDetailSymptomList"
+    <select id="selectInterviewDetailSymptomList"   
             parameterType="int"
             resultType="kr.co.hconnect.vo.SymptomList">
         SELECT
