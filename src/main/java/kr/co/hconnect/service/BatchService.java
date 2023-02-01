@@ -247,6 +247,12 @@ public class BatchService extends EgovAbstractServiceImpl{
     public String scoreInsert(BatchVO vo) throws IOException, InterruptedException {
 
         String rtn = "";
+        AiInferenceVO logVO = new AiInferenceVO();
+        logVO.setInfDiv("10");
+        //로그로 데이터 복사
+        aiInferenceDao.insInf_log(logVO);
+        //데이터 삭제
+        aiInferenceDao.delInf(logVO);
 
         File csv = new File(vo.getOutFilePath());
 
@@ -254,18 +260,6 @@ public class BatchService extends EgovAbstractServiceImpl{
             log.info(" 상급병원 전원 예측 알고리즘 결과 파일이 없습니다.");
             return "";
         }
-
-        AiInferenceVO logVO = new AiInferenceVO();
-        logVO.setInfDiv("10");
-
-        //로그로 데이터 복사
-
-        log.info(" 로그로 데이터 복사.");
-        aiInferenceDao.insInf_log(logVO);
-
-        log.info(" 데이터 삭제");
-        //데이터 삭제
-        aiInferenceDao.delInf(logVO);
 
         BufferedReader br = null;
         String line = "";
@@ -525,6 +519,13 @@ public class BatchService extends EgovAbstractServiceImpl{
         log.info("체온 상승 결과 데이터 데이틀 임포트");
         String rtn = "0";
 
+        AiInferenceVO logVO = new AiInferenceVO();
+        logVO.setInfDiv("20");
+        //로그로 데이터 복사
+        aiInferenceDao.insInf_log(logVO);
+        //데이터 삭제
+        aiInferenceDao.delInf(logVO);
+
         File csv = new File(vo.getOutFilePath());
 
         if(!csv.exists() ) {
@@ -532,13 +533,7 @@ public class BatchService extends EgovAbstractServiceImpl{
             return "";
         }
 
-        AiInferenceVO logVO = new AiInferenceVO();
-        logVO.setInfDiv("20");
 
-        //로그로 데이터 복사
-        aiInferenceDao.insInf_log(logVO);
-        //데이터 삭제
-        aiInferenceDao.delInf(logVO);
 
         BufferedReader br = null;
         String line = "";
@@ -781,9 +776,14 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         String rtn = "0";
 
+        AiInferenceVO logVO = new AiInferenceVO();
+        logVO.setInfDiv("30");
+        //로그로 데이터 복사
+        aiInferenceDao.insInf_log(logVO);
+        //데이터 삭제
+        aiInferenceDao.delInf(logVO);
+
         File csv = new File(vo.getOutFilePath());
-
-
         if(!csv.exists() ) {
             log.error("우울 예측 알고리즘 결과 파일이 없습니다");
             return "";
@@ -791,14 +791,6 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         BufferedReader br = null;
         String line = "";
-        AiInferenceVO logVO = new AiInferenceVO();
-        logVO.setInfDiv("30");
-
-        //로그로 데이터 복사
-        aiInferenceDao.insInf_log(logVO);
-        //데이터 삭제
-        aiInferenceDao.delInf(logVO);
-
         try{
             br = new BufferedReader(new FileReader(csv));
             log.info("우울 예측 알고리즘 결과 파일 업로드 시작 ");
