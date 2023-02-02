@@ -484,7 +484,7 @@ public class BatchService extends EgovAbstractServiceImpl{
                 log.info("체온상승 파일 만들기");
 
                 for (TemperListVO dt : dataList) {
-
+                    if (!targetString.contains(dt.getAdmissionId())) {               //최초 문진이 없으면 파일을 만들지 않음
                         String aData = "";
                         aData = dt.getAdmissionId();   //환자 id
                         aData += "," + dt.getRr();     //호흡
@@ -504,6 +504,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
                         fw.write(aData);
                         fw.newLine();
+                    }
                 }
             }
             fw.flush();
