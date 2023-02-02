@@ -247,6 +247,9 @@ public class BatchService extends EgovAbstractServiceImpl{
     public String scoreInsert(BatchVO vo) throws IOException, InterruptedException {
 
         String rtn = "";
+        //현재시간 설정
+        LocalDate nowDate = LocalDate.now();
+
         AiInferenceVO logVO = new AiInferenceVO();
         logVO.setInfDiv("10");
         //로그로 데이터 복사
@@ -261,9 +264,11 @@ public class BatchService extends EgovAbstractServiceImpl{
             return "";
         }
 
+        BioErrorVO  bioSuccessVO ;
+        String msg= "상급병원 전원 예측 성공";
+
         BufferedReader br = null;
         String line = "";
-
         try{
             br = new BufferedReader(new FileReader(csv));
             while ((line = br.readLine()) != null){
@@ -285,8 +290,13 @@ public class BatchService extends EgovAbstractServiceImpl{
 
                 aiInferenceDao.insInf(entityVO);  // 인서트
 
-                System.out.println(lineArr[0]);
-                System.out.println(lineArr[1]);
+                //성공 로그 보여주기
+                bioSuccessVO = new BioErrorVO();
+                bioSuccessVO.setAdmissionId(str);
+                bioSuccessVO.setInfDiv("10");
+                bioSuccessVO.setCDate(nowDate.toString());
+                bioSuccessVO.setMessage(msg);
+                aiInferenceDao.insBioError(bioSuccessVO);
             }
 
 
@@ -518,6 +528,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         log.info("체온 상승 결과 데이터 데이틀 임포트");
         String rtn = "0";
+        LocalDate nowDate = LocalDate.now();
 
         AiInferenceVO logVO = new AiInferenceVO();
         logVO.setInfDiv("20");
@@ -533,7 +544,8 @@ public class BatchService extends EgovAbstractServiceImpl{
             return "";
         }
 
-
+        BioErrorVO  bioSuccessVO ;
+        String msg= "체온상승 예측 성공";
 
         BufferedReader br = null;
         String line = "";
@@ -560,6 +572,14 @@ public class BatchService extends EgovAbstractServiceImpl{
 
                 System.out.println(lineArr[0]);
                 System.out.println(lineArr[1]);
+
+                //성공 로그 보여주기
+                bioSuccessVO = new BioErrorVO();
+                bioSuccessVO.setAdmissionId(str);
+                bioSuccessVO.setInfDiv("20");
+                bioSuccessVO.setCDate(nowDate.toString());
+                bioSuccessVO.setMessage(msg);
+                aiInferenceDao.insBioError(bioSuccessVO);
             }
 
 
@@ -775,6 +795,7 @@ public class BatchService extends EgovAbstractServiceImpl{
     public String depressInsert(BatchVO vo) throws IOException, InterruptedException {
 
         String rtn = "0";
+        LocalDate nowDate = LocalDate.now();
 
         AiInferenceVO logVO = new AiInferenceVO();
         logVO.setInfDiv("30");
@@ -785,15 +806,18 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         File csv = new File(vo.getOutFilePath());
         if(!csv.exists() ) {
-            log.error("우울 예측 알고리즘 결과 파일이 없습니다");
+            log.error("정신건강 악화 (우울) 예측 알고리즘 결과 파일이 없습니다");
             return "";
         }
+
+        BioErrorVO  bioSuccessVO ;
+        String msg= "정신건강 악화 (우울) 예측 성공";
 
         BufferedReader br = null;
         String line = "";
         try{
             br = new BufferedReader(new FileReader(csv));
-            log.info("우울 예측 알고리즘 결과 파일 업로드 시작 ");
+            log.info("정신건강 악화 (우울) 예측 알고리즘 결과 파일 업로드 시작 ");
             while ((line = br.readLine()) != null){
                 String[] lineArr = line.split(",");
                 //타이틀이면 스킵
@@ -813,6 +837,15 @@ public class BatchService extends EgovAbstractServiceImpl{
                 log.info("우울 추론 결과 데이터 >>> " + lineArr[23]);
 
                 aiInferenceDao.insInf(entityVO);  // 인서트
+
+                //성공 로그 보여주기
+                bioSuccessVO = new BioErrorVO();
+                bioSuccessVO.setAdmissionId(str);
+                bioSuccessVO.setInfDiv("30");
+                bioSuccessVO.setCDate(nowDate.toString());
+                bioSuccessVO.setMessage(msg);
+                aiInferenceDao.insBioError(bioSuccessVO);
+
 
 
             }

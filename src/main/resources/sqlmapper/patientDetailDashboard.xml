@@ -66,17 +66,17 @@
                                 CASE WHEN X.RESULT_START_DATE = X.RESULT_END_DATE
                                           THEN
                                                CASE WHEN X.RESULT_START_DATE = DATE (DATE_ADD(NOW(), INTERVAL -1 DAY))
-                                                         THEN TIMESTAMPDIFF(MINUTE, TIMESTAMP(X.RESULT_START_DATE, GREATEST(X.RESULT_START_TIME, TIME('060000'))), TIMESTAMP(X.RESULT_END_DATE, X.RESULT_END_TIME))
-                                                    ELSE      TIMESTAMPDIFF(MINUTE, TIMESTAMP(X.RESULT_START_DATE, X.RESULT_START_TIME), TIMESTAMP(X.RESULT_END_DATE, LEAST(X.RESULT_END_TIME, TIME('210000'))))
+                                                         THEN TIMESTAMPDIFF(MINUTE, TIMESTAMP(X.RESULT_START_DATE, GREATEST(X.RESULT_START_TIME, TIME('120000'))), TIMESTAMP(X.RESULT_END_DATE, X.RESULT_END_TIME))
+                                                    ELSE      TIMESTAMPDIFF(MINUTE, TIMESTAMP(X.RESULT_START_DATE, X.RESULT_START_TIME), TIMESTAMP(X.RESULT_END_DATE, LEAST(X.RESULT_END_TIME, TIME('120000'))))
                                                END
-                                     ELSE TIMESTAMPDIFF(MINUTE, TIMESTAMP(X.RESULT_START_DATE, GREATEST(X.RESULT_START_TIME, TIME('060000'))), TIMESTAMP(X.RESULT_END_DATE, LEAST(X.RESULT_END_TIME, TIME('210000'))))
+                                     ELSE TIMESTAMPDIFF(MINUTE, TIMESTAMP(X.RESULT_START_DATE, GREATEST(X.RESULT_START_TIME, TIME('120000'))), TIMESTAMP(X.RESULT_END_DATE, LEAST(X.RESULT_END_TIME, TIME('120000'))))
                                 END
                            )  AS SLEEP_RESULT
              FROM RESULT_SLEEP X
             WHERE X.ADMISSION_ID = #{admissionId}
-              AND X.SLEEP_TYPE IN ('0', '1') -- 깊은잠, 얕은잠
-              AND (   X.RESULT_END_DATE = DATE (DATE_ADD(NOW(), INTERVAL -1 DAY)) AND X.RESULT_END_TIME > TIME ('210000')
-                   OR X.RESULT_END_DATE = DATE (NOW()) AND X.RESULT_END_TIME < TIME ('060000'))
+              AND X.SLEEP_TYPE IN ('0', '1', '3') -- 0 깊은잠, 1 얕은잠  3램수면
+              AND (   X.RESULT_END_DATE = DATE (DATE_ADD(NOW(), INTERVAL -1 DAY)) AND X.RESULT_END_TIME > TIME ('120000')
+                   OR X.RESULT_END_DATE = DATE (NOW()) AND X.RESULT_END_TIME < TIME ('120000'))
         )
         SELECT A.ADMISSION_ID
              -- 혈압
