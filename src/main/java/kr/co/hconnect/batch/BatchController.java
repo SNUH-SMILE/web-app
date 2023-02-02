@@ -41,11 +41,12 @@ public class BatchController {
 
     /**
      * 1. 스코어 배치 처리 하기
+     * 배치 주기 0시 30분
      * ./score 폴더
      * @Scheduled(cron="0 0 0/1 * * *")
      * 매일 1번 22시 (오후10시)
      */
-    @Scheduled(cron="0 0 22 * * *")
+    @Scheduled(cron="0 30 0 * * *")
     public void scoreScheduler() throws IOException, InterruptedException {
 
         String filePath = ai_path+ "score/score_file.csv";
@@ -78,6 +79,7 @@ public class BatchController {
 
     /**
      * 2. 체온 배치 처리 하기
+     * 배치주기 : 2시간마다
      * ./temperature
      * @Scheduled(fixedDelay=20000)
      * @Scheduled(cron="0 0 0/2 * * *")
@@ -117,10 +119,11 @@ public class BatchController {
     /**
      * 3. 우울 배치 처리 하기
      * 영상녹화 파일 다운로드 를 하고 나서 시작한다
+     * 배치 주기 : 01시에 돌기
      * ./depressed 폴더
      * 매일 1번 23시 (오후11시)
      */
-    @Scheduled(cron="0 0 23 * * *")
+    @Scheduled(cron="0 0 1 * * *")
     public void depressedScheduler() throws IOException, InterruptedException, ParseException {
 
         String filePath = ai_path+ "depressed/annotation.csv";
@@ -155,7 +158,7 @@ public class BatchController {
      * 4. 영상 녹화 파일 다운로드
      * 매일 1번 20시 (오후 08시)
      */
-    @Scheduled(cron="0 0 21 * * *")
+    @Scheduled(cron="0 30 23 * * *")
     public void fileDownScheduler() throws IOException, OpenTokException {
         log.info("5. 화상상담 파일 다운로드 ");
         String rtn = batchService.vonageArchiveList();

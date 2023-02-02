@@ -87,7 +87,7 @@
                          INNER JOIN RESULT_DETAIL RD
                             ON R.RESULT_SEQ  = RD.RESULT_SEQ
                     WHERE R.ITEM_ID ='I0001'
-                      AND RESULT_DATE = DATE_FORMAT(NOW(), '%Y-%m-%d')
+                      AND RESULT_DATE = DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y-%m-%d')
                     GROUP BY R.ADMISSION_ID
                     UNION ALL
                     SELECT  R.ADMISSION_ID
@@ -98,7 +98,7 @@
                          INNER JOIN RESULT_DETAIL RD
                             ON R.RESULT_SEQ  = RD.RESULT_SEQ
                     WHERE R.ITEM_ID ='I0002'
-                      AND RESULT_DATE = DATE_FORMAT(NOW(), '%Y-%m-%d')
+                      AND RESULT_DATE = DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y-%m-%d')
                     GROUP BY R.ADMISSION_ID
                     UNION ALL
                     SELECT  R.ADMISSION_ID
@@ -109,13 +109,13 @@
                          INNER JOIN RESULT_DETAIL RD
                             ON R.RESULT_SEQ  = RD.RESULT_SEQ
                     WHERE R.ITEM_ID ='I0003'
-                      AND RESULT_DATE = DATE_FORMAT(NOW(), '%Y-%m-%d')
+                      AND RESULT_DATE = DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y-%m-%d')
                     GROUP BY R.ADMISSION_ID
                 ) T1
                 GROUP BY ADMISSION_ID
             ) T2 ON A.ADMISSION_ID = T2.ADMISSION_ID
         WHERE 1=1
-          AND IFNULL(A.DSCHGE_DATE ,'9999-12-31') >=  DATE_FORMAT(NOW(), '%Y-%m-%d')
+          AND IFNULL(A.DSCHGE_DATE ,'9999-12-31') >=  DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y-%m-%d')
         ORDER BY A.ADMISSION_ID
         ]]>
     </select>

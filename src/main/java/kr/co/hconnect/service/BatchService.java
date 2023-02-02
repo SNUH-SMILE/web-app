@@ -340,7 +340,6 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         vo.setCDate(nowDate.toString());
 
-/*
         //스코어 대상 리스트
         List<BioCheckVO> bvo = aiInferenceDao.bioAdmissionId();
 
@@ -385,7 +384,6 @@ public class BatchService extends EgovAbstractServiceImpl{
                     , nowDate.toString()
                     ," 심박수 "
                 );
-                System.out.println(msg);
                 //에러 메세지 저장
                 bioErrorVO = new BioErrorVO();
                 bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
@@ -404,7 +402,6 @@ public class BatchService extends EgovAbstractServiceImpl{
                     , nowDate.toString()
                     ,"체온 "
                 );
-                System.out.println(msg);
                 //에러 메세지 저장
                 bioErrorVO = new BioErrorVO();
                 bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
@@ -425,7 +422,6 @@ public class BatchService extends EgovAbstractServiceImpl{
                     , bcvo.getAdmissionId()
                     ,"확진당일 "
                 );
-                System.out.println(msg);
                 //에러 메세지 저장
                 bioErrorVO = new BioErrorVO();
                 bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
@@ -437,8 +433,6 @@ public class BatchService extends EgovAbstractServiceImpl{
             }
 
         }
-
-*/
 
         log.info("체온상승 파일 만들기 ==================================");
 
@@ -1476,8 +1470,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
             String attendeeToken = "{\n" +
                 "    \"action\": \"interview\",\n" +
-                "    \"interviewType\" : \"" + interviewType + "\", \n" +
-                "    }\n" +
+                "    \"interviewType\": \"" + interviewType + "\"\n" +
                 "}";
 
 
