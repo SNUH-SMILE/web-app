@@ -12,7 +12,8 @@
                  , A.SLEEP_TYPE                             -- 수면 유형
               FROM RESULT_SLEEP A
              WHERE A.ADMISSION_ID = #{admissionId}
-               AND A.RESULT_START_DATE BETWEEN DATE (#{resultStartDateTime}) AND DATE (#{resultEndDateTime})
+               AND CONCAT(A.RESULT_START_DATE, ' ', A.RESULT_START_TIME) >= DATE (#{resultStartDateTime})
+               AND CONCAT(A.RESULT_END_DATE, ' ', A.RESULT_END_TIME) <= DATE (#{resultEndDateTime})
         ]]>
     </select>
 </mapper>
