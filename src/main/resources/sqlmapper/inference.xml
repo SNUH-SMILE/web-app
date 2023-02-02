@@ -223,9 +223,8 @@
                  ) T1 on A.ADMISSION_ID = T1.ADMISSION_ID
              INNER JOIN
                  (
-                     SELECT DN_SEQ, ADMISSION_ID , DN_FOLDER_VOICE  FROM ARCHIVE_DOWN AD
-                     ORDER BY DN_SEQ DESC
-                         LIMIT 1
+                     SELECT MAX(DN_SEQ) DN_SEQ , ADMISSION_ID , MAX(DN_FOLDER_VOICE) DN_FOLDER_VOICE   FROM ARCHIVE_DOWN AD
+                     GROUP BY ADMISSION_ID
                  ) T4 ON A.ADMISSION_ID = T4.ADMISSION_ID
              LEFT JOIN
             ( SELECT ADMISSION_ID
@@ -261,7 +260,6 @@
                        FROM INTERVIEW_DETAIL K5
                                 INNER JOIN INTERVIEW K1
                                            ON K5.INTERVIEW_SEQ = K1.INTERVIEW_SEQ
-
                        WHERE 1=1
                          AND K1.INTERVIEW_TYPE ='05'
                          AND ANSWER_SEQ IN ('33-1','33-2','33-3','33-4','33-5','33-6','33-7','33-8','33-9')
