@@ -188,11 +188,14 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
         SearchResultInfos searchResultInfos = new SearchResultInfos();
         searchResultInfos.setAdmissionId(searchResultInfo.getAdmissionId());
         searchResultInfos.setResultDate(today.toLocalDate());
+
         //수면 검색조건
         SearchSleepResultInfo searchSleepResultInfo = new SearchSleepResultInfo();
         searchSleepResultInfo.setAdmissionId(searchResultInfo.getAdmissionId());
-        searchSleepResultInfo.setResultStartDateTime(today.toLocalDate().minusDays(1).atTime(21, 0));
-        searchSleepResultInfo.setResultEndDateTime(today.toLocalDate().atTime(6, 0));
+        searchSleepResultInfo.setResultStartDateTime(today.toLocalDate().minusDays(1).atTime(12, 0));
+        searchSleepResultInfo.setResultEndDateTime(today.toLocalDate().atTime(12, 0));
+
+        System.out.println("수면시간 정의 " + searchSleepResultInfo);
 
         MainContentDetail mainContentDetail = new MainContentDetail();
         mainContentDetail.setPatientNm(admissionVO.getPatientId());
@@ -207,7 +210,7 @@ public class MeasurementResultService extends EgovAbstractServiceImpl {
         mainContentDetail.setTodaySpO2List(selectSpO2List(searchResultInfo));
         mainContentDetail.setTodayStepCountList(selectStepList(searchResultInfos));
         mainContentDetail.setTodayRrList(selectRrList(searchResultInfo));
-        mainContentDetail.setTodaySleepTimeList(selectSleepTimeList(searchSleepResultInfo));
+        //mainContentDetail.setTodaySleepTimeList(selectSleepTimeList(searchSleepResultInfo));
 
         mainContentDetail.setTodayInterviewList(selectInterviewList(searchResultInfo));
         mainContentDetail.setTodayDrugList(selectDrugList(searchResultInfo));
