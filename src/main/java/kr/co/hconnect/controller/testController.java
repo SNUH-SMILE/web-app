@@ -234,59 +234,54 @@ public class testController {
         log.info("score insert >>>" + insResult);
 
     }
+    @RequestMapping(value = "/ScoreIns", method = RequestMethod.POST)
+    public void Scoreins() throws IOException, InterruptedException {
 
-    @RequestMapping(value = "/temperCreate", method = RequestMethod.POST)
-    public void bodyTemperatureScheduler() throws IOException, InterruptedException, ParseException {
-
-        String filePath = ai_path+ "temper/temper_file.csv";
-        String outfilePath = ai_path + "temper/temper_result.csv";
-        String executePath = ai_path + "temper/body_temp_rise.py";
+        String filePath = ai_path+ "score/score_file.csv";
+        String outfilePath = ai_path + "score/score_result.csv";
+        String executePath = ai_path + "score/scoring.py";
 
         BatchVO bvo = new BatchVO();
         bvo.setFilePath(filePath);
         bvo.setOutFilePath(outfilePath);
 
-        log.warn("2. 체온 배치 파일 만들기");
-        String csvResult = batchService.temperCreate(bvo);
+        String insResult = batchService.scoreInsert(bvo);
+        log.info("score insert >>>" + insResult);
 
-        String bool = batchService.pythonProcessbuilder(executePath);
-
-        batchService.temperInsert(bvo);
     }
 
-    @RequestMapping(value = "/depreCreate", method = RequestMethod.POST)
-    public void depressedScheduler() throws IOException, InterruptedException, ParseException {
 
-        String filePath = ai_path+ "depress/annotation.csv";
-        String outfilePath = ai_path + "depress/result.csv";
-        String executePath = ai_path + "depress/final_exe.py";
+    @RequestMapping(value = "/scoreCsv", method = RequestMethod.POST)
+    public void scoreCsv() throws IOException, InterruptedException {
 
-        /**
-         * 체온 데이터 파일 생성
-         */
+        String filePath = ai_path+ "score/score_file.csv";
+        String outfilePath = ai_path + "score/score_result.csv";
+        String executePath = ai_path + "score/scoring.py";
+
         BatchVO bvo = new BatchVO();
         bvo.setFilePath(filePath);
         bvo.setOutFilePath(outfilePath);
 
-        System.out.println("3. 우울 배치 파일 만들기 ");
-        batchService.depressCreate(bvo);
-
-        /**
-         * 스코어 AI 추론엔진 실행 서비스
-         */
-        System.out.println("3. 우울 배치 실행 ");
-        batchService.pythonProcessbuilder(executePath);
-
-        /**
-         * 스코어 파일 임포트
-         */
-        System.out.println("4. 우울 배치 파일 임포트 ");
-        batchService.depressInsert(bvo);
-
-
+        batchService.scoreCreate(bvo);
     }
 
+    @RequestMapping(value = "/scoreExe", method = RequestMethod.POST)
+    public void scoreExe() throws IOException, InterruptedException {
 
+        String filePath = ai_path+ "score/score_file.csv";
+        String outfilePath = ai_path + "score/score_result.csv";
+        String executePath = ai_path + "score/scoring.py";
+
+        BatchVO bvo = new BatchVO();
+        bvo.setFilePath(filePath);
+        bvo.setOutFilePath(outfilePath);
+
+        String exeResult = batchService.pythonProcessbuilder(executePath);
+        log.info("scoreExe >>>" + exeResult);
+
+        // String insResult = batchService.temperInsert(bvo);
+        // log.info("temper insert >>>" + insResult);
+    }
     @RequestMapping(value = "/scoreinsrt", method = RequestMethod.POST)
     public void scoreinsrt() throws IOException, InterruptedException {
 
@@ -313,6 +308,7 @@ public class testController {
         BatchVO bvo = new BatchVO();
         bvo.setFilePath(filePath);
         bvo.setOutFilePath(outfilePath);
+        bvo.setTestFlag("1");
 
         String csvResult = batchService.temperCreate(bvo);
 

@@ -95,14 +95,13 @@ public class BatchService extends EgovAbstractServiceImpl{
 
             bcvo.setItemId("I0002");
             sBiochk = aiInferenceDao.bioCheck(bcvo);
-            if (sBiochk == null && sBiochk.equals("0")){
+            if (sBiochk == null || sBiochk.equals("0")){
                 msg= String.format(bioMetaDataFormat
                     , bcvo.getAdmissionId()
                     , nowDate.toString()
                     ,"  심박수  "
                 );
 
-                System.out.println(msg);
 
                 //에러 메세지 저장
                 bioErrorVO = new BioErrorVO();
@@ -117,7 +116,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
             bcvo.setItemId("I0003");
             sBiochk = aiInferenceDao.bioCheck(bcvo);
-            if (sBiochk == null && sBiochk.equals("0")){
+            if (sBiochk == null || sBiochk.equals("0")){
                 msg= String.format(bioMetaDataFormat
                     ,bcvo.getAdmissionId()
                     , nowDate.toString()
@@ -136,13 +135,12 @@ public class BatchService extends EgovAbstractServiceImpl{
 
             bcvo.setItemId("I0001");
             sBiochk = aiInferenceDao.bioCheck(bcvo);
-            if (sBiochk == null && sBiochk.equals("0")){
+            if (sBiochk == null || sBiochk.equals("0")){
                 msg= String.format(bioMetaDataFormat
                     ,bcvo.getAdmissionId()
                     , nowDate.toString()
                     ,"체온 "
                 );
-                System.out.println(msg);
                 //에러 메세지 저장
                 bioErrorVO = new BioErrorVO();
                 bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
@@ -156,7 +154,7 @@ public class BatchService extends EgovAbstractServiceImpl{
             String interviewMetaDataFormat = "id=%s & 문진 =%s & 데이터가 없습니다.";
             bcvo.setInterviewType("01");
             sBiochk = aiInferenceDao.interviewCheck(bcvo);
-            if (sBiochk == null && sBiochk.equals("0")){
+            if (sBiochk == null || sBiochk.equals("0")){
                 msg= String.format(interviewMetaDataFormat
                     , bcvo.getAdmissionId()
                     ,"확진당일 "
@@ -169,7 +167,9 @@ public class BatchService extends EgovAbstractServiceImpl{
                 bioErrorVO.setCDate(nowDate.toString());
                 bioErrorVO.setMessage(msg);
                 aiInferenceDao.insBioError(bioErrorVO);
+
                 targetString.add(bcvo.getAdmissionId());
+
             }
 
         }
@@ -177,13 +177,18 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         List list= null;
         String filePath = vo.getFilePath();
+        String outFilePath = vo.getOutFilePath();
         log.info("파일 대상 >>>> " + filePath);
 
         //데이터를 받아오고 파일로 쓰기
         try {
 
-            File file = new File(filePath);
+            File ofile = new File(outFilePath);
+            if( ofile.exists() ) {
+                ofile.delete();
+            }
 
+            File file = new File(filePath);
             if( file.exists() ) {
                 file.delete();
             }
@@ -196,18 +201,16 @@ public class BatchService extends EgovAbstractServiceImpl{
             log.info(" 스코어 대상 파일 수 " +  dataList.size());
             if (dataList.size() > 0 ) {
                 //타이틀 넣기
-                /*
                 String tData = "";
-                tData = "환자 id";   //환자 id
-                tData += "," + "나이";    // 나이
-                tData += "," + "심박수";     //심박수
-                tData += "," + "산소포화도";   // 산소포화도
-                tData += "," + "체온";     //체온
-                tData += "," + "고혈압여부";    //고혈압 여부
+                tData = "Patient_id";   //환자 id
+                tData += "," + "age";    // 나이
+                tData += "," + "hr";     //심박수
+                tData += "," + "spo2";   // 산소포화도
+                tData += "," + "temper";     //체온
+                tData += "," + "hpx";    //고혈압 여부
 
                 fw.write(tData);
                 fw.newLine();
-                */
 
                 for (ScoreVO dt : dataList) {
                     if(!targetString.contains(dt.getAdmissionId())) {
@@ -332,6 +335,10 @@ public class BatchService extends EgovAbstractServiceImpl{
         int resultCount = 0;
         String result="";
 
+        String testFlag="";
+        testFlag = vo.getTestFlag();   //테스트릉 위한 flag
+
+
         List<String> targetString  = new ArrayList<>();
 
         BioErrorVO bioErrorVO ;
@@ -359,9 +366,9 @@ public class BatchService extends EgovAbstractServiceImpl{
             bioch = aiInferenceDao.bioTimeCheck(bcvo);
             if (bioch == null || bioch.equals("0")){
                 msg= String.format(bioMetaDataFormat
-                    , bcvo.getAdmissionId()
-                    , nowDate.toString()
-                    ,"  호흡  "
+                    ,bcvo.getAdmissionId()
+                    ,nowDate.toString()
+                    ," 호흡  "
                 );
 
                 //에러 메세지 저장
@@ -381,7 +388,7 @@ public class BatchService extends EgovAbstractServiceImpl{
             if (bioch == null || bioch.equals("0")){
                 msg= String.format(bioMetaDataFormat
                     ,bcvo.getAdmissionId()
-                    , nowDate.toString()
+                    ,nowDate.toString()
                     ," 심박수 "
                 );
                 //에러 메세지 저장
@@ -399,8 +406,8 @@ public class BatchService extends EgovAbstractServiceImpl{
             if (bioch == null || bioch.equals("0") ){
                 msg= String.format(bioMetaDataFormat
                     ,bcvo.getAdmissionId()
-                    , nowDate.toString()
-                    ,"체온 "
+                    ,nowDate.toString()
+                    ," 체온 "
                 );
                 //에러 메세지 저장
                 bioErrorVO = new BioErrorVO();
@@ -412,15 +419,15 @@ public class BatchService extends EgovAbstractServiceImpl{
                 targetString.add(bcvo.getAdmissionId());
             }
             //01 확진당일
-            String interviewMetaDataFormat = "id=%s & 문진 =%s & 데이터가 없습니다.";
+            String interviewMetaDataFormat = "id=%s & 문진=%s & 데이터가 없습니다.";
             String endDate = bcvo.getEndDate();  //마지막일
 
             bcvo.setInterviewType("01");
             bioch = aiInferenceDao.interviewCheck(bcvo);
             if (bioch == null || bioch.equals("0") ){
                 msg= String.format(interviewMetaDataFormat
-                    , bcvo.getAdmissionId()
-                    ,"확진당일 "
+                    ,bcvo.getAdmissionId()
+                    ," 확진당일 "
                 );
                 //에러 메세지 저장
                 bioErrorVO = new BioErrorVO();
@@ -438,15 +445,22 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         List list= null;
         String filePath = vo.getFilePath();
+        String outFilePath = vo.getOutFilePath();
 
         //데이터를 받아오고 파일로 쓰기
         try {
+            //출력파일 삭제
+            File ofile = new File(outFilePath);
+            if( ofile.exists() ) {
+                ofile.delete();
+            }
 
+            //입력 데이터 파일
             File file = new File(filePath);
-
             if( file.exists() ) {
                 file.delete();
             }
+
 
             //csv 파일의 기존 값에 이어쓰려면 위처럼 tru를 지정하고 기존갑을 덮어 쓰려면 true를 삭제한다
             BufferedWriter fw = new BufferedWriter(new FileWriter(filePath));
@@ -456,6 +470,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
             log.info("체온 상승 오류 대상자 리스트  >>>> " + targetString.toString());
             log.info("체온 상스 파일 대상자 리스트  >>>> ");
+            log.info("체온 상스 파일 테스트 여부  >>>>  " + testFlag);
 
             List<TemperListVO> dataList = aiInferenceDao.temperList(vo);
 
@@ -484,7 +499,30 @@ public class BatchService extends EgovAbstractServiceImpl{
                 log.info("체온상승 파일 만들기");
 
                 for (TemperListVO dt : dataList) {
-                    if (!targetString.contains(dt.getAdmissionId())) {               //최초 문진이 없으면 파일을 만들지 않음
+                    if(StringUtils.isEmpty(testFlag)){   //테스트를 위한 flag
+                        if (!targetString.contains(dt.getAdmissionId())) {               //최초 문진이 없으면 파일을 만들지 않음
+                            String aData = "";
+                            aData = dt.getAdmissionId();   //환자 id
+                            aData += "," + dt.getRr();     //호흡
+                            aData += "," + dt.getPr();     //심박수
+                            aData += "," + dt.getBt();     //체온
+                            aData += "," + dt.getQ1Yn();   //가래
+                            aData += "," + dt.getQ2Yn();   //발열
+                            aData += "," + dt.getQ3Yn();   //인후통
+                            aData += "," + dt.getQ4Yn();   //호흡곤란
+                            aData += "," + dt.getQ5Yn();   //흉통
+                            aData += "," + dt.getQ6Yn();   //오심
+                            aData += "," + dt.getQ7Yn();   //구토
+                            aData += "," + dt.getQ8Yn();   //변비
+                            aData += "," + dt.getQ9Yn();   //설사
+                            aData += "," + dt.getQ10Yn();   //복통
+                            aData += "," + dt.getQ11Yn();   //수면장애
+
+                            fw.write(aData);
+                            fw.newLine();
+                        }
+
+                    } else {
                         String aData = "";
                         aData = dt.getAdmissionId();   //환자 id
                         aData += "," + dt.getRr();     //호흡
@@ -504,6 +542,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
                         fw.write(aData);
                         fw.newLine();
+
                     }
                 }
             }
@@ -657,6 +696,23 @@ public class BatchService extends EgovAbstractServiceImpl{
                 targetString.add(bcvo.getAdmissionId());
 
             }
+            //영상다운이 있는지 체크한다.
+            bioch = aiInferenceDao.videoCheck(bcvo);
+            if (bioch == null || bioch.equals("0")){
+                msg= String.format(interviewMetaDataFormat
+                    , bcvo.getAdmissionId()
+                    ,"화상 녹화  "
+                );
+                //에러 메세지 저장
+                bioErrorVO = new BioErrorVO();
+                bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
+                bioErrorVO.setInfDiv("30");
+                bioErrorVO.setCDate(nowDate.toString());
+                bioErrorVO.setMessage(msg);
+                aiInferenceDao.insBioError(bioErrorVO);
+                targetString.add(bcvo.getAdmissionId());
+            }
+
 
             //퇴소일이 있는 경우 30일 문진
             String disChargeDate = bcvo.getEndDate();
@@ -684,15 +740,21 @@ public class BatchService extends EgovAbstractServiceImpl{
 
                 }
             }
-
-
         }
         log.info(" 우울 추론 데이터 시작");
-        List list= null;
+
         String filePath = vo.getFilePath();
-        int sno = 0;
+        String outFilePath = vo.getOutFilePath();
+        List list= null;
         //데이터를 받아오고 파일로 쓰기
         try {
+
+            //출력파일 삭제
+            File ofile = new File(outFilePath);
+            if( ofile.exists() ) {
+                ofile.delete();
+            }
+           // 데이터 파일
             File file = new File(filePath);
             if( file.exists() ) {
                 file.delete();     //기존 파일을 삭제 한다
@@ -734,12 +796,12 @@ public class BatchService extends EgovAbstractServiceImpl{
 
                 fw.write(tData);
                 fw.newLine();
-
+                int sno = 0;
                 for (DepressListVO dt : dataList) {
                     if (!targetString.contains(dt.getAdmissionId())) {               //최초 문진이 없으면 파일을 만들지 않음
-                        sno += 1;
-                        String aData = String.valueOf(sno);
-                        aData = "," + dt.getAdmissionId();   //환자 id
+                        String aData = " ";
+                        aData =  Integer.toString(sno);    //환자 id
+                        aData += "," + dt.getAdmissionId();   //환자 id
                         aData += "," + dt.getSt1Yn();   //스트레스설문 1번
                         aData += "," + dt.getSt2Yn();   //스트레스설문 2번
                         aData += "," + dt.getSt3Yn();   //스트레스설문 3번
@@ -763,6 +825,8 @@ public class BatchService extends EgovAbstractServiceImpl{
                         aData += "," + dt.getTag();       //실제악화값
                         fw.write(aData);
                         fw.newLine();
+
+                        sno += 1;
                     }
                 }
             } else {
@@ -775,7 +839,6 @@ public class BatchService extends EgovAbstractServiceImpl{
             throw new RuntimeException(e);
         }
 
-        log.info("우울 추론 파일 생성 건수 : " + sno);
         return resultCount;
 
     }

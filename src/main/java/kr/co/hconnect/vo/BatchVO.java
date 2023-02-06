@@ -33,6 +33,8 @@ public class BatchVO implements Serializable {
 
     private String cDate;
 
+    private String testFlag;
+
 
 
 }

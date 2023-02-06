@@ -74,6 +74,9 @@ public class AiInferenceDao extends EgovAbstractMapper {
         return insert("kr.co.hconnect.sqlmapper.insBioError", vo);
     }
 
+    public String videoCheck(BioCheckVO vo) {
 
+        return selectOne("kr.co.hconnect.sqlmapper.videoCheck", vo);
+    }
 
 }

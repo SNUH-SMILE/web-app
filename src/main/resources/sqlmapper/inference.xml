@@ -459,7 +459,7 @@
               FROM RESULT
             WHERE ADMISSION_ID = #{admissionId}
               AND ITEM_ID = #{itemId}
-              AND RESULT_DATE = #{bioDate}
+              AND RESULT_DATE = DATE_ADD(#{bioDate}, interval  -1 DAY)
         ]]>
     </select>
     <select id="bioTimeCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="String">
@@ -504,5 +504,12 @@
                    now());
         ]]>
     </insert>
+    <select id="videoCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="String">
+    <![CDATA[
+            SELECT COUNT(*) CNT
+              FROM ARCHIVE_DOWN
+            WHERE ADMISSION_ID = #{admissionId}
+        ]]>
+    </select>
 
 </mapper>
