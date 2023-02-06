@@ -73,7 +73,9 @@ public class PatientDetailDashboardService extends EgovAbstractServiceImpl {
 
 		// 02. 환자 healthSignal 조회
 		// TODO::AI 예측 결과 도입 후 작업필요
+        System.out.println("AI 추론 결과 ");
 		PatientHealthSignalVO healthSignalVO = new PatientHealthSignalVO();
+        healthSignalVO = patientDetailDashboardDao.selectPatientHealthSignal(admissionId);
 		patientDetailDashboardHeaderBaseVO.setHealthSignalVO(healthSignalVO);
 
 		PatientDetailDashboardHeaderVO patientDetailDashboardHeaderVO = new PatientDetailDashboardHeaderVO();

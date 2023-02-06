@@ -50,6 +50,33 @@
                LEFT JOIN COM_CD_DETAIL     CCDR  ON CCDR.COM_CD    = 'CD005'
                                                 AND CCDR.DETAIL_CD = A.ROOM
                                                 AND CCDR.PROPERTY1 = A.CENTER_ID
+               LEFT JOIN (
+                      SELECT
+                          ADMISSION_ID
+                           ,SUM(INF10) INF10  , SUM(INF_VLUE10) INF_VLUE10
+                           ,SUM(INF20) INF20  , SUM(INF_VLUE20) INF_VLUE20
+                           ,SUM(INF30) INF30  , SUM(INF_VLUE30) INF_VLUE30
+                      FROM (
+                               SELECT ADMISSION_ID
+                                    ,INF_DIV AS INF10 ,  INF_VALUE AS INF_VLUE10
+                                    ,0 AS INF20 ,  0 AS INF_VLUE20
+                                    ,0 AS INF30 ,  0 AS INF_VLUE30
+                               FROM INFERENCE I WHERE INF_DIV ='10'
+                               UNION ALL
+                               SELECT ADMISSION_ID
+                                    ,0 AS INF10 ,  0 AS INF_VLUE10
+                                    ,INF_DIV AS INF20 ,  INF_VALUE AS INF_VLUE20
+                                    ,0 AS INF30 ,  0 AS INF_VLUE30
+                               FROM INFERENCE I WHERE INF_DIV ='20'
+                               UNION ALL
+                               SELECT ADMISSION_ID
+                                    ,0 AS INF10 ,  0 AS INF_VLUE10
+                                    ,0 AS INF20 ,  0 AS INF_VLUE20
+                                    ,INF_DIV AS INF30 ,  INF_VALUE AS INF_VLUE30
+                               FROM INFERENCE I WHERE INF_DIV ='30'
+                           ) T4
+                      GROUP BY ADMISSION_ID
+                  ) T1 ON A.ADMISSION_ID  = T1.ADMISSION_ID
          WHERE A.ADMISSION_ID = #{admissionId}
            AND A.DEL_YN = 'N'
     </select>
@@ -306,7 +333,57 @@
     ]]>
     </select>
 
-<!--	&lt;!&ndash; 환자 상세 대쉬보드 입소 상세 정보 조회 &ndash;&gt;-->
+    <!-- 환자 상세 대시보드 상단 정보 조회 추론결과 - kr.co.hconnect.sqlmapper.PatientHealthSignalVO -->
+    <select id="selectPatientHealthSignal"
+            parameterType="String"
+            resultType="kr.co.hconnect.vo.PatientHealthSignalVO">
+        SELECT
+            IFNULL(CASE WHEN (T1.INF_VLUE10 >=5) OR (T1.INF_VLUE20 = '1')
+                THEN 'Y' ELSE 'N' END , 'N')      AS SIGNAL1_YN
+         , IFNULL(CASE WHEN T1.INF_VLUE30 = '1'
+            THEN 'Y' ELSE 'N' END, 'N')       AS SIGNAL2_YN
+        FROM ADMISSION A
+                 INNER JOIN PATIENT          P     ON A.PATIENT_ID   = P.PATIENT_ID
+                 LEFT JOIN TREATMENT_CENTER  TC    ON A.CENTER_ID = TC.CENTER_ID
+                 INNER JOIN COM_CD_DETAIL    CCDS  ON CCDS.COM_CD    = 'CD003'
+            AND CCDS.DETAIL_CD = P.SEX
+                 LEFT JOIN COM_CD_DETAIL     CCDR  ON CCDR.COM_CD    = 'CD005'
+            AND CCDR.DETAIL_CD = A.ROOM
+            AND CCDR.PROPERTY1 = A.CENTER_ID
+                 LEFT JOIN (
+            SELECT
+                ADMISSION_ID
+                 ,SUM(INF10) INF10  , SUM(INF_VLUE10) INF_VLUE10
+                 ,SUM(INF20) INF20  , SUM(INF_VLUE20) INF_VLUE20
+                 ,SUM(INF30) INF30  , SUM(INF_VLUE30) INF_VLUE30
+            FROM (
+                     SELECT ADMISSION_ID
+                          ,INF_DIV AS INF10 ,  INF_VALUE AS INF_VLUE10
+                          ,0 AS INF20 ,  0 AS INF_VLUE20
+                          ,0 AS INF30 ,  0 AS INF_VLUE30
+                     FROM INFERENCE I WHERE INF_DIV ='10'
+                     UNION ALL
+                     SELECT ADMISSION_ID
+                          ,0 AS INF10 ,  0 AS INF_VLUE10
+                          ,INF_DIV AS INF20 ,  INF_VALUE AS INF_VLUE20
+                          ,0 AS INF30 ,  0 AS INF_VLUE30
+                     FROM INFERENCE I WHERE INF_DIV ='20'
+                     UNION ALL
+                     SELECT ADMISSION_ID
+                          ,0 AS INF10 ,  0 AS INF_VLUE10
+                          ,0 AS INF20 ,  0 AS INF_VLUE20
+                          ,INF_DIV AS INF30 ,  INF_VALUE AS INF_VLUE30
+                     FROM INFERENCE I WHERE INF_DIV ='30'
+                 ) T4
+            GROUP BY ADMISSION_ID
+        ) T1 ON A.ADMISSION_ID  = T1.ADMISSION_ID
+        WHERE A.ADMISSION_ID = #{admissionId}
+          AND A.DEL_YN = 'N'
+    </select>
+
+
+
+    <!--	&lt;!&ndash; 환자 상세 대쉬보드 입소 상세 정보 조회 &ndash;&gt;-->
 <!--	<select id="selectPatientDetailDashboardPatientInfo" parameterType="String" resultType="kr.co.hconnect.vo.PatientDetailDashboardPatientInfoVO">-->
 <!--	<![CDATA[-->
 <!--	    &#45;&#45; 환자 상세 대쉬보드 입소 상세 정보 조회-->

@@ -1,10 +1,7 @@
 package kr.co.hconnect.repository;
 
 import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
-import kr.co.hconnect.vo.PatientDetailDashboardHeaderBaseVO;
-import kr.co.hconnect.vo.PatientDetailDashboardRecentResultVO;
-import kr.co.hconnect.vo.PatientVitalChartDataSearchVO;
-import kr.co.hconnect.vo.PatientVitalChartDataVO;
+import kr.co.hconnect.vo.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,6 +20,13 @@ public class PatientDetailDashboardDao extends EgovAbstractMapper {
      */
     public PatientDetailDashboardHeaderBaseVO selectPatientDetailDashboardHeaderBase(String admissionId) {
         return selectOne("kr.co.hconnect.sqlmapper.selectPatientDetailDashboardHeaderBase", admissionId);
+    }
+
+    /*
+     * AI 추론결과
+     */
+    public PatientHealthSignalVO selectPatientHealthSignal(String admissionId) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectPatientHealthSignal", admissionId);
     }
 
     /**
