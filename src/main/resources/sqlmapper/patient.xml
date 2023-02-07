@@ -66,13 +66,6 @@
 		   AND CELL_PHONE = #{cellPhone}
 	]]>
 
-        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(searsAccount)">
-
-        </if>
-        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(activeStatus)">
-            AND ACTIVE_STATUS = #{activeStatus}
-        </if>
-
 	</select>
 
     <select id="selectPatientByCellPhone" parameterType="String" resultType="kr.co.hconnect.domain.Patient">

@@ -21,6 +21,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -286,7 +287,44 @@ public class AdmissionService extends EgovAbstractServiceImpl {
             patientVO.setMemo(patientIdentityVO.getMemo());
             patientVO.setActiveStatus(patientIdentityVO.getActiveStatus());
 
-            patientDao.updatePatient(patientVO);
+            //patientDao.updatePatient(patientVO);
+
+            //비교정보
+            String pName = patientIdentityVO.getPatientNm();
+            LocalDate BirthDate = patientIdentityVO.getBirthDate();
+            String sex = patientIdentityVO.getSex();
+            String CellPhone = patientIdentityVO.getCellPhone();
+
+            System.out.println("기본데이터가 변했어요 이름 : " + pName);
+            System.out.println("기본데이터가 변했어요 생일 : " + BirthDate);
+            System.out.println("기본데이터가 변했어요 성별 : " + sex );
+            System.out.println("기본데이터가 변했어요 전화 : " + CellPhone);
+
+            if (   !pName.equals(dbPatientVO.getPatientNm())                //이름
+                || !BirthDate.equals(dbPatientVO.getBirthDate())           //
+                || !sex.equals(dbPatientVO.getSex())
+                || !CellPhone.equals(dbPatientVO.getCellPhone()))
+            {
+                System.out.println("기본데이터가 변했어요");
+                IdentityInfo identityInfo = new IdentityInfo();
+                identityInfo.setPatientNm(patientIdentityVO.getPatientNm());
+                identityInfo.setBirthDate(patientIdentityVO.getBirthDate());
+                identityInfo.setSex(patientIdentityVO.getSex());
+                identityInfo.setCellPhone(patientIdentityVO.getCellPhone());
+                //identityInfo.setSearsAccount(patientIdentityVO.getSearsAccount());
+                //identityInfo.setMemo(patientIdentityVO.getMemo());
+                //identityInfo.setActiveStatus(patientIdentityVO.getActiveStatus());
+                Patient patientByIdentityInfo = patientDao.selectPatientByIdentityInfo(identityInfo);
+
+                if (patientByIdentityInfo != null) {
+                    throw new DuplicatePatientInfoException(messageSource.getMessage("message.duplicate.patientInfo", null, Locale.getDefault()));
+                }
+                patientDao.updatePatient(patientVO);
+            } else {
+                System.out.println("기본데이터가 변하기 않았어요");
+                patientDao.updatePatient(patientVO);
+            }
+
 
 			// 변경 데이터 확인
             /*
@@ -298,9 +336,9 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 				identityInfo.setBirthDate(patientIdentityVO.getBirthDate());
 				identityInfo.setSex(patientIdentityVO.getSex());
 				identityInfo.setCellPhone(patientIdentityVO.getCellPhone());
-				identityInfo.setSearsAccount(patientIdentityVO.getSearsAccount());
-                identityInfo.setMemo(patientIdentityVO.getMemo());
-                identityInfo.setActiveStatus(patientIdentityVO.getActiveStatus());
+				//identityInfo.setSearsAccount(patientIdentityVO.getSearsAccount());
+                //identityInfo.setMemo(patientIdentityVO.getMemo());
+                //identityInfo.setActiveStatus(patientIdentityVO.getActiveStatus());
 				Patient patientByIdentityInfo = patientDao.selectPatientByIdentityInfo(identityInfo);
 
 				if (patientByIdentityInfo != null) {
