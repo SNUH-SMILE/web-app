@@ -67,7 +67,7 @@
 	]]>
 
         <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(searsAccount)">
-            AND SEARS_ACCOUNT = #{searsAccount}
+
         </if>
         <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(activeStatus)">
             AND ACTIVE_STATUS = #{activeStatus}
@@ -226,7 +226,7 @@
 		     , #{sex}
 		     , #{cellPhone}
 		     , #{searsAccount}
-		     , #{activeStatus}
+		     , '1'
 		     , #{memo}
 		     )
 	</insert>

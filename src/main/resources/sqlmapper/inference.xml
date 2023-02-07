@@ -292,7 +292,7 @@
                          INNER JOIN INTERVIEW K1
                                     ON K4.INTERVIEW_SEQ = K1.INTERVIEW_SEQ
                 WHERE 1=1
-                  AND ANSWER_SEQ IN ('33-1','33-2', '33-3', '33-4', '33-5', '33-6', '33-7', '33-8', '33-9'
+                  AND ANSWER_SEQ IN ('33-1','33-2', '33-3', '33-4', '33-5', '33-6', '33-7', '33-8', '33-9',
                     '34-2','34-3','34-4','34-5','34-6','34-7', '34-8', '34-9', '34-10')
                 GROUP  BY K1.ADMISSION_ID
             ) T2 ON A.ADMISSION_ID = T2.ADMISSION_ID  AND T1.INTERVIEW_SEQ = T2.INTERVIEW_SEQ

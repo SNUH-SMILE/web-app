@@ -286,8 +286,10 @@ public class AdmissionService extends EgovAbstractServiceImpl {
             patientVO.setMemo(patientIdentityVO.getMemo());
             patientVO.setActiveStatus(patientIdentityVO.getActiveStatus());
 
+            patientDao.updatePatient(patientVO);
 
 			// 변경 데이터 확인
+            /*
 			if (!patientVO.isIdentityEquals(dbPatientVO)) {
 				// 변경 정보 환자 중복여부 확인
 				// TODO:: 2세부 API 변경 작업과 함께 수정 작업진행 필요
@@ -307,6 +309,7 @@ public class AdmissionService extends EgovAbstractServiceImpl {
 
 				patientDao.updatePatient(patientVO);
 			}
+            */
 
 			// 입소내역 수정
 			admissionId = admissionVO.getAdmissionId();
