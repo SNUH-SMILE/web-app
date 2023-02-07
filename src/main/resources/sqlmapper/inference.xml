@@ -146,7 +146,7 @@
                                  INNER JOIN RESULT_DETAIL RD
                                             ON R.RESULT_SEQ  = RD.RESULT_SEQ
                         WHERE R.ITEM_ID  IN ('I0002', 'I0006', 'I0001')
-                          AND CONCAT(RESULT_DATE, ' ', RESULT_TIME) BETWEEN  DATE_ADD(NOW(), INTERVAL -1 HOUR) AND NOW()
+                          AND TIMESTAMP(CONCAT(RESULT_DATE, ' ', RESULT_TIME))  BETWEEN  TIMESTAMP(DATE_ADD(NOW(), INTERVAL -1 HOUR)) AND NOW()
                         GROUP BY R.ADMISSION_ID, R.ITEM_ID
                     ) T1  ON A.ADMISSION_ID = T1.ADMISSION_ID
                  LEFT JOIN (

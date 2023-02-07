@@ -76,6 +76,8 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         BioErrorVO bioErrorVO ;
         LocalDate nowDate = LocalDate.now();
+        LocalTime nowTime = LocalTime.now();
+
         vo.setCDate(nowDate.toString());
 
         //스코어 대상 리스트
@@ -181,16 +183,25 @@ public class BatchService extends EgovAbstractServiceImpl{
         log.info("파일 대상 >>>> " + filePath);
 
         //데이터를 받아오고 파일로 쓰기
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String formatedNow = nowDate.format(formatter);
+
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmm");
+        String timeFormatedNow = nowTime.format(timeFormatter);
         try {
 
             File ofile = new File(outFilePath);
             if( ofile.exists() ) {
-                ofile.delete();
+                File newFile = new File(ofile+"_"+formatedNow + timeFormatedNow );
+                ofile.renameTo(newFile);
             }
 
+            //입력 데이터 파일
             File file = new File(filePath);
             if( file.exists() ) {
-                file.delete();
+                //file.delete();
+                File newFile = new File(file+"_"+formatedNow + timeFormatedNow );
+                file.renameTo(newFile);
             }
 
             //csv 파일의 기존 값에 이어쓰려면 위처럼 tru를 지정하고 기존갑을 덮어 쓰려면 true를 삭제한다
@@ -432,7 +443,7 @@ public class BatchService extends EgovAbstractServiceImpl{
                 //에러 메세지 저장
                 bioErrorVO = new BioErrorVO();
                 bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
-                bioErrorVO.setInfDiv("10");
+                bioErrorVO.setInfDiv("20");
                 bioErrorVO.setCDate(nowDate.toString());
                 bioErrorVO.setMessage(msg);
                 aiInferenceDao.insBioError(bioErrorVO);
@@ -447,20 +458,27 @@ public class BatchService extends EgovAbstractServiceImpl{
         String filePath = vo.getFilePath();
         String outFilePath = vo.getOutFilePath();
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String formatedNow = nowDate.format(formatter);
+
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmm");
+        String timeFormatedNow = nowTime.format(timeFormatter);
         //데이터를 받아오고 파일로 쓰기
         try {
             //출력파일 삭제
             File ofile = new File(outFilePath);
             if( ofile.exists() ) {
-                ofile.delete();
+                File newFile = new File(ofile+"_"+formatedNow + timeFormatedNow );
+                ofile.renameTo(newFile);
             }
 
             //입력 데이터 파일
             File file = new File(filePath);
             if( file.exists() ) {
-                file.delete();
+                //file.delete();
+                File newFile = new File(file+"_"+formatedNow + timeFormatedNow );
+                file.renameTo(newFile);
             }
-
 
             //csv 파일의 기존 값에 이어쓰려면 위처럼 tru를 지정하고 기존갑을 덮어 쓰려면 true를 삭제한다
             BufferedWriter fw = new BufferedWriter(new FileWriter(filePath));
@@ -747,17 +765,26 @@ public class BatchService extends EgovAbstractServiceImpl{
         String outFilePath = vo.getOutFilePath();
         List list= null;
         //데이터를 받아오고 파일로 쓰기
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String formatedNow = nowDate.format(formatter);
+
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmm");
+        String timeFormatedNow = nowTime.format(timeFormatter);
+
         try {
 
-            //출력파일 삭제
             File ofile = new File(outFilePath);
             if( ofile.exists() ) {
-                ofile.delete();
+                File newFile = new File(ofile+"_"+formatedNow + timeFormatedNow );
+                ofile.renameTo(newFile);
             }
-           // 데이터 파일
+
+            //입력 데이터 파일
             File file = new File(filePath);
             if( file.exists() ) {
-                file.delete();     //기존 파일을 삭제 한다
+                //file.delete();
+                File newFile = new File(file+"_"+formatedNow + timeFormatedNow );
+                file.renameTo(newFile);
             }
 
             //csv 파일의 기존 값에 이어쓰려면 위처럼 tru를 지정하고 기존갑을 덮어 쓰려면 true를 삭제한다
