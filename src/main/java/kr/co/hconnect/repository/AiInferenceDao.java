@@ -44,6 +44,13 @@ public class AiInferenceDao extends EgovAbstractMapper {
     public int insArchiveDown(ArchiveDownVO vo) {
         return insert("kr.co.hconnect.sqlmapper.insArchiveDown", vo);
     }
+
+    public int udpArchiveDownYn(ArchiveDownVO vo) {
+        return update("kr.co.hconnect.sqlmapper.udpArchiveDownYn", vo);
+    }
+    public int delArchiveDown(ArchiveDownVO vo) {
+        return delete("kr.co.hconnect.sqlmapper.delArchiveDown", vo);
+    }
     public List<ArchiveDownVO> selectVoiceList() {
         return selectList("kr.co.hconnect.sqlmapper.selectVoiceList");
     }

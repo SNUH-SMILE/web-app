@@ -308,7 +308,7 @@ public class testController {
         BatchVO bvo = new BatchVO();
         bvo.setFilePath(filePath);
         bvo.setOutFilePath(outfilePath);
-        bvo.setTestFlag("1");
+        //bvo.setTestFlag("1");
 
         String csvResult = batchService.temperCreate(bvo);
 

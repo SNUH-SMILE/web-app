@@ -20,7 +20,7 @@
              , IBP.UNIT                                     AS BP_UNIT
              -- 심박수
              , RDPR.RESULT                                  AS PR_RESULT_VALUE
-             , CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),TIMESTAMP(RPR.RESULT_DATE, RPR.RESULT_TIME)), '%H') <=1 THEN  RDPR.result  ELSE 'X' END AS PR_RESULT
+             , CASE WHEN CAST(DATE_FORMAT(TIMEDIFF(NOW(), TIMESTAMP(CONCAT(RPR.RESULT_DATE,' ', RPR.RESULT_TIME))), '%H') AS UNSIGNED) <= 1 THEN  RDPR.result  ELSE 'X' END AS PR_RESULT
              , CASE WHEN RDPR.RESULT < IPR.REF_FROM
                          THEN 'L'
                     WHEN RDPR.RESULT > IPR.REF_TO
@@ -31,7 +31,7 @@
              , IPR.UNIT                                     AS PR_UNIT
              -- 체온
              , ROUND(RDBT.RESULT,1)                         AS BT_RESULT_VALUE
-             , CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),TIMESTAMP(RBT.RESULT_DATE, RBT.RESULT_TIME)), '%H') <=1 THEN  ROUND(RDBT.RESULT,1)   ELSE 'X' END AS BT_RESULT
+             , CASE WHEN CAST(DATE_FORMAT(TIMEDIFF(NOW(), TIMESTAMP(CONCAT(RBT.RESULT_DATE,' ', RBT.RESULT_TIME))), '%H') AS UNSIGNED) <= 1 THEN  ROUND(RDBT.RESULT,1)   ELSE 'X' END AS BT_RESULT
              , CASE WHEN RDBT.RESULT < IBT.REF_FROM
                          THEN 'L'
                     WHEN RDBT.RESULT > IBT.REF_TO
@@ -42,7 +42,7 @@
              , IBT.UNIT                                     AS BT_UNIT
              -- 걸음수
              , RDST1.RESULT                                 AS ST1_RESULT_VALUE
-             , CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),TIMESTAMP(RST.RESULT_DATE, RST.RESULT_TIME)), '%H') <=1 THEN  RDST1.RESULT  ELSE 'X' END AS ST1_RESULT
+             , CASE WHEN CAST(DATE_FORMAT(TIMEDIFF(NOW(), TIMESTAMP(CONCAT(RST.RESULT_DATE,' ', RST.RESULT_TIME))), '%H') AS UNSIGNED) <= 1 THEN  RDST1.RESULT  ELSE 'X' END AS ST1_RESULT
              , RDST2.RESULT                                 AS ST2_RESULT
              , ''                                           AS ST1_RISK_GB
              , ''                                           AS ST2_RISK_GB
@@ -50,7 +50,7 @@
              , IST.UNIT                                     AS ST_UNIT
              -- 호흡(데이터 입력 가능 여부 미정)
              , RDRP.RESULT                                  AS RR_RESULT_VALUE
-             , CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),TIMESTAMP(RRP.RESULT_DATE, RRP.RESULT_TIME)), '%H') <=1 THEN  RDRP.RESULT  ELSE 'X' END AS RR_RESULT
+             , CASE WHEN CAST(DATE_FORMAT(TIMEDIFF(NOW(), TIMESTAMP(CONCAT(RRP.RESULT_DATE,' ', RRP.RESULT_TIME))), '%H') AS UNSIGNED) <= 1 THEN  RDRP.RESULT  ELSE 'X' END AS RR_RESULT
              , CASE WHEN RDRP.RESULT < IRP.REF_FROM
                          THEN 'L'
                     WHEN RDSP.RESULT > IRP.REF_TO
@@ -61,7 +61,7 @@
              , IRP.UNIT                                     AS RR_UNIT
              -- 산소포화도
              , RDSP.RESULT                                  AS SP_RESULT_VALUE
-             , CASE WHEN DATE_FORMAT(TIMEDIFF(NOW(),TIMESTAMP(RSP.RESULT_DATE, RSP.RESULT_TIME)), '%H') <=1 THEN  RDSP.RESULT  ELSE 'X' END AS SP_RESULT
+             , CASE WHEN CAST(DATE_FORMAT(TIMEDIFF(NOW(), TIMESTAMP(CONCAT(RSP.RESULT_DATE,' ', RSP.RESULT_TIME))), '%H') AS UNSIGNED) <= 1 THEN  RDSP.RESULT  ELSE 'X' END AS SP_RESULT
              , CASE WHEN RDSP.RESULT < ISP.REF_FROM
                          THEN 'L'
                     WHEN RDSP.RESULT > ISP.REF_TO

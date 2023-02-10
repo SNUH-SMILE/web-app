@@ -383,12 +383,12 @@ public class BatchService extends EgovAbstractServiceImpl{
                 );
 
                 //에러 메세지 저장
-                bioErrorVO = new BioErrorVO();
-                bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
-                bioErrorVO.setInfDiv("20");
-                bioErrorVO.setCDate(nowDate.toString());
-                bioErrorVO.setMessage(msg);
-                aiInferenceDao.insBioError(bioErrorVO);
+                BioErrorVO bioErrorVO06 = new BioErrorVO();
+                bioErrorVO06.setAdmissionId(bcvo.getAdmissionId());
+                bioErrorVO06.setInfDiv("20");
+                bioErrorVO06.setCDate(nowDate.toString());
+                bioErrorVO06.setMessage(msg);
+                aiInferenceDao.insBioError(bioErrorVO06);
 
                 targetString.add(bcvo.getAdmissionId());
 
@@ -403,12 +403,12 @@ public class BatchService extends EgovAbstractServiceImpl{
                     ," 심박수 "
                 );
                 //에러 메세지 저장
-                bioErrorVO = new BioErrorVO();
-                bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
-                bioErrorVO.setInfDiv("20");
-                bioErrorVO.setCDate(nowDate.toString());
-                bioErrorVO.setMessage(msg);
-                aiInferenceDao.insBioError(bioErrorVO);
+                BioErrorVO bioErrorVO02 = new BioErrorVO();
+                bioErrorVO02.setAdmissionId(bcvo.getAdmissionId());
+                bioErrorVO02.setInfDiv("20");
+                bioErrorVO02.setCDate(nowDate.toString());
+                bioErrorVO02.setMessage(msg);
+                aiInferenceDao.insBioError(bioErrorVO02);
                 targetString.add(bcvo.getAdmissionId());
             }
 
@@ -421,12 +421,12 @@ public class BatchService extends EgovAbstractServiceImpl{
                     ," 체온 "
                 );
                 //에러 메세지 저장
-                bioErrorVO = new BioErrorVO();
-                bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
-                bioErrorVO.setInfDiv("20");
-                bioErrorVO.setCDate(nowDate.toString());
-                bioErrorVO.setMessage(msg);
-                aiInferenceDao.insBioError(bioErrorVO);
+                BioErrorVO bioErrorVO01 = new BioErrorVO();
+                bioErrorVO01.setAdmissionId(bcvo.getAdmissionId());
+                bioErrorVO01.setInfDiv("20");
+                bioErrorVO01.setCDate(nowDate.toString());
+                bioErrorVO01.setMessage(msg);
+                aiInferenceDao.insBioError(bioErrorVO01);
                 targetString.add(bcvo.getAdmissionId());
             }
             //01 확진당일
@@ -441,12 +441,12 @@ public class BatchService extends EgovAbstractServiceImpl{
                     ," 확진당일 "
                 );
                 //에러 메세지 저장
-                bioErrorVO = new BioErrorVO();
-                bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
-                bioErrorVO.setInfDiv("20");
-                bioErrorVO.setCDate(nowDate.toString());
-                bioErrorVO.setMessage(msg);
-                aiInferenceDao.insBioError(bioErrorVO);
+                BioErrorVO bioErrorVOM01 = new BioErrorVO();
+                bioErrorVOM01.setAdmissionId(bcvo.getAdmissionId());
+                bioErrorVOM01.setInfDiv("20");
+                bioErrorVOM01.setCDate(nowDate.toString());
+                bioErrorVOM01.setMessage(msg);
+                aiInferenceDao.insBioError(bioErrorVOM01);
                 targetString.add(bcvo.getAdmissionId());
             }
 
@@ -632,6 +632,7 @@ public class BatchService extends EgovAbstractServiceImpl{
                 bioSuccessVO.setCDate(nowDate.toString());
                 bioSuccessVO.setMessage(msg);
                 aiInferenceDao.insBioError(bioSuccessVO);
+
             }
 
 
@@ -1098,13 +1099,6 @@ public class BatchService extends EgovAbstractServiceImpl{
             //파일 다운 로드
             FileUtils.copyURLToFile(url, f );
 
-            //파일 다운로드 완료 업데이트
-            ArchiveVO archiveVO = new ArchiveVO();
-            archiveVO.setArchiveId(archiveId);
-            aiInferenceDao.udpArchiveDown(archiveVO);
-
-
-
             //압축파일 풀기
             zipUtil ziputil = new zipUtil();
             String zipFile = admissionId + ".zip";
@@ -1155,12 +1149,15 @@ public class BatchService extends EgovAbstractServiceImpl{
                         System.out.println("files: connectionData==>"+dataObject.get("connectionData"));
 
                         String connData = (String) dataObject.get("connectionData");
-
                         //파일명 찾기
                         if (connData.contains(admissionId)){
                             System.out.println("files: connectionData==>");
                             vFileName = (String) dataObject.get("filename");
                             System.out.println(vFileName);
+                        } else {
+                            //파일 삭제 하기
+                            String wFileName = (String) dataObject.get("filename");
+
                         }
 
                     }
@@ -1172,6 +1169,11 @@ public class BatchService extends EgovAbstractServiceImpl{
             }
 
             System.out.println("vFileName  >>>>>>>>>>  "+ vFileName);
+
+            //기존  mp3 변환 한 내용 delete
+            ArchiveDownVO archiveDownDelete = new ArchiveDownVO();
+            archiveDownDelete.setAdmissionId(vo.getName());
+            aiInferenceDao.udpArchiveDownYn(archiveDownDelete);
 
             //mp3 파일 추출
             if (!StringUtils.isEmpty(vFileName)) {
@@ -1211,7 +1213,7 @@ public class BatchService extends EgovAbstractServiceImpl{
                     archiveDownVO.setDnDateVoice(formatedNow);
                     archiveDownVO.setDnTimeVoice(timeFormatedNow);
                     archiveDownVO.setDnFolderVoice(targetPath);
-                    archiveDownVO.setDnYn("Y");
+                    archiveDownVO.setDnYnVoice("Y");
 
                     aiInferenceDao.insArchiveDown(archiveDownVO);
 

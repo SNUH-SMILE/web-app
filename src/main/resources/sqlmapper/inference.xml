@@ -347,6 +347,19 @@
               )
         ]]>
     </insert>
+    <delete id="delArchiveDown"  parameterType="kr.co.hconnect.vo.ArchiveDownVO" >
+        <![CDATA[
+            delete from archive_down
+            where ADMISSION_ID =  #{admissionId}
+        ]]>
+    </delete>
+    <update id="udpArchiveDownYn"  parameterType="kr.co.hconnect.vo.ArchiveDownVO" >
+        <![CDATA[
+        update archive_down
+        set DN_YN_VOICE = 'N'
+        where ADMISSION_ID =  #{admissionId}
+        ]]>
+    </update>
 
     <select id="selectVoiceList"  resultType="kr.co.hconnect.vo.ArchiveDownVO">
         <![CDATA[
@@ -465,10 +478,10 @@
     <select id="bioTimeCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="String">
         <![CDATA[
         SELECT
-            CASE WHEN T1.RE ='O' THEN 1 ELSE 0 END AS CNT
+            CASE WHEN T1.RE ='k' THEN 1 ELSE 0 END AS CNT
         FROM (SELECT CASE
-                         WHEN DATE_FORMAT(TIMEDIFF(NOW(), TIMESTAMP(R.RESULT_DATE, R.RESULT_TIME)), '%H') <= 1
-                             THEN '0'
+                         WHEN CAST(DATE_FORMAT(TIMEDIFF(NOW(), TIMESTAMP(CONCAT(R.RESULT_DATE,' ', R.RESULT_TIME))), '%H') AS UNSIGNED) <= 1
+                             THEN 'k'
                          ELSE 'X' END AS RE
               FROM `RESULT` R
               WHERE 1 = 1
@@ -509,6 +522,7 @@
             SELECT COUNT(*) CNT
               FROM ARCHIVE_DOWN
             WHERE ADMISSION_ID = #{admissionId}
+           AND DN_YN_VOICE = 'Y'
         ]]>
     </select>
 
