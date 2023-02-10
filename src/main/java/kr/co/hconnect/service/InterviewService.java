@@ -95,17 +95,17 @@ public class InterviewService extends EgovAbstractServiceImpl {
             vo.getInterviewList().add(interviewList);
         }
         /*격리해제 문진*/
-        if((vo.getInterviewList().stream().filter(i -> ("03").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && now.equals(dschgeDtate)){
+        if((vo.getInterviewList().stream().filter(i -> ("04").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && now.equals(dschgeDtate)){
             InterviewList interviewList = new InterviewList();
-            interviewList.setInterviewType("03");
+            interviewList.setInterviewType("04");
             interviewList.setInterviewStatus("0"); //작성하기
             interviewList.setInterviewTitle("격리해제");
             vo.getInterviewList().add(interviewList);
         }
         /*격리해제 후 30일 문진*/
-        if((vo.getInterviewList().stream().filter(i -> ("04").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && now.minusDays(30).equals(dschgeDtate)){
+        if((vo.getInterviewList().stream().filter(i -> ("05").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && now.minusDays(30).equals(dschgeDtate)){
             InterviewList interviewList = new InterviewList();
-            interviewList.setInterviewType("04");
+            interviewList.setInterviewType("05");
             interviewList.setInterviewStatus("0"); //작성하기
             interviewList.setInterviewTitle("격리해제 30일 후 문진");
             vo.getInterviewList().add(interviewList);

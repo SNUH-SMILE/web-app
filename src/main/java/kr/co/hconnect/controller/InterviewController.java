@@ -50,7 +50,7 @@ public class InterviewController {
     @RequestMapping(value = "/interviewList", method = RequestMethod.POST)
     public ResponseVO<InterviewListResponseByCenterVO> selectInterviewListByCentor(
         @Valid @RequestBody InterviewListSearchVO vo, BindingResult bindingResult) {
-
+        System.out.println("interview List");
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }

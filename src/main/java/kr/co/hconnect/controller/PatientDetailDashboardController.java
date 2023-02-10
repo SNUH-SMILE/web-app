@@ -192,12 +192,12 @@ public class PatientDetailDashboardController {
      * @return
      */
     @RequestMapping(value = "/noticeAppList", method = RequestMethod.POST)
-    public ResponseBaseVO<List<NoticeListVO>> selectnoticeAppList(@Valid @RequestBody LoginId vo, BindingResult bindingResult
+    public ResponseExtraVo<List<NoticeListVO>> selectnoticeAppList(@Valid @RequestBody LoginId vo, BindingResult bindingResult
         , @RequestAttribute TokenDetailInfo tokenDetailInfo) {
+
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
-
 
         // 격리/입소내역ID
         String admissionId = admissionService.selectActiveAdmissionByLoginId(vo.getLoginId()).getAdmissionId();
@@ -205,12 +205,19 @@ public class PatientDetailDashboardController {
         NoticeListSearchVO entity = new NoticeListSearchVO();
         entity.setAdmissionId(admissionId);
 
-        ResponseBaseVO<List<NoticeListVO>> responseVO = new ResponseBaseVO<>();
-        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
-        responseVO.setMessage("조회 성공");
-        responseVO.setResult(noticeService.selectnoticeAppList(entity));
+        ResponseExtraVo<List<NoticeListVO>> responseVO = new ResponseExtraVo();
+        try{
+            List<NoticeListVO> dt = noticeService.selectnoticeAppList(entity);
+            responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+            responseVO.setMessage("조회성공");
+            responseVO.setResult(dt);
+        } catch(RuntimeException e){
+            responseVO.setCode(ApiResponseCode.CODE_INVALID_REQUEST_PARAMETER.getCode());
+            responseVO.setMessage(e.getMessage());
+        }
 
         return responseVO;
+
     }
 
 
