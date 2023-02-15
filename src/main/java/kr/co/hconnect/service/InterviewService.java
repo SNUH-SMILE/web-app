@@ -132,10 +132,10 @@ public class InterviewService extends EgovAbstractServiceImpl {
                 case "02":
                     title = "일일 문진";
                     break;
-                case "03":
+                case "04":
                     title = "격리 해제일 문진";
                     break;
-                case "04":
+                case "05":
                     title = "격리 해제 30일 후 문진";
                     break;
             }

@@ -33,6 +33,8 @@
         WHERE A.ADMISSION_DATE <= date_format(now(),'%Y-%m-%d')
           AND A.DEL_YN = 'N'
           AND B.LOGIN_ID = #{loginId}
+        ORDER BY A.ADMISSION_ID DESC
+         LIMIT 1
         ]]>
     </select>
     <!-- 로그인ID 기준 격리/입소내역(내원중) 리스트 조회 -->
@@ -59,9 +61,11 @@
                  INNER JOIN PATIENT B  ON A.PATIENT_ID = B.PATIENT_ID
                  LEFT JOIN  TREATMENT_CENTER TC  ON A.CENTER_ID = TC.CENTER_ID
         WHERE 1=1
-          AND A.DSCHGE_DATE IS NULL
+          -- AND A.DSCHGE_DATE IS NULL
           AND A.DEL_YN = 'N'
           AND B.LOGIN_ID = #{loginId}
+        ORDER BY A.ADMISSION_ID DESC
+        LIMIT 1
         ]]>
    </select>
 

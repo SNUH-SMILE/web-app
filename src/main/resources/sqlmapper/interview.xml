@@ -124,7 +124,6 @@
              , B.VAL10
              , B.VAL11
              , B.VAL12
-
         FROM INTERVIEW_CONTENT B
         WHERE B.INTERVIEW_TYPE = #{interviewType}
     </select>
@@ -160,7 +159,7 @@
             WHERE 1=1
               AND DSCHGE_DATE IS NULL
               AND P.LOGIN_ID  IS NOT NULL
-              AND A.ADMISSION_DATE = NOW()
+              AND A.ADMISSION_DATE = DATE_FORMAT(NOW(), '%Y-%m-%d')
         ]]>
     </select>
 
@@ -181,7 +180,8 @@
         WHERE 1=1
           AND DSCHGE_DATE IS NULL
           AND P.LOGIN_ID  IS NOT NULL
-          AND A.ADMISSION_DATE < NOW() AND  A.ADMISSION_DATE != DATE_FORMAT(NOW(), '%Y-%m-%d')
+          AND A.ADMISSION_DATE <= DATE_FORMAT(NOW(), '%Y-%m-%d')
+          AND A.DSCHGE_SCHDLD_DATE < DATE_FORMAT(NOW(), '%Y-%m-%d')
         ]]>
     </select>
 
@@ -200,9 +200,9 @@
         FROM ADMISSION A
                  INNER JOIN PATIENT P ON A.PATIENT_ID  = P.PATIENT_ID
         WHERE 1=1
-          AND DSCHGE_DATE IS NOT NULL
           AND P.LOGIN_ID  IS NOT NULL
-          AND A.DSCHGE_DATE = NOW()
+          AND A.DSCHGE_DATE IS NULL
+          AND A.DSCHGE_SCHDLD_DATE = DATE_FORMAT(NOW(),'%Y-%m-%d')
         ]]>
     </select>
     <!--문진내역 퇴소일후 30 알림  BatchVO-->
@@ -220,9 +220,9 @@
         FROM ADMISSION A
                  INNER JOIN PATIENT P ON A.PATIENT_ID  = P.PATIENT_ID
         WHERE 1=1
-          AND DSCHGE_DATE IS NOT NULL
+          AND A.DSCHGE_DATE IS NOT NULL
           AND P.LOGIN_ID  IS NOT NULL
-          AND DATEDIFF( DATE_FORMAT(NOW(), '%Y-%m-%d'), A.DSCHGE_DATE) BETWEEN 30 AND 33
+          AND DATEDIFF( DATE_FORMAT(NOW(), '%Y-%m-%d'), A.DSCHGE_DATE) = 30
         ]]>
     </select>
 

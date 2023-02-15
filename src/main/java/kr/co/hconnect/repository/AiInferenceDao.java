@@ -86,4 +86,13 @@ public class AiInferenceDao extends EgovAbstractMapper {
         return selectOne("kr.co.hconnect.sqlmapper.videoCheck", vo);
     }
 
+    /**
+     *  퇴소 예정일 => 퇴소일 로 업데이트
+     *  조건 : DSCHGE_SCHDLD_DATE = DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y-%m-%d')
+     *  2023-02-14
+     * @return  int
+     */
+    public int udpAdmissionDischarge() {
+        return update("kr.co.hconnect.sqlmapper.udpAdmissionDischarge");
+    }
 }

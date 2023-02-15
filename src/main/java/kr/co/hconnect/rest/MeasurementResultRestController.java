@@ -312,8 +312,12 @@ public class MeasurementResultRestController {
         if (bindingResult.hasErrors()) {
             throw new InvalidRequestArgumentException(bindingResult);
         }
-        searchSleepResultInfo.setAdmissionId(getAdmissionId(searchSleepResultInfo.getLoginId()));
-
+        String admission = getAdmissionId(searchSleepResultInfo.getLoginId());
+        if (StringUtils.isEmpty(admission)){
+            admission = "99";
+        }
+        //searchSleepResultInfo.setAdmissionId(getAdmissionId(searchSleepResultInfo.getLoginId()));
+        searchSleepResultInfo.setAdmissionId(admission);
         //SleepTimeResultDetail 세팅
         SleepTimeResultDetail sleepTimeResultDetail = new SleepTimeResultDetail();
         sleepTimeResultDetail.setResultStartDateTime(searchSleepResultInfo.getResultStartDateTime());

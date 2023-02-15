@@ -115,7 +115,9 @@
                 GROUP BY ADMISSION_ID
             ) T2 ON A.ADMISSION_ID = T2.ADMISSION_ID
         WHERE 1=1
-          AND IFNULL(A.DSCHGE_DATE ,'9999-12-31') >=  DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y-%m-%d')
+          -- AND IFNULL(A.DSCHGE_DATE ,'9999-12-31') >=  DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y-%m-%d')
+          AND A.DSCHGE_DATE IS NULL
+          AND A.DSCHGE_SCHDLD_DATE > DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y-%m-%d')
         ORDER BY A.ADMISSION_ID
         ]]>
     </select>
@@ -171,7 +173,7 @@
                                       INNER JOIN INTERVIEW_DETAIL ID
                                                  ON I.INTERVIEW_SEQ  = ID.INTERVIEW_SEQ
                              WHERE 1=1
-                               AND I.INTERVIEW_TYPE ='02'
+                               AND I.INTERVIEW_TYPE in ('02', '04')
                                AND ID.ANSWER_SEQ IN ('40','42','46','48','50','54','55','57','58','59','62')
                                AND I.INTERVIEW_SEQ = (SELECT X.INTERVIEW_SEQ FROM INTERVIEW X
                                                       WHERE X.INTERVIEW_TYPE ='02'
@@ -183,7 +185,8 @@
                 GROUP BY T1.ADMISSION_ID
                     ) T2 ON A.ADMISSION_ID  = T2.ADMISSION_ID
         WHERE 1=1
-          AND IFNULL(A.DSCHGE_DATE ,'9999-12-31') >=  DATE_FORMAT(NOW(), '%Y-%m-%d')
+          AND A.DSCHGE_DATE IS NULL
+          AND A.DSCHGE_SCHDLD_DATE > DATE_FORMAT(NOW(), '%Y-%m-%d')
         GROUP BY ADMISSION_ID
         ]]>
     </select>
@@ -218,7 +221,7 @@
                  (
                      SELECT ADMISSION_ID, MAX(INTERVIEW_SEQ)  INTERVIEW_SEQ FROM INTERVIEW
                      WHERE 1=1
-                       and INTERVIEW_TYPE in ('01', '05')
+                       and INTERVIEW_TYPE in ('01', '04')
                      GROUP BY ADMISSION_ID
                  ) T1 on A.ADMISSION_ID = T1.ADMISSION_ID
              INNER JOIN
@@ -297,8 +300,9 @@
                 GROUP  BY K1.ADMISSION_ID
             ) T2 ON A.ADMISSION_ID = T2.ADMISSION_ID  AND T1.INTERVIEW_SEQ = T2.INTERVIEW_SEQ
          WHERE 1=1
-           AND IFNULL(A.DSCHGE_DATE ,'9999-12-31') >=  DATE_FORMAT(NOW(), '%Y-%m-%d') OR
-            DATE_FORMAT(DATE_ADD(IFNULL(A.DSCHGE_DATE ,'9999-10-31'), interval 2 month),'%Y-%m') >= DATE_FORMAT(NOW(), '%Y-%m')
+           AND A.DSCHGE_DATE IS NULL
+           AND A.DSCHGE_SCHDLD_DATE > DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y-%m-%d')
+        ORDER BY A.ADMISSION_ID
         ]]>
     </select>
 
@@ -381,77 +385,6 @@
         ]]>
     </select>
 
-    <select id="depressList_old"  resultType="kr.co.hconnect.vo.DepressListVO">
-        <![CDATA[
-        SELECT T1.ADMISSION_ID
-             ,T2.STRESS_1    as ST1_YN
-             ,T2.STRESS_2    as ST2_YN
-             ,T2.STRESS_3    as ST3_YN
-             ,T2.STRESS_4    as ST4_YN
-             ,T2.STRESS_5    as ST5_YN
-             ,T2.STRESS_6    as ST6_YN
-             ,T2.STRESS_7    as ST7_YN
-             ,T2.STRESS_8    as ST8_YN
-             ,T2.STRESS_9    as ST9_YN
-             ,T3.GADVAL      AS GAD_TOTAL
-             ,T3.INSVAL      AS INS_TOTAL
-             ,T4.DN_FOLDER_VOICE AS VIDEO
-             ,T3.PHQVAL      AS PHQ_TOTAL
-             ,CASE WHEN T3.PHQVAL >= 10 THEN 1 ELSE 0 END TAG
-             ,0 SPLIT
-        FROM
-            (
-                SELECT ADMISSION_ID, MIN(INTERVIEW_SEQ)  INTERVIEW_SEQ FROM INTERVIEW
-                WHERE 1=1
-                  AND INTERVIEW_TYPE IN ('01','03','04')
-                GROUP BY ADMISSION_ID
-            ) T1 INNER JOIN
-            (
-                SELECT DN_SEQ, ADMISSION_ID , DN_FOLDER_VOICE  FROM ARCHIVE_DOWN AD
-                ORDER BY DN_SEQ DESC
-                    LIMIT 1
-            ) T4 ON T1.ADMISSION_ID = T4.ADMISSION_ID
-                 LEFT OUTER JOIN
-            (
-                SELECT
-                    INTERVIEW_SEQ
-                     , SUM(GADVAL)  GADVAL
-                     , SUM(INSVAL)  INSVAL
-                     , SUM(PHQVAL)  PHQVAL
-                FROM (
-                         /** 정신건강 불안 */
-                         SELECT INTERVIEW_SEQ , CAST(ANSWER_VALUE AS UNSIGNED)  GADVAL, 0 INSVAL , 0 PHQVAL FROM INTERVIEW_DETAIL
-                         WHERE ANSWER_SEQ IN ('35-1','35-2','35-3','35-4','35-5','35-6','35-7')
-                         UNION ALL
-                         /** 정신건강 불면증 */
-                         SELECT INTERVIEW_SEQ, 0 GADVAL, CAST(ANSWER_VALUE AS UNSIGNED) INSVAL, 0 PHQVAL FROM INTERVIEW_DETAIL
-                         WHERE ANSWER_SEQ IN ('36-1','36-2','36-3','36-4','36-5','36-6','36-7')
-                         UNION ALL
-                         /** 정신건강 우울*/
-                         SELECT INTERVIEW_SEQ, 0 GADVAL, 0 INSVAL, CAST(ANSWER_VALUE AS UNSIGNED)  PHQVAL FROM INTERVIEW_DETAIL
-                         WHERE ANSWER_SEQ IN ('33-1','33-2','33-3','33-4','33-5','33-6','33-7','33-8','33-9')
-                     ) DT
-                GROUP BY INTERVIEW_SEQ
-            ) T3 ON T1.INTERVIEW_SEQ = T3.INTERVIEW_SEQ
-                 LEFT OUTER JOIN
-            (	/** 정신건강 스트레스 */
-                SELECT INTERVIEW_SEQ ,
-                    SUM(CASE WHEN ANSWER_SEQ = '34-2' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_1
-                     ,SUM(CASE WHEN ANSWER_SEQ = '34-3' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_2
-                     ,SUM(CASE WHEN ANSWER_SEQ = '34-4' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_3
-                     ,SUM(CASE WHEN ANSWER_SEQ = '34-5' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_4
-                     ,SUM(CASE WHEN ANSWER_SEQ = '34-6' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_5
-                     ,SUM(CASE WHEN ANSWER_SEQ = '34-7' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_6
-                     ,SUM(CASE WHEN ANSWER_SEQ = '34-8' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_7
-                     ,SUM(CASE WHEN ANSWER_SEQ = '34-9' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_8
-                     ,SUM(CASE WHEN ANSWER_SEQ = '34-10' THEN CAST(ANSWER_VALUE AS UNSIGNED) END) STRESS_9
-                FROM INTERVIEW_DETAIL
-                WHERE ANSWER_SEQ IN ('34-2','34-3','34-4','34-5','34-6','34-7', '34-8', '34-9', '34-10')
-                GROUP  BY INTERVIEW_SEQ
-            ) T2 ON T1.INTERVIEW_SEQ = T2.INTERVIEW_SEQ
-        ]]>
-    </select>
-
     <select id="bioAdmissionId"   resultType="kr.co.hconnect.vo.BioCheckVO" >
         <![CDATA[
             SELECT A.ADMISSION_ID
@@ -461,8 +394,9 @@
                    END  END_DATE30
             FROM ADMISSION A
             WHERE 1=1
-            AND ADMISSION_DATE <= NOW()
-            AND IFNULL(DSCHGE_DATE,'9999-12-31') >= NOW()
+            AND A.DSCHGE_DATE IS NULL
+            AND ADMISSION_DATE <= DATE_FORMAT(NOW(), '%Y-%m-%d')
+            AND DSCHGE_SCHDLD_DATE > DATE_FORMAT(NOW(), '%Y-%m-%d')
         ]]>
     </select>
 
@@ -526,4 +460,15 @@
         ]]>
     </select>
 
+    <update id="udpAdmissionDischarge"  >
+        <![CDATA[
+            UPDATE ADMISSION
+               SET DSCHGE_DATE = DSCHGE_SCHDLD_DATE
+                  ,QANTN_LOCATION = '1'
+                  ,UPD_DT = NOW()
+             WHERE 1=1
+             AND DSCHGE_DATE IS NULL
+             AND DSCHGE_SCHDLD_DATE = DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y-%m-%d')
+        ]]>
+    </update>
 </mapper>

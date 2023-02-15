@@ -50,16 +50,19 @@ public class BatchService extends EgovAbstractServiceImpl{
 
     private  final  InterviewDao interviewDao;
 
+    private  final  NoticeDao noticeDao;
+
     private int apikey = 47595911;
 
     private String apiSecret = "2ddde1eb92a2528bd22be0c465174636daca363d";
 
 
     @Autowired
-    public BatchService(AiInferenceDao dao, InterviewDao interviewDao)
+    public BatchService(AiInferenceDao dao, InterviewDao interviewDao, NoticeDao noticeDao)
     {
         this.aiInferenceDao = dao;
         this.interviewDao = interviewDao;
+        this.noticeDao = noticeDao;
     }
 
 
@@ -734,6 +737,8 @@ public class BatchService extends EgovAbstractServiceImpl{
 
 
             //퇴소일이 있는 경우 30일 문진
+            /**
+             * 티소후 문진만 있고 추론은 돌리지 않는다
             String disChargeDate = bcvo.getEndDate();
             String disChargeDate30 = bcvo.getEndDate30();
 
@@ -759,6 +764,9 @@ public class BatchService extends EgovAbstractServiceImpl{
 
                 }
             }
+             */
+
+
         }
         log.info(" 우울 추론 데이터 시작");
 
@@ -1235,13 +1243,22 @@ public class BatchService extends EgovAbstractServiceImpl{
         interviewAlarmToDay();
         //매일 문진
         interviewAlarmDay();
+
+        //퇴소일문진
+        //selectInterviewDischarge();
+        //퇴소후30일 문진
+        //selectInterviewDischarge30();
+
+    }
+
+    public void interviewAlarmDischarge(){
+
         //퇴소일문진
         selectInterviewDischarge();
         //퇴소후30일 문진
         selectInterviewDischarge30();
 
     }
-
 
     /**
      * 확진당일문진결과에 대하여 알람리스트
@@ -1263,8 +1280,13 @@ public class BatchService extends EgovAbstractServiceImpl{
                         mapValue.put("INTERVIEWTYPE", "01");  //문진타입
                         //#푸시내역 생성
                          int ret = InterviewSendPush(mapValue);
-                        //log.info("CUID >>> " +  CUID);
-                        //log.info("MESSAGe  확진당일 문진이 없습니다.");
+
+                         NoticeVO noticeVO = new NoticeVO();
+                        noticeVO.setAdmissionId(vo.getAdmissionId());
+                        noticeVO.setNotice("확진당일 문진이 없습니다.");
+                        noticeVO.setRegId("admin");
+                        // 알림 내역 저장
+                        noticeDao.insertNotice(noticeVO);
 
                     }
                 }
@@ -1297,9 +1319,12 @@ public class BatchService extends EgovAbstractServiceImpl{
                         //#푸시내역 생성
                         int ret = InterviewSendPush(mapValue);
 
-                        //log.info("CUID >>> " +  CUID);
-                        //log.info("MESSAGe  매일 문진이 없습니다");
-
+                        NoticeVO noticeVO = new NoticeVO();
+                        noticeVO.setAdmissionId(vo.getAdmissionId());
+                        noticeVO.setNotice("매일 문진이 없습니다.");
+                        noticeVO.setRegId("admin");
+                        // 알림 내역 저장
+                        noticeDao.insertNotice(noticeVO);
                     }
                 }
             }
@@ -1325,12 +1350,17 @@ public class BatchService extends EgovAbstractServiceImpl{
                         HashMap<String, Object> mapValue = new HashMap<String, Object>();
                         String CUID = vo.getLoginId();
                         mapValue.put("CUID", CUID);
-                        mapValue.put("MESSAGE", "퇴소일 문진이 없습니다.");
-                        mapValue.put("INTERVIEWTYPE", "03");  //문진타입
+                        mapValue.put("MESSAGE", "격리해제 당일 문진이 없습니다.");
+                        mapValue.put("INTERVIEWTYPE", "04");  //문진타입
                         //#푸시내역 생성
                         int ret = InterviewSendPush(mapValue);
-                        //log.info("CUID >>> " + CUID);
-                        //log.info("MESSAGe 퇴소일 문진이 없습니다.");
+
+                        NoticeVO noticeVO = new NoticeVO();
+                        noticeVO.setAdmissionId(vo.getAdmissionId());
+                        noticeVO.setNotice("격리해제 당일 문진이 없습니다.");
+                        noticeVO.setRegId("admin");
+                        // 알림 내역 저장
+                        noticeDao.insertNotice(noticeVO);
                     }
                 }
             }
@@ -1356,12 +1386,18 @@ public class BatchService extends EgovAbstractServiceImpl{
                         HashMap<String, Object> mapValue = new HashMap<String, Object>();
                         String CUID = vo.getLoginId();
                         mapValue.put("CUID" , CUID);
-                        mapValue.put("MESSAGE", "퇴소일 후 30일 문진이 없습니다.");
+                        mapValue.put("MESSAGE", "격리 해제 후 30일 이후 문진이 없습니다.");
                         mapValue.put("INTERVIEWTYPE", "05");  //문진타입
                         //#푸시내역 생성
                         int ret = InterviewSendPush(mapValue);
-                        //log.info("CUID >>> " + CUID);
-                        //log.info("MESSAGE  퇴소일 후 30일 문진이 없습니다.");
+
+                        NoticeVO noticeVO = new NoticeVO();
+                        noticeVO.setAdmissionId(vo.getAdmissionId());
+                        noticeVO.setNotice("격리 해제 후 30일 이후 문진이 없습니다.");
+                        noticeVO.setRegId("admin");
+                        // 알림 내역 저장
+                        noticeDao.insertNotice(noticeVO);
+
                     }
                 }
             }
@@ -1369,6 +1405,22 @@ public class BatchService extends EgovAbstractServiceImpl{
             rtn = e.getMessage();
             log.error(e.getMessage());
         }
+        return rtn;
+    }
+
+
+    public String updateAdmissionDischarge(){
+        log.info("격리헤제 일괄 배치 시작");
+        String rtn = "";
+
+        try {
+            //일괄처리 함
+            aiInferenceDao.udpAdmissionDischarge();
+        } catch ( Exception e){
+            rtn=e.getMessage();
+            log.error(e.getMessage());
+        }
+        log.info("격리헤제 일괄 배치 종료");
         return rtn;
     }
 

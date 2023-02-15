@@ -180,4 +180,17 @@ public class BatchController {
         batchService.interviewAlarm();
     }
 
+    @Scheduled(cron="0 0 8 * * *")
+    public void interviewAlarm08() throws IOException {
+        log.info(" 퇴소후 문진 / 퇴소후 30일 이후 문진  알람 8 시 리스트 및 알람 발송");
+        batchService.interviewAlarmDischarge();
+    }
+
+    @Scheduled(cron="0 10 0 * * *")
+    public void autoDischarge() throws IOException {
+        log.info(" 격리 헤제 일괄 배치 시작");
+        batchService.updateAdmissionDischarge();
+        log.info(" 격리 헤제 일괄 배치 종료");
+    }
+
 }

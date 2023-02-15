@@ -414,6 +414,25 @@ public class testController {
         log.info(" 문진 알람 리스트 및 알람 발송 종료");
     }
 
+    @RequestMapping(value = "/filedownExtra", method = RequestMethod.POST)
+    public void filedownExtra() throws IOException, OpenTokException {
+        log.info("5. 화상상담 파일 다운로드 ");
+        String rtn = batchService.vonageArchiveList();
+    }
+
+    @RequestMapping(value = "/interviewAlarmDischage", method = RequestMethod.POST)
+    public void interviewAlarm00()  {
+        log.info(" 퇴소 리스트 및 알람 발송 시작");
+        batchService.interviewAlarmDischarge();
+        log.info(" 퇴소 리스트 및 알람 발송 종료");
+    }
+
+    @RequestMapping(value = "/interviewAlarmDischage30", method = RequestMethod.POST)
+    public void interviewAlarm30()  {
+        log.info(" 퇴소 30일 이후 리스트 및 알람 발송 시작");
+        batchService.selectInterviewDischarge30();
+        log.info(" 퇴소 30일 이후 리스트 및 알람 발송 종료");
+    }
 
 
 
