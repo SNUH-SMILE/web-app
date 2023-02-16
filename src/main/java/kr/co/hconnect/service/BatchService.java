@@ -85,7 +85,7 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         //스코어 대상 리스트
         log.info("스코어 대상 리스트 >>>> ");
-        List<BioCheckVO> bvo = aiInferenceDao.bioAdmissionId();
+        List<BioCheckVO> bvo = aiInferenceDao.bioAdmissionIdBefore();
 
         // 생체데이터 체크
         //itemid = I0002 심박수 I0003 산소포와도  ㅑ001체온
@@ -675,7 +675,7 @@ public class BatchService extends EgovAbstractServiceImpl{
         vo.setCDate(nowDate.toString());
 
         //스코어 대상 리스트
-        List<BioCheckVO> bvo = aiInferenceDao.bioAdmissionId();
+        List<BioCheckVO> bvo = aiInferenceDao.bioAdmissionIdBefore();
 
 
         // 생체데이터 체크
@@ -1245,9 +1245,9 @@ public class BatchService extends EgovAbstractServiceImpl{
         interviewAlarmDay();
 
         //퇴소일문진
-        //selectInterviewDischarge();
+        selectInterviewDischarge();
         //퇴소후30일 문진
-        //selectInterviewDischarge30();
+        selectInterviewDischarge30();
 
     }
 

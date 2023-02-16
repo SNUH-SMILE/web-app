@@ -60,6 +60,12 @@ public class AiInferenceDao extends EgovAbstractMapper {
         return selectList("kr.co.hconnect.sqlmapper.bioAdmissionId");
     }
 
+    //퇴소일이 오늘 보다 큰 입소자
+    public List<BioCheckVO> bioAdmissionIdBefore() {
+        return selectList("kr.co.hconnect.sqlmapper.bioAdmissionIdBefore");
+    }
+
+
     //퇴소일이 오늘 보다 큰 입소자의 바이오 데이터 체크
     public String bioCheck(BioCheckVO vo) {
         return selectOne("kr.co.hconnect.sqlmapper.bioCheck", vo);

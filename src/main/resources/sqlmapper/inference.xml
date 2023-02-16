@@ -400,6 +400,21 @@
         ]]>
     </select>
 
+    <select id="bioAdmissionIdBefore"   resultType="kr.co.hconnect.vo.BioCheckVO" >
+        <![CDATA[
+        SELECT A.ADMISSION_ID
+             ,A.DSCHGE_DATE as END_DATE
+             ,CASE WHEN DATEDIFF(NOW(), IFNULL(DSCHGE_DATE,NOW())) < 30 THEN 'N'
+                   ELSE 'Y'
+            END  END_DATE30
+        FROM ADMISSION A
+        WHERE 1=1
+          AND A.DSCHGE_DATE IS NULL
+          AND A.ADMISSION_DATE <= DATE_FORMAT(NOW(), '%Y-%m-%d')
+          AND A.DSCHGE_SCHDLD_DATE > DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y-%m-%d')
+        ]]>
+    </select>
+
     <select id="bioCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="String">
         <![CDATA[
             SELECT COUNT(*) CNT
@@ -431,7 +446,6 @@
             ) T1
         ]]>
     </select>
-
     <select id="interviewCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="String">
         <![CDATA[
             SELECT count(*) cnt
