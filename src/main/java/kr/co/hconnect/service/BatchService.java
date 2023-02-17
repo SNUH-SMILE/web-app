@@ -733,6 +733,25 @@ public class BatchService extends EgovAbstractServiceImpl{
                 bioErrorVO.setMessage(msg);
                 aiInferenceDao.insBioError(bioErrorVO);
                 targetString.add(bcvo.getAdmissionId());
+            } else {
+                //오디오 파일이 있는지 체크 해야 함
+                //추론엔진에서는 오류가 나면
+                String  audioPath = aiInferenceDao.audioCheck(bcvo);
+                File afile = new File(audioPath);
+                if( !afile.exists() ) {
+                    msg= String.format(interviewMetaDataFormat
+                        , bcvo.getAdmissionId()
+                        ,"오디오 파일이 없습니다.  "
+                    );
+                    bioErrorVO = new BioErrorVO();
+                    bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
+                    bioErrorVO.setInfDiv("30");
+                    bioErrorVO.setCDate(nowDate.toString());
+                    bioErrorVO.setMessage(msg);
+                    aiInferenceDao.insBioError(bioErrorVO);
+                    targetString.add(bcvo.getAdmissionId());
+                }
+
             }
 
 

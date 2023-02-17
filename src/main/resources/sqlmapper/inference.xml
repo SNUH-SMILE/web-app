@@ -473,6 +473,14 @@
            AND DN_YN_VOICE = 'Y'
         ]]>
     </select>
+    <select id="audioCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="String">
+    <![CDATA[
+        SELECT DN_FOLDER_VOICE
+        FROM ARCHIVE_DOWN
+        WHERE ADMISSION_ID = #{admissionId}
+          AND DN_YN_VOICE = 'Y'
+        ]]>
+    </select>
 
     <update id="udpAdmissionDischarge"  >
         <![CDATA[
