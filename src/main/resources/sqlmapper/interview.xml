@@ -56,17 +56,31 @@
     <select id="selectInterviewForDateList"
             parameterType="kr.co.hconnect.domain.Interview"
             resultType="kr.co.hconnect.vo.InterviewList">
-        SELECT
-            a.INTERVIEW_TYPE,
-            a.INTERVIEW_SEQ ,
-            a.INTERVIEW_TITLE,
-            a.INTERVIEW_TIME,
-            a.INTERVIEW_STATUS,
-            a.INTERVIEW_DD
+        <![CDATA[
+            SELECT
+                a.INTERVIEW_TYPE,
+                a.INTERVIEW_SEQ ,
+                a.INTERVIEW_TITLE,
+                a.INTERVIEW_TIME,
+                a.INTERVIEW_STATUS,
+                a.INTERVIEW_DD
+            FROM INTERVIEW A
+            WHERE a.ADMISSION_ID = #{admissionId}
+                AND
+                a.INTERVIEW_DD = #{requestDate}
+        ]]>
+    </select>
+
+    <select id="selectInterviewForDischargeDateList"
+            parameterType="kr.co.hconnect.domain.Interview"
+            resultType="int">
+        <![CDATA[
+        SELECT COUNT(*) CNT
         FROM INTERVIEW A
-        WHERE a.ADMISSION_ID = #{admissionId}
-            AND
-            a.INTERVIEW_DD = #{requestDate}
+        WHERE a.ADMISSION_ID   = #{admissionId}
+          AND a.INTERVIEW_TYPE = #{iType}
+
+        ]]>
     </select>
     <!--해당고객 문진 리스트 조회-->
     <select id="selectInterviewList"

@@ -53,4 +53,9 @@ public class Interview extends BaseResponse {
      */
     private String requestDate;
 
+    /*
+    *문진타입
+    */
+    private String iType;
+
 }

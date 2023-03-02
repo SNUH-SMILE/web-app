@@ -15,8 +15,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,8 +49,8 @@ public class InterviewService extends EgovAbstractServiceImpl {
     }
     /**
      * 문진 조회
-     *  @param vo InterviewListSearchVO 문진조회정보 VO
-     *  @return InterviewListResponseByCenterVO 문진 조회 결과
+     *  //@param vo InterviewListSearchVO 문진조회정보 VO
+     *  //@return InterviewListResponseByCenterVO 문진 조회 결과
      * */
     public InterviewListResponseByCenterVO selectInterview(InterviewListSearchVO interviewListSearchVO){
 
@@ -58,12 +60,19 @@ public class InterviewService extends EgovAbstractServiceImpl {
         interview.setRequestDate(interviewListSearchVO.getRequestDate().substring(0,8));
         interview.setAdmissionId(admissionId);
 
+
+
         AdmissionInfoVO admissionInfoVO = getAdmission(admissionId);
         /* 날짜비교를 위한 */
         LocalDate admissionDate = admissionInfoVO.getAdmissionDate();
-        LocalDate dschgeDtate = admissionInfoVO.getDschgeDate();
+        LocalDate dschgeDtate = admissionInfoVO.getDschgeDate();   //퇴소일
+        LocalDate dchgeSchdldDate = admissionInfoVO.getDschgeSchdldDate(); //퇴소 예정일
 
-        LocalDate now = LocalDate.now();
+        //조회일을 현재 날짜로 본다
+        DateTimeFormatter fm = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate now = LocalDate.parse(interviewListSearchVO.getRequestDate().substring(0,8), fm);
+
+        LocalDate fDate = LocalDate.now();
         LocalTime nowTime = LocalTime.now();
 
         InterviewListResponseByCenterVO vo = new InterviewListResponseByCenterVO();
@@ -79,6 +88,7 @@ public class InterviewService extends EgovAbstractServiceImpl {
         vo.setSymptomLists(symptomLists);
 
         /*확진당일문진*/
+        /*
         if((vo.getInterviewList().stream().filter(i -> ("01").equals(i.getInterviewType())).collect(Collectors.toList()).size()) == 0 && now.compareTo(admissionDate) == 0){
             InterviewList interviewList = new InterviewList();
             interviewList.setInterviewType("01");
@@ -86,8 +96,22 @@ public class InterviewService extends EgovAbstractServiceImpl {
             interviewList.setInterviewTitle("확진 당일 문진");
             vo.getInterviewList().add(interviewList);
         }
+        */
+        if((vo.getInterviewList().stream().filter(i -> ("01").equals(i.getInterviewType())).collect(Collectors.toList()).size()) == 0
+            && now.equals(admissionDate)){
+
+            InterviewList interviewList = new InterviewList();
+            interviewList.setInterviewType("01");
+            interviewList.setInterviewStatus("0");
+            interviewList.setInterviewTitle("확진 당일 문진");
+            vo.getInterviewList().add(interviewList);
+        }
         /*일일문진*/
-        if((vo.getInterviewList().stream().filter(i -> ("02").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && dschgeDtate == null){
+        if((vo.getInterviewList().stream().filter(i -> ("02").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0
+            && dschgeDtate == null
+            && now.isAfter(admissionDate)
+            && now.isBefore(dchgeSchdldDate)){
+
             InterviewList interviewList = new InterviewList();
             interviewList.setInterviewType("02");
             interviewList.setInterviewStatus("0");//작성하기
@@ -95,20 +119,49 @@ public class InterviewService extends EgovAbstractServiceImpl {
             vo.getInterviewList().add(interviewList);
         }
         /*격리해제 문진*/
-        if((vo.getInterviewList().stream().filter(i -> ("04").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && now.equals(dschgeDtate)){
-            InterviewList interviewList = new InterviewList();
-            interviewList.setInterviewType("04");
-            interviewList.setInterviewStatus("0"); //작성하기
-            interviewList.setInterviewTitle("격리해제");
-            vo.getInterviewList().add(interviewList);
+        if((vo.getInterviewList().stream().filter(i -> ("04").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0
+            && now.equals(dchgeSchdldDate) || now.isAfter(dchgeSchdldDate) ){
+
+            Interview viewEntity04 = new Interview();
+            viewEntity04.setAdmissionId(admissionId);
+            viewEntity04.setIType("04");
+            viewEntity04.setRequestDate(interviewListSearchVO.getRequestDate().substring(0,8));
+
+            int  vo04 = interviewDao.selectInterviewForDischargeDateList(viewEntity04);
+            System.out.println("문진종류 04");
+            System.out.println(vo04);
+            if (vo04 == 0){
+                InterviewList interviewList = new InterviewList();
+                interviewList.setInterviewType("04");
+                interviewList.setInterviewStatus("0"); //작성하기
+                interviewList.setInterviewTitle("격리해제");
+                vo.getInterviewList().add(interviewList);
+            }
+
+
         }
         /*격리해제 후 30일 문진*/
-        if((vo.getInterviewList().stream().filter(i -> ("05").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0 && now.minusDays(30).equals(dschgeDtate)){
-            InterviewList interviewList = new InterviewList();
-            interviewList.setInterviewType("05");
-            interviewList.setInterviewStatus("0"); //작성하기
-            interviewList.setInterviewTitle("격리해제 30일 후 문진");
-            vo.getInterviewList().add(interviewList);
+        if (dschgeDtate == null){
+            dschgeDtate = now;
+        }
+        if((vo.getInterviewList().stream().filter(i -> ("05").equals(i.getInterviewType())).collect(Collectors.toList()).size())==0
+            && fDate.minusDays(30).equals(dschgeDtate) || fDate.minusDays(30).isAfter(dschgeDtate) ){
+
+            Interview viewEntity05 = new Interview();
+            viewEntity05.setAdmissionId(admissionId);
+            viewEntity05.setIType("05");
+            viewEntity05.setRequestDate(interviewListSearchVO.getRequestDate().substring(0,8));
+
+            int  vo05 = interviewDao.selectInterviewForDischargeDateList(viewEntity05);
+            System.out.println("문진종류 05");
+            System.out.println(vo05);
+            if (vo05 == 0){
+                InterviewList interviewList = new InterviewList();
+                interviewList.setInterviewType("05");
+                interviewList.setInterviewStatus("0"); //작성하기
+                interviewList.setInterviewTitle("격리해제 30일 후 문진");
+                vo.getInterviewList().add(interviewList);
+            }
         }
 
         return vo;

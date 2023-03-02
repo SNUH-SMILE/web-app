@@ -293,7 +293,7 @@
           , P.PATIENT_NM                                   -- 환자명
           , A.QANTN_DIV                                    -- 격리/입소 구분(CD004)
           , A.ADMISSION_DATE                               -- 격리 시작일
-          , TIMESTAMPDIFF(DAY, A.ADMISSION_DATE, NOW())  AS  QANTN_DAY
+          , TIMESTAMPDIFF(DAY, A.ADMISSION_DATE, NOW()) + 1  AS  QANTN_DAY
           , CASE WHEN A.DSCHGE_DATE IS NULL
                          THEN '1'
                     ELSE      '2'

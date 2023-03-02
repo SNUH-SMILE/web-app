@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -65,7 +66,8 @@ public class PatientResultChartHeaderVO extends PatientDetailDashboardHeaderBase
     public List<LocalDate> getSearchDtList() {
         // 입소일부터 격리해제/퇴소일 or 현재일 까지 일자리스트 역순 데이터 생성
         LocalDate admissionDate = getAdmissionDate();
-        LocalDate endDate = getDschgeYn().equals("Y") ? getDschgeDate() : LocalDate.now();
+        //LocalDate endDate = getDschgeYn().equals("Y") ? getDschgeDate() : LocalDate.now();
+        LocalDate endDate = getVitalDate() == null ? LocalDate.now() : getVitalDate();
 
         return Stream.iterate(endDate, d -> d.plusDays(-1))
                 .limit(ChronoUnit.DAYS.between(admissionDate, endDate) + 1)

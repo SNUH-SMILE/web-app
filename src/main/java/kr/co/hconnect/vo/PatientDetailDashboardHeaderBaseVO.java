@@ -98,4 +98,10 @@ public class PatientDetailDashboardHeaderBaseVO implements Serializable {
     private String dschgeYn;
 
 
+    /**
+     * 생체데이타 마지막 날
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate vitalDate;
+
 }

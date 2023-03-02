@@ -35,6 +35,16 @@ public class InterviewDao  extends EgovAbstractMapper {
     public List<InterviewList> selectInterviewForDateList(Interview interview) {
         return selectList("kr.co.hconnect.sqlmapper.selectInterviewForDateList", interview);
     }
+
+    /**
+     * 해당고객 문진 리스트 조회
+     * @param interview
+     * @return
+     */
+    public int selectInterviewForDischargeDateList(Interview interview) {
+        return selectOne("kr.co.hconnect.sqlmapper.selectInterviewForDischargeDateList", interview);
+    }
+
     /**
      * 해당고객 문진 리스트 조회
      * @param interview
@@ -65,6 +75,8 @@ public class InterviewDao  extends EgovAbstractMapper {
     public InterviewDetailVO selectInterviewDetailList(InterviewSearchVO vo) {
         return selectOne("kr.co.hconnect.sqlmapper.selectInterviewDetailList", vo);
     }
+
+
 
     /**
      * 확진 당일 문진 리스트
