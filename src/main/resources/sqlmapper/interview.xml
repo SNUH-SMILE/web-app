@@ -140,6 +140,7 @@
              , B.VAL12
         FROM INTERVIEW_CONTENT B
         WHERE B.INTERVIEW_TYPE = #{interviewType}
+        ORDER BY INTER_ORDER ASC
     </select>
 
     <!--문진내역 리스트 조회-->
