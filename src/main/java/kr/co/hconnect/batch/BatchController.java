@@ -163,6 +163,8 @@ public class BatchController {
         log.info("5. 화상상담 파일 다운로드 ");
         String rtn = batchService.vonageArchiveList();
 
+
+
     }
 
     /**
@@ -192,5 +194,36 @@ public class BatchController {
         batchService.updateAdmissionDischarge();
         log.info(" 격리 헤제 일괄 배치 종료");
     }
+
+    //가민 동기화 알림(9AM, 1PM, 5PM)
+    //배터리 잔여 확인 알림 (9AM)
+    @Scheduled(cron="0 9 0 * * *")
+    public void gaminSync09() throws IOException {
+        //가민 동기화 알림
+        batchService.gaminSync();
+        //배터리 잔여 학인 알림
+        batchService.batterySync();
+    }
+
+    /**
+     * 가민 동기화 알림(9AM, 1PM, 5PM)
+     * @throws IOException
+     */
+
+    /*
+    @Scheduled(cron="0 13 0 * * *")
+    public void gaminSync13() throws IOException {
+        batchService.gaminSync();
+    }
+    */
+
+
+    //가민 동기화 알림(9AM, 1PM, 5PM)
+    @Scheduled(cron="0 17 0 * * *")
+    public void gaminSync17() throws IOException {
+        batchService.gaminSync();
+    }
+
+
 
 }

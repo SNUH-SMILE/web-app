@@ -415,7 +415,7 @@ public class testController {
 
     @RequestMapping(value = "/filedownExtra", method = RequestMethod.POST)
     public void filedownExtra() throws IOException, OpenTokException {
-        log.info("5. 화상상담 파일 다운로드 ");
+        log.info("filedownExtra. 화상상담 파일 다운로드 ");
         String rtn = batchService.vonageArchiveList();
     }
 
@@ -433,6 +433,11 @@ public class testController {
         log.info(" 퇴소 30일 이후 리스트 및 알람 발송 종료");
     }
 
-
+    @RequestMapping(value = "/gamin", method = RequestMethod.POST)
+    public void gaminAlarm()  {
+        log.info(" 가민  알람 발송 시작");
+        batchService.gaminSync();
+        log.info(" 가민  알람 발송 종료");
+    }
 
 }

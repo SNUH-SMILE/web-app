@@ -45,12 +45,14 @@ public class BatchService extends EgovAbstractServiceImpl{
     @Value("${push.url}")
     private String push_url;
 
-
+    private final  NoticeService noticeService;
     private  final  AiInferenceDao aiInferenceDao;
 
     private  final  InterviewDao interviewDao;
 
     private  final  NoticeDao noticeDao;
+
+    private  final  AdmissionDao admissionDao;
 
     private int apikey = 47595911;
 
@@ -58,11 +60,16 @@ public class BatchService extends EgovAbstractServiceImpl{
 
 
     @Autowired
-    public BatchService(AiInferenceDao dao, InterviewDao interviewDao, NoticeDao noticeDao)
+    public BatchService(AiInferenceDao dao, InterviewDao interviewDao
+        , NoticeDao noticeDao
+        ,AdmissionDao admissionDao
+        ,NoticeService noticeService)
     {
         this.aiInferenceDao = dao;
         this.interviewDao = interviewDao;
         this.noticeDao = noticeDao;
+        this.admissionDao = admissionDao;
+        this.noticeService = noticeService;
     }
 
 
@@ -1043,9 +1050,14 @@ public class BatchService extends EgovAbstractServiceImpl{
             log.info("rtnvoList.size :  " + rtnvoList.size());
 
             for (ArchiveVO rvo : rtnvoList) {
-                log.info("download  admissionId :  " + rvo.getName());
+                log.info("rvo  download  admissionId :  " + rvo.getName());
                 try{
-                    fileDownload(rvo);
+                    String f = fileDownload(rvo);
+                    log.info("fileDownload f :  " + f);
+                    //다운로드  완료 업데이트
+                    aiInferenceDao.udpArchiveDown(rvo);
+                    log.info("aiInferenceDao.udpArchiveDown  ");
+
                 } catch (Exception e){
                     rtn = e.getMessage();
                     log.error("vonageArchiveList   >>>  " + e.getMessage());
@@ -1053,6 +1065,9 @@ public class BatchService extends EgovAbstractServiceImpl{
 
             }
 
+        } else {
+            //파일 다운도드
+            log.info("영상녹화 파일 다운로드 할 파일이 없습니다. >>>");
         }
         return rtn;
     }
@@ -1061,12 +1076,8 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         String rtn = "";
 
-        log.debug("ai_path  >>>  " + ai_path);
-        log.debug("ai_video_path  >>>  " + ai_video_path);
-
-        String FILE_URL ="";         // "리소스 경로";
+        String FILE_URL = "";         // "리소스 경로";
         String outputDir  = ai_video_path;
-        Archive archive = null;
         String vFileName ="";
         String getJsonPath ="";
         String getVideoPath ="";
@@ -1086,6 +1097,14 @@ public class BatchService extends EgovAbstractServiceImpl{
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmm");
         String timeFormatedNow = nowTime.format(timeFormatter);
 
+        //오픈톡 접속
+        FILE_URL = getArchive(archiveId);
+
+        // url 이 없는 경우 ㄱㄷ녓
+        if (StringUtils.isEmpty(FILE_URL)){
+            rtn = "다운로드 URL 이 없습니다";
+            return rtn;
+        }
 
         outputDir += admissionId;
 
@@ -1110,14 +1129,6 @@ public class BatchService extends EgovAbstractServiceImpl{
         }
         //디렉토리 생성하기
         try{
-
-            OpenTok openTok = new OpenTok(apikey, apiSecret);
-            archive =openTok.getArchive(archiveId);
-
-            FILE_URL = archive.getUrl();
-
-            rtn = FILE_URL;
-
             //해당 url
             URL url = new URL(FILE_URL);
             String outputFile = outputDir + "/" + admissionId +".zip";
@@ -1248,8 +1259,8 @@ public class BatchService extends EgovAbstractServiceImpl{
                 log.info("video convert end");
 
             }
-        } catch (OpenTokException e) {
-            log.error("오픈톡 오류 >>>>  " +  e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
 
         return rtn;
@@ -1667,6 +1678,68 @@ public class BatchService extends EgovAbstractServiceImpl{
 
         return rtn;
     }
+
+
+    private String getArchive(String archiveId) throws IOException, OpenTokException {
+        String url ="";
+        log.info(" openTok Start  >>>>  ");
+        try{
+            OpenTok openTok = new OpenTok(apikey, apiSecret);
+            Archive archive =openTok.getArchive(archiveId);
+            url = archive.getUrl();
+
+            openTok.close();
+
+        } catch (OpenTokException e) {
+            log.error("openTok >>>>  " + e.getMessage());
+            return url;
+        }
+
+        return url;
+    }
+
+    public void gaminSync(){
+        log.info("BatchService.gaminSync()   ");
+        String smileMsg = "안녕하세요. SMILE 연구팀입니다. 가민, 씨어스 어플 들어가셔서 동기화 버튼을 눌러주시기 바랍니다.";
+        try{
+            List<AdmissionVO> gaminList = admissionDao.selectGamineList();
+            log.info("gaminSync  gaminList.size() ==> " + gaminList.size());
+            if (gaminList != null){
+                for (AdmissionVO vo : gaminList){
+                    NoticeVO noticeVO = new NoticeVO();
+                    noticeVO.setAdmissionId(vo.getAdmissionId());
+                    noticeVO.setNotice(smileMsg);
+                    noticeVO.setRegId("admin");
+                    noticeService.insertNotice(noticeVO);
+                }
+            }
+        } catch (Exception e){
+            log.error("배치 가민 동기화 푸시 " + e.getMessage());
+        }
+    }
+
+    public void batterySync(){
+        log.info("BatchService.batterySync()");
+        String smileMsg = "안녕하세요. SMILE 연구팀입니다. 현재 착용하고 계신 웨어러블 배터리 잔량 확인 해주시고 필요 시 층전 부탁 드립니다.(배터리 25% 미만)";
+
+        try{
+            List<AdmissionVO> gaminList = admissionDao.selectGamineList();
+            log.info("batterySync  gaminList.size() ==> " + gaminList.size());
+            if (gaminList != null){
+                for (AdmissionVO vo : gaminList){
+                    NoticeVO noticeVO = new NoticeVO();
+                    noticeVO.setAdmissionId(vo.getAdmissionId());
+                    noticeVO.setNotice(smileMsg);
+                    noticeVO.setRegId("admin");
+                    noticeService.insertNotice(noticeVO);
+                }
+            }
+        } catch (Exception e){
+            log.error("배치 배터리 푸시 " + e.getMessage());
+        }
+
+    }
+
 }
 
 
