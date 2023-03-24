@@ -237,7 +237,7 @@
         WHERE 1=1
           AND A.DSCHGE_DATE IS NOT NULL
           AND P.LOGIN_ID  IS NOT NULL
-          AND DATEDIFF( DATE_FORMAT(NOW(), '%Y-%m-%d'), A.DSCHGE_DATE) = 30
+          AND DATEDIFF( DATE_FORMAT(NOW(), '%Y-%m-%d'), A.DSCHGE_DATE)  = 30
         ]]>
     </select>
 

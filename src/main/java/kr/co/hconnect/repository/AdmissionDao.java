@@ -135,12 +135,23 @@ public class AdmissionDao extends EgovAbstractMapper {
     }
 
     /**
-     * 가민 동기화 및 배터리 확인 알람 리스트
+     * 가민 동기화  알람 리스트
      * @return
      */
     public List<AdmissionVO> selectGamineList() {
         return selectList("kr.co.hconnect.sqlmapper.selectGamineList");
     }
+
+    /**
+     * 배터리 확인 알람 리스트
+     * @return
+     */
+    public List<AdmissionVO> selectBatteryList() {
+        return selectList("kr.co.hconnect.sqlmapper.selectBatteryList");
+    }
+
+
+
 }
 
 

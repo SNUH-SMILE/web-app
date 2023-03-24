@@ -726,11 +726,12 @@ public class BatchService extends EgovAbstractServiceImpl{
 
             }
             //영상다운이 있는지 체크한다.
+            //당일자 화상 파일이 있는지 체크한다.
+            String videoMetaDataFormat = "id=%s &  화상 녹화 데이터가 없습니다.";
             bioch = aiInferenceDao.videoCheck(bcvo);
             if (bioch == null || bioch.equals("0")){
-                msg= String.format(interviewMetaDataFormat
+                msg= String.format(videoMetaDataFormat
                     , bcvo.getAdmissionId()
-                    ,"화상 녹화  "
                 );
                 //에러 메세지 저장
                 bioErrorVO = new BioErrorVO();
@@ -743,12 +744,13 @@ public class BatchService extends EgovAbstractServiceImpl{
             } else {
                 //오디오 파일이 있는지 체크 해야 함
                 //추론엔진에서는 오류가 나면
+                //당일자 화상 음성 파일이 잇는지
+                String audioMetaDataFormat = "id=%s 오디오 파일 데이터가 없습니다.";
                 String  audioPath = aiInferenceDao.audioCheck(bcvo);
                 File afile = new File(audioPath);
                 if( !afile.exists() ) {
-                    msg= String.format(interviewMetaDataFormat
+                    msg= String.format(audioMetaDataFormat
                         , bcvo.getAdmissionId()
-                        ,"오디오 파일이 없습니다.  "
                     );
                     bioErrorVO = new BioErrorVO();
                     bioErrorVO.setAdmissionId(bcvo.getAdmissionId());
@@ -1720,10 +1722,10 @@ public class BatchService extends EgovAbstractServiceImpl{
 
     public void batterySync(){
         log.info("BatchService.batterySync()");
-        String smileMsg = "안녕하세요. SMILE 연구팀입니다. 현재 착용하고 계신 웨어러블 배터리 잔량 확인 해주시고 필요 시 층전 부탁 드립니다.(배터리 25% 미만)";
+        String smileMsg = "안녕하세요. SMILE 연구팀입니다. 현재 착용하고 계신 웨어러블 배터리 잔량 확인 해주시고 필요 시 충전 부탁 드립니다.(배터리 25% 미만)";
 
         try{
-            List<AdmissionVO> gaminList = admissionDao.selectGamineList();
+            List<AdmissionVO> gaminList = admissionDao.selectBatteryList();
             log.info("batterySync  gaminList.size() ==> " + gaminList.size());
             if (gaminList != null){
                 for (AdmissionVO vo : gaminList){

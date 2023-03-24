@@ -112,6 +112,7 @@
                       AND RESULT_DATE = DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y-%m-%d')
                     GROUP BY R.ADMISSION_ID
                 ) T1
+
                 GROUP BY ADMISSION_ID
             ) T2 ON A.ADMISSION_ID = T2.ADMISSION_ID
         WHERE 1=1
@@ -470,7 +471,8 @@
             SELECT COUNT(*) CNT
               FROM ARCHIVE_DOWN
             WHERE ADMISSION_ID = #{admissionId}
-           AND DN_YN_VOICE = 'Y'
+              AND DN_DATE_VOICE = DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y%m%d')
+              AND DN_YN_VOICE = 'Y'
         ]]>
     </select>
     <select id="audioCheck"  parameterType="kr.co.hconnect.vo.BioCheckVO" resultType="String">
@@ -478,6 +480,7 @@
         SELECT DN_FOLDER_VOICE
         FROM ARCHIVE_DOWN
         WHERE ADMISSION_ID = #{admissionId}
+          AND DN_DATE_VOICE = DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 DAY), '%Y%m%d')
           AND DN_YN_VOICE = 'Y'
         ]]>
     </select>

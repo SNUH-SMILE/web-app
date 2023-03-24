@@ -132,10 +132,9 @@ public class PatientService extends EgovAbstractServiceImpl {
             }
 
             patient.setPatientId(patientByIdentityInfo.getPatientId());
-
+            patient.setSearsAccount(patientByIdentityInfo.getSearsAccount());  //시어스 계정
             // 비밀번호 암호화
             patient.setPassword(CryptoUtils.encrypt(patient.getPassword()));
-
             // 환자정보 생성 - 업데이트
             patientDao.createPatientInfo(patient);
 
@@ -156,6 +155,7 @@ public class PatientService extends EgovAbstractServiceImpl {
             }
 
             patient.setPatientId(patientByLoginId.getPatientId());
+            patient.setSearsAccount(patientByLoginId.getSearsAccount());
 
             // 환자정보 업데이트
             patientDao.updatePatientInfo(patient);

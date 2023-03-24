@@ -197,7 +197,7 @@ public class BatchController {
 
     //가민 동기화 알림(9AM, 1PM, 5PM)
     //배터리 잔여 확인 알림 (9AM)
-    @Scheduled(cron="0 9 0 * * *")
+    @Scheduled(cron="0 0 9 * * *")
     public void gaminSync09() throws IOException {
         //가민 동기화 알림
         batchService.gaminSync();
@@ -211,7 +211,7 @@ public class BatchController {
      */
 
     /*
-    @Scheduled(cron="0 13 0 * * *")
+    @Scheduled(cron="0  0 * * *")
     public void gaminSync13() throws IOException {
         batchService.gaminSync();
     }
@@ -219,7 +219,7 @@ public class BatchController {
 
 
     //가민 동기화 알림(9AM, 1PM, 5PM)
-    @Scheduled(cron="0 17 0 * * *")
+    @Scheduled(cron="0 0 17 * * *")
     public void gaminSync17() throws IOException {
         batchService.gaminSync();
     }

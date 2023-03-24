@@ -396,7 +396,20 @@
         WHERE 1=1
           AND A.DEL_YN ='N'
           AND P.ACTIVE_STATUS ='1'
-          AND DATE_ADD(A.DSCHGE_SCHDLD_DATE, INTERVAL  30 DAY ) >= now()
+          AND A.DSCHGE_DATE IS NULL
+          -- AND DATE_ADD(A.DSCHGE_SCHDLD_DATE, INTERVAL  30 DAY ) >= now()
     </select>
 
+    <select id="selectBatteryList"  resultType="kr.co.hconnect.vo.AdmissionVO">
+        <![CDATA[
+        SELECT A.ADMISSION_ID
+        FROM ADMISSION A
+                 INNER JOIN PATIENT P
+                            ON A.PATIENT_ID = P.PATIENT_ID
+        WHERE 1=1
+          AND A.DEL_YN ='N'
+          AND P.ACTIVE_STATUS ='1'
+          AND A.DSCHGE_SCHDLD_DATE <= now()
+        ]]>
+    </select>
 </mapper>
