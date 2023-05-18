@@ -260,6 +260,7 @@
 				                  INNER JOIN RESULT_DETAIL RD
                                      ON R.RESULT_SEQ  = RD.RESULT_SEQ
 				            WHERE 1=1
+                             AND ADMISSION_ID = #{admissionId}
 				             AND R.ITEM_ID  = 'I0004'
 				             AND RD.RESULT_TYPE ='04'
 				             AND R.RESULT_DATE  = (SELECT MAX(RESULT_DATE) RESULT_DATE FROM RESULT S
