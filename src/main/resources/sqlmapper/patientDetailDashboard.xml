@@ -343,6 +343,7 @@
                                                 WHERE 1=1
                                                   AND ADMISSION_ID = #{admissionId}
                                                   AND RESULT_DATE = #{searchDt}
+                                                  AND RESULT_TIME >= '00:00:00'
                                                   AND R.ITEM_ID IN ('I0001','I0002','I0003', 'I0004', 'I0005','I0006')
                                                 GROUP BY R.ITEM_ID , HOUR(RESULT_TIME), FLOOR(MINUTE(RESULT_TIME)/15) * 15
                                             ) T3
