@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.hconnect.sqlmapper">
+
+
+    <insert id="addPatientLocation" parameterType="kr.co.hconnect.domain.PatientLocation">
+    <![CDATA[
+        /** kr.co.hconnect.sqlmapper.addPatientLocation */
+        INSERT INTO smile.patient_location
+        ( ADMISSION_ID -- 격리/입소내역ID
+        , RESULT_DT -- 측정일시
+        , LATITUDE -- 위도
+        , LONGITUDE -- 경도
+        )
+        VALUES ( #{admissionId}
+               , #{resultDt}
+               , #{latitude}
+               , #{longitude})
+        ]]>
+    </insert>
+
+</mapper>
