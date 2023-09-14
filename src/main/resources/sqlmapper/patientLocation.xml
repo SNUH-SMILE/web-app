@@ -2,11 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.hconnect.sqlmapper">
 
-
+    <!-- 위치정보 추가 -->
     <insert id="addPatientLocation" parameterType="kr.co.hconnect.domain.PatientLocation">
     <![CDATA[
         /** kr.co.hconnect.sqlmapper.addPatientLocation */
-        INSERT INTO smile.patient_location
+        INSERT INTO patient_location
         ( ADMISSION_ID -- 격리/입소내역ID
         , RESULT_DT -- 측정일시
         , LATITUDE -- 위도
@@ -18,5 +18,44 @@
                , #{longitude})
         ]]>
     </insert>
+
+    <!-- 격리/입소내역ID로 격리/입소정보 조회 -->
+    <select id="getAdmissionInfoById" parameterType="java.lang.String"
+            resultType="kr.co.hconnect.vo.PatientLocationInfoResponseVO">
+    <![CDATA[
+        /** kr.co.hconnect.sqlmapper.getAdmissionInfoById */
+        SELECT A.PATIENT_ID -- 환자ID
+             , B.PATIENT_NM -- 환자명
+             , A.QANTN_DIV  -- 격리/입소구분
+             , (SELECT Z.DETAIL_CD_NM
+                  FROM com_cd_detail Z
+                 WHERE Z.COM_CD = 'CD004'
+                   AND Z.DETAIL_CD = A.QANTN_DIV)
+            AS QANTN_DIV_NM -- 격리/입소구분 명칭
+             , B.BIRTH_DATE -- 생년월일
+             , B.SEX        -- 성별
+             , TRUNCATE((TO_DAYS(NOW()) - TO_DAYS(B.BIRTH_DATE)) / 365, 0)
+            AS AGE          -- 나이
+             , B.CELL_PHONE -- 휴대폰
+          FROM admission A
+          INNER JOIN patient B ON B.PATIENT_ID = A.PATIENT_ID
+         WHERE A.ADMISSION_ID = #{admissionId}
+        ]]>
+    </select>
+
+    <!-- 위치정보 목록 조회 -->
+    <select id="getPatientLocations" parameterType="kr.co.hconnect.vo.PatientLocationInfoRequestVO"
+            resultType="kr.co.hconnect.vo.PatientLocationInfoVO">
+    <![CDATA[
+        /** kr.co.hconnect.sqlmapper.getPatientLocations */
+        SELECT A.RESULT_DT -- 측정일시
+             , A.LATITUDE  -- 위도
+             , A.LONGITUDE -- 경도
+          FROM patient_location A
+         WHERE A.ADMISSION_ID = #{admissionId}
+           AND DATE(A.RESULT_DT) = #{resultDate}
+         ORDER BY A.LOCATION_SEQ
+        ]]>
+    </select>
 
 </mapper>

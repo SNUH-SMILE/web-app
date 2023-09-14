@@ -1,0 +1,31 @@
+### 로그인
+POST http://localhost:8080/api/patient/login
+Content-Type: application/json
+
+{
+    "loginId": "heritage124",
+    "password": "covid-19"
+}
+
+### 위치정보 저장
+POST http://localhost:8080/api/location/setLocationList
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIZWFsdGhDb25uZWN0IiwiaWF0IjoxNjk0NjY1NTU5LCJleHAiOjE2OTQ3NTE5NTksInRva2VuVHlwZSI6IkFQUCIsImlkIjoiaGVyaXRhZ2UxMjQiLCJuYW1lIjoi6rmA66-47KeAIn0.8cwhBi44WG27zlb2MVY6P10H39tyQujXFRwI2D4iOTw
+Content-Type: application/json
+
+{
+    "loginId": "heritage124",
+    "resultDate": "20230914",
+    "resultTime": "180500",
+    "lat": "41.40338",
+    "lng": "2.17403"
+}
+
+### 위치정보 조회
+GET http://localhost:8080/api/patient-locations
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIZWFsdGhDb25uZWN0IiwiaWF0IjoxNjk0NjY1NTU5LCJleHAiOjE2OTQ3NTE5NTksInRva2VuVHlwZSI6IkFQUCIsImlkIjoiaGVyaXRhZ2UxMjQiLCJuYW1lIjoi6rmA66-47KeAIn0.8cwhBi44WG27zlb2MVY6P10H39tyQujXFRwI2D4iOTw
+Content-Type: application/json
+
+{
+    "admissionId": "0000000145",
+    "resultDate": "2023-09-14"
+}

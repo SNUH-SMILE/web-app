@@ -5,11 +5,14 @@ import kr.co.hconnect.domain.BaseResponse;
 import kr.co.hconnect.domain.PatientLocation;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.service.PatientLocationService;
+import kr.co.hconnect.vo.PatientLocationInfoResponseVO;
+import kr.co.hconnect.vo.PatientLocationInfoRequestVO;
 import kr.co.hconnect.vo.PatientLocationResponseVO;
 import kr.co.hconnect.vo.PatientLocationVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,6 +63,27 @@ public class PatientLocationController {
         PatientLocationResponseVO responseVO = new PatientLocationResponseVO();
         responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
         responseVO.setMessage(messageSource.getMessage("message.success.addPatientLocation", null, Locale.getDefault()));
+        return responseVO;
+    }
+
+    /**
+     * 사용자 위치정보 조회
+     *
+     * @param requestVO {@link PatientLocationInfoRequestVO}
+     * @param result    {@link BindingResult}
+     * @return {@link PatientLocationInfoResponseVO}
+     */
+    @GetMapping("/api/patient-locations")
+    public PatientLocationInfoResponseVO getPatientLocations(@RequestBody @Valid PatientLocationInfoRequestVO requestVO, BindingResult result) {
+        // 유효성 검사
+        if (result.hasErrors()) {
+            throw new InvalidRequestArgumentException(result);
+        }
+
+        // 위치정보 조회
+        PatientLocationInfoResponseVO responseVO = service.getPatientLocationInfo(requestVO);
+        responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
+        responseVO.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
         return responseVO;
     }
 

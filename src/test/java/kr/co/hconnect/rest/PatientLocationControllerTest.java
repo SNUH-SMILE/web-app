@@ -1,8 +1,11 @@
 package kr.co.hconnect.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kr.co.hconnect.common.RestControllerExceptionHandler;
 import kr.co.hconnect.service.PatientLocationService;
+import kr.co.hconnect.vo.PatientLocationInfoRequestVO;
+import kr.co.hconnect.vo.PatientLocationInfoResponseVO;
 import kr.co.hconnect.vo.PatientLocationResponseVO;
 import kr.co.hconnect.vo.PatientLocationVO;
 import org.junit.Before;
@@ -16,6 +19,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.time.LocalDate;
 
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -41,6 +46,8 @@ public class PatientLocationControllerTest {
     @Before
     public void setUp() {
         objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
         mockMvc = MockMvcBuilders.standaloneSetup(new PatientLocationController(patientLocationService, messageSource))
             .setControllerAdvice(restControllerExceptionHandler)
             .build();
@@ -85,5 +92,38 @@ public class PatientLocationControllerTest {
                 .content(jsonString))
             .andDo(print())
             .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void givenInvalidRequest_whenGetPatientLocations_thenReturn4xx() throws Exception {
+        PatientLocationInfoRequestVO requestVO = new PatientLocationInfoRequestVO();
+        requestVO.setAdmissionId("0000000145");
+
+        String jsonString = objectMapper.writeValueAsString(requestVO);
+        mockMvc.perform(get("/api/patient-locations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString))
+            .andDo(print())
+            .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void whenGetPatientLocations_thenCorrect() throws Exception {
+        PatientLocationInfoRequestVO requestVO = new PatientLocationInfoRequestVO();
+        requestVO.setAdmissionId("0000000145");
+        requestVO.setResultDate(LocalDate.now());
+
+        String jsonString = objectMapper.writeValueAsString(requestVO);
+        MvcResult result = mockMvc.perform(get("/api/patient-locations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andReturn();
+
+        PatientLocationInfoResponseVO responseVO = objectMapper.readValue(result.getResponse().getContentAsByteArray()
+            , PatientLocationInfoResponseVO.class);
+        assertNotNull(responseVO);
+        assertEquals("00", responseVO.getCode());
     }
 }
