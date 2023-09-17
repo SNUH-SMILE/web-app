@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kr.co.hconnect.common.RestControllerExceptionHandler;
 import kr.co.hconnect.service.PatientLocationService;
-import kr.co.hconnect.vo.PatientLocationInfoRequestVO;
 import kr.co.hconnect.vo.PatientLocationInfoResponseVO;
 import kr.co.hconnect.vo.PatientLocationResponseVO;
 import kr.co.hconnect.vo.PatientLocationVO;
@@ -20,10 +19,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDate;
-
-import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -96,27 +95,17 @@ public class PatientLocationControllerTest {
 
     @Test
     public void givenInvalidRequest_whenGetPatientLocations_thenReturn4xx() throws Exception {
-        PatientLocationInfoRequestVO requestVO = new PatientLocationInfoRequestVO();
-        requestVO.setAdmissionId("0000000145");
-
-        String jsonString = objectMapper.writeValueAsString(requestVO);
         mockMvc.perform(get("/api/patient-locations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonString))
+                .param("admissionId", "0000000145"))
             .andDo(print())
             .andExpect(status().is4xxClientError());
     }
 
     @Test
     public void whenGetPatientLocations_thenCorrect() throws Exception {
-        PatientLocationInfoRequestVO requestVO = new PatientLocationInfoRequestVO();
-        requestVO.setAdmissionId("0000000145");
-        requestVO.setResultDate(LocalDate.now());
-
-        String jsonString = objectMapper.writeValueAsString(requestVO);
         MvcResult result = mockMvc.perform(get("/api/patient-locations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonString))
+                .param("admissionId", "0000000145")
+                .param("resultDate", "2023-09-14"))
             .andDo(print())
             .andExpect(status().isOk())
             .andReturn();

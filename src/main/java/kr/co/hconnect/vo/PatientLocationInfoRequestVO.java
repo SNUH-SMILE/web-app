@@ -1,6 +1,5 @@
 package kr.co.hconnect.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -22,7 +21,6 @@ public class PatientLocationInfoRequestVO {
      * 측정일자
      */
     @NotNull(message = "{validation.null.resultDate}")
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate resultDate;
 
 }

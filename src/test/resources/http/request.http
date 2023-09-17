@@ -21,11 +21,9 @@ Content-Type: application/json
 }
 
 ### 위치정보 조회
-GET {{baseUrl}}/api/patient-locations
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIZWFsdGhDb25uZWN0IiwiaWF0IjoxNjk0NjY3MzA4LCJleHAiOjE2OTQ3NTM3MDgsInRva2VuVHlwZSI6IkFQUCIsImlkIjoiaGVyaXRhZ2UxMjQiLCJuYW1lIjoi6rmA66-47KeAIn0.QoU0XDmgiIFHWpYqKV9L_wJ6QF56fh0pS3rYSHUHgWs
-Content-Type: application/json
+GET {{baseUrl}}/api/patient-locations?admissionId=0000000145&resultDate=2023-09-14
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIZWFsdGhDb25uZWN0IiwiaWF0IjoxNjk0OTkyMTM5LCJleHAiOjE2OTUwNzg1MzksInRva2VuVHlwZSI6IkFQUCIsImlkIjoiaGVyaXRhZ2UxMjQiLCJuYW1lIjoi6rmA66-47KeAIn0.1zStVULlV9Yv2uzrA3DQRsQpe79BKcHkFhc-6uzSVNI
 
-{
-    "admissionId": "0000000145",
-    "resultDate": "2023-09-14"
-}
+### String to LocalDate 테스트
+GET {{baseUrl}}/api/patient-locations/local-date?resultDate=2023-09-14
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIZWFsdGhDb25uZWN0IiwiaWF0IjoxNjk0OTkyMTM5LCJleHAiOjE2OTUwNzg1MzksInRva2VuVHlwZSI6IkFQUCIsImlkIjoiaGVyaXRhZ2UxMjQiLCJuYW1lIjoi6rmA66-47KeAIn0.1zStVULlV9Yv2uzrA3DQRsQpe79BKcHkFhc-6uzSVNI
