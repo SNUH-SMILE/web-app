@@ -96,27 +96,17 @@ public class PatientLocationControllerTest {
 
     @Test
     public void givenInvalidRequest_whenGetPatientLocations_thenReturn4xx() throws Exception {
-        PatientLocationInfoRequestVO requestVO = new PatientLocationInfoRequestVO();
-        requestVO.setAdmissionId("0000000145");
-
-        String jsonString = objectMapper.writeValueAsString(requestVO);
         mockMvc.perform(get("/api/patient-locations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonString))
+                .param("admissionId", "0000000145"))
             .andDo(print())
             .andExpect(status().is4xxClientError());
     }
 
     @Test
     public void whenGetPatientLocations_thenCorrect() throws Exception {
-        PatientLocationInfoRequestVO requestVO = new PatientLocationInfoRequestVO();
-        requestVO.setAdmissionId("0000000145");
-        requestVO.setResultDate(LocalDate.now());
-
-        String jsonString = objectMapper.writeValueAsString(requestVO);
         MvcResult result = mockMvc.perform(get("/api/patient-locations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonString))
+                .param("admissionId", "0000000145")
+                .param("resultDate", "2023-09-14"))
             .andDo(print())
             .andExpect(status().isOk())
             .andReturn();

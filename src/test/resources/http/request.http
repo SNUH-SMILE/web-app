@@ -1,5 +1,5 @@
 ### 로그인
-POST http://localhost:8080/api/patient/login
+POST {{baseUrl}}/api/patient/login
 Content-Type: application/json
 
 {
@@ -8,7 +8,7 @@ Content-Type: application/json
 }
 
 ### 위치정보 저장
-POST http://localhost:8080/api/location/setLocationList
+POST {{baseUrl}}/api/location/setLocationList
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIZWFsdGhDb25uZWN0IiwiaWF0IjoxNjk0NjY1NTU5LCJleHAiOjE2OTQ3NTE5NTksInRva2VuVHlwZSI6IkFQUCIsImlkIjoiaGVyaXRhZ2UxMjQiLCJuYW1lIjoi6rmA66-47KeAIn0.8cwhBi44WG27zlb2MVY6P10H39tyQujXFRwI2D4iOTw
 Content-Type: application/json
 
@@ -21,11 +21,9 @@ Content-Type: application/json
 }
 
 ### 위치정보 조회
-GET http://localhost:8080/api/patient-locations
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIZWFsdGhDb25uZWN0IiwiaWF0IjoxNjk0NjY1NTU5LCJleHAiOjE2OTQ3NTE5NTksInRva2VuVHlwZSI6IkFQUCIsImlkIjoiaGVyaXRhZ2UxMjQiLCJuYW1lIjoi6rmA66-47KeAIn0.8cwhBi44WG27zlb2MVY6P10H39tyQujXFRwI2D4iOTw
-Content-Type: application/json
+GET {{baseUrl}}/api/patient-locations?admissionId=0000000145&resultDate=2023-09-14
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIZWFsdGhDb25uZWN0IiwiaWF0IjoxNjk0OTkyMTM5LCJleHAiOjE2OTUwNzg1MzksInRva2VuVHlwZSI6IkFQUCIsImlkIjoiaGVyaXRhZ2UxMjQiLCJuYW1lIjoi6rmA66-47KeAIn0.1zStVULlV9Yv2uzrA3DQRsQpe79BKcHkFhc-6uzSVNI
 
-{
-    "admissionId": "0000000145",
-    "resultDate": "2023-09-14"
-}
+### String to LocalDate 테스트
+GET {{baseUrl}}/api/patient-locations/local-date?resultDate=2023-09-14
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIZWFsdGhDb25uZWN0IiwiaWF0IjoxNjk0OTkyMTM5LCJleHAiOjE2OTUwNzg1MzksInRva2VuVHlwZSI6IkFQUCIsImlkIjoiaGVyaXRhZ2UxMjQiLCJuYW1lIjoi6rmA66-47KeAIn0.1zStVULlV9Yv2uzrA3DQRsQpe79BKcHkFhc-6uzSVNI

@@ -5,19 +5,20 @@ import kr.co.hconnect.domain.BaseResponse;
 import kr.co.hconnect.domain.PatientLocation;
 import kr.co.hconnect.exception.InvalidRequestArgumentException;
 import kr.co.hconnect.service.PatientLocationService;
-import kr.co.hconnect.vo.PatientLocationInfoResponseVO;
 import kr.co.hconnect.vo.PatientLocationInfoRequestVO;
+import kr.co.hconnect.vo.PatientLocationInfoResponseVO;
 import kr.co.hconnect.vo.PatientLocationResponseVO;
 import kr.co.hconnect.vo.PatientLocationVO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.beans.PropertyEditorSupport;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -74,7 +75,9 @@ public class PatientLocationController {
      * @return {@link PatientLocationInfoResponseVO}
      */
     @GetMapping("/api/patient-locations")
-    public PatientLocationInfoResponseVO getPatientLocations(@RequestBody @Valid PatientLocationInfoRequestVO requestVO, BindingResult result) {
+    public PatientLocationInfoResponseVO getPatientLocations(@Valid @ModelAttribute PatientLocationInfoRequestVO requestVO
+        , BindingResult result
+    ) {
         // 유효성 검사
         if (result.hasErrors()) {
             throw new InvalidRequestArgumentException(result);
@@ -85,6 +88,40 @@ public class PatientLocationController {
         responseVO.setCode(ApiResponseCode.SUCCESS.getCode());
         responseVO.setMessage(messageSource.getMessage("message.success.searchResultList", null, Locale.getDefault()));
         return responseVO;
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        binder.registerCustomEditor(LocalDate.class, new CustomLocalDateEditor(formatter, true));
+    }
+
+    /**
+     * String to LocalDate PropertyEditor
+     */
+    static class CustomLocalDateEditor extends PropertyEditorSupport {
+        private final DateTimeFormatter formatter;
+        private final boolean allowEmpty;
+
+        CustomLocalDateEditor(DateTimeFormatter formatter, boolean allowEmpty) {
+            this.formatter = formatter;
+            this.allowEmpty = allowEmpty;
+        }
+
+        @Override
+        public void setAsText(String text) throws IllegalArgumentException {
+            if (allowEmpty && StringUtils.isEmpty(text)) {
+                setValue(null);
+            } else {
+                setValue(LocalDate.parse(text, formatter));
+            }
+        }
+
+        @Override
+        public String getAsText() {
+            LocalDate value = (LocalDate) getValue();
+            return value != null ? formatter.format(value) : "";
+        }
     }
 
 }
