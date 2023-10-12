@@ -136,7 +136,7 @@
                         <value>POST</value>
                     </list>
                 </entry>
-                <entry key="/api//patient/patient">
+                <entry key="/api/patient/patient">
                     <list>
                         <value>POST</value>
                     </list>
