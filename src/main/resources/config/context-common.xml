@@ -136,6 +136,21 @@
                         <value>POST</value>
                     </list>
                 </entry>
+                <entry key="/api//patient/patient">
+                    <list>
+                        <value>POST</value>
+                    </list>
+                </entry>
+                <entry key="/api/getQuarantineStatus">
+                    <list>
+                        <value>POST</value>
+                    </list>
+                </entry>
+                <entry key="/api/patient/getDevice">
+                    <list>
+                        <value>POST</value>
+                    </list>
+                </entry>
             </map>
         </property>
     </bean>
