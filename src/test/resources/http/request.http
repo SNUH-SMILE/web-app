@@ -27,3 +27,28 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIZWFsdGhDb
 ### String to LocalDate 테스트
 GET {{baseUrl}}/api/patient-locations/local-date?resultDate=2023-09-14
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIZWFsdGhDb25uZWN0IiwiaWF0IjoxNjk0OTkyMTM5LCJleHAiOjE2OTUwNzg1MzksInRva2VuVHlwZSI6IkFQUCIsImlkIjoiaGVyaXRhZ2UxMjQiLCJuYW1lIjoi6rmA66-47KeAIn0.1zStVULlV9Yv2uzrA3DQRsQpe79BKcHkFhc-6uzSVNI
+
+### 개인정보 조회
+POST {{baseUrl}}/api/patient/patient
+Content-Type: application/json
+
+{
+    "loginId": "heritage124"
+}
+
+### 격리상태 조회
+POST {{baseUrl}}/api/getQuarantineStatus
+Content-Type: application/json
+
+{
+    "loginId": "heritage124"
+}
+
+### 디바이스 정보 조회
+POST {{baseUrl}}/api/patient/getDevice
+Content-Type: application/json
+
+{
+    "loginId": "heritage124"
+}
+
